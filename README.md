@@ -9,6 +9,10 @@ Repo found at: https://github.com/korlibs/korge
 
 Hope this may help you in your development work. - IanP
 
+modelling organic cave-like environment rooms network:
+
 ![example output for renderOakLeafAngled()](nodes_oakLeaf.png "example output for renderOakLeafAngled()")
 
 ![example output for renderNodeMeshStationary()](nodes_mesh_consolidated.png "example output for renderNodeMeshStationary()")
+
+yellow nodes are from three 'oakleaf trees', blue nodes are connectivity and consolidation along the yellow node lines..
