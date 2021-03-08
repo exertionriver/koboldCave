@@ -8,3 +8,7 @@ And using Korge 2.0.7.1 (Apache 2.0 License) Korge Project template
 Repo found at: https://github.com/korlibs/korge
 
 Hope this may help you in your development work. - IanP
+
+![example output for renderOakLeafAngled()](nodes_oakLeaf.png "example output for renderOakLeafAngled()")
+
+![example output for renderNodeMeshStationary()](nodes_mesh_consolidated.png "example output for renderNodeMeshStationary()")
