@@ -5,11 +5,11 @@ import RenderOakLeaf.renderOakLeafStationary
 @ExperimentalUnsignedTypes
 suspend fun main() {
 
-	renderOakLeafStationary()
+//	renderOakLeafStationary()
 
 //	renderOakLeafAngled()
 
-//	renderNodeMeshStationary()
+	renderNodeMeshStationary()
 }
 
 

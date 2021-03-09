@@ -23,11 +23,12 @@ object RenderNodeMesh {
             val leafSecond = OakLeaf(initHeight = 5, startingPosition = startingMap[120], startingAngle = Angle.fromDegrees(120), relativeAngle = true )
             val leafThird = OakLeaf(initHeight = 5, startingPosition = startingMap[240], startingAngle = Angle.fromDegrees(240), relativeAngle = true)
 
-            val nodeMesh = NodeMesh(oakLeafNodes = leafFirst.getNodeList().plus(leafSecond.getNodeList()).plus(leafThird.getNodeList()))
+            val nodeMesh = NodeMesh(leafNodes = leafFirst.getNodeList().plus(leafSecond.getNodeList()).plus(leafThird.getNodeList()))
+            val consolidatedNodes = nodeMesh.getConsolidatedLeafNodes()
 
             stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
-                for (node in nodeMesh.getConsolidatedOakLeafNodes()) {
+                for (node in consolidatedNodes) {
                     if (node.childNodes.isEmpty()) continue
 
                     for (nodeChild in node.childNodes) {
@@ -39,10 +40,12 @@ object RenderNodeMesh {
 
             stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
 
-                for (node in nodeMesh.getConsolidatedOakLeafNodes() ) {
+                for (node in nodeMesh.getConsolidatedLeafNodes() ) {
                     if (node.childNodes.isEmpty()) continue
 
+                    //render line to childnode if line has not already been rendered in sorted nodelist
                     for (nodeChild in node.childNodes) {
+                        if (nodeChild.uuid.toString() > node.uuid.toString()) continue
 
                         line(node.position, nodeChild.position)
                     }
