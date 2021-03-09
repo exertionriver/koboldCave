@@ -7,6 +7,10 @@ And using Korge 2.0.7.1 (Apache 2.0 License) Korge Project template
 
 Repo found at: https://github.com/korlibs/korge
 
+Example usage, after cloning / downloading:
+
+```./gradlew :runJvm```
+
 Hope this may help you in your development work. - IanP
 
 modelling organic cave-like environment rooms network:
