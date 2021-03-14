@@ -104,7 +104,7 @@ class CaveLeaf (initHeight : Int = 3, parentLeafNode : CaveLeaf? = null
                 val angle = Angle.fromRadians(atan((currentPoint.y - lineEndPoint.y) / (lineEndPoint.x - currentPoint.x)))
 
 //                println("2) node at ${currentPoint}, angle ${angle.degrees}")
-                currentPoint = Point(currentPoint.x - 2 * cos(angle), currentPoint.y + 2 * sin(angle))
+                currentPoint = Point(currentPoint.x - nodeLength * cos(angle), currentPoint.y + nodeLength * sin(angle))
 
                 while ( (lineEndPoint.x < currentPoint.x) && (lineEndPoint.y >= currentPoint.y)  ) {
 //                    println("2) node at ${currentPoint}, angle ${angle.degrees}")
@@ -112,14 +112,14 @@ class CaveLeaf (initHeight : Int = 3, parentLeafNode : CaveLeaf? = null
                     previousNode.childNodes.add(currentNode)
                     nodeLineList.add(currentNode)
                     previousNode = currentNode
-                    currentPoint = Point(currentPoint.x - 2 * cos(angle), currentPoint.y + 2 * sin(angle))
+                    currentPoint = Point(currentPoint.x - nodeLength * cos(angle), currentPoint.y + nodeLength * sin(angle))
                 }
             }
             (lineEndPoint.x >= currentPoint.x) && (lineEndPoint.y < currentPoint.y) -> {
                 val angle = Angle.fromRadians(atan((lineEndPoint.y - currentPoint.y) / (currentPoint.x - lineEndPoint.x)))
 
 //                println("3) node at ${currentPoint}, angle ${angle.degrees}")
-                currentPoint = Point(currentPoint.x + 2 * cos(angle), currentPoint.y - 2 * sin(angle))
+                currentPoint = Point(currentPoint.x + nodeLength * cos(angle), currentPoint.y - nodeLength * sin(angle))
 
                 while ( (lineEndPoint.x >= currentPoint.x) && (lineEndPoint.y < currentPoint.y) ) {
 //                    println("3) node at ${currentPoint}, angle ${angle.degrees}")
@@ -127,14 +127,14 @@ class CaveLeaf (initHeight : Int = 3, parentLeafNode : CaveLeaf? = null
                     previousNode.childNodes.add(currentNode)
                     nodeLineList.add(currentNode)
                     previousNode = currentNode
-                    currentPoint = Point(currentPoint.x + 2 * cos(angle), currentPoint.y - 2 * sin(angle))
+                    currentPoint = Point(currentPoint.x + nodeLength * cos(angle), currentPoint.y - nodeLength * sin(angle))
                 }
             }
             (lineEndPoint.x < currentPoint.x) && (lineEndPoint.y < currentPoint.y) -> {
                 val angle = Angle.fromRadians(atan((currentPoint.y - lineEndPoint.y) / (currentPoint.x - lineEndPoint.x)))
 
 //                println("4) node at ${currentPoint}, angle ${angle.degrees}")
-                currentPoint = Point(currentPoint.x - 2 * cos(angle), currentPoint.y - 2 * sin(angle))
+                currentPoint = Point(currentPoint.x - nodeLength * cos(angle), currentPoint.y - 2 * sin(angle))
 
                 while ( (lineEndPoint.x < currentPoint.x) && (lineEndPoint.y < currentPoint.y)  ) {
 //                    println("4) node at ${currentPoint}, angle ${angle.degrees}")
@@ -142,7 +142,7 @@ class CaveLeaf (initHeight : Int = 3, parentLeafNode : CaveLeaf? = null
                     previousNode.childNodes.add(currentNode)
                     nodeLineList.add(currentNode)
                     previousNode = currentNode
-                    currentPoint = Point(currentPoint.x - 2 * cos(angle), currentPoint.y - 2 * sin(angle))
+                    currentPoint = Point(currentPoint.x - nodeLength * cos(angle), currentPoint.y - nodeLength * sin(angle))
                 }
             }
         }

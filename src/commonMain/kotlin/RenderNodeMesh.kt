@@ -26,31 +26,6 @@ object RenderNodeMesh {
             val nodeMesh = NodeMesh(leafNodes = leafFirst.getNodeList().plus(leafSecond.getNodeList()).plus(leafThird.getNodeList()))
             val consolidatedNodes = nodeMesh.getConsolidatedLeafNodes()
 
-            stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
-
-                for (node in consolidatedNodes) {
-                    if (node.childNodes.isEmpty()) continue
-
-                    for (nodeChild in node.childNodes) {
-
-                        circle(node.position, radius = 5.0)
-                    }
-                }
-            }
-
-            stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
-
-                for (node in nodeMesh.getConsolidatedLeafNodes() ) {
-                    if (node.childNodes.isEmpty()) continue
-
-                    //render line to childnode if line has not already been rendered in sorted nodelist
-                    for (nodeChild in node.childNodes) {
-                        if (nodeChild.uuid.toString() > node.uuid.toString()) continue
-
-                        line(node.position, nodeChild.position)
-                    }
-                }
-            }
             stroke(Colors["#f4ff0b"], StrokeInfo(thickness = 3.0)) {
                 for (node in leafFirst.getLeafNodeList() ) {
                     circle(node.position, radius = 5.0)
@@ -75,6 +50,32 @@ object RenderNodeMesh {
                     line(line.first, line.second)
                 }
 
+            }
+
+            stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in consolidatedNodes) {
+                    if (node.childNodes.isEmpty()) continue
+
+                    for (nodeChild in node.childNodes) {
+
+                        circle(node.position, radius = 5.0)
+                    }
+                }
+            }
+
+            stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in nodeMesh.getConsolidatedLeafNodes() ) {
+                    if (node.childNodes.isEmpty()) continue
+
+                    //render line to childnode if line has not already been rendered in sorted nodelist
+                    for (nodeChild in node.childNodes) {
+                        if (nodeChild.uuid.toString() > node.uuid.toString()) continue
+
+                        line(node.position, nodeChild.position)
+                    }
+                }
             }
         }
     }
