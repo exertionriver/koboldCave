@@ -1,77 +1,68 @@
-package util.node
+package node
 
-import Leaf
-import Node
-import Node.Companion.emptyNode
-import Probability
-import com.soywiz.korma.geom.*
-import kotlin.math.atan
+import com.soywiz.korio.util.UUID
+import com.soywiz.korma.geom.Point
+import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
-class CaveLeaf (initHeight : Int = 3, parentLeafNode : CaveLeaf? = null
-                , val startingAngle : Angle? = null, val startingPosition : Point? = null
-                , incrementPxLength : Int = 60, relativeAngle : Boolean = false
-    ) : Leaf(initHeight = initHeight, parentLeafNode = parentLeafNode) {
+class NodeMesh(val uuid: UUID = UUID.randomUUID(Random.Default), val nodes : List<Node> ) {
 
-    val lengthFromParent : Int = when {
-        (parentLeafNode == null) -> 0
-        (initHeight > 0) -> randOakLengthFromParent()
-        else -> 1
-    }
+    val consolidateDistance = 12.0
+    val linkDistance = 24.0
+/*
+    fun getConsolidatedLeafNodes() : List<Node> {
+        val includeNodes : MutableSet<Node> = mutableSetOf()
+        val excludeNodes : MutableSet<Node> = mutableSetOf()
+        var mutableNode : Node
 
-    val angleFromParent : Angle = when {
-        (startingAngle == null) -> Angle.fromDegrees(0) //0 == up
-        (initHeight >= 0) -> startingAngle + Angle.fromDegrees(Probability(0, 30).getValue())
-        else -> startingAngle
-    }
-
-    val position : Point = when {
-        (startingPosition == null) -> Point(512, 512)
-        (initHeight >= 0) -> {
-            if (relativeAngle) {
+        leafNodes.forEach { outer ->
+            leafNodes.forEach { inner ->
+                if (!excludeNodes.contains(outer) && !excludeNodes.contains(inner) && (inner != outer))
                 when {
-                    (angleFromParent >= Angle.fromDegrees(270) && angleFromParent < Angle.fromDegrees(90) ) ->
-                        Point(startingPosition.x + lengthFromParent * incrementPxLength * sin(angleFromParent)
-                            , startingPosition.y - lengthFromParent * incrementPxLength * cos(angleFromParent)
-                        )
-                    else ->
-                        Point(startingPosition.x + lengthFromParent * incrementPxLength * sin(angleFromParent)
-                            , startingPosition.y + lengthFromParent * incrementPxLength * cos(angleFromParent)
-                        )
+                    (Point.distance(inner.position, outer.position) < consolidateDistance) -> {
+                        mutableNode = outer
+                        inner.childNodes.let { mutableNode.childNodes.addAll(it) }
+                        inner.childNodes.forEach { it.childNodes.add(mutableNode) }
+                        inner.childNodes.forEach { it.childNodes.remove(inner) }
+                        if (!includeNodes.contains(mutableNode)) includeNodes.add(mutableNode) //compare by UUID
+                        excludeNodes.add(inner)
+                    }
+                    (Point.distance(inner.position, outer.position) in consolidateDistance..linkDistance) -> {
+                        mutableNode = outer
+                        mutableNode.childNodes.add(inner)
+                        if (!includeNodes.contains(mutableNode)) includeNodes.add(mutableNode)
+                    }
+                    else -> if (!excludeNodes.contains(outer)) includeNodes.add(outer)
                 }
             }
-            else //grow from bottom of screen up
-                Point(startingPosition.x + lengthFromParent * incrementPxLength * sin(angleFromParent)
-                    , startingPosition.y - lengthFromParent * incrementPxLength * cos(angleFromParent)
-                )
         }
-        else -> Point(startingPosition.x, startingPosition.y)
+        return includeNodes.toList().sortedBy { it.uuid.toString() }
     }
 
-    override val childrenLeafNodes = MutableList<Leaf?>(size = randChildSizeList(initHeight)) {
-        if (initHeight == 0) null else CaveLeaf(
-            initHeight = initHeight - 1,
-            parentLeafNode = this,
-            startingPosition = position,
-            startingAngle = angleFromParent
-        )
+//    https://www.baeldung.com/java-k-means-clustering-algorithm
+
+    fun getClusteredNodes(rooms : Int = 4, maxIterations : Int) : List<NodeRoom> {
+
+        val nodeRooms = List(size = rooms) { NodeRoom(position = NodeRoom.randomPosition(leafNodes)) }
+
+        println("init nodeRooms: $nodeRooms")
+
+        (0 until maxIterations).toList().forEach { iteration ->
+            val isLastIteration: Boolean = iteration == maxIterations - 1
+
+            nodeRooms.forEach { roomNode -> roomNode.clearNodes() }
+            leafNodes.forEach { node -> node.nearestNodeRoom(nodeRooms).nodes.add(node)}
+
+            println("iteration $iteration:")
+            println(nodeRooms)
+
+            if (!isLastIteration) nodeRooms.forEach { nodeRoom -> nodeRoom.averagePositionWithinNodes() }
+        }
+
+        return nodeRooms
     }
 
-
-    fun getLeafLineList() = getLeafNodeList().filter{ (it as CaveLeaf).startingPosition != null}.map {Point((it as CaveLeaf).startingPosition!!.x, it.startingPosition!!.y) to Point(it.position.x, it.position.y) }
-
-    fun getNode(limitRecursion : Boolean = false) : Node = when {
-        (limitRecursion) -> Node(uuid = uuid, position = position)
-        (parentLeafNode == null) -> when {
-            childrenEmpty -> Node(uuid = uuid, position = position) //singular OakLeaf, singular Node ; or limit recursion
-            else -> Node(uuid = uuid, position = position, childNodes = childrenLeafNodes.map { (it!! as CaveLeaf).getNode(limitRecursion = true) }.toMutableList()) // top of OakLeaf, add Node
-        }
-        else -> when {
-            childrenEmpty -> Node(uuid = uuid, position = position, childNodes = listOf((parentLeafNode as CaveLeaf).getNode(limitRecursion = true)).toMutableList())
-            else -> Node(uuid = uuid, position = position, childNodes = childrenLeafNodes.map { (it!! as CaveLeaf).getNode(limitRecursion = true) }.plus((parentLeafNode as CaveLeaf).getNode(limitRecursion = true)).toMutableList())
-        }
-    }
-
+    /*
     fun getNodeLine(parentLeaf : CaveLeaf) : List<Node> {
 
         val nodeLineList = mutableListOf<Node>()
@@ -155,13 +146,9 @@ class CaveLeaf (initHeight : Int = 3, parentLeafNode : CaveLeaf? = null
     fun getNodeList() : List<Node> =
         ( listOf( getNode() ).plus( childrenLeafNodes.flatMap { (it!! as CaveLeaf).getNodeList().plus((it as CaveLeaf).getNodeLine(this)) } )).toMutableList()
 
-    //nodeLineList handled in NodeMesh
 
-    override fun toString() = "CaveLeaf($uuid) : ${initHeight}, ${childrenLeafNodes.size}, $lengthFromParent, $angleFromParent, $position"
+     */
 
-    companion object {
-        fun randOakLengthFromParent() : Int = ProbabilitySelect.psAccumulating(listOf(1, 2, 3, 5, 7)).getSelectedProbability()!! // in pxIncrements
-
-        fun randNodeLengthFromParent() : Int = 30 //util.conditions.ProbabilitySelect.psAccumulating(listOf(16, 18, 14, 20, 12, 22)).getSelectedProbability()!! //in ft
-    }
+    override fun toString() = "Node.NodeMesh(${uuid}) : $leafNodes"
+*/
 }

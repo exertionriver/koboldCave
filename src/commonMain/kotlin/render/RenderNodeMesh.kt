@@ -1,3 +1,6 @@
+package render
+
+import node.NodeMesh
 import com.soywiz.korge.Korge
 import com.soywiz.korge.view.graphics
 import com.soywiz.korim.color.Colors
@@ -6,22 +9,23 @@ import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
+import leaf.Leaf
 
 object RenderNodeMesh {
 
     @ExperimentalUnsignedTypes
     suspend fun renderNodeMeshStationary() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
-
+/*
         val startingMap = mapOf(
-            0 to Point(512, 674)
-            , 120 to Point(212, 374)
-            , 240 to Point(812, 374)
+            90 to Point(512, 674)
+            , 210 to Point(212, 374)
+            , 330 to Point(812, 374)
         )
         graphics {
 
-            val leafFirst = OakLeaf(initHeight = 5, startingPosition = startingMap[0], startingAngle = Angle.fromDegrees(0) , relativeAngle = true)
-            val leafSecond = OakLeaf(initHeight = 5, startingPosition = startingMap[120], startingAngle = Angle.fromDegrees(120), relativeAngle = true )
-            val leafThird = OakLeaf(initHeight = 5, startingPosition = startingMap[240], startingAngle = Angle.fromDegrees(240), relativeAngle = true)
+            val leafFirst = Leaf(initHeight = 5, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(initHeight = 5, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(initHeight = 5, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
             val nodeMesh = NodeMesh(leafNodes = leafFirst.getNodeList().plus(leafSecond.getNodeList()).plus(leafThird.getNodeList()))
             val consolidatedNodes = nodeMesh.getConsolidatedLeafNodes()
@@ -77,6 +81,6 @@ object RenderNodeMesh {
                     }
                 }
             }
-        }
+        }*/
     }
 }

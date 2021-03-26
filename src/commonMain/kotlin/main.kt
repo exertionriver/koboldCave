@@ -1,15 +1,20 @@
-import RenderNodeMesh.renderNodeMeshStationary
-import RenderOakLeaf.renderOakLeafAngled
-import RenderOakLeaf.renderOakLeafStationary
+import render.RenderLeaf.renderAddLeafStationary
+import render.RenderLeaf.renderLeafAngled
+import render.RenderLeaf.renderLeafStationary
+import render.RenderNodeRooms.renderNodeRooms
 
 @ExperimentalUnsignedTypes
 suspend fun main() {
 
-//	renderOakLeafStationary()
+//	renderLeafStationary()
 
-//	renderOakLeafAngled()
+//	renderLeafAngled()
 
-	renderNodeMeshStationary()
+	renderAddLeafStationary()
+
+//	renderNodeMeshStationary()
+
+//	renderNodeRooms()
 }
 
 
