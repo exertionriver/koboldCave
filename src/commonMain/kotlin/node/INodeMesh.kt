@@ -41,7 +41,7 @@ interface INodeMesh {
 
         if ( (firstNode != null) && (secondNode != null) ) {
 
-            println("pre-consolidate firstNode: $firstNode")
+//            println("pre-consolidate firstNode: $firstNode")
 
             //positioned between current first and second nodes, with children uuids of both
 
@@ -59,9 +59,9 @@ interface INodeMesh {
                 )
             )
 
-            println("post-consolidate firstNode: $firstNode")
+//            println("post-consolidate firstNode: $firstNode")
 
-            println("pre-consolidate secondNode: $secondNode")
+//            println("pre-consolidate secondNode: $secondNode")
 
             //update children of second node to point to first (updated) node
             secondNode.childNodeUuids?.forEach { secondNodeChild ->
@@ -69,13 +69,13 @@ interface INodeMesh {
 
                 if (updateSecondNodeChild != null) {
 
-                    println("consolidating secondNode child: $updateSecondNodeChild")
+//                    println("consolidating secondNode child: $updateSecondNodeChild")
 
                     updateSecondNodeChild.childNodeUuids?.remove(secondUuid)
                     updateSecondNodeChild.childNodeUuids?.add(firstUuid)
                     updateNode(updateSecondNodeChild)
 
-                    println("done consolidating secondNode child: $updateSecondNodeChild")
+//                    println("done consolidating secondNode child: $updateSecondNodeChild")
                 }
             }
 
@@ -122,7 +122,7 @@ interface INodeMesh {
     }
 
     fun linkNodes() {
-        println("checking for nodes to link...")
+//        println("checking for nodes to link...")
 
         nodes.forEach { outer ->
             nodes.forEach { inner ->
