@@ -16,9 +16,9 @@ suspend fun main() {
 
 //	renderLeafAndNodes()
 
-	renderNodeMeshStationary()
+//	renderNodeMeshStationary()
 
-//	renderNodeRooms()
+	renderNodeRooms()
 }
 
 

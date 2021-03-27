@@ -7,6 +7,7 @@ import com.soywiz.korma.geom.*
 import leaf.ILeaf.Companion.nodeLinks
 import node.Node
 import node.NodeLink
+import node.NodeMesh
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -67,7 +68,6 @@ interface ILeaf {
             , LeafDistancePx * 1 / 4
             , LeafDistancePx * 7 / 4
         )).getSelectedProbability()!!
-
 
         fun getParentPosition(parentLeaf : MutableList<ILeaf>) : Point =
             if (!parentLeaf.isNullOrEmpty()) parentLeaf[0].position else Point(256, 256)
@@ -149,8 +149,10 @@ interface ILeaf {
 
             if( !childrenEmpty() ) this.getChildrenLeavesList()!!.forEach { childLeaf -> returnNodes.add( Node(childLeaf) ) }
 
-            return returnNodes
+            return returnNodes.plus(this.node())
         }
+
+        fun ILeaf.nodeMesh() : NodeMesh = NodeMesh(nodes = this.nodes().toMutableList(), nodeLinks = this.nodeLinks().toMutableList())
 
         fun List<ILeaf>.nodes() : List<Node> {
             val returnNodes = mutableListOf<Node>()

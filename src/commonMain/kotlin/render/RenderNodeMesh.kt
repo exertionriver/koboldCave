@@ -50,6 +50,13 @@ object RenderNodeMesh {
             }
 
 
+            stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
+
+                for (nodeLine in nodeMesh.getNodeLineList() ) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
             stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
                 for (node in nodeMesh.nodes) {
@@ -57,23 +64,9 @@ object RenderNodeMesh {
                 }
             }
 
-            stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
-
-                for (nodeLine in nodeMesh.getNodeLineList() ) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
-            
             nodeMesh.consolidateNodes()
 
             delay(1000)
-            
-            stroke(Colors["#f4ff0b"], StrokeInfo(thickness = 3.0)) {
-
-                for (node in nodeMesh.nodes) {
-                    circle(node.position + xNodeOffset, radius = 5.0)
-                }
-            }
 
             stroke(Colors["#9f9a3f"], StrokeInfo(thickness = 3.0)) {
 
@@ -82,16 +75,17 @@ object RenderNodeMesh {
                 }
             }
 
+            stroke(Colors["#f4ff0b"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in nodeMesh.nodes) {
+                    circle(node.position + xNodeOffset, radius = 5.0)
+                }
+            }
+
             nodeMesh.linkNodes()
             
             delay(1000)
 
-            stroke(Colors["#ff4494"], StrokeInfo(thickness = 3.0)) {
-
-                for (node in nodeMesh.nodes) {
-                    circle(node.position + yNodeOffset, radius = 5.0)
-                }
-            }
 
             stroke(Colors["#9f3762"], StrokeInfo(thickness = 3.0)) {
 
@@ -100,21 +94,28 @@ object RenderNodeMesh {
                 }
             }
 
+            stroke(Colors["#ff4494"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in nodeMesh.nodes) {
+                    circle(node.position + yNodeOffset, radius = 5.0)
+                }
+            }
+
             nodeMesh.consolidateNodes()
 
             delay(1000)
-
-            stroke(Colors["#b685ff"], StrokeInfo(thickness = 3.0)) {
-
-                for (node in nodeMesh.nodes) {
-                    circle(node.position + xNodeOffset + yNodeOffset, radius = 5.0)
-                }
-            }
 
             stroke(Colors["#7e519f"], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in nodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first + xNodeOffset + yNodeOffset, nodeLine.second + xNodeOffset + yNodeOffset )
+                }
+            }
+
+            stroke(Colors["#b685ff"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in nodeMesh.nodes) {
+                    circle(node.position + xNodeOffset + yNodeOffset, radius = 5.0)
                 }
             }
         }

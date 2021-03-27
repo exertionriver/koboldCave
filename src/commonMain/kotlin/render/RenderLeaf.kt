@@ -28,16 +28,16 @@ object RenderLeaf {
             val leaf = Leaf(initHeight = 6, position = startingPoint)
 
             graphics {
-                stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
-
-                    for (listLeaf in leaf.getLeafList() ) {
-                        circle(leaf.position, radius = 3.0)
-                    }
-                }
                 stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
 
                     for (line in leaf.getLeafLineList() ) {
                         if (line != null) line(line.first, line.second)
+                    }
+                }
+                stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
+
+                    for (listLeaf in leaf.getLeafList() ) {
+                        circle(listLeaf.position, radius = 3.0)
                     }
                 }
             }
@@ -67,15 +67,22 @@ object RenderLeaf {
         thirdLeaf.getLeafList()[thirdRandLeafIdx].graftLeaf(fourthLeaf)
 
         graphics {
+            stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in firstLeaf.getLeafLineList() ) {
+                    if (line != null) line(line.first, line.second)
+                }
+            }
             stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
                 for (leaf in firstLeaf.getLeafList() ) {
                     circle(leaf.position, radius = 3.0)
                 }
             }
-            stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
 
-                for (line in firstLeaf.getLeafLineList() ) {
+            stroke(Colors["#268184"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in secondLeaf.getLeafLineList() ) {
                     if (line != null) line(line.first, line.second)
                 }
             }
@@ -85,9 +92,10 @@ object RenderLeaf {
                     circle(leaf.position, radius = 3.0)
                 }
             }
-            stroke(Colors["#268184"], StrokeInfo(thickness = 3.0)) {
 
-                for (line in secondLeaf.getLeafLineList() ) {
+            stroke(Colors["#818436"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in thirdLeaf.getLeafLineList() ) {
                     if (line != null) line(line.first, line.second)
                 }
             }
@@ -97,9 +105,10 @@ object RenderLeaf {
                     circle(leaf.position, radius = 3.0)
                 }
             }
-            stroke(Colors["#818436"], StrokeInfo(thickness = 3.0)) {
 
-                for (line in thirdLeaf.getLeafLineList() ) {
+            stroke(Colors["#844a32"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in fourthLeaf.getLeafLineList() ) {
                     if (line != null) line(line.first, line.second)
                 }
             }
@@ -107,12 +116,6 @@ object RenderLeaf {
 
                 for (leaf in fourthLeaf.getLeafList() ) {
                     circle(leaf.position, radius = 3.0)
-                }
-            }
-            stroke(Colors["#844a32"], StrokeInfo(thickness = 3.0)) {
-
-                for (line in fourthLeaf.getLeafLineList() ) {
-                    if (line != null) line(line.first, line.second)
                 }
             }
         }
@@ -143,19 +146,20 @@ object RenderLeaf {
 
                 graphics {
 
-                    stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
-
-                        for (listLeaf in leaf.getLeafList() ) {
-                            circle(leaf.position, radius = 5.0)
-                        }
-                    }
-
                     stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
 
                         for (line in leaf.getLeafLineList() ) {
                             if (line != null) line(line.first, line.second)
                         }
                     }
+
+                    stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
+
+                        for (listLeaf in leaf.getLeafList() ) {
+                            circle(listLeaf.position, radius = 5.0)
+                        }
+                    }
+
                     delay(TimeSpan(1500.0))
 
                 }

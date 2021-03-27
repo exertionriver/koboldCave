@@ -1,5 +1,6 @@
 package node
 
+import com.soywiz.korio.async.runBlockingNoSuspensions
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
@@ -35,7 +36,7 @@ interface INodeMesh {
     }
 
     //replaces firstUuid node, removes secondUuid node; does not handle updates to NodeLinks
-    fun consolidateNodes(firstUuid : UUID, secondUuid : UUID) {
+    fun consolidateNodes(firstUuid : UUID, secondUuid : UUID)  {
         val firstNode = getNode(firstUuid)
         val secondNode = getNode(secondUuid)
 
@@ -44,18 +45,20 @@ interface INodeMesh {
 //            println("pre-consolidate firstNode: $firstNode")
 
             //positioned between current first and second nodes, with children uuids of both
+            //use set to remove duplicates
+            val consolidatedNodeUuids : MutableSet<UUID> = firstNode.childNodeUuids.toMutableSet()
 
-            val consolidatedNodes : MutableList<UUID>? = firstNode.childNodeUuids
-            secondNode.childNodeUuids?.let { consolidatedNodes?.addAll(it) }
+            //add uuids from second node
+            secondNode.childNodeUuids.let { consolidatedNodeUuids.addAll(it) }
 
-            //remove any crossUuids between first and second, if present
-            firstNode.childNodeUuids?.remove(secondUuid)
-            secondNode.childNodeUuids?.remove(firstUuid)
+            //remove any links to second node
+            consolidatedNodeUuids.remove(secondUuid)
 
+            //update first node with new links
             updateNode(
                 Node( firstNode
                     , updPosition = Point.middle(firstNode.position, secondNode.position)
-                    , updChildNodeUuids = consolidatedNodes
+                    , updChildNodeUuids = consolidatedNodeUuids.toMutableList()
                 )
             )
 
@@ -64,20 +67,34 @@ interface INodeMesh {
 //            println("pre-consolidate secondNode: $secondNode")
 
             //update children of second node to point to first (updated) node
-            secondNode.childNodeUuids?.forEach { secondNodeChild ->
-                val updateSecondNodeChild : Node? = getNode(secondNodeChild)
+            consolidatedNodeUuids.forEach { consolidatedNodeUuid ->
+                val updateConsolidatedNode : Node? = getNode(consolidatedNodeUuid)
 
-                if (updateSecondNodeChild != null) {
+//                println("updateConsolidatedNode: $updateConsolidatedNode")
+
+                if (updateConsolidatedNode != null)  {
+
+                    if (updateConsolidatedNode.childNodeUuids.isNotEmpty()) {
+
+                        if (!updateConsolidatedNode.childNodeUuids.contains(firstUuid)) {
+                            updateConsolidatedNode.childNodeUuids.add(firstUuid)
+                        }
+
+                        if (updateConsolidatedNode.childNodeUuids.contains(secondUuid)) {
+                            updateConsolidatedNode.childNodeUuids.remove(secondUuid)
+                        }
 
 //                    println("consolidating secondNode child: $updateSecondNodeChild")
 
-                    updateSecondNodeChild.childNodeUuids?.remove(secondUuid)
-                    updateSecondNodeChild.childNodeUuids?.add(firstUuid)
-                    updateNode(updateSecondNodeChild)
-
+                        updateNode(
+                            Node(updateConsolidatedNode, updChildNodeUuids = updateConsolidatedNode.childNodeUuids)
+                        )
+                    }
 //                    println("done consolidating secondNode child: $updateSecondNodeChild")
                 }
             }
+
+
 
 //            println("post-consolidate secondNode: $secondNode")
 
@@ -143,7 +160,7 @@ interface INodeMesh {
 
         val nodeRooms = List(size = rooms) { NodeRoom(position = NodeRoom.randomPosition(nodes)) }
 
-        println("init nodeRooms: $nodeRooms")
+//        println("init nodeRooms: $nodeRooms")
 
         (0 until maxIterations).toList().forEach { iteration ->
             val isLastIteration: Boolean = iteration == maxIterations - 1
@@ -151,8 +168,8 @@ interface INodeMesh {
             nodeRooms.forEach { roomNode -> roomNode.clearNodes() }
             nodes.forEach { node -> node.nearestNodeRoom(nodeRooms).nodes.add(node)}
 
-            println("iteration $iteration:")
-            println(nodeRooms)
+//            println("iteration $iteration:")
+//            println(nodeRooms)
 
             if (!isLastIteration) nodeRooms.forEach { nodeRoom -> nodeRoom.averagePositionWithinNodes() }
         }
@@ -165,11 +182,11 @@ interface INodeMesh {
         val returnNodeLineList : MutableList<Pair<Point, Point>> = mutableListOf()
 
         nodeLinks.sortedBy {
-                link -> link.firstNodeUuid.toString() }.filter {
-                    sortedLink -> sortedLink.firstNodeUuid.toString() < sortedLink.secondNodeUuid.toString() }.forEach {
-                        filteredLink -> if ( getNode(filteredLink.firstNodeUuid) != null && getNode(filteredLink.secondNodeUuid) != null)
-                            returnNodeLineList.add(Pair(getNode(filteredLink.firstNodeUuid)!!.position, getNode(filteredLink.secondNodeUuid)!!.position) )
-                }
+            link -> link.firstNodeUuid.toString() }.filter {
+                sortedLink -> sortedLink.firstNodeUuid.toString() < sortedLink.secondNodeUuid.toString() }.forEach {
+                    filteredLink -> if ( getNode(filteredLink.firstNodeUuid) != null && getNode(filteredLink.secondNodeUuid) != null)
+                        returnNodeLineList.add(Pair(getNode(filteredLink.firstNodeUuid)!!.position, getNode(filteredLink.secondNodeUuid)!!.position) )
+            }
 
         return returnNodeLineList
     }
@@ -259,7 +276,48 @@ interface INodeMesh {
      */
 
     companion object {
-        val consolidateNodeDistance = ILeaf.LeafDistancePx / 2
+        val consolidateNodeDistance = ILeaf.LeafDistancePx / 8
         val linkNodeDistance = ILeaf.LeafDistancePx
+
+        fun MutableList<NodeLink>.getNodeLink(firstUuid: UUID, secondUuid: UUID) : NodeLink? = this.firstOrNull { nodeLink -> nodeLink.firstNodeUuid == firstUuid && nodeLink.secondNodeUuid == secondUuid }
+
+        fun getNodeRelinks(nodes: MutableList<Node>) : MutableList<NodeLink> {
+
+        println("checking for nodes to re-link...")
+
+            val nodeLinks : MutableList<NodeLink> = mutableListOf()
+            lateinit var closestNode : Node
+
+            nodes.forEach { outer ->
+                closestNode = Node (outer, updPosition = outer.position + Point(10000, 10000) ) //faraway point
+                outer.childNodeUuids.clear()
+
+                println("relinking outer: $outer, $closestNode")
+                nodes.forEach { inner ->
+                    //in case outer node is orphaned
+                    if ( ( nodeLinks.getNodeLink(outer.uuid, inner.uuid) == null) && (outer.uuid != inner.uuid) ) {
+                        if ( Point.distance(inner.position, outer.position) <= Point.distance(outer.position, closestNode.position) ) {
+                            closestNode = inner
+                            println("new closestNode: $outer, $closestNode")
+                        }
+
+                        if (Point.distance(inner.position, outer.position).toInt() <= linkNodeDistance) {
+                            nodeLinks.add(NodeLink(inner.uuid, outer.uuid, Point.distance(inner.position, outer.position)
+                                , Angle.between(inner.position, outer.position), Angle.between(outer.position, inner.position)))
+                        }
+                    }
+                }
+                //if outer node is orphaned, link to closest node
+                if ( (nodes.size > 1) && (outer.childNodeUuids.none { nodes.map { node -> node.uuid }.contains(it) } ) ) {
+
+                    println ("adding link for orphan: $outer, $closestNode")
+                    nodeLinks.add(
+                        NodeLink(closestNode.uuid, outer.uuid, Point.distance(closestNode.position, outer.position)
+                        , Angle.between(closestNode.position, outer.position), Angle.between(outer.position, closestNode.position) )
+                    )
+                }
+            }
+            return nodeLinks
+        }
     }
 }
