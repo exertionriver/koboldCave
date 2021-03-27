@@ -4,6 +4,9 @@ import Probability
 import com.soywiz.korio.dynamic.dyn
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
+import leaf.ILeaf.Companion.nodeLinks
+import node.Node
+import node.NodeLink
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -30,7 +33,7 @@ interface ILeaf {
 
     fun childrenEmpty() = childrenLeaves.isNullOrEmpty()
 
-    fun getChildrenLeavesList() : List<ILeaf>? = if (childrenEmpty() ) null else childrenLeaves.toList()
+    fun getChildrenLeavesList() : List<ILeaf>? = if ( childrenEmpty() ) null else childrenLeaves.toList()
 
     fun getChildAngle() : Angle =
         this.angleFromParent + Angle.fromDegrees(Probability(0, 30).getValue())
@@ -120,11 +123,49 @@ interface ILeaf {
             this.position.x += xOffset
             this.position.y += yOffset
 
-            if (!this.childrenEmpty()) this.childrenLeaves.forEach{ childSubLeaf -> childSubLeaf.moveLeaf(xOffset, yOffset) }
+            if ( !this.childrenEmpty() ) this.childrenLeaves.forEach{ childSubLeaf -> childSubLeaf.moveLeaf(xOffset, yOffset) }
 
             return this
-
         }
 
+        fun ILeaf.node() : Node {
+            return Node(this)
+        }
+
+        fun ILeaf.nodeLinks() : List<NodeLink> {
+            val returnNodeLinks = mutableListOf<NodeLink>()
+
+            if ( !parentEmpty() ) returnNodeLinks.add( NodeLink(this, getParentLeaf()!!) )
+
+            if( !childrenEmpty() ) this.getChildrenLeavesList()!!.forEach { childLeaf -> returnNodeLinks.add( NodeLink(this, childLeaf) ) }
+
+            return returnNodeLinks
+        }
+
+        fun ILeaf.nodes() : List<Node> {
+            val returnNodes = mutableListOf<Node>()
+
+            if ( !parentEmpty() ) returnNodes.add( Node(getParentLeaf()!!) )
+
+            if( !childrenEmpty() ) this.getChildrenLeavesList()!!.forEach { childLeaf -> returnNodes.add( Node(childLeaf) ) }
+
+            return returnNodes
+        }
+
+        fun List<ILeaf>.nodes() : List<Node> {
+            val returnNodes = mutableListOf<Node>()
+
+            this.forEach { iLeaf -> returnNodes.add(iLeaf.node()) }
+
+            return returnNodes
+        }
+
+        fun List<ILeaf>.nodeLinks() : List<NodeLink> {
+            val returnNodeLinks = mutableListOf<NodeLink>()
+
+            this.forEach { iLeaf -> returnNodeLinks.addAll(iLeaf.nodeLinks()) }
+
+            return returnNodeLinks
+        }
     }
 }

@@ -1,35 +1,58 @@
 import node.NodeMesh
 import com.soywiz.korma.geom.Point
+import leaf.ILeaf.Companion.nodeLinks
 import leaf.Leaf
+import node.Node
+import node.NodeLink
 import kotlin.test.Test
 
 class TestNode {
 
     @ExperimentalUnsignedTypes
     @Test
-    fun testNodeConsolidate() {
+    fun testNodeList() {
         val leaf = Leaf(initHeight = 5)
-//        println("leaf(" +leaf.childrenLeafNodes.count() + "): " + leaf)
-/*
-        println("leafNodeList(" + leaf.getLeafList().size + "): ")
-        for (leafNode in leaf.getLeafList())
-            println(leafNode)
+        val nodeList = mutableListOf<Node>()
 
-        val nodeMesh = NodeMesh(leafNodes = leaf.getNodeList())
-        println("nodeMesh(" + nodeMesh.leafNodes.size + "): " + nodeMesh)
+        println("leafList(${leaf.getLeafList().size}):")
+        for (listLeaf in leaf.getLeafList()) {
+            println(listLeaf)
+            nodeList.add(Node(listLeaf))
+        }
 
-        println("nodeMeshConsolidated(" + nodeMesh.getConsolidatedLeafNodes().size + "): " + nodeMesh.getConsolidatedLeafNodes())
-*/
+        println("nodeList(${nodeList.size}):")
+        for (listNode in nodeList) {
+            println(listNode)
+        }
     }
+
+    @ExperimentalUnsignedTypes
+    @Test
+    fun testNodeLinkList() {
+        val leaf = Leaf(initHeight = 3)
+        val nodeLinkList = mutableListOf<NodeLink>()
+
+        println("leafList(${leaf.getLeafList().size}):")
+        for (listLeaf in leaf.getLeafList()) {
+            println(listLeaf)
+            nodeLinkList.addAll(listLeaf.nodeLinks())
+        }
+
+        println("nodeLinkList(${nodeLinkList.size}):")
+        for (nodeLink in nodeLinkList) {
+            println(nodeLink)
+        }
+    }
+
 
     @ExperimentalUnsignedTypes
     @Test
     fun testNodeMultiConsolidate() {
         val startingPoint = Point(512.0, 954.0)
 
-        val leafFirst = Leaf(initHeight = 5, position = startingPoint)
-        val leafSecond = Leaf(initHeight = 5, position = startingPoint)
-        val leafThird = Leaf(initHeight = 5, position = startingPoint)
+        val leafFirst = Leaf(initHeight = 3, position = startingPoint)
+        val leafSecond = Leaf(initHeight = 3, position = startingPoint)
+        val leafThird = Leaf(initHeight = 3, position = startingPoint)
 
         println("leafNodeListFirst(" + leafFirst.getLeafList().size + "): ")
         for (leafNode in leafFirst.getLeafList())
@@ -40,12 +63,24 @@ class TestNode {
         println("leafNodeListThird(" + leafThird.getLeafList().size + "): ")
         for (leafNode in leafThird.getLeafList())
             println(leafNode)
-/*
-        val nodeMesh = NodeMesh(leafNodes = leafFirst.getNodeList().plus(leafSecond.getNodeList()).plus(leafThird.getNodeList()))
-        println("nodeMesh(" + nodeMesh.leafNodes.size + "): " + nodeMesh)
 
-        println("nodeMeshConsolidated(" + nodeMesh.getConsolidatedLeafNodes().size + "): " + nodeMesh.getConsolidatedLeafNodes())
-*/
+        val nodeMesh = NodeMesh(leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()))
+        println("nodeMesh(" + nodeMesh.nodes.size + "):")
+        nodeMesh.nodes.forEach { println ("node: $it")}
+        nodeMesh.nodeLinks.forEach { println ("nodeLink: $it")}
+
+        nodeMesh.consolidateNodes()
+
+        println("consolidated nodeMesh(" + nodeMesh.nodes.size + "):")
+        nodeMesh.nodes.forEach { println ("node: $it")}
+        nodeMesh.nodeLinks.forEach { println ("nodeLink: $it")}
+
+        nodeMesh.linkNodes()
+
+        println("linkNodes nodeMesh(" + nodeMesh.nodes.size + "):")
+        nodeMesh.nodes.forEach { println ("node: $it")}
+        nodeMesh.nodeLinks.forEach { println ("nodeLink: $it")}
+
     }
 
 

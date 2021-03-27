@@ -30,8 +30,8 @@ object RenderLeaf {
             graphics {
                 stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
-                    for (node in leaf.getLeafList() ) {
-                        circle(node.position, radius = 3.0)
+                    for (listLeaf in leaf.getLeafList() ) {
+                        circle(leaf.position, radius = 3.0)
                     }
                 }
                 stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
@@ -145,8 +145,8 @@ object RenderLeaf {
 
                     stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
-                        for (node in leaf.getLeafList() ) {
-                            circle(node.position, radius = 5.0)
+                        for (listLeaf in leaf.getLeafList() ) {
+                            circle(leaf.position, radius = 5.0)
                         }
                     }
 

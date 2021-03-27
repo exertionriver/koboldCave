@@ -6,7 +6,7 @@ import kotlin.random.Random
 
 //aka 'kmeans centroid'
 @ExperimentalUnsignedTypes
-class NodeRoom(val uuid: UUID = UUID.randomUUID(), val position : Point, val nodes : MutableList<Node> = mutableListOf() ) {
+class NodeRoom(override val uuid: UUID = UUID.randomUUID(), val position : Point, override val nodes : MutableList<Node> = mutableListOf(), override val nodeLinks : MutableList<NodeLink> = mutableListOf() ) : INodeMesh {
 
     val description = "room${Random.nextInt(512)}"
 

@@ -14,7 +14,7 @@ import kotlin.random.Random
 class Leaf(override val initHeight : Int = 3
         , override val parentLeaf : MutableList<ILeaf> = mutableListOf()
         , override val distanceFromParent : Int = 0
-        , override val angleFromParent : Angle = Angle.fromDegrees(270.0) //270 == up
+        , override val angleFromParent : Angle = Angle.fromDegrees(270.0) //270 == down
         , override val position : Point = getChildPosition(getParentPosition(parentLeaf), distanceFromParent, angleFromParent)
     ) : ILeaf {
 
