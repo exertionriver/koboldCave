@@ -1,14 +1,8 @@
 package node
 
 import com.soywiz.korio.util.UUID
-import com.soywiz.korma.geom.Angle
-import com.soywiz.korma.geom.Point
-import leaf.ILeaf
-import leaf.ILeaf.Companion.nodeLinks
-import leaf.ILeaf.Companion.nodes
-import node.INodeMesh.Companion.getNodeRelinks
+import node.INodeMesh.Companion.linkNodes
 import kotlin.random.Random
-import kotlin.reflect.KClass
 
 @ExperimentalUnsignedTypes
 class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), override val nodes : MutableList<Node>, override val nodeLinks : MutableList<NodeLink> ) : INodeMesh {
@@ -22,9 +16,9 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), overri
         , nodeLinks = updNodeLinks
     )
 
-    constructor(relinkNodes: List<Node>) : this (
-        nodes = relinkNodes.toMutableList()
-        , nodeLinks = getNodeRelinks(relinkNodes.toMutableList())
+    constructor(relinkNodes: MutableList<Node>) : this (
+        nodes = relinkNodes
+        , nodeLinks = relinkNodes.linkNodes()
     )
 
     override fun toString() = "Node.NodeMesh(${uuid}) : $nodes, $nodeLinks"

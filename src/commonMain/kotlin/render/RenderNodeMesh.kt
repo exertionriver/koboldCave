@@ -11,6 +11,7 @@ import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
 import leaf.ILeaf.Companion.LeafDistancePx
+import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 
 object RenderNodeMesh {
@@ -36,7 +37,7 @@ object RenderNodeMesh {
             val leafSecond = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(210) )
             val leafThird = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val nodeMesh = NodeMesh(leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()))
+            val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
 
             stroke(Colors["#45f049"], StrokeInfo(thickness = 3.0)) {
 

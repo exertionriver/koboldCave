@@ -31,12 +31,10 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), val position : Point
             val maxXY = Point(0, 0)
 
             nodes.forEach { node ->
-                when {
-                    (node.position.x > maxXY.x) -> maxXY.x = node.position.x
-                    (node.position.y > maxXY.y) -> maxXY.y = node.position.y
-                    (node.position.x < minXY.x) -> minXY.x = node.position.x
-                    (node.position.y < minXY.x) -> minXY.y = node.position.y
-                }
+                if (node.position.x > maxXY.x) maxXY.x = node.position.x
+                if (node.position.y > maxXY.y) maxXY.y = node.position.y
+                if (node.position.x < minXY.x) minXY.x = node.position.x
+                if (node.position.y < minXY.y) minXY.y = node.position.y
             }
 
             println("max: $maxXY, min: $minXY")

@@ -169,5 +169,7 @@ interface ILeaf {
 
             return returnNodeLinks
         }
+
+        fun List<ILeaf>.nodeMesh() : NodeMesh = NodeMesh(nodes = this.nodes().toMutableList(), nodeLinks = this.nodeLinks().toMutableList())
     }
 }

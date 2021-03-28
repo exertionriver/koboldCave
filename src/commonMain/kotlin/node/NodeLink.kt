@@ -4,32 +4,51 @@ import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import leaf.ILeaf
-import leaf.Leaf
-import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
-class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID, val distance : Double, val firstToSecondAngle : Angle, val secondToFirstAngle : Angle) {
+class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
     constructor(firstLeaf : ILeaf, secondLeaf : ILeaf) : this (
         firstNodeUuid = firstLeaf.uuid
         , secondNodeUuid = secondLeaf.uuid
-        , distance = firstLeaf.position.distanceTo(secondLeaf.position)
-        , firstToSecondAngle = Angle.between(firstLeaf.position, secondLeaf.position)
-        , secondToFirstAngle = Angle.between(secondLeaf.position, firstLeaf.position)
     )
 
     constructor(copyNodeLink : NodeLink
                 , updFirstNodeUuid: UUID = copyNodeLink.firstNodeUuid
-                , updSecondNodeUuid: UUID = copyNodeLink.secondNodeUuid
-                , updDistance: Double = copyNodeLink.distance
-                , updFirstToSecondAngle: Angle = copyNodeLink.firstToSecondAngle
-                , updSecondToFirstAngle: Angle = copyNodeLink.secondToFirstAngle) : this (
+                , updSecondNodeUuid: UUID = copyNodeLink.secondNodeUuid) : this (
         firstNodeUuid = updFirstNodeUuid
         , secondNodeUuid = updSecondNodeUuid
-        , distance = updDistance
-        , firstToSecondAngle = updFirstToSecondAngle
-        , secondToFirstAngle = updSecondToFirstAngle
     )
 
-    override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid) : $distance, $firstToSecondAngle, $secondToFirstAngle"
+
+    fun getDistance(nodes : List<Node>) : Double? {
+        val firstNode = nodes.node(firstNodeUuid)
+        val secondNode = nodes.node(secondNodeUuid)
+
+        return if (firstNode != null && secondNode != null) Point.distance(firstNode.position, secondNode.position) else null
+    }
+
+    fun getFirstToSecondAngle(nodes : List<Node>) : Angle? {
+        val firstNode = nodes.node(firstNodeUuid)
+        val secondNode = nodes.node(secondNodeUuid)
+
+        return if (firstNode != null && secondNode != null) Angle.between(firstNode.position, secondNode.position) else null
+    }
+
+    fun getSecondToFirstAngle(nodes : List<Node>) : Angle? {
+        val firstNode = nodes.node(firstNodeUuid)
+        val secondNode = nodes.node(secondNodeUuid)
+
+        return if (firstNode != null && secondNode != null) Angle.between(secondNode.position, firstNode.position) else null
+    }
+
+    override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid)"
+
+    companion object {
+
+        fun List<Node>.node(uuid : UUID) : Node? {
+            return this.firstOrNull { node -> node.uuid == uuid }
+        }
+
+    }
 }

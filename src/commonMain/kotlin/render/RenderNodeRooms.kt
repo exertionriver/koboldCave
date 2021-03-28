@@ -12,6 +12,7 @@ import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
+import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 
 object RenderNodeRooms {
@@ -43,7 +44,7 @@ object RenderNodeRooms {
             val leafSecond = Leaf(initHeight = 5, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
             val leafThird = Leaf(initHeight = 5, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val nodeMesh = NodeMesh(leafList = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()))
+            val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
             val nodeRooms = nodeMesh.getClusteredNodes(rooms = 8, maxIterations = 4)
             var colorIdx = 0
 
@@ -68,7 +69,9 @@ object RenderNodeRooms {
             delay(3000)
 
             nodeRooms.forEach { nodeRoom ->
-                val roomNodes = NodeMesh(relinkNodes = nodeRoom.nodes)
+                val roomNodes = NodeMesh(relinkNodes = nodeRoom.nodes.toMutableList())
+
+                nodeRoom.consolidateNodes()
 
                 stroke(roomColors[colorIdx % 9], StrokeInfo(thickness = 2.0)) {
 

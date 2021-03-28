@@ -1,6 +1,7 @@
 import node.NodeMesh
 import com.soywiz.korma.geom.Point
 import leaf.ILeaf.Companion.nodeLinks
+import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.Node
 import node.NodeLink
@@ -64,7 +65,7 @@ class TestNode {
         for (leafNode in leafThird.getLeafList())
             println(leafNode)
 
-        val nodeMesh = NodeMesh(leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()))
+        val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
         println("nodeMesh(" + nodeMesh.nodes.size + "):")
         nodeMesh.nodes.forEach { println ("node: $it")}
         nodeMesh.nodeLinks.forEach { println ("nodeLink: $it")}
