@@ -1,11 +1,11 @@
 package node
 
 import com.soywiz.korio.util.UUID
-import node.INodeMesh.Companion.linkNodes
+import node.Node.Companion.linkNodes
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
-class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), override val nodes : MutableList<Node>, override val nodeLinks : MutableList<NodeLink> ) : INodeMesh {
+class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), override val nodes : MutableList<Node>, override var nodeLinks : MutableList<NodeLink> ) : INodeMesh {
 
     constructor(copyNodeMesh : NodeMesh
                 , updUuid: UUID = copyNodeMesh.uuid

@@ -6,7 +6,11 @@ import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
 import leaf.ILeaf.Companion.nodeLinks
 import node.Node
+import node.Node.Companion.addNode
 import node.NodeLink
+import node.NodeLink.Companion.addNodeLink
+import node.NodeLink.Companion.addNodeLinks
+import node.NodeLink.Companion.areNodesLinked
 import node.NodeMesh
 import kotlin.math.max
 import kotlin.random.Random
@@ -132,40 +136,40 @@ interface ILeaf {
             return Node(this)
         }
 
-        fun ILeaf.nodeLinks() : List<NodeLink> {
+        fun ILeaf.nodeLinks() : MutableList<NodeLink> {
             val returnNodeLinks = mutableListOf<NodeLink>()
 
-            if ( !parentEmpty() ) returnNodeLinks.add( NodeLink(this, getParentLeaf()!!) )
+            if ( !parentEmpty() ) returnNodeLinks.addNodeLink( this.uuid, getParentLeaf()!!.uuid )
 
-            if( !childrenEmpty() ) this.getChildrenLeavesList()!!.forEach { childLeaf -> returnNodeLinks.add( NodeLink(this, childLeaf) ) }
+            if( !childrenEmpty() ) this.getChildrenLeavesList()!!.forEach { childLeaf -> returnNodeLinks.addNodeLink( this.uuid, childLeaf.uuid ) }
 
             return returnNodeLinks
         }
 
-        fun ILeaf.nodes() : List<Node> {
+        fun ILeaf.nodes() : MutableList<Node> {
             val returnNodes = mutableListOf<Node>()
 
-            if ( !parentEmpty() ) returnNodes.add( Node(getParentLeaf()!!) )
+            if ( !parentEmpty() ) returnNodes.addNode( Node(getParentLeaf()!!) )
 
-            if( !childrenEmpty() ) this.getChildrenLeavesList()!!.forEach { childLeaf -> returnNodes.add( Node(childLeaf) ) }
+            if( !childrenEmpty() ) this.getChildrenLeavesList()!!.forEach { childLeaf -> returnNodes.addNode( Node(childLeaf) ) }
 
-            return returnNodes.plus(this.node())
+            return returnNodes.plus(this.node()).toMutableList()
         }
 
         fun ILeaf.nodeMesh() : NodeMesh = NodeMesh(nodes = this.nodes().toMutableList(), nodeLinks = this.nodeLinks().toMutableList())
 
-        fun List<ILeaf>.nodes() : List<Node> {
+        fun List<ILeaf>.nodes() : MutableList<Node> {
             val returnNodes = mutableListOf<Node>()
 
-            this.forEach { iLeaf -> returnNodes.add(iLeaf.node()) }
+            this.forEach { iLeaf -> returnNodes.addNode(iLeaf.node()) }
 
             return returnNodes
         }
 
-        fun List<ILeaf>.nodeLinks() : List<NodeLink> {
+        fun List<ILeaf>.nodeLinks() : MutableList<NodeLink> {
             val returnNodeLinks = mutableListOf<NodeLink>()
 
-            this.forEach { iLeaf -> returnNodeLinks.addAll(iLeaf.nodeLinks()) }
+            this.forEach { iLeaf -> returnNodeLinks.addNodeLinks(iLeaf.nodeLinks()) }
 
             return returnNodeLinks
         }

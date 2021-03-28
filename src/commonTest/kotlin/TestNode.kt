@@ -48,7 +48,7 @@ class TestNode {
 
     @ExperimentalUnsignedTypes
     @Test
-    fun testNodeMultiConsolidate() {
+    fun testNodeConsolidateLink() {
         val startingPoint = Point(512.0, 954.0)
 
         val leafFirst = Leaf(initHeight = 3, position = startingPoint)
