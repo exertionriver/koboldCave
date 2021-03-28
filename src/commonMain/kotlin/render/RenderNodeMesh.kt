@@ -13,6 +13,8 @@ import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
 import leaf.ILeaf.Companion.LeafDistancePx
+import leaf.ILeaf.Companion.getLeafLineList
+import leaf.ILeaf.Companion.getLeafList
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.NodeLink.Companion.consolidateNodeDistance
@@ -33,8 +35,9 @@ object RenderNodeMesh {
    //         , 210 to Point(212, 374)
    //         , 330 to Point(812, 374)
         )
+        val leafOffset = Point(250, 200)
 
-        val xNodeOffset = Point(400.0, 0.0)
+        val xNodeOffset = Point(600.0, 0.0)
         val yNodeOffset = Point(0.0, 400.0)
 
         val firstRefPoint = Point(300, 200)
@@ -52,7 +55,8 @@ object RenderNodeMesh {
             val leafSecond = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(210) )
             val leafThird = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
+            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val nodeMesh = threeLeaf.nodeMesh()
 
             stroke(Colors["#52b670"], StrokeInfo(thickness = 3.0)) {
 
@@ -68,6 +72,26 @@ object RenderNodeMesh {
                 circle(fourthRefPoint, radius = 5.0)
             }
 
+            stroke(Colors["#20842b"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in threeLeaf.getLeafLineList() ) {
+                    if (line != null) line(line.first + leafOffset, line.second + leafOffset)
+                }
+            }
+
+            for (listLeaf in threeLeaf.getLeafList() ) {
+                println (listLeaf)
+                circle {
+                    position(listLeaf.position + leafOffset)
+                    radius = 5.0
+                    color = Colors["#42f048"]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(listLeaf.uuid.toString())
+                    }
+                }
+            }
+            
             stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in nodeMesh.getNodeLineList() ) {
@@ -87,7 +111,7 @@ object RenderNodeMesh {
                 }
             }
 
-            nodeMesh.consolidateNodes()
+            nodeMesh.consolidateNearNodes()
 
             delay(1000)
 
@@ -133,7 +157,7 @@ object RenderNodeMesh {
                 }
             }
 
-            nodeMesh.consolidateNodes()
+            nodeMesh.consolidateNearNodes()
 
             delay(1000)
 

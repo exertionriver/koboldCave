@@ -39,7 +39,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
     override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid)"
 
     companion object {
-        val consolidateNodeDistance = ILeaf.LeafDistancePx / 2
+        val consolidateNodeDistance = ILeaf.LeafDistancePx / 4
         val linkNodeDistance = ILeaf.LeafDistancePx
 
         fun NodeLink.getNodeChildUuid(uuid: UUID) : UUID? = if (this.firstNodeUuid == uuid) secondNodeUuid else if (this.secondNodeUuid == uuid) firstNodeUuid else null
@@ -64,7 +64,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
         fun MutableList<NodeLink>.areNodesLinked(firstUuid: UUID, secondUuid: UUID) : Boolean = ( getNodeLink(firstUuid, secondUuid) != null || getNodeLink(secondUuid, firstUuid) != null )
 
-        fun MutableList<NodeLink>.addNodeLink(firstUuid : UUID, secondUuid: UUID) : Boolean = if ( !areNodesLinked(firstUuid, secondUuid) ) this.add( NodeLink(firstUuid, secondUuid) ) else false
+        fun MutableList<NodeLink>.addNodeLink(nodes: MutableList<Node>, firstUuid : UUID, secondUuid: UUID) : Boolean = if ( !areNodesLinked(firstUuid, secondUuid) && nodes.getNode(firstUuid) != null && nodes.getNode(secondUuid) != null ) this.add( NodeLink(firstUuid, secondUuid) ) else false
 
         fun MutableList<NodeLink>.addNodeLinks(nodeLinksToAdd : MutableList<NodeLink>) : Unit = nodeLinksToAdd.forEach { nodeLinkToAdd -> if ( !areNodesLinked(nodeLinkToAdd.firstNodeUuid, nodeLinkToAdd.secondNodeUuid) ) this.add( nodeLinkToAdd ) }
 

@@ -3,6 +3,7 @@ package node
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Point
 import leaf.ILeaf
+import node.Node.Companion.linkNodes
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.areNodesLinked
 import node.NodeLink.Companion.getNodeChildrenUuids
@@ -59,7 +60,9 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return this.firstOrNull { node -> node.uuid == uuid }
         }
 
-        fun MutableList<Node>.addNode(node : Node) : Boolean = this.add(node)
+        //filters out duplicate positions
+        fun MutableList<Node>.addNode(nodeToAdd : Node) : Boolean = //if ( !this.map { node -> node.position }.contains(nodeToAdd.position) )
+            this.add(nodeToAdd) //else false
 
         fun MutableList<Node>.removeNode(nodeLinks : MutableList<NodeLink>, uuid : UUID) {
             nodeLinks.getNodeLinks(uuid).let { nodeLinks.removeAll(it) }
@@ -75,7 +78,11 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             val returnNodeLineList : MutableList<Pair<Point, Point>> = mutableListOf()
 
-            nodeLinks.forEach { nodeLink -> returnNodeLineList.add(Pair(this.getNode(nodeLink.firstNodeUuid)!!.position, this.getNode(nodeLink.secondNodeUuid)!!.position) ) }
+            this.forEach { println("node : $it") }
+
+            nodeLinks.forEach { nodeLink ->
+                println("nodeLink : $nodeLink")
+                returnNodeLineList.add(Pair(this.getNode(nodeLink.firstNodeUuid)!!.position, this.getNode(nodeLink.secondNodeUuid)!!.position) ) }
 
             return returnNodeLineList
         }
@@ -100,14 +107,14 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                         }
 
                         if (Point.distance(inner.position, outer.position).toInt() <= linkNodeDistance) {
-                            nodeLinks.addNodeLink(outer.uuid, inner.uuid)
+                            nodeLinks.addNodeLink(this, outer.uuid, inner.uuid)
                         }
                     }
                 }
                 //if outer node is orphaned, link to closest node
                 if ( (this.size > 1) && (nodeLinks.getNodeLinks(outer.uuid).isNullOrEmpty() ) && linkOrphans ) {
                     println ("adding link for orphan: $outer, $closestNode")
-                    nodeLinks.addNodeLink(outer.uuid, closestNode.uuid)
+                    nodeLinks.addNodeLink(this, outer.uuid, closestNode.uuid)
                 }
             }
             return nodeLinks
@@ -133,9 +140,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
                 //cycle through second node UUIDs, create link to first UUID node if none exists
                 if (!secondNodeChildrenUuids.isNullOrEmpty()) {
-                    secondNodeChildrenUuids.forEach { secondNodeChildUuid ->
-                        if (!nodeLinks.areNodesLinked(firstUuid, secondNodeChildUuid)) nodeLinks.addNodeLink(firstUuid, secondNodeChildUuid)
-                    }
+                    secondNodeChildrenUuids.forEach { secondNodeChildUuid -> nodeLinks.addNodeLink(this, firstUuid, secondNodeChildUuid) }
                 }
 
                 //update first node with new position, between two nodes
@@ -154,12 +159,32 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return nodeLinks
         }
 
-        fun MutableList<Node>.consolidateNodes(nodeLinks : MutableList<NodeLink>) : MutableList<NodeLink> {
+        fun MutableList<Node>.consolidateNearNodes(nodeLinks : MutableList<NodeLink>) : MutableList<NodeLink> {
 //        println("checking for nodes to consolidate...")
             var returnNodeLinks = nodeLinks
 
             nodeLinks.filter { link -> link.getDistance(this)!! <= NodeLink.consolidateNodeDistance }.forEach { consolidateNodeLink ->
                 returnNodeLinks = this.consolidateNode(nodeLinks, consolidateNodeLink.firstNodeUuid, consolidateNodeLink.secondNodeUuid)
+            }
+
+            return returnNodeLinks
+        }
+
+        fun MutableList<Node>.consolidateStackedNodes(nodeLinks : MutableList<NodeLink>) : MutableList<NodeLink> {
+//        println("checking for nodes to consolidate...")
+            var returnNodeLinks = nodeLinks
+            val checkNodes = this.toList()
+
+            checkNodes.forEach { outer ->
+                if (getNode(outer.uuid) != null)
+                    checkNodes.forEach { inner ->
+                        if (getNode(inner.uuid) != null)
+                            if ( !nodeLinks.areNodesLinked(outer.uuid, inner.uuid) && (outer.uuid != inner.uuid) ) {
+                                if (Point.distance(inner.position, outer.position).toInt() <= 0.1) {
+                                    returnNodeLinks = this.consolidateNode(nodeLinks, outer.uuid, inner.uuid)
+                                }
+                            }
+                    }
             }
 
             return returnNodeLinks

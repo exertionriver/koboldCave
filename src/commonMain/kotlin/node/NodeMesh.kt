@@ -7,6 +7,10 @@ import kotlin.random.Random
 @ExperimentalUnsignedTypes
 class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), override val nodes : MutableList<Node>, override var nodeLinks : MutableList<NodeLink> ) : INodeMesh {
 
+    init {
+        this.consolidateStackedNodes()
+    }
+
     constructor(copyNodeMesh : NodeMesh
                 , updUuid: UUID = copyNodeMesh.uuid
                 , updNodes: MutableList<Node> = copyNodeMesh.nodes
