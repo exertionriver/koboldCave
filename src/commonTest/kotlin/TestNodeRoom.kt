@@ -24,7 +24,7 @@ class TestNodeRoom {
 
         val rooms = 3
 
-        println("nodeRooms(${rooms}): ${nodeMesh.getClusteredNodes(rooms = 3, maxIterations = 3)}")
+        println("nodeRooms(${rooms}): ${nodeMesh.getClusters(rooms = 3, maxIterations = 3)}")
 
     }
 

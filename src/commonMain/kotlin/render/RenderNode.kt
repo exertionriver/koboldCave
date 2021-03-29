@@ -35,13 +35,13 @@ object RenderNode {
             stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
 
                 for (line in leaf.getLeafLineList()) {
-                    if (line != null) line(line.first, line.second)
+                    if (line != null) line(line.first - nodeOffset, line.second - nodeOffset)
                 }
             }
             stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
                 for (listLeaf in leaf.getLeafList()) {
-                    circle(listLeaf.position, radius = 3.0)
+                    circle(listLeaf.position - nodeOffset, radius = 5.0)
                 }
             }
 
@@ -52,7 +52,7 @@ object RenderNode {
 
                 for (listLeaf in leaf.getLeafList()) {
 
-                    listLeaf.nodes().forEach { node -> line(listLeaf.position.plus(nodeOffset), node.position.plus(nodeOffset)) }
+                    listLeaf.nodes().forEach { node -> line(listLeaf.position + nodeOffset, node.position + nodeOffset) }
 
                 }
             }
@@ -60,7 +60,7 @@ object RenderNode {
 
                 for (listLeaf in leaf.getLeafList()) {
 
-                    circle( Node(listLeaf).position.plus(nodeOffset), radius = 3.0 )
+                    circle( Node(listLeaf).position + nodeOffset, radius = 5.0 )
                 }
             }
         }

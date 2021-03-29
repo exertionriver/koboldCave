@@ -3,7 +3,6 @@ package node
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Point
 import leaf.ILeaf
-import node.Node.Companion.linkNodes
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.areNodesLinked
 import node.NodeLink.Companion.getNodeChildrenUuids
@@ -60,9 +59,9 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return this.firstOrNull { node -> node.uuid == uuid }
         }
 
-        //filters out duplicate positions
-        fun MutableList<Node>.addNode(nodeToAdd : Node) : Boolean = //if ( !this.map { node -> node.position }.contains(nodeToAdd.position) )
-            this.add(nodeToAdd) //else false
+        fun MutableList<Node>.addNode(nodeToAdd : Node) : Boolean = this.add(nodeToAdd)
+
+        fun MutableList<Node>.addNodes(nodesToAdd : MutableList<Node>) : Unit = nodesToAdd.forEach { nodeToAdd -> this.add(nodeToAdd) }
 
         fun MutableList<Node>.removeNode(nodeLinks : MutableList<NodeLink>, uuid : UUID) {
             nodeLinks.getNodeLinks(uuid).let { nodeLinks.removeAll(it) }
@@ -78,18 +77,18 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             val returnNodeLineList : MutableList<Pair<Point, Point>> = mutableListOf()
 
-            this.forEach { println("node : $it") }
+//            this.forEach { println("node : $it") }
 
             nodeLinks.forEach { nodeLink ->
-                println("nodeLink : $nodeLink")
+//                println("nodeLink : $nodeLink")
                 returnNodeLineList.add(Pair(this.getNode(nodeLink.firstNodeUuid)!!.position, this.getNode(nodeLink.secondNodeUuid)!!.position) ) }
 
             return returnNodeLineList
         }
 
-        fun MutableList<Node>.linkNodes(linkOrphans : Boolean = true) : MutableList<NodeLink> {
+        fun MutableList<Node>.linkNearNodes(linkOrphans : Boolean = true) : MutableList<NodeLink> {
 
-            println("checking for nodes to re-link...")
+//            println("checking for nodes to re-link...")
 
             val nodeLinks : MutableList<NodeLink> = mutableListOf()
             lateinit var closestNode : Node
@@ -97,13 +96,13 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             this.forEach { outer ->
                 closestNode = Node (outer, updPosition = outer.position + Point(10000, 10000) ) //faraway point
 
-                println("linking outer: $outer, $closestNode")
+//                println("linking outer: $outer, $closestNode")
                 this.forEach { inner ->
                     //in case outer node is orphaned
                     if ( !nodeLinks.areNodesLinked(outer.uuid, inner.uuid) && (outer.uuid != inner.uuid) ) {
                         if ( Point.distance(inner.position, outer.position) <= Point.distance(outer.position, closestNode.position) ) {
                             closestNode = inner
-                            println("new closestNode: $outer, $closestNode")
+//                            println("new closestNode: $outer, $closestNode")
                         }
 
                         if (Point.distance(inner.position, outer.position).toInt() <= linkNodeDistance) {
@@ -113,7 +112,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 }
                 //if outer node is orphaned, link to closest node
                 if ( (this.size > 1) && (nodeLinks.getNodeLinks(outer.uuid).isNullOrEmpty() ) && linkOrphans ) {
-                    println ("adding link for orphan: $outer, $closestNode")
+//                    println ("adding link for orphan: $outer, $closestNode")
                     nodeLinks.addNodeLink(this, outer.uuid, closestNode.uuid)
                 }
             }
@@ -122,18 +121,18 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
         //replaces firstUuid node, removes secondUuid node; does not handle updates to NodeLinks
         fun MutableList<Node>.consolidateNode(nodeLinks : MutableList<NodeLink>, firstUuid : UUID, secondUuid : UUID) : MutableList<NodeLink> {
-            println("pre-consolidation nodes: $this")
+//            println("pre-consolidation nodes: $this")
 
             val firstNode = this.getNode(firstUuid)
             val secondNode = this.getNode(secondUuid)
 
             if ( (firstNode != null) && (secondNode != null) ) {
 
-                println("pre-consolidated first node: $firstNode")
-                println("pre-consolidated first node links: ${nodeLinks.getNodeLinks(firstUuid)}")
+//                println("pre-consolidated first node: $firstNode")
+//                println("pre-consolidated first node links: ${nodeLinks.getNodeLinks(firstUuid)}")
 
-                println("pre-consolidated second node: $secondNode")
-                println("pre-consolidated second node links: ${nodeLinks.getNodeLinks(secondUuid)}")
+//                println("pre-consolidated second node: $secondNode")
+//                println("pre-consolidated second node links: ${nodeLinks.getNodeLinks(secondUuid)}")
 
                 //get UUIDs that second node links to, excluding link to node at firstUuid
                 val secondNodeChildrenUuids = nodeLinks.getNodeChildrenUuids(secondUuid, firstUuid)
@@ -146,11 +145,11 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 //update first node with new position, between two nodes
                 this.updateNode( Node( firstNode, updPosition = Point.middle(firstNode.position, secondNode.position) ) )
 
-                println("post-consolidated first node: $firstNode")
-                println("post-consolidated first node links: ${nodeLinks.getNodeLinks(firstUuid)}")
+//                println("post-consolidated first node: $firstNode")
+//                println("post-consolidated first node links: ${nodeLinks.getNodeLinks(firstUuid)}")
 
-                println("post-consolidated second node: $secondNode")
-                println("post-consolidated second node links: ${nodeLinks.getNodeLinks(secondUuid)}")
+//                println("post-consolidated second node: $secondNode")
+//                println("post-consolidated second node links: ${nodeLinks.getNodeLinks(secondUuid)}")
 
                 //remove second node and links
                 this.removeNode(nodeLinks, secondUuid)
@@ -209,12 +208,12 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 if (node.position.y < minXY.y) minXY.y = node.position.y
             }
 
-            println("max: $maxXY, min: $minXY")
+//            println("max: $maxXY, min: $minXY")
 
             val randomXInRange = Random.nextInt(maxXY.x.toInt() - minXY.x.toInt() ) + minXY.x.toInt()
             val randomYInRange = Random.nextInt(maxXY.y.toInt() - minXY.y.toInt() ) + minXY.y.toInt()
 
-            println("randomX: $randomXInRange, randomY: $randomYInRange")
+//            println("randomX: $randomXInRange, randomY: $randomYInRange")
 
             return Point(randomXInRange, randomYInRange)
         }
@@ -244,89 +243,5 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             return nodeClusters
         }
-
-        /*
-        fun getNodeLine(parentLeaf : CaveLeaf) : List<Node> {
-
-            val nodeLineList = mutableListOf<Node>()
-            var currentPoint = Point(parentLeaf.position.x, parentLeaf.position.y)
-            val lineEndPoint = Point(this.position.x, this.position.y)
-            val nodeLength = randNodeLengthFromParent()
-
-            var previousNode = parentLeaf.getNode(limitRecursion = true)
-            var currentNode = emptyNode()
-
-    //        println (this.uuid.toString() + "nodeLine + [${parentOakLeaf.position}, ${this.position}] step $nodeLength")
-
-            when {
-                (lineEndPoint.x >= currentPoint.x) && (lineEndPoint.y >= currentPoint.y) -> {
-                    val angle = Angle.fromRadians(atan( (lineEndPoint.y - currentPoint.y) / (lineEndPoint.x - currentPoint.x) ) )
-
-    //                println("1) node at ${currentPoint}, angle ${angle.degrees}")
-                    currentPoint = Point(currentPoint.x + nodeLength * cos(angle), currentPoint.y + nodeLength * sin(angle))
-
-                    while ((lineEndPoint.x >= currentPoint.x) && (lineEndPoint.y >= currentPoint.y) ) {
-    //                    println("1) node at ${currentPoint}, angle ${angle.degrees}")
-                        currentNode = Node(position = currentPoint, childNodes = mutableListOf(previousNode))
-                        previousNode.childNodes.add(currentNode)
-                        nodeLineList.add(currentNode)
-                        previousNode = currentNode
-                        currentPoint = Point(currentPoint.x + nodeLength * cos(angle), currentPoint.y + nodeLength * sin(angle))
-                    }
-                }
-                (lineEndPoint.x < currentPoint.x) && (lineEndPoint.y >= currentPoint.y) -> {
-                    val angle = Angle.fromRadians(atan((currentPoint.y - lineEndPoint.y) / (lineEndPoint.x - currentPoint.x)))
-
-    //                println("2) node at ${currentPoint}, angle ${angle.degrees}")
-                    currentPoint = Point(currentPoint.x - nodeLength * cos(angle), currentPoint.y + nodeLength * sin(angle))
-
-                    while ( (lineEndPoint.x < currentPoint.x) && (lineEndPoint.y >= currentPoint.y)  ) {
-    //                    println("2) node at ${currentPoint}, angle ${angle.degrees}")
-                        currentNode = Node(position = currentPoint, childNodes = mutableListOf(previousNode))
-                        previousNode.childNodes.add(currentNode)
-                        nodeLineList.add(currentNode)
-                        previousNode = currentNode
-                        currentPoint = Point(currentPoint.x - nodeLength * cos(angle), currentPoint.y + nodeLength * sin(angle))
-                    }
-                }
-                (lineEndPoint.x >= currentPoint.x) && (lineEndPoint.y < currentPoint.y) -> {
-                    val angle = Angle.fromRadians(atan((lineEndPoint.y - currentPoint.y) / (currentPoint.x - lineEndPoint.x)))
-
-    //                println("3) node at ${currentPoint}, angle ${angle.degrees}")
-                    currentPoint = Point(currentPoint.x + nodeLength * cos(angle), currentPoint.y - nodeLength * sin(angle))
-
-                    while ( (lineEndPoint.x >= currentPoint.x) && (lineEndPoint.y < currentPoint.y) ) {
-    //                    println("3) node at ${currentPoint}, angle ${angle.degrees}")
-                        currentNode = Node(position = currentPoint, childNodes = mutableListOf(previousNode))
-                        previousNode.childNodes.add(currentNode)
-                        nodeLineList.add(currentNode)
-                        previousNode = currentNode
-                        currentPoint = Point(currentPoint.x + nodeLength * cos(angle), currentPoint.y - nodeLength * sin(angle))
-                    }
-                }
-                (lineEndPoint.x < currentPoint.x) && (lineEndPoint.y < currentPoint.y) -> {
-                    val angle = Angle.fromRadians(atan((currentPoint.y - lineEndPoint.y) / (currentPoint.x - lineEndPoint.x)))
-
-    //                println("4) node at ${currentPoint}, angle ${angle.degrees}")
-                    currentPoint = Point(currentPoint.x - nodeLength * cos(angle), currentPoint.y - 2 * sin(angle))
-
-                    while ( (lineEndPoint.x < currentPoint.x) && (lineEndPoint.y < currentPoint.y)  ) {
-    //                    println("4) node at ${currentPoint}, angle ${angle.degrees}")
-                        currentNode = Node(position = currentPoint, childNodes = mutableListOf(previousNode))
-                        previousNode.childNodes.add(currentNode)
-                        nodeLineList.add(currentNode)
-                        previousNode = currentNode
-                        currentPoint = Point(currentPoint.x - nodeLength * cos(angle), currentPoint.y - nodeLength * sin(angle))
-                    }
-                }
-            }
-
-            currentNode.childNodes.add(this.getNode(limitRecursion = true))
-
-            return nodeLineList
-        }
-
-
-         */
     }
 }

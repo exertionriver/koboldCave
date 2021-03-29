@@ -1,6 +1,5 @@
 package render
 
-import node.NodeMesh
 import com.soywiz.korge.Korge
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.view.*
@@ -134,7 +133,7 @@ object RenderNodeMesh {
                 }
             }
 
-            nodeMesh.linkNodes()
+            nodeMesh.linkNearNodes()
             
             delay(1000)
 

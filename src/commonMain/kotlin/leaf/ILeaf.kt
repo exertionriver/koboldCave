@@ -1,19 +1,15 @@
 package leaf
 
 import Probability
-import com.soywiz.korio.dynamic.dyn
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
-import leaf.ILeaf.Companion.nodeLinks
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.addNodeLinks
-import node.NodeLink.Companion.areNodesLinked
 import node.NodeMesh
 import kotlin.math.max
-import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
 interface ILeaf {
@@ -106,7 +102,7 @@ interface ILeaf {
                 (childAngle.degrees >= 180) && (childAngle.degrees < 270) -> parentPosition.y + distanceFromParent * sin(
                     childAngle - Angle.fromDegrees(180)
                 )
-                (childAngle.degrees >= 270) && (childAngle.degrees < 360) -> parentPosition.y + distanceFromParent * sin(
+                (childAngle.degrees >= 270) && (childAngle.degrees <= 360) -> parentPosition.y + distanceFromParent * sin(
                     Angle.fromDegrees(360) - childAngle
                 )
                 else -> parentPosition.y - distanceFromParent * sin(childAngle) //360 degrees

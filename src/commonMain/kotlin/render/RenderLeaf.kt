@@ -23,7 +23,7 @@ object RenderLeaf {
 
         val startingPoint = Point(512.0, 512.0)
 
-        while (true) {
+        (1..3).toList().forEach {
 
             val leaf = Leaf(initHeight = 6, position = startingPoint)
 
@@ -37,7 +37,7 @@ object RenderLeaf {
                 stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
                     for (listLeaf in leaf.getLeafList() ) {
-                        circle(listLeaf.position, radius = 3.0)
+                        circle(listLeaf.position, radius = 5.0)
                     }
                 }
             }
@@ -76,7 +76,7 @@ object RenderLeaf {
             stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
                 for (leaf in firstLeaf.getLeafList() ) {
-                    circle(leaf.position, radius = 3.0)
+                    circle(leaf.position, radius = 5.0)
                 }
             }
 
@@ -89,7 +89,7 @@ object RenderLeaf {
             stroke(Colors["#59eef0"], StrokeInfo(thickness = 3.0)) {
 
                 for (leaf in secondLeaf.getLeafList() ) {
-                    circle(leaf.position, radius = 3.0)
+                    circle(leaf.position, radius = 5.0)
                 }
             }
 
@@ -102,7 +102,7 @@ object RenderLeaf {
             stroke(Colors["#f0f057"], StrokeInfo(thickness = 3.0)) {
 
                 for (leaf in thirdLeaf.getLeafList() ) {
-                    circle(leaf.position, radius = 3.0)
+                    circle(leaf.position, radius = 5.0)
                 }
             }
 
@@ -115,7 +115,7 @@ object RenderLeaf {
             stroke(Colors["#f08154"], StrokeInfo(thickness = 3.0)) {
 
                 for (leaf in fourthLeaf.getLeafList() ) {
-                    circle(leaf.position, radius = 3.0)
+                    circle(leaf.position, radius = 5.0)
                 }
             }
         }
@@ -142,7 +142,7 @@ object RenderLeaf {
 
                 val leaf = Leaf(initHeight = 4, angleFromParent = Angle.fromDegrees(it.key), position = it.value )
 
-                println ("tree: ${Angle.fromDegrees(it.key)}, ${it.value}")
+//                println ("tree: ${Angle.fromDegrees(it.key)}, ${it.value}")
 
                 graphics {
 
