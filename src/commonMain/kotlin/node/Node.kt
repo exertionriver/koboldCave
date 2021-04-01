@@ -1,7 +1,11 @@
 package node
 
 import com.soywiz.korio.util.UUID
+import com.soywiz.korma.geom.Angle
+import com.soywiz.korma.geom.Angle.Companion.fromRadians
 import com.soywiz.korma.geom.Point
+import com.soywiz.korma.geom.minus
+import com.soywiz.korma.geom.plus
 import leaf.ILeaf
 import node.INodeMesh.Companion.addMesh
 import node.NodeLink.Companion.addNodeLink
@@ -10,6 +14,7 @@ import node.NodeLink.Companion.buildNodeLinkLine
 import node.NodeLink.Companion.getNodeChildrenUuids
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.linkNodeDistance
+import kotlin.math.atan
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -26,6 +31,8 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
         uuid = updUuid
         , position = updPosition
     )
+
+    constructor() : this(position = Point(0,0))
 
     fun nearestCentroid(centroids : List<Node>) : Node {
 
@@ -57,6 +64,20 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
     companion object {
         fun emptyNode() = Node(position = Point(0, 0))
+
+        fun Node.angleBetween(secondNode : Node) : Angle {
+            return when {
+                (secondNode.position.x >= this.position.x) && (secondNode.position.y < this.position.y) ->
+                    fromRadians(atan((this.position.y - secondNode.position.y) / (secondNode.position.x - this.position.x)))
+                (secondNode.position.x < this.position.x) && (secondNode.position.y < this.position.y) ->
+                    Angle.fromDegrees(180) - fromRadians(atan((this.position.y - secondNode.position.y) / (this.position.x - secondNode.position.x)))
+                (secondNode.position.x < this.position.x) && (secondNode.position.y >= this.position.y) ->
+                    fromRadians(atan((secondNode.position.y - this.position.y) / (this.position.x - secondNode.position.x))) + Angle.fromDegrees(180)
+                (secondNode.position.x >= this.position.x) && (secondNode.position.y >= this.position.y) ->
+                    Angle.fromDegrees(360) - fromRadians(atan((secondNode.position.y - this.position.y) / (secondNode.position.x - this.position.x)))
+                else -> Angle.fromDegrees(0)
+            }
+        }
 
         fun MutableList<Node>.getNode(uuid : UUID) : Node? {
             return this.firstOrNull { node -> node.uuid == uuid }
@@ -293,5 +314,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             return if (nearestNodes.size > 1) nearestNodes[nearestNodes.size - 1] else refNode
         }
+
+        fun List<Node>.getRandomNode() : Node = this[Random.nextInt(this.size)]
     }
 }

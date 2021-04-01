@@ -1,6 +1,7 @@
 package node
 
 import com.soywiz.korio.util.UUID
+import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import node.Node.Companion.addNodes
 import node.Node.Companion.buildNodePaths
@@ -9,11 +10,13 @@ import node.Node.Companion.consolidateNearNodes
 import node.Node.Companion.consolidateStackedNodes
 import node.Node.Companion.getFarthestNode
 import node.Node.Companion.getNodeLineList
+import node.Node.Companion.getRandomNode
 import node.Node.Companion.linkNearNodes
 import node.Node.Companion.nearestNodesOrderedAsc
 import node.NodeLink.Companion.addNodeLinks
 import node.NodeLink.Companion.buildNodeLinkLines
 import node.NodeLink.Companion.getNodeLinks
+import node.NodeLink.Companion.getRandomNextNodeAngle
 
 @ExperimentalUnsignedTypes
 interface INodeMesh {
@@ -34,7 +37,15 @@ interface INodeMesh {
 
     fun getClusters(rooms : Int = 4, maxIterations : Int = 4) : Map<Node, MutableList<Node>> = nodes.cluster(rooms, maxIterations)
 
+    fun getRandomNode() = nodes.getRandomNode()
+
+    fun getRandomNextNodeAngle(node : Node) = nodeLinks.getRandomNextNodeAngle(nodes, node)
+
     fun getFarthestNode(refNode : Node) = nodes.getFarthestNode(refNode)
+
+//    fun getNextNode(refNode : Node, refAngle : Angle)
+
+//    fun getNextAngle(refAngle : Angle, rangeAngle : Angle)
 
     fun getNodeLineList() : List<Pair<Point, Point>?> = nodes.getNodeLineList(nodeLinks)
 

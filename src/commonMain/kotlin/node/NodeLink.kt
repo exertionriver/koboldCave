@@ -6,9 +6,8 @@ import com.soywiz.korma.geom.*
 import leaf.ILeaf
 import node.INodeMesh.Companion.addMesh
 import node.Node.Companion.addNode
+import node.Node.Companion.angleBetween
 import node.Node.Companion.getNode
-import node.Node.Companion.nearestNodesOrderedAsc
-import node.NodeLink.Companion.removeNodeLink
 import kotlin.math.atan
 import kotlin.random.Random
 
@@ -36,6 +35,20 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
         val linkNodeDistance = ILeaf.LeafDistancePx
 
         fun NodeLink.getNodeChildUuid(uuid: UUID) : UUID? = if (this.firstNodeUuid == uuid) secondNodeUuid else if (this.secondNodeUuid == uuid) firstNodeUuid else null
+
+        fun NodeLink.getNodeChildAngle(nodes : MutableList<Node>, uuid: UUID) : Angle? {
+            val firstNode = nodes.getNode(this.firstNodeUuid)
+            val secondNode = nodes.getNode(this.secondNodeUuid)
+
+            if ( (firstNode == null) || (secondNode == null) ) return null
+
+            val returnAngle = if (this.firstNodeUuid == uuid) firstNode.angleBetween(secondNode)
+            else secondNode.angleBetween(firstNode)
+
+            println("getting angle $returnAngle between $firstNode and $secondNode")
+
+            return returnAngle
+        }
 
         fun MutableList<NodeLink>.removeNode(nodes : MutableList<Node>, uuid : UUID) {
             this.getNodeLinks(uuid).let { this.removeAll(it) }
@@ -70,7 +83,15 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
         fun MutableList<NodeLink>.getNodeLinks(uuids: List<UUID>) : MutableList<NodeLink> = this.filter { nodeLink -> uuids.contains(nodeLink.firstNodeUuid) || uuids.contains(nodeLink.secondNodeUuid) }.toMutableList()
 
-        fun MutableList<NodeLink>.getNodeChildrenUuids(uuid: UUID, parentToExcludeUuid : UUID = uuid) : MutableList<UUID> = this.getNodeLinks(uuid).filter { nodeLink -> nodeLink.getNodeChildUuid(uuid)!! != parentToExcludeUuid }.map{ filteredLink -> filteredLink.getNodeChildUuid(uuid)!! }.distinct().toMutableList()
+        fun MutableList<NodeLink>.getNodeChildrenUuids(uuid: UUID, parentToExcludeUuid : UUID = uuid) : MutableList<UUID> = this.getNodeLinks(uuid).filter { nodeLink -> nodeLink.getNodeChildUuid(uuid)!! != parentToExcludeUuid }.map{ filteredLink -> filteredLink.getNodeChildUuid(uuid) }.filterNotNull().distinct().toMutableList()
+
+        fun MutableList<NodeLink>.getNodeChildrenAngles(nodes: MutableList<Node>, uuid: UUID, parentToExcludeUuid : UUID = uuid) : MutableList<Angle> {
+
+            return this.getNodeLinks( uuid ).map{ filteredLink -> filteredLink.getNodeChildAngle(nodes, uuid) ?: Angle.fromDegrees(0) }.toMutableList()
+
+        }
+
+
 
         //noise goes from 0 to 100
         fun Pair<Node?, Node?>.buildNodeLinkLine(noise : Int = 0) : INodeMesh {
@@ -265,5 +286,14 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
             return returnNodeMesh
         }
 
+        fun MutableList<NodeLink>.getRandomNextNodeAngle(nodes : MutableList<Node>, refNode : Node) : Angle {
+            val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid)
+
+            val randomAngle = childrenAngles[Random.nextInt(childrenAngles.size)]
+
+            println("randomAngle : $randomAngle")
+
+            return randomAngle
+        }
     }
 }

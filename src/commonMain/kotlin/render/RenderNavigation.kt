@@ -1,31 +1,45 @@
 package render
 
+import com.soywiz.korev.Key
 import com.soywiz.korge.Korge
+import com.soywiz.korge.input.keys
 import com.soywiz.korge.input.onClick
+import com.soywiz.korge.resources.resourceBitmap
 import com.soywiz.korge.view.*
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.text.TextAlignment
 import com.soywiz.korim.vector.StrokeInfo
-import com.soywiz.korma.geom.Angle
-import com.soywiz.korma.geom.Point
-import com.soywiz.korma.geom.vector.circle
+import com.soywiz.korio.resources.ResourcesContainer
+import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
-import kotlinx.coroutines.delay
+import leaf.ILeaf
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh.Companion.addMesh
+import node.Node
 import node.NodeMesh
+import render.RenderArrow.arrow_png
+
 
 object RenderNavigation {
 
-    lateinit var textView : View
+    val ResourcesContainer.arrow_png by resourceBitmap("brightarrow.png")
+
+    lateinit var nodeView : View
+    lateinit var angleView : View
 
     fun updateNodeText(uuidString : String) {
-        textView.setText(uuidString)
+        nodeView.setText(uuidString)
+    }
+
+    fun updateAngleText(angleDegrees : String) {
+        angleView.setText(angleDegrees)
     }
 
     @ExperimentalUnsignedTypes
     suspend fun renderNavigation() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        val container = this.containerRoot
 
         val roomColors = listOf(
             Colors.DARKRED, Colors.DARKGREEN,  Colors.BLUE, Colors.DARKMAGENTA, Colors.DARKSEAGREEN, Colors.DARKTURQUOISE
@@ -38,9 +52,21 @@ object RenderNavigation {
             , 330 to Point(300, 400)
             , 210 to Point(600, 400)
         )
+
+        var currentNode = Node()
+        var currentAngle = Angle.fromDegrees(0)
+        lateinit var forwardNextNodeAngle : Pair<Node, Angle>
+        lateinit var backwardNextNodeAngle : Pair<Node, Angle>
+        var leftNextAngle : Angle = Angle.fromDegrees(0)
+        var rightNextAngle : Angle = Angle.fromDegrees(0)
+
+        val renderNodeMap : MutableMap<Node, View> = mutableMapOf()
+        val allRooms = NodeMesh()
+
         graphics {
 
-            textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+            nodeView = text(text = "current node", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+            angleView = text(text = "current node angle", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 45)
 
             val leafFirst = Leaf(initHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
             val leafSecond = Leaf(initHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
@@ -54,7 +80,6 @@ object RenderNavigation {
 
             nodeMesh.consolidateNearNodes()
 
-            val allRooms = NodeMesh()
 
             nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
 
@@ -72,7 +97,7 @@ object RenderNavigation {
             stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
 
                 for (node in allRooms.nodes) {
-                    circle(node.position, radius = 5.0)
+                    renderNodeMap[node] = container.circle(radius = 5.0).position(node.position)
                 }
             }
 
@@ -90,7 +115,7 @@ object RenderNavigation {
 
                 nodeRoom.nodes.forEach { node ->
                     circle { position(node.position)
-                        radius = 5.0
+                        radius = 2.0
                         color = roomColors[colorIdx % 9]
                         strokeThickness = 3.0
                         onClick{ updateNodeText(node.uuid.toString())
@@ -100,7 +125,83 @@ object RenderNavigation {
 
                 colorIdx++
             }
-        }
-    }
 
+            currentNode = allRooms.getRandomNode()
+            currentAngle = allRooms.getRandomNextNodeAngle(currentNode)
+
+            renderNodeMap[currentNode]!!.colorMul = Colors["#ff00ed"]
+
+            updateNodeText(currentNode.uuid.toString())
+            updateAngleText(currentAngle.degrees.toString())
+
+            val arrowImage = image(arrow_png) {
+                anchor(1, 1)
+                scale(.1)
+                position(currentNode.position.x, currentNode.position.y)
+            }.rotation(Angle.fromDegrees(180 - currentAngle.degrees))
+
+        /*
+            forwardNextNodeAngle = allRooms.getNextNode(currentNode, currentAngle)
+            backwardNextNodeAngle = allRooms.getNextNode(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
+            leftNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(60))
+            rightNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(-60))
+  */      }
+/*
+        keys {
+            down(Key.RIGHT) {
+                currentAngle = rightNextAngle
+
+                updateAngleText(currentAngle.degrees.toString())
+
+                forwardNextNodeAngle = allRooms.getNextNode(currentNode, currentAngle)
+                backwardNextNodeAngle = allRooms.getNextNode(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
+                leftNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(60))
+                rightNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(-60))
+            }
+            down(Key.UP) {
+                renderNodeMap[currentNode]!!.colorMul = Colors["#151540"]
+
+                currentNode = forwardNextNodeAngle.first
+                currentAngle = forwardNextNodeAngle.second
+
+                renderNodeMap[currentNode]!!.colorMul = Colors["#ff00ed"]
+
+                updateNodeText(currentNode.uuid.toString())
+                updateAngleText(currentAngle.degrees.toString())
+
+                forwardNextNodeAngle = allRooms.getNextNode(currentNode, currentAngle)
+                backwardNextNodeAngle = allRooms.getNextNode(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
+                leftNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(60))
+                rightNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(-60))
+            }
+            down(Key.LEFT) {
+                currentAngle = leftNextAngle
+
+                updateAngleText(currentAngle.degrees.toString())
+
+                forwardNextNodeAngle = allRooms.getNextNode(currentNode, currentAngle)
+                backwardNextNodeAngle = allRooms.getNextNode(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
+                leftNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(60))
+                rightNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(-60))
+
+            }
+            down(Key.DOWN) {
+                //move 'backwardmost' direction. Stop if nothing within 120 degrees backward
+                renderNodeMap[currentNode]!!.colorMul = Colors["#151540"]
+
+                currentNode = backwardNextNodeAngle.first
+                currentAngle = backwardNextNodeAngle.second
+
+                renderNodeMap[currentNode]!!.colorMul = Colors["#ff00ed"]
+
+                updateNodeText(currentNode.uuid.toString())
+                updateAngleText(currentAngle.degrees.toString())
+
+                forwardNextNodeAngle = allRooms.getNextNode(currentNode, currentAngle)
+                backwardNextNodeAngle = allRooms.getNextNode(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
+                leftNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(60))
+                rightNextAngle = allRooms.getNextAngle(currentAngle, Angle.fromDegrees(-60))
+            }
+        }*/
+    }
 }
