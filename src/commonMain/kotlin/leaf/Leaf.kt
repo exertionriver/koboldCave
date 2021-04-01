@@ -25,7 +25,7 @@ class Leaf(override val initHeight : Int = 3
             Leaf(initHeight = initHeight - 1
                 , parentLeaf = mutableListOf(this)
                 , distanceFromParent = getLeafDistancePxProb()
-                , angleFromParent = this.getChildAngle()
+                , angleFromParent = this.getChildAngle(Angle.fromDegrees(30))
             )
     }
 
@@ -33,16 +33,17 @@ class Leaf(override val initHeight : Int = 3
         return when {
             (height > 2) -> ProbabilitySelect(
                 mapOf(
-                    "1" to Probability(20, 0),
+                    "1" to Probability(35, 0),
                     "2" to Probability(60, 0),
-                    "3" to Probability(20, 0)
+                    "3" to Probability(5, 0)
                 )
             ).getSelectedProbability()!!.toInt()
             (height > 0) -> ProbabilitySelect(
                 mapOf(
-                    "1" to Probability(60, 0),
-                    "2" to Probability(20, 0),
-                    "3" to Probability(10, 0)
+                    "0" to Probability(5, 0),
+                    "1" to Probability(40, 0),
+                    "2" to Probability(50, 0),
+                    "3" to Probability(5, 0)
                 )
             ).getSelectedProbability()!!.toInt()
             else -> 0

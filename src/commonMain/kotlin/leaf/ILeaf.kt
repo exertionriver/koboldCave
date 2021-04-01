@@ -36,8 +36,8 @@ interface ILeaf {
 
     fun getChildrenLeavesList() : List<ILeaf>? = if ( childrenEmpty() ) null else childrenLeaves.toList()
 
-    fun getChildAngle() : Angle =
-        this.angleFromParent + Angle.fromDegrees(Probability(0, 30).getValue())
+    fun getChildAngle(variance : Angle, normalToTop : Angle = this.angleFromParent) : Angle =
+        (this.angleFromParent + normalToTop.times(3) ) / 4 + Angle.fromDegrees( Probability(0, variance.degrees.toInt()).getValue() )
 
     fun getLeafList() : List<ILeaf> =
         if (childrenEmpty()) listOf(this)
@@ -124,7 +124,7 @@ interface ILeaf {
 
             this.forEach { iLeaf -> iLeaf.getLeafLineList().forEach { line -> returnLineList.add(line) } }
 
-            return returnLineList
+            return returnLineList.filterNotNull()
         }
 
         fun ILeaf.addLeaf(childLeaf: ILeaf): ILeaf {

@@ -7,8 +7,10 @@ import leaf.ILeaf
 import node.INodeMesh.Companion.addMesh
 import node.Node.Companion.addNode
 import node.Node.Companion.getNode
+import node.Node.Companion.nearestNodesOrderedAsc
 import node.NodeLink.Companion.removeNodeLink
 import kotlin.math.atan
+import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
 class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
@@ -31,7 +33,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
     companion object {
         val consolidateNodeDistance = ILeaf.LeafDistancePx / 4
-        val linkNodeDistance = ILeaf.LeafDistancePx / 2
+        val linkNodeDistance = ILeaf.LeafDistancePx
 
         fun NodeLink.getNodeChildUuid(uuid: UUID) : UUID? = if (this.firstNodeUuid == uuid) secondNodeUuid else if (this.secondNodeUuid == uuid) firstNodeUuid else null
 
@@ -64,7 +66,9 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
         fun MutableList<NodeLink>.removeNodeLink(nodeLink : NodeLink) { this.removeNodeLink(nodeLink.firstNodeUuid, nodeLink.secondNodeUuid) }
 
-        fun MutableList<NodeLink>.getNodeLinks(uuid: UUID) : MutableList<NodeLink> = this.filter { nodeLink -> nodeLink.firstNodeUuid == uuid || nodeLink.secondNodeUuid == uuid }.toMutableList()
+        fun MutableList<NodeLink>.getNodeLinks(uuid: UUID): MutableList<NodeLink> = this.filter { nodeLink -> nodeLink.firstNodeUuid == uuid || nodeLink.secondNodeUuid == uuid }.toMutableList()
+
+        fun MutableList<NodeLink>.getNodeLinks(uuids: List<UUID>) : MutableList<NodeLink> = this.filter { nodeLink -> uuids.contains(nodeLink.firstNodeUuid) || uuids.contains(nodeLink.secondNodeUuid) }.toMutableList()
 
         fun MutableList<NodeLink>.getNodeChildrenUuids(uuid: UUID, parentToExcludeUuid : UUID = uuid) : MutableList<UUID> = this.getNodeLinks(uuid).filter { nodeLink -> nodeLink.getNodeChildUuid(uuid)!! != parentToExcludeUuid }.map{ filteredLink -> filteredLink.getNodeChildUuid(uuid)!! }.distinct().toMutableList()
 
@@ -244,7 +248,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
  //           println ("nodeLine end: $endNode, ${nodeLineList.size} nodes")
  //           nodeLineLinkList.forEach{ println("nodeLine link: $it") }
 
-            return NodeMesh(nodes = nodeLineList, nodeLinks = nodeLineLinkList)
+            return NodeMesh(description = "path${Random.nextInt(256)}", nodes = nodeLineList, nodeLinks = nodeLineLinkList)
         }
 
         fun MutableList<NodeLink>.buildNodeLinkLines(nodes: MutableList<Node>, noise : Int = 0) : INodeMesh {
@@ -260,5 +264,6 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
             return returnNodeMesh
         }
+
     }
 }

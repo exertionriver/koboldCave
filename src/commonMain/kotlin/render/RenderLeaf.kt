@@ -6,14 +6,15 @@ import com.soywiz.korge.view.graphics
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
-import com.soywiz.korma.geom.Angle
-import com.soywiz.korma.geom.Point
-import com.soywiz.korma.geom.sin
+import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
+import leaf.ILeaf
+import leaf.ILeaf.Companion.LeafDistancePx
 import leaf.ILeaf.Companion.addLeaf
 import leaf.ILeaf.Companion.graftLeaf
 import leaf.Leaf
+import leaf.Stream
 import kotlin.random.Random
 
 object RenderLeaf {
@@ -25,7 +26,7 @@ object RenderLeaf {
 
         (1..3).toList().forEach {
 
-            val leaf = Leaf(initHeight = 6, position = startingPoint)
+            val leaf = Stream(initHeight = 8, position = startingPoint)
 
             graphics {
                 stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
@@ -162,6 +163,69 @@ object RenderLeaf {
 
                     delay(TimeSpan(1500.0))
 
+                }
+            }
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderStreamCircle() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        val centerPoint = Point(512.0, 512.0)
+
+        val leafHeight = 9
+
+        val leafPoints = leafHeight + 1
+
+        val leafMap = mutableMapOf<Angle, Point>()
+
+        (0 until leafPoints).toList().forEach{ leafIndex ->
+            val angleOnCircle = Angle.fromDegrees( 360 / leafPoints * leafIndex ).normalized
+
+            //angleInMap points back to the center of the circle
+            leafMap[(Angle.fromDegrees(180) + angleOnCircle).normalized] = ILeaf.getChildPosition(centerPoint, (leafHeight - 2) * LeafDistancePx, angleOnCircle)
+        }
+
+        
+        
+        leafMap.forEach {
+
+            val leaf = Stream(initHeight = leafHeight, topAngle = it.key, angleFromParent = it.key, position = it.value )
+
+//                println ("tree: ${it.key.degrees}, ${it.value}")
+
+            val finalPoints = mutableListOf<Point>()
+
+            graphics {
+
+                stroke(Colors["#848323"], StrokeInfo(thickness = 1.0)) {
+
+                    line(it.value, centerPoint)
+                }
+                
+                stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in leaf.getLeafLineList() ) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                }
+
+                stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
+
+                    val leafList = leaf.getLeafList()
+                    val leafListSize = leafList.size
+
+                    leafList.forEachIndexed { leafIndex, listLeaf ->
+                        circle(listLeaf.position, radius = 5.0)
+
+                        if (leafIndex == leafListSize - 1) finalPoints.add(listLeaf.position)
+                    }
+                }
+                stroke(Colors["#842b27"], StrokeInfo(thickness = 3.0)) {
+
+                    finalPoints.forEach { finalPoint ->
+                        line(finalPoint, centerPoint)
+                    }
                 }
             }
         }

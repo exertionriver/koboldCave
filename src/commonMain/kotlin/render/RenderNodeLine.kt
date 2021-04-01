@@ -55,7 +55,7 @@ object RenderNodeLine {
 
             RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val nodeMesh = NodeMesh(relinkNodes = startingMap)
+            val nodeMesh = NodeMesh(linkNodes = startingMap)
 
             stroke(Colors["#52b670"], StrokeInfo(thickness = 3.0)) {
 

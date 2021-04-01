@@ -3,8 +3,10 @@ package node
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Point
 import leaf.ILeaf
+import node.INodeMesh.Companion.addMesh
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.areNodesLinked
+import node.NodeLink.Companion.buildNodeLinkLine
 import node.NodeLink.Companion.getNodeChildrenUuids
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.linkNodeDistance
@@ -27,7 +29,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
     fun nearestCentroid(centroids : List<Node>) : Node {
 
-        var minimumDistance = 1024.0
+/*        var minimumDistance = 1024.0
         lateinit var nearestCentroid : Node
 
         centroids.forEach { centroid ->
@@ -38,8 +40,9 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 nearestCentroid = centroid
             }
         }
+*/
 
-        return nearestCentroid
+        return centroids.nearestNodesOrderedAsc(this)[0]
     }
 
     override fun equals(other: Any?): Boolean {
@@ -81,7 +84,11 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             nodeLinks.forEach { nodeLink ->
 //                println("nodeLink : $nodeLink")
-                returnNodeLineList.add(Pair(this.getNode(nodeLink.firstNodeUuid)!!.position, this.getNode(nodeLink.secondNodeUuid)!!.position) ) }
+                val firstNode = this.getNode(nodeLink.firstNodeUuid)
+                val secondNode = this.getNode(nodeLink.secondNodeUuid)
+
+                if ( (firstNode != null) && (secondNode != null) )
+                    returnNodeLineList.add(Pair(firstNode.position, secondNode.position) ) }
 
             return returnNodeLineList
         }
@@ -162,7 +169,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 //        println("checking for nodes to consolidate...")
             var returnNodeLinks = nodeLinks
 
-            nodeLinks.filter { link -> link.getDistance(this)!! <= NodeLink.consolidateNodeDistance }.forEach { consolidateNodeLink ->
+            nodeLinks.filter { link -> link.getDistance(this) ?: NodeLink.consolidateNodeDistance + 1.0 <= NodeLink.consolidateNodeDistance }.forEach { consolidateNodeLink ->
                 returnNodeLinks = this.consolidateNode(nodeLinks, consolidateNodeLink.firstNodeUuid, consolidateNodeLink.secondNodeUuid)
             }
 
@@ -218,6 +225,21 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return Point(randomXInRange, randomYInRange)
         }
 
+        fun List<Node>.nearestNodesOrderedAsc(refNode : Node) : MutableList<Node> {
+
+            val nodeDistMap = mutableMapOf<Node, Double>()
+
+            this.forEach { node ->
+                val nodeToRefDistance = node.position.distanceTo(refNode.position)
+
+                nodeDistMap[node] = nodeToRefDistance
+            }
+
+//            println("nearest nodes found for $refNode")
+
+            return nodeDistMap.toList().sortedBy { (_, dist) -> dist}.toMap().keys.toMutableList()
+        }
+
         fun MutableList<Node>.cluster(rooms : Int = 4, maxIterations : Int = 4) : MutableMap<Node, MutableList<Node>> {
 
             val centroids = MutableList(size = rooms) { Node(position = this.randomPosition() ) }
@@ -242,6 +264,34 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             }
 
             return nodeClusters
+        }
+
+        fun List<Node>.buildNodePaths(noise : Int = 0, paths : Int = 4) : INodeMesh {
+
+            val returnPathMeshes = NodeMesh("pathMesh${Random.nextInt(256)}")
+
+            println("building node paths..")
+
+            this.forEach { node ->
+
+                val nearestNodes = this.nearestNodesOrderedAsc(node)
+
+                (0 until paths).forEach { idx ->
+                    if ( (idx >= 0) && (idx < nearestNodes.size) )
+                        returnPathMeshes.addMesh( Pair(node, nearestNodes[idx]).buildNodeLinkLine(noise) )
+                }
+
+            }
+            println("nodepaths built..!")
+
+            return returnPathMeshes
+        }
+
+        fun List<Node>.getFarthestNode(refNode : Node) : Node {
+
+            val nearestNodes = this.nearestNodesOrderedAsc(refNode)
+
+            return if (nearestNodes.size > 1) nearestNodes[nearestNodes.size - 1] else refNode
         }
     }
 }

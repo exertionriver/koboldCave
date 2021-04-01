@@ -1,9 +1,12 @@
 import render.RenderLeaf.renderAddLeafStationary
 import render.RenderLeaf.renderLeafAngled
 import render.RenderLeaf.renderLeafStationary
+import render.RenderLeaf.renderStreamCircle
+import render.RenderNavigation.renderNavigation
 import render.RenderNode.renderLeafAndNodes
 import render.RenderNodeLine.renderNodeLineStationary
 import render.RenderNodeLine.renderNodeLinesBetweenPoints
+import render.RenderNodeMesh.renderAbsorbedNodeMesh
 import render.RenderNodeMesh.renderNodeMeshStationary
 import render.RenderNodeRooms.renderConnectedNodeRooms
 import render.RenderNodeRooms.renderNodeRooms
@@ -18,9 +21,13 @@ suspend fun main() {
 
 //	renderLeafAngled()
 
+//	renderStreamCircle()
+
 //	renderLeafAndNodes()
 
 //	renderNodeMeshStationary()
+
+//	renderAbsorbedNodeMesh()
 
 //	renderNodeLineStationary()
 
@@ -29,7 +36,11 @@ suspend fun main() {
 //	renderNodeRooms()
 
 	//proof of concept only
-	renderNodeRoomsBuiltLines()
+//	renderNodeRoomsBuiltLines()
+
+//	renderConnectedNodeRooms()
+
+	renderNavigation()
 
 }
 

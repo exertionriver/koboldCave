@@ -12,8 +12,13 @@ import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
+import leaf.ILeaf.Companion.getLeafLineList
+import leaf.ILeaf.Companion.getLeafList
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
+import node.INodeMesh.Companion.absorbMesh
+import node.INodeMesh.Companion.addMesh
+import node.Node.Companion.buildNodePaths
 
 object RenderNodeRooms {
 
@@ -69,7 +74,7 @@ object RenderNodeRooms {
             delay(3000)
             
             nodeClusters.forEach { nodeCluster ->
-                val nodeRoom = NodeMesh(relinkNodes = nodeCluster.value)
+                val nodeRoom = NodeMesh(linkNodes = nodeCluster.value)
 
                 nodeRoom.consolidateNearNodes()
 
@@ -116,7 +121,8 @@ object RenderNodeRooms {
             val leafSecond = Leaf(initHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
             val leafThird = Leaf(initHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
+            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val nodeMesh = threeLeaf.nodeMesh()
             val nodeClusters = nodeMesh.getClusters(rooms = 12, maxIterations = 5)
             var colorIdx = 0
 
@@ -140,10 +146,8 @@ object RenderNodeRooms {
                 }
             }
 
-            delay(3000)
-
-            nodeClusters.forEach { nodeCluster ->
-                val nodeRoom = NodeMesh(relinkNodes = nodeCluster.value)
+            nodeClusters.values.forEachIndexed { nodeClusterIndex, nodeCluster ->
+                val nodeRoom = NodeMesh(description = "nodeRoom${nodeClusterIndex}", linkNodes = nodeCluster)
 
                 nodeRoom.consolidateNearNodes()
 
@@ -185,12 +189,13 @@ object RenderNodeRooms {
 
             textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(initHeight = 5, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 5, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 5, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(initHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(initHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(initHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
-            val nodeClusters = nodeMesh.getClusters(rooms = 12, maxIterations = 5)
+            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val nodeMesh = threeLeaf.nodeMesh()
+            val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
 
             var colorIdx = 0
 
@@ -198,24 +203,47 @@ object RenderNodeRooms {
 
             nodeMesh.consolidateNearNodes()
 
+            val allRooms = NodeMesh()
+
+            nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
+
+            allRooms.linkNearNodes()
+
+            allRooms.consolidateNearNodes()
+
             stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
 
-                for (nodeLine in nodeMesh.getNodeLineList() ) {
+                for (nodeLine in allRooms.getNodeLineList() ) {
                     line(nodeLine!!.first, nodeLine.second )
                 }
             }
 
             stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
 
-                for (node in nodeMesh.nodes) {
+                for (node in allRooms.nodes) {
                     circle(node.position, radius = 5.0)
                 }
             }
 
-            delay(3000)
+            colorIdx = 0
 
-            nodeClusters.forEach { nodeCluster ->
-                val nodeRoom = NodeMesh(relinkNodes = nodeCluster.value)
+            nodeClusters.keys.forEach { centroid ->
+
+                circle { position(centroid.position)
+                    radius = 10.0
+                    color = roomColors[colorIdx % 9]
+                    strokeThickness = 3.0
+                    onClick{ updateNodeText(centroid.uuid.toString())
+                    }
+                }
+                colorIdx++
+            }
+
+            colorIdx = 0
+
+            nodeClusters.values.forEachIndexed { nodeClusterIndex, nodeCluster ->
+                val nodeRoom = NodeMesh(description = "nodeRoom${nodeClusterIndex}", linkNodes = nodeCluster)
+
 
                 nodeRoom.consolidateNearNodes()
 
