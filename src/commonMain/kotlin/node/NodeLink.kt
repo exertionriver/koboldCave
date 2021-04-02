@@ -8,6 +8,7 @@ import node.INodeMesh.Companion.addMesh
 import node.Node.Companion.addNode
 import node.Node.Companion.angleBetween
 import node.Node.Companion.getNode
+import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.random.Random
 
@@ -31,7 +32,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
     override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid)"
 
     companion object {
-        val consolidateNodeDistance = ILeaf.LeafDistancePx / 4
+        val consolidateNodeDistance = ILeaf.LeafDistancePx / 2
         val linkNodeDistance = ILeaf.LeafDistancePx
 
         fun NodeLink.getNodeChildUuid(uuid: UUID) : UUID? = if (this.firstNodeUuid == uuid) secondNodeUuid else if (this.secondNodeUuid == uuid) firstNodeUuid else null
@@ -47,7 +48,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
             println("getting angle $returnAngle between $firstNode and $secondNode")
 
-            return returnAngle
+            return returnAngle.normalized
         }
 
         fun MutableList<NodeLink>.removeNode(nodes : MutableList<Node>, uuid : UUID) {
@@ -85,9 +86,18 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
         fun MutableList<NodeLink>.getNodeChildrenUuids(uuid: UUID, parentToExcludeUuid : UUID = uuid) : MutableList<UUID> = this.getNodeLinks(uuid).filter { nodeLink -> nodeLink.getNodeChildUuid(uuid)!! != parentToExcludeUuid }.map{ filteredLink -> filteredLink.getNodeChildUuid(uuid) }.filterNotNull().distinct().toMutableList()
 
-        fun MutableList<NodeLink>.getNodeChildrenAngles(nodes: MutableList<Node>, uuid: UUID, parentToExcludeUuid : UUID = uuid) : MutableList<Angle> {
+        fun MutableList<NodeLink>.getNodeChildrenNodeAngles(nodes: MutableList<Node>, uuid: UUID) : MutableList<Pair<Node, Angle>> {
 
-            return this.getNodeLinks( uuid ).map{ filteredLink -> filteredLink.getNodeChildAngle(nodes, uuid) ?: Angle.fromDegrees(0) }.toMutableList()
+            val returnList : MutableList<Pair<Node, Angle>> = mutableListOf()
+
+            this.getNodeLinks(uuid).forEach { childLink -> returnList.add(Pair(nodes.getNode(childLink.getNodeChildUuid(uuid)!!) ?: Node(), childLink.getNodeChildAngle(nodes, uuid) ?: Angle.fromDegrees(0) ) ) }
+
+            return returnList
+        }
+
+        fun MutableList<NodeLink>.getNodeChildrenAngles(nodes: MutableList<Node>, uuid: UUID) : MutableList<Angle> {
+
+            return this.getNodeLinks( uuid ).map{ childLink -> childLink.getNodeChildAngle(nodes, uuid) ?: Angle.fromDegrees(0) }.toMutableList()
 
         }
 
@@ -294,6 +304,68 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
             println("randomAngle : $randomAngle")
 
             return randomAngle
+        }
+
+        fun MutableList<NodeLink>.getNextNodeAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle) : Pair<Node, Angle> {
+
+            println ("refNode, refAngle: $refNode, $refAngle")
+
+            val childrenNodeAngles = getNodeChildrenNodeAngles(nodes, refNode.uuid)
+
+            childrenNodeAngles.forEach { println ("childrenNodeAngles ${it.first}, ${it.second}")}
+
+            val combinedAngleNodes : MutableMap<Angle, Node> = mutableMapOf()
+
+            childrenNodeAngles.forEach { combinedAngleNodes[it.second] = it.first }
+
+            childrenNodeAngles.forEach { combinedAngleNodes[it.second + Angle.fromDegrees(360)] = it.first }
+
+            childrenNodeAngles.forEach { combinedAngleNodes[it.second - Angle.fromDegrees(360)] = it.first }
+
+            combinedAngleNodes.forEach { println ("combinedAngles ${it.key}, ${it.value}")}
+
+            val combinedAngles = combinedAngleNodes.keys.toList().filter { abs(it.degrees - refAngle.degrees) < 60 }.sortedBy { abs(it.degrees - refAngle.degrees) }
+
+            if (combinedAngles.isNullOrEmpty()) return Pair(refNode, refAngle)
+
+            val returnNode = combinedAngleNodes[combinedAngles[0]] ?: return Pair(refNode, refAngle)
+
+            val returnAngle = childrenNodeAngles.firstOrNull { it.first == returnNode }?.second ?: return Pair(refNode, refAngle)
+
+            val returnNodeAngle = Pair(returnNode, returnAngle)
+
+            println ("returnNodeAngle: $returnNodeAngle")
+
+            return returnNodeAngle
+        }
+
+        fun MutableList<NodeLink>.getNextAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle, rangeAngle : Angle) : Angle {
+
+            println ("refNode, refAngle, rangeAngle: $refNode, $refAngle, $rangeAngle")
+
+            val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid)
+
+            val childrenAnglesOver360 = childrenAngles.map { Angle.fromDegrees(360) + it }
+
+            val childrenAnglesUnder0 = childrenAngles.map { Angle.fromDegrees(360) - it }
+
+            val combinedAngles = (childrenAngles + childrenAnglesOver360 + childrenAnglesUnder0).sortedBy { it.degrees }
+
+            val nextAngle = when {
+                (rangeAngle.degrees > 0) -> {
+                    val nextAngles = combinedAngles.filter { it > refAngle && it <= refAngle + rangeAngle }
+                    if (!nextAngles.isNullOrEmpty()) nextAngles[0] else refAngle + rangeAngle
+                }
+                (rangeAngle.degrees < 0) -> {
+                    val nextAngles = combinedAngles.filter { it < refAngle && it >= refAngle + rangeAngle }
+                    if (!nextAngles.isNullOrEmpty()) nextAngles[0] else refAngle + rangeAngle
+                }
+                else -> refAngle + rangeAngle
+            }
+
+            println ("returnNextAngle: ${nextAngle.normalized}")
+
+            return nextAngle.normalized
         }
     }
 }

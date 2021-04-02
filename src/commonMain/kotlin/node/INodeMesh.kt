@@ -15,6 +15,8 @@ import node.Node.Companion.linkNearNodes
 import node.Node.Companion.nearestNodesOrderedAsc
 import node.NodeLink.Companion.addNodeLinks
 import node.NodeLink.Companion.buildNodeLinkLines
+import node.NodeLink.Companion.getNextAngle
+import node.NodeLink.Companion.getNextNodeAngle
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.getRandomNextNodeAngle
 
@@ -37,15 +39,16 @@ interface INodeMesh {
 
     fun getClusters(rooms : Int = 4, maxIterations : Int = 4) : Map<Node, MutableList<Node>> = nodes.cluster(rooms, maxIterations)
 
+    //todo: combine next two
     fun getRandomNode() = nodes.getRandomNode()
 
     fun getRandomNextNodeAngle(node : Node) = nodeLinks.getRandomNextNodeAngle(nodes, node)
 
     fun getFarthestNode(refNode : Node) = nodes.getFarthestNode(refNode)
 
-//    fun getNextNode(refNode : Node, refAngle : Angle)
+    fun getNextNodeAngle(refNode : Node, refAngle : Angle) : Pair<Node, Angle> = nodeLinks.getNextNodeAngle(nodes, refNode, refAngle)
 
-//    fun getNextAngle(refAngle : Angle, rangeAngle : Angle)
+    fun getNextAngle(refNode : Node, refAngle : Angle, rangeAngle : Angle) : Angle = nodeLinks.getNextAngle(nodes, refNode, refAngle, rangeAngle)
 
     fun getNodeLineList() : List<Pair<Point, Point>?> = nodes.getNodeLineList(nodeLinks)
 
