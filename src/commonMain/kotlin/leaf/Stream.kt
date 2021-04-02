@@ -12,6 +12,7 @@ import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
 class Stream(override val initHeight : Int = 3
+             , override val description: String = "stream${Random.nextInt(256)}"
              , override val parentLeaf : MutableList<ILeaf> = mutableListOf()
              , override val distanceFromParent : Int = 0
              , val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down

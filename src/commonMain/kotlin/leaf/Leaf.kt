@@ -12,6 +12,7 @@ import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
 class Leaf(override val initHeight : Int = 3
+        , override val description: String = "leaf${Random.nextInt(256)}"
         , override val parentLeaf : MutableList<ILeaf> = mutableListOf()
         , override val distanceFromParent : Int = 0
         , override val angleFromParent : Angle = Angle.fromDegrees(270.0) //270 == down

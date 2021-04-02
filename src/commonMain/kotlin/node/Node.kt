@@ -18,18 +18,21 @@ import kotlin.math.atan
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
-class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Point) {
+class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Point, val description : String = "Node${Random.nextInt(2048)}") {
 
-    constructor(leaf : ILeaf) : this (
+    constructor(leaf : ILeaf, description : String = "LeafNode${Random.nextInt(2048)}") : this (
         uuid = leaf.uuid
         , position = leaf.position
+        , description = description
     )
 
     constructor(copyNode : Node
         , updUuid : UUID = copyNode.uuid
-        , updPosition : Point = copyNode.position) : this (
+        , updPosition : Point = copyNode.position
+        , updDescription : String = copyNode.description) : this (
         uuid = updUuid
         , position = updPosition
+        , description = updDescription
     )
 
     constructor() : this(position = Point(0,0))
@@ -83,9 +86,9 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return this.firstOrNull { node -> node.uuid == uuid }
         }
 
-        fun MutableList<Node>.addNode(nodeToAdd : Node) : Boolean = this.add(nodeToAdd)
+        fun MutableList<Node>.addNode(nodeToAdd : Node, nodeDescription : String) : Boolean = this.add(Node(nodeToAdd, updDescription = nodeDescription))
 
-        fun MutableList<Node>.addNodes(nodesToAdd : MutableList<Node>) : Unit = nodesToAdd.forEach { nodeToAdd -> this.add(nodeToAdd) }
+        fun MutableList<Node>.addNodes(nodesToAdd : MutableList<Node>, nodeDescription : String) : Unit = nodesToAdd.forEach { nodeToAdd -> this.add(Node(nodeToAdd, updDescription = nodeDescription)) }
 
         fun MutableList<Node>.removeNode(nodeLinks : MutableList<NodeLink>, uuid : UUID) {
             nodeLinks.getNodeLinks(uuid).let { nodeLinks.removeAll(it) }
@@ -287,7 +290,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return nodeClusters
         }
 
-        fun List<Node>.buildNodePaths(noise : Int = 0, paths : Int = 4) : INodeMesh {
+        fun List<Node>.buildNodePaths(noise : Int = 0, paths : Int = 4, nodeDescription : String) : INodeMesh {
 
             val returnPathMeshes = NodeMesh("pathMesh${Random.nextInt(256)}")
 
@@ -299,7 +302,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
                 (0 until paths).forEach { idx ->
                     if ( (idx >= 0) && (idx < nearestNodes.size) )
-                        returnPathMeshes.addMesh( Pair(node, nearestNodes[idx]).buildNodeLinkLine(noise) )
+                        returnPathMeshes.addMesh( Pair(node, nearestNodes[idx]).buildNodeLinkLine(noise, nodeDescription) )
                 }
 
             }

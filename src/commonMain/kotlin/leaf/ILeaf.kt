@@ -16,6 +16,8 @@ interface ILeaf {
 
     val uuid : UUID
 
+    val description : String
+
     val initHeight : Int
 
     val position : Point
@@ -182,12 +184,12 @@ interface ILeaf {
         fun ILeaf.nodes(): MutableList<Node> {
             val returnNodes = mutableListOf<Node>()
 
-            returnNodes.addNode(Node(this))
+            returnNodes.addNode(Node(this), this.description)
 
-            if (!parentEmpty()) returnNodes.addNode(Node(getParentLeaf()!!))
+            if (!parentEmpty()) returnNodes.addNode(Node(getParentLeaf()!!), this.description)
 
             if (!childrenEmpty()) this.getChildrenLeavesList()!!
-                .forEach { childLeaf -> returnNodes.addNode(Node(childLeaf)) }
+                .forEach { childLeaf -> returnNodes.addNode(Node(childLeaf), this.description) }
 
             return returnNodes
         }
@@ -197,7 +199,7 @@ interface ILeaf {
         fun List<ILeaf>.nodes(): MutableList<Node> {
             val returnNodes = mutableListOf<Node>()
 
-            this.forEach { iLeaf -> returnNodes.addNode(Node(iLeaf)) }
+            this.forEach { iLeaf -> returnNodes.addNode(Node(iLeaf), iLeaf.description) }
 
             return returnNodes
         }

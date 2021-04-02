@@ -12,14 +12,11 @@ import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.resources.ResourcesContainer
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
-import leaf.ILeaf
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh.Companion.addMesh
 import node.Node
 import node.NodeMesh
-import render.RenderArrow.arrow_png
-
 
 object RenderNavigation {
 
@@ -27,6 +24,7 @@ object RenderNavigation {
 
     lateinit var nodeView : View
     lateinit var angleView : View
+    lateinit var roomView : View
 
     fun updateNodeText(uuidString : String) {
         nodeView.setText(uuidString)
@@ -34,6 +32,10 @@ object RenderNavigation {
 
     fun updateAngleText(angleDegrees : String) {
         angleView.setText(angleDegrees)
+    }
+
+    fun updateRoomText(roomDescription : String) {
+        roomView.setText(roomDescription)
     }
 
     @ExperimentalUnsignedTypes
@@ -61,13 +63,14 @@ object RenderNavigation {
         var rightNextAngle : Angle = Angle.fromDegrees(0)
 
         val renderNodeMap : MutableMap<Node, View> = mutableMapOf()
-        val allRooms = NodeMesh()
+        val allRooms = NodeMesh("allRooms")
         lateinit var arrowImage : Image
 
         graphics {
 
             nodeView = text(text = "current node", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
             angleView = text(text = "current node angle", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 45)
+            roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
 
             val leafFirst = Leaf(initHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
             val leafSecond = Leaf(initHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
@@ -77,7 +80,7 @@ object RenderNavigation {
             val nodeClusters = nodeMesh.getClusters(rooms = nodeMesh.nodes.size / 20, maxIterations = 7)
             var colorIdx = 0
 
-            nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
+            nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes), description = "room$clusterIdx") }
 
             allRooms.consolidateNearNodes()
 
@@ -133,6 +136,7 @@ object RenderNavigation {
 
             updateNodeText(currentNode.uuid.toString())
             updateAngleText(currentAngle.degrees.toString())
+            updateRoomText(currentNode.description)
 
             arrowImage = image(arrow_png) {
                 anchor(1, 1)
@@ -143,13 +147,13 @@ object RenderNavigation {
             arrowImage.position(currentNode.position)
             arrowImage.rotation(Angle.fromDegrees(180 - currentAngle.degrees))
 
-            println("checking forward nodeAngle:")
+//            println("checking forward nodeAngle:")
             forwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, currentAngle)
-            println("checking backward nodeAngle:")
+//            println("checking backward nodeAngle:")
             backwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
-            println("checking leftward angle:")
+//            println("checking leftward angle:")
             leftNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(60) )
-            println("checking rightward angle:")
+//            println("checking rightward angle:")
             rightNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(-60) )
         }
 
@@ -157,17 +161,19 @@ object RenderNavigation {
             down(Key.RIGHT) {
                 currentAngle = rightNextAngle
 
+                updateNodeText(currentNode.uuid.toString())
                 updateAngleText(currentAngle.degrees.toString())
+                updateRoomText(currentNode.description)
 
                 arrowImage.rotation(Angle.fromDegrees(180 - currentAngle.degrees))
 
-                println("checking forward nodeAngle:")
+//                println("checking forward nodeAngle:")
                 forwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, currentAngle)
-                println("checking backward nodeAngle:")
+//                println("checking backward nodeAngle:")
                 backwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
-                println("checking leftward angle:")
+//                println("checking leftward angle:")
                 leftNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(60) )
-                println("checking rightward angle:")
+//                println("checking rightward angle:")
                 rightNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(-60) )
             }
             down(Key.UP) {
@@ -180,33 +186,36 @@ object RenderNavigation {
 
                 updateNodeText(currentNode.uuid.toString())
                 updateAngleText(currentAngle.degrees.toString())
+                updateRoomText(currentNode.description)
 
                 arrowImage.position(currentNode.position)
                 arrowImage.rotation(Angle.fromDegrees(180 - currentAngle.degrees))
 
-                println("checking forward nodeAngle:")
+//                println("checking forward nodeAngle:")
                 forwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, currentAngle)
-                println("checking backward nodeAngle:")
+//                println("checking backward nodeAngle:")
                 backwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
-                println("checking leftward angle:")
+//                println("checking leftward angle:")
                 leftNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(60) )
-                println("checking rightward angle:")
+//                println("checking rightward angle:")
                 rightNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(-60) )
             }
             down(Key.LEFT) {
                 currentAngle = leftNextAngle
 
+                updateNodeText(currentNode.uuid.toString())
                 updateAngleText(currentAngle.degrees.toString())
+                updateRoomText(currentNode.description)
 
                 arrowImage.rotation(Angle.fromDegrees(180 - currentAngle.degrees))
 
-                println("checking forward nodeAngle:")
+//                println("checking forward nodeAngle:")
                 forwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, currentAngle)
-                println("checking backward nodeAngle:")
+//                println("checking backward nodeAngle:")
                 backwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
-                println("checking leftward angle:")
+//                println("checking leftward angle:")
                 leftNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(60) )
-                println("checking rightward angle:")
+//                println("checking rightward angle:")
                 rightNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(-60) )
 
             }
@@ -221,17 +230,18 @@ object RenderNavigation {
 
                 updateNodeText(currentNode.uuid.toString())
                 updateAngleText(currentAngle.degrees.toString())
+                updateRoomText(currentNode.description)
 
                 arrowImage.position(currentNode.position)
                 arrowImage.rotation(Angle.fromDegrees(180 - currentAngle.degrees))
 
-                println("checking forward nodeAngle:")
+//                println("checking forward nodeAngle:")
                 forwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, currentAngle)
-                println("checking backward nodeAngle:")
+//                println("checking backward nodeAngle:")
                 backwardNextNodeAngle = allRooms.getNextNodeAngle(currentNode, (Angle.fromDegrees(180) + currentAngle).normalized)
-                println("checking leftward angle:")
+//                println("checking leftward angle:")
                 leftNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(60) )
-                println("checking rightward angle:")
+//                println("checking rightward angle:")
                 rightNextAngle = allRooms.getNextAngle(currentNode, currentAngle, Angle.fromDegrees(-60) )
             }
         }

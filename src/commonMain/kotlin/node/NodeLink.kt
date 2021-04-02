@@ -104,7 +104,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
 
         //noise goes from 0 to 100
-        fun Pair<Node?, Node?>.buildNodeLinkLine(noise : Int = 0) : INodeMesh {
+        fun Pair<Node?, Node?>.buildNodeLinkLine(noise : Int = 0, nodeDescription : String) : INodeMesh {
 
             if ( (this.first == null) || (this.second == null) ) return NodeMesh()
 
@@ -122,7 +122,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
 //            println ("nodeLine start: $startNode step $linkDistance")
 
-            nodeLineList.addNode(startNode)
+            nodeLineList.addNode( startNode, nodeDescription )
             var previousNode = startNode
             var currentNode = startNode
 
@@ -148,7 +148,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 //                    println("1) node at ${currentNode}, angle ${angle.degrees}")
 
                     while ( (endNode.position.x >= currentPosition.x) && (endNode.position.y < currentPosition.y) ) {
-                        nodeLineList.addNode(currentNode)
+                        nodeLineList.addNode(currentNode, nodeDescription )
                         nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, currentNode.uuid)
                         previousNode = currentNode
 
@@ -183,7 +183,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
  //                   println("2) node at ${currentNode}, angle ${angle.degrees}")
 
                     while ( (endNode.position.x < currentPosition.x) && (endNode.position.y < currentPosition.y) ) {
-                        nodeLineList.addNode(currentNode)
+                        nodeLineList.addNode(currentNode, nodeDescription)
                         nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, currentNode.uuid)
                         previousNode = currentNode
 
@@ -218,7 +218,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
                     //                  println("3) node at ${currentNode}, angle ${angle.degrees}")
 
                     while ( (endNode.position.x < currentPosition.x) && (endNode.position.y >= currentPosition.y) ) {
-                        nodeLineList.addNode(currentNode)
+                        nodeLineList.addNode(currentNode, nodeDescription)
                         nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, currentNode.uuid)
                         previousNode = currentNode
 
@@ -253,7 +253,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
                     //                  println("4) node at ${currentNode}, angle ${angle.degrees}")
 
                     while ( (endNode.position.x >= currentPosition.x) && (endNode.position.y >= currentPosition.y) ) {
-                        nodeLineList.addNode(currentNode)
+                        nodeLineList.addNode(currentNode, nodeDescription)
                         nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, currentNode.uuid)
                         previousNode = currentNode
 
@@ -273,7 +273,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
                 }
             }
 
-            nodeLineList.addNode(endNode)
+            nodeLineList.addNode(endNode, nodeDescription)
             nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, endNode.uuid)
 
  //           println ("nodeLine end: $endNode, ${nodeLineList.size} nodes")
@@ -282,13 +282,13 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
             return NodeMesh(description = "path${Random.nextInt(256)}", nodes = nodeLineList, nodeLinks = nodeLineLinkList)
         }
 
-        fun MutableList<NodeLink>.buildNodeLinkLines(nodes: MutableList<Node>, noise : Int = 0) : INodeMesh {
+        fun MutableList<NodeLink>.buildNodeLinkLines(nodes: MutableList<Node>, noise : Int = 0, nodeDescription : String) : INodeMesh {
 
             val returnNodeMesh = NodeMesh()
 
             this.forEach { link ->
 //                println("before nodes: ${link.firstNodeUuid}, ${link.secondNodeUuid}")
-                returnNodeMesh.addMesh(Pair(nodes.getNode(link.firstNodeUuid), nodes.getNode(link.secondNodeUuid)).buildNodeLinkLine(noise) )
+                returnNodeMesh.addMesh(Pair(nodes.getNode(link.firstNodeUuid), nodes.getNode(link.secondNodeUuid)).buildNodeLinkLine(noise, nodeDescription) )
                 returnNodeMesh.nodeLinks.removeNodeLink(link)
 //                returnNodeMesh.nodeLinks.forEach { println("after nodeLinks: $it")}
             }
@@ -308,11 +308,11 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
         fun MutableList<NodeLink>.getNextNodeAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle) : Pair<Node, Angle> {
 
-            println ("refNode, refAngle: $refNode, $refAngle")
+//            println ("refNode, refAngle: $refNode, $refAngle")
 
             val childrenNodeAngles = getNodeChildrenNodeAngles(nodes, refNode.uuid)
 
-            childrenNodeAngles.forEach { println ("childrenNodeAngles ${it.first}, ${it.second}")}
+//            childrenNodeAngles.forEach { println ("childrenNodeAngles ${it.first}, ${it.second}")}
 
             val combinedAngleNodes : MutableMap<Angle, Node> = mutableMapOf()
 
@@ -322,7 +322,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
             childrenNodeAngles.forEach { combinedAngleNodes[it.second - Angle.fromDegrees(360)] = it.first }
 
-            combinedAngleNodes.forEach { println ("combinedAngles ${it.key}, ${it.value}")}
+//            combinedAngleNodes.forEach { println ("combinedAngles ${it.key}, ${it.value}")}
 
             val combinedAngles = combinedAngleNodes.keys.toList().filter { abs(it.degrees - refAngle.degrees) < 60 }.sortedBy { abs(it.degrees - refAngle.degrees) }
 
@@ -334,14 +334,14 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
             val returnNodeAngle = Pair(returnNode, returnAngle)
 
-            println ("returnNodeAngle: $returnNodeAngle")
+//            println ("returnNodeAngle: $returnNodeAngle")
 
             return returnNodeAngle
         }
 
         fun MutableList<NodeLink>.getNextAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle, rangeAngle : Angle) : Angle {
 
-            println ("refNode, refAngle, rangeAngle: $refNode, $refAngle, $rangeAngle")
+//            println ("refNode, refAngle, rangeAngle: $refNode, $refAngle, $rangeAngle")
 
             val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid)
 
@@ -363,7 +363,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
                 else -> refAngle + rangeAngle
             }
 
-            println ("returnNextAngle: ${nextAngle.normalized}")
+//            println ("returnNextAngle: ${nextAngle.normalized}")
 
             return nextAngle.normalized
         }

@@ -3,6 +3,7 @@ package node
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
+import node.Node.Companion.addNode
 import node.Node.Companion.addNodes
 import node.Node.Companion.buildNodePaths
 import node.Node.Companion.cluster
@@ -52,20 +53,21 @@ interface INodeMesh {
 
     fun getNodeLineList() : List<Pair<Point, Point>?> = nodes.getNodeLineList(nodeLinks)
 
-    fun buildNodeLinkLines(noise : Int = 0) { this.addMesh( nodeLinks.buildNodeLinkLines(nodes, noise) ) }
+    fun buildNodeLinkLines(noise : Int = 0, description : String = this.description) { this.addMesh( nodeLinks.buildNodeLinkLines(nodes, noise, description) ) }
 
     companion object {
 
-        fun INodeMesh.addMesh(nodeMeshToAdd : INodeMesh) {
-            this.nodes.addNodes(nodeMeshToAdd.nodes)
+        fun INodeMesh.addMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {
+            this.nodes.addNodes(nodeMeshToAdd.nodes, description)
             this.nodeLinks.addNodeLinks(nodeMeshToAdd.nodeLinks)
 
             this.nodes = this.nodes.distinct().toMutableList()
             this.consolidateStackedNodes()
         }
 
-        fun INodeMesh.replaceMesh(nodeMeshToAdd : INodeMesh) {
-            this.nodes = nodeMeshToAdd.nodes
+        fun INodeMesh.replaceMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {
+            this.nodes.clear()
+            nodeMeshToAdd.nodes.forEach { addNode -> this.nodes.addNode(addNode, description) }
             this.nodeLinks = nodeMeshToAdd.nodeLinks
 
             this.nodes = this.nodes.distinct().toMutableList()

@@ -183,7 +183,7 @@ object RenderNodeLine {
             startingMap.forEachIndexed { outerIndex, outer ->
                 startingMap.forEachIndexed { innerIndex, inner ->
                     if (innerIndex > outerIndex) {
-                        lineNodeMesh.addMesh( Pair(outer, inner).buildNodeLinkLine(noise = 70) )
+                        lineNodeMesh.addMesh( Pair(outer, inner).buildNodeLinkLine(noise = 70, lineNodeMesh.description) )
                     }
                 }
             }
