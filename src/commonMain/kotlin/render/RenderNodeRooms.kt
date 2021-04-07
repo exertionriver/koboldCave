@@ -12,13 +12,15 @@ import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
-import leaf.ILeaf.Companion.getLeafLineList
-import leaf.ILeaf.Companion.getLeafList
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
-import node.INodeMesh.Companion.absorbMesh
 import node.INodeMesh.Companion.addMesh
-import node.Node.Companion.buildNodePaths
+import node.Node
+import node.Node.Companion.angleBetween
+import node.Node.Companion.averagePositionWithinNodes
+import node.Node.Companion.getFarthestNode
+import node.Node.Companion.getRandomNode
+import node.Node.Companion.nearestNodesOrderedAsc
 
 object RenderNodeRooms {
 
@@ -53,9 +55,9 @@ object RenderNodeRooms {
             val nodeClusters = nodeMesh.getClusters(rooms = 12, maxIterations = 5)
             var colorIdx = 0
 
-            nodeMesh.linkNearNodes()
-
             nodeMesh.consolidateNearNodes()
+
+            nodeMesh.linkNearNodes()
 
             stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
 
@@ -71,12 +73,12 @@ object RenderNodeRooms {
                 }
             }
 
-            delay(3000)
-            
             nodeClusters.forEach { nodeCluster ->
                 val nodeRoom = NodeMesh(linkNodes = nodeCluster.value)
 
                 nodeRoom.consolidateNearNodes()
+
+                nodeRoom.linkNearNodes()
 
                 stroke(roomColors[colorIdx % 9], StrokeInfo(thickness = 2.0)) {
 
@@ -199,17 +201,17 @@ object RenderNodeRooms {
 
             var colorIdx = 0
 
-            nodeMesh.linkNearNodes()
-
             nodeMesh.consolidateNearNodes()
+
+            nodeMesh.linkNearNodes()
 
             val allRooms = NodeMesh()
 
             nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
 
-            allRooms.linkNearNodes()
-
             allRooms.consolidateNearNodes()
+
+            allRooms.linkNearNodes()
 
             stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
 
@@ -265,6 +267,187 @@ object RenderNodeRooms {
                 }
 
                 colorIdx++
+            }
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderConnectedNodeRoomBorder() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        val startingMap = mapOf(
+            90 to Point(750, 600)
+            , 330 to Point(600, 400)
+            , 210 to Point(900, 400)
+        )
+        graphics {
+
+            textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+
+            val leafFirst = Leaf(initHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(initHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(initHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+
+            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val nodeMesh = threeLeaf.nodeMesh()
+            val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
+
+            var colorIdx = 0
+
+            nodeMesh.consolidateNearNodes()
+
+            nodeMesh.linkNearNodes()
+
+            val allRooms = NodeMesh()
+
+            nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
+
+            allRooms.consolidateNearNodes()
+
+            allRooms.linkNearNodes()
+
+            stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
+
+                for (nodeLine in allRooms.getNodeLineList() ) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+            stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in allRooms.nodes) {
+                    circle(node.position, radius = 5.0)
+                }
+            }
+
+            val centroid = Node(position = allRooms.nodes.averagePositionWithinNodes())
+
+            stroke(Colors["#3939ad"], StrokeInfo(thickness = 3.0)) {
+                 circle(centroid.position, radius = 5.0)
+            }
+
+            val farthestNode = allRooms.nodes.getFarthestNode(centroid)
+            
+            val outerNodes80 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .8 }
+
+            val outerNodes70 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .7 }
+
+            val outerNodes60 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .6 }
+
+            stroke(Colors["#56f636"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in outerNodes60) {
+                    circle(node.position, radius = 5.0)
+                }
+            }
+
+            delay(1000)
+
+            stroke(Colors["#1d8a1e"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in outerNodes70) {
+                    circle(node.position, radius = 5.0)
+                }
+            }
+
+            delay(1000)
+
+            stroke(Colors["#0d431b"], StrokeInfo(thickness = 3.0)) {
+
+                for (node in outerNodes80) {
+                    circle(node.position, radius = 5.0)
+                }
+            }
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderConnectedNodeRoomElaboration() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        val startingMap = mapOf(
+            90 to Point(450, 600)
+            , 330 to Point(300, 400)
+            , 210 to Point(600, 400)
+        )
+        graphics {
+
+            textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+
+            val leafFirst = Leaf(initHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(initHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(initHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+
+            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val nodeMesh = threeLeaf.nodeMesh()
+            val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
+
+            var colorIdx = 0
+
+            nodeMesh.consolidateNearNodes()
+
+            nodeMesh.linkNearNodes()
+
+            val allRooms = NodeMesh()
+
+            nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
+
+            allRooms.consolidateNearNodes()
+
+            allRooms.linkNearNodes()
+
+            (1..5).forEach {
+
+                stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
+
+                    for (nodeLine in allRooms.getNodeLineList() ) {
+                        line(nodeLine!!.first, nodeLine.second )
+                    }
+                }
+
+                stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
+
+                    for (node in allRooms.nodes) {
+                        circle(node.position, radius = 5.0)
+                    }
+                }
+
+                val centroid = Node(position = allRooms.nodes.averagePositionWithinNodes())
+
+                stroke(Colors["#3939ad"], StrokeInfo(thickness = 3.0)) {
+                    circle(centroid.position, radius = 5.0)
+                }
+
+                val farthestNode = allRooms.nodes.getFarthestNode(centroid)
+
+                val outerNodes60 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .5 }
+
+                stroke(Colors["#56f636"], StrokeInfo(thickness = 3.0)) {
+
+                    for (node in outerNodes60) {
+                        circle(node.position, radius = 5.0)
+                    }
+                }
+
+                val randomOuter60Node = outerNodes60.getRandomNode()
+
+                stroke(Colors["#f65862"], StrokeInfo(thickness = 3.0)) {
+
+                    circle(randomOuter60Node.position, radius = 5.0)
+                }
+
+                delay(3000)
+
+                println("elaboration position: ${randomOuter60Node.position}")
+
+                println("elaboration angle: ${centroid.angleBetween(randomOuter60Node)}")
+
+                val newMesh = Leaf(initHeight = 5, position = randomOuter60Node.position, angleFromParent = centroid.angleBetween(randomOuter60Node) ).getLeafList().nodeMesh()
+
+                newMesh.consolidateNearNodes()
+
+                newMesh.linkNearNodes()
+
+                allRooms.addMesh(newMesh)
+
             }
         }
     }

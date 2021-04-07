@@ -12,6 +12,8 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), overri
  //       println("consolidating stacked nodes..!")
     }
 
+    override var roomIdx = 0
+
     constructor(copyNodeMesh : NodeMesh
                 , updUuid: UUID = copyNodeMesh.uuid
                 , updDescription: String = copyNodeMesh.description
@@ -35,6 +37,6 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), overri
         , nodeLinks = mutableListOf()
     )
 
-    override fun toString() = "Node.NodeMesh(${uuid}) : $nodes, $nodeLinks"
+    override fun toString() = "Node.NodeMesh(${uuid}) : $description, $nodes, $nodeLinks"
 
 }

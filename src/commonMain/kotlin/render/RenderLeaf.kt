@@ -186,8 +186,6 @@ object RenderLeaf {
             leafMap[(Angle.fromDegrees(180) + angleOnCircle).normalized] = ILeaf.getChildPosition(centerPoint, (leafHeight - 2) * LeafDistancePx, angleOnCircle)
         }
 
-        
-        
         leafMap.forEach {
 
             val leaf = Stream(initHeight = leafHeight, topAngle = it.key, angleFromParent = it.key, position = it.value )

@@ -191,6 +191,8 @@ interface ILeaf {
             if (!childrenEmpty()) this.getChildrenLeavesList()!!
                 .forEach { childLeaf -> returnNodes.addNode(Node(childLeaf), this.description) }
 
+            println("leaf nodes: $returnNodes")
+
             return returnNodes
         }
 

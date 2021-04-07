@@ -7,20 +7,14 @@ import com.soywiz.korge.view.*
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.text.TextAlignment
 import com.soywiz.korim.vector.StrokeInfo
-import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
 import leaf.ILeaf.Companion.LeafDistancePx
-import leaf.ILeaf.Companion.getLeafLineList
-import leaf.ILeaf.Companion.getLeafList
-import leaf.ILeaf.Companion.nodeMesh
-import leaf.Leaf
 import node.INodeMesh.Companion.addMesh
 import node.Node
 import node.NodeLink.Companion.buildNodeLinkLine
-import node.NodeLink.Companion.buildNodeLinkLines
 import node.NodeLink.Companion.consolidateNodeDistance
 
 object RenderNodeLine {

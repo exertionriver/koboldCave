@@ -6,20 +6,12 @@ import com.soywiz.korge.view.graphics
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
-import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
-import com.soywiz.korma.geom.sin
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
-import leaf.ILeaf.Companion.addLeaf
-import leaf.ILeaf.Companion.graftLeaf
-import leaf.ILeaf.Companion.nodeLinks
 import leaf.ILeaf.Companion.nodes
 import leaf.Leaf
-import node.INodeMesh
 import node.Node
-import node.NodeMesh
-import kotlin.random.Random
 
 object RenderNode {
 

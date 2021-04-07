@@ -17,6 +17,7 @@ import leaf.ILeaf.Companion.getLeafList
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh.Companion.absorbMesh
+import node.INodeMesh.Companion.buildRoomMesh
 import node.Node
 import node.Node.Companion.randomPosition
 import node.NodeLink.Companion.consolidateNodeDistance
@@ -28,6 +29,10 @@ object RenderNodeMesh {
 
     fun updateNodeText(uuidString : String) {
         textView.setText(uuidString)
+    }
+
+    fun updateRoomText(roomDescription : String) {
+        RenderNavigation.roomView.setText(roomDescription)
     }
 
     @ExperimentalUnsignedTypes
@@ -305,6 +310,49 @@ object RenderNodeMesh {
                 }
 
                 delay(1000)
+            }
+        }
+    }
+    @ExperimentalUnsignedTypes
+    suspend fun renderNodeMeshRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        val roomColors = listOf(Colors.DARKRED, Colors.DARKGREEN,  Colors.BLUE, Colors.DARKMAGENTA, Colors.DARKSEAGREEN, Colors.DARKTURQUOISE
+            , Colors.DARKORANGE, Colors.DARKOLIVEGREEN, Colors.DARKSALMON)
+
+        graphics {
+
+            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+
+            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
+
+            val roomMesh = buildRoomMesh(Point(512, 512), height = 5)
+
+            println("drawing lines")
+            for (nodeLine in roomMesh.getNodeLineList()) {
+
+                stroke(Colors["#343ab6"], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+            println("drawing nodes")
+            roomMesh.nodes.forEach { node ->
+
+          //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = roomColors[colorIdx % 9]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
             }
         }
     }

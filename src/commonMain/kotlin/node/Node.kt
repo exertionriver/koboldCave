@@ -8,6 +8,7 @@ import com.soywiz.korma.geom.minus
 import com.soywiz.korma.geom.plus
 import leaf.ILeaf
 import node.INodeMesh.Companion.addMesh
+import node.Node.Companion.updateNode
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.areNodesLinked
 import node.NodeLink.Companion.buildNodeLinkLine
@@ -264,9 +265,11 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return nodeDistMap.toList().sortedBy { (_, dist) -> dist}.toMap().keys.toMutableList()
         }
 
-        fun MutableList<Node>.cluster(rooms : Int = 4, maxIterations : Int = 4) : MutableMap<Node, MutableList<Node>> {
+        fun MutableList<Node>.cluster(rooms : Int = 4, maxIterations : Int = 4, roomIdx : Int = 0) : MutableMap<Node, MutableList<Node>> {
 
-            val centroids = MutableList(size = rooms) { Node(position = this.randomPosition() ) }
+            var roomIdxVar = roomIdx
+
+            val centroids = MutableList(size = rooms) { Node(position = this.randomPosition(), description = "Room${roomIdxVar++}" ) }
             val nodeClusters = mutableMapOf<Node, MutableList<Node>>()
 
 //        println("init nodeRooms: $nodeRooms")
@@ -279,7 +282,11 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
                 centroids.forEach { centroid -> nodeClusters[centroid]!!.clear() }
 
-                this.forEach { node -> nodeClusters[node.nearestCentroid(centroids)]!!.add(node) }
+                this.forEach { node ->
+                    val nearestNodeDescription = node.nearestCentroid(centroids).description
+                    nodeClusters[node.nearestCentroid(centroids)]!!.add(Node (node, updDescription = node.nearestCentroid(centroids).description))
+//                    println ("iteration: $iteration, nearestNodeDescription: $nearestNodeDescription, node: $node")
+                }
 
 //            println("iteration $iteration:")
 //            println(nodeRooms)

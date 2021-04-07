@@ -76,7 +76,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
         fun MutableList<NodeLink>.addNodeLinks(nodeLinksToAdd : MutableList<NodeLink>) : Unit = nodeLinksToAdd.forEach { nodeLinkToAdd -> if ( !areNodesLinked(nodeLinkToAdd.firstNodeUuid, nodeLinkToAdd.secondNodeUuid) ) this.add( nodeLinkToAdd ) }
 
-        fun MutableList<NodeLink>.removeNodeLink(firstUuid : UUID, secondUuid: UUID) { this.remove(NodeLink(firstUuid, secondUuid)); this.remove(NodeLink(secondUuid, firstUuid)) }
+        fun MutableList<NodeLink>.removeNodeLink(firstUuid : UUID, secondUuid: UUID) { this.remove(this.getNodeLink(firstUuid, secondUuid)) }
 
         fun MutableList<NodeLink>.removeNodeLink(nodeLink : NodeLink) { this.removeNodeLink(nodeLink.firstNodeUuid, nodeLink.secondNodeUuid) }
 
@@ -100,8 +100,6 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
             return this.getNodeLinks( uuid ).map{ childLink -> childLink.getNodeChildAngle(nodes, uuid) ?: Angle.fromDegrees(0) }.toMutableList()
 
         }
-
-
 
         //noise goes from 0 to 100
         fun Pair<Node?, Node?>.buildNodeLinkLine(noise : Int = 0, nodeDescription : String) : INodeMesh {
@@ -367,5 +365,101 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
             return nextAngle.normalized
         }
+
+        val linkAngleMinDegree = 30
+
+     fun MutableList<NodeLink>.consolidateNodeLinkNodes(nodes : MutableList<Node>, nodeUuid : UUID) : MutableList<Node> {
+    //        println("pre-consolidation nodeLinks: $this")
+
+        val childNodeAngles = this.getNodeChildrenNodeAngles(nodes, nodeUuid)
+        var bestAngle = 0
+        var bestAngleDiff = childNodeAngles.size * linkAngleMinDegree
+
+        (0 until linkAngleMinDegree).forEach { angleIdx ->
+            var thisAngleDiff = 0
+
+            childNodeAngles.forEach {
+                //    println ("angle modded: ${(it.second.degrees % angleMinDegrees).toInt()} ")
+                thisAngleDiff += abs(angleIdx - (it.second.degrees % linkAngleMinDegree).toInt() )
+            }
+
+            println ("thisAngleDiff @ $angleIdx: $thisAngleDiff")
+
+            if (thisAngleDiff <= bestAngleDiff) {
+                bestAngleDiff = thisAngleDiff
+                bestAngle = angleIdx
+            }
+
+            println ("bestAngleDiff @ $bestAngle: $bestAngleDiff")
+        }
+
+        val checkNodeAngles = mutableMapOf<Angle, Node>()
+
+        childNodeAngles.forEach { checkNodeAngles[it.second] = it.first }
+
+        childNodeAngles.forEach { checkNodeAngles[it.second + Angle.fromDegrees(360)] = it.first }
+
+        childNodeAngles.forEach { checkNodeAngles[it.second - Angle.fromDegrees(360)] = it.first }
+
+        val keepNodeAngles = mutableMapOf<Node, Angle>()
+
+        checkNodeAngles.keys.sortedBy {
+            if (it.degrees.toInt() >= 0)
+                abs (( it.degrees % linkAngleMinDegree) - bestAngle).toInt()
+            else abs ( linkAngleMinDegree - (it.degrees % -linkAngleMinDegree) - bestAngle ).toInt()
+        }.forEach { checkNodeAngle ->
+
+            var keepNodeAngle = false
+
+            if (!keepNodeAngles.containsKey(checkNodeAngles[checkNodeAngle])) {
+
+                val checkMod = if (checkNodeAngle.degrees.toInt() >= 0)
+                    abs((checkNodeAngle.degrees % linkAngleMinDegree) - bestAngle).toInt()
+                else abs(linkAngleMinDegree - (checkNodeAngle.degrees % -linkAngleMinDegree) - bestAngle).toInt()
+
+                println("node:${checkNodeAngles[checkNodeAngle]} angle:${checkNodeAngle.degrees} mod:${checkMod}")
+
+                if (keepNodeAngles.isNotEmpty()) {
+                    if (checkNodeAngle.degrees.toInt() in 0..360) keepNodeAngle = true
+
+                    keepNodeAngles.forEach { keepNode ->
+                        if ( abs(checkNodeAngle.degrees - keepNode.value.degrees) < linkAngleMinDegree) {
+                            println("angle diff : ${abs(checkNodeAngle.degrees - keepNode.value.degrees)}")
+                            keepNodeAngle = false
+                        }
+                    }
+                } else if (checkNodeAngle.degrees.toInt() in 0..360) keepNodeAngle = true
+
+                if (keepNodeAngle) {
+                    println("adding ${checkNodeAngles[checkNodeAngle]} = $checkNodeAngle")
+                    keepNodeAngles[checkNodeAngles[checkNodeAngle]!!] = checkNodeAngle
+                }
+            }
+        }
+        keepNodeAngles.forEach { println ("keepNodesAngles: ${it.key} : ${it.value}")}
+
+         val removeNodeAngles = mutableMapOf<Node, Angle>()
+
+         childNodeAngles.forEach { if (!keepNodeAngles.containsKey(it.first)) removeNodeAngles[it.first] = it.second }
+
+         removeNodeAngles.forEach { println ("removeNodesAngles: ${it.key} : ${it.value}")}
+
+         return removeNodeAngles.map { it.key }.toMutableList()
+       }
+
+        fun MutableList<NodeLink>.consolidateNodeLinks(nodes : MutableList<Node>) : MutableList<NodeLink> {
+        println("checking for nodelinks to consolidate...")
+           val returnNodeLinks = this
+
+            nodes.sortedBy { it.uuid.toString() }.forEach { node ->
+                this.consolidateNodeLinkNodes(nodes, node.uuid).forEach { returnNode ->
+                    println ("removing link(${node.uuid}, ${returnNode.uuid})")
+                    returnNodeLinks.removeNodeLink(node.uuid, returnNode.uuid)
+                }
+            }
+
+            return returnNodeLinks
+        }
     }
+
 }
