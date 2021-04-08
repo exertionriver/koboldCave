@@ -47,11 +47,11 @@ object RenderNodeRooms {
 
             textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(initHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
+            val nodeMesh = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList()).nodeMesh()
             val nodeClusters = nodeMesh.getClusters(rooms = 12, maxIterations = 5)
             var colorIdx = 0
 
@@ -119,11 +119,11 @@ object RenderNodeRooms {
 
             textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(initHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
             val nodeClusters = nodeMesh.getClusters(rooms = 12, maxIterations = 5)
             var colorIdx = 0
@@ -191,11 +191,11 @@ object RenderNodeRooms {
 
             textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(initHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
             val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
 
@@ -283,11 +283,11 @@ object RenderNodeRooms {
 
             textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(initHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
             val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
 
@@ -372,11 +372,11 @@ object RenderNodeRooms {
 
             textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(initHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
             val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
 
@@ -440,7 +440,7 @@ object RenderNodeRooms {
 
                 println("elaboration angle: ${centroid.angleBetween(randomOuter60Node)}")
 
-                val newMesh = Leaf(initHeight = 5, position = randomOuter60Node.position, angleFromParent = centroid.angleBetween(randomOuter60Node) ).getLeafList().nodeMesh()
+                val newMesh = Leaf(topHeight = 5, position = randomOuter60Node.position, angleFromParent = centroid.angleBetween(randomOuter60Node) ).getList().nodeMesh()
 
                 newMesh.consolidateNearNodes()
 

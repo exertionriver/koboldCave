@@ -1,9 +1,7 @@
 import com.soywiz.klock.DateTime
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
-import com.soywiz.korma.geom.cos
-import com.soywiz.korma.geom.sin
-import leaf.ILeaf.Companion.addLeaf
+import leaf.ILeaf.Companion.add
 import leaf.Leaf
 import kotlin.random.Random
 import kotlin.test.Test
@@ -13,10 +11,10 @@ class TestLeaf {
 
     @Test
     fun testLeaf() {
-        val leaf = Leaf(initHeight = 3)
+        val leaf = Leaf(topHeight = 3)
         println(leaf)
-        println("leaf size : " + leaf.getLeafList().size)
-        for(listLeaf in leaf.getLeafList()) {
+        println("leaf size : " + leaf.getList().size)
+        for(listLeaf in leaf.getList()) {
             println(listLeaf)
         }
     }
@@ -25,20 +23,20 @@ class TestLeaf {
     fun testRandLeaf() {
         Random(DateTime.now().milliseconds)
 
-        val leaf = Leaf(initHeight = 4)
+        val leaf = Leaf(topHeight = 4)
         println(leaf)
-        println("leaf size : " + leaf.getLeafList().size)
-        for(listLeaf in leaf.getLeafList()) {
+        println("leaf size : " + leaf.getList().size)
+        for(listLeaf in leaf.getList()) {
             println(listLeaf)
         }
 
-        val randLeafIdx = Random.nextInt(leaf.getLeafList().size)
+        val randLeafIdx = Random.nextInt(leaf.getList().size)
         println("rand idx: $randLeafIdx")
-        val randLeaf = leaf.getLeafList()[randLeafIdx]
+        val randLeaf = leaf.getList()[randLeafIdx]
         println("rand leaf uuid: $randLeaf")
-        println("rand leaf parent uuid: ${randLeaf.getParentLeaf()}")
+        println("rand leaf parent uuid: ${randLeaf.getParent()}")
 
-        randLeaf.getChildrenLeavesList()?.forEach { println("rand leaf child uuid: ${it.uuid}") }
+        randLeaf.getChildrenList()?.forEach { println("rand leaf child uuid: ${it.uuid}") }
     }
 
     @ExperimentalUnsignedTypes
@@ -46,61 +44,61 @@ class TestLeaf {
     fun testAddRandLeaf() {
         Random(DateTime.now().milliseconds)
 
-        val firstLeaf = Leaf(initHeight = 3)
-        println("first leaf size : " + firstLeaf.getLeafList().size)
-        for(listLeaf in firstLeaf.getLeafList()) {
+        val firstLeaf = Leaf(topHeight = 3)
+        println("first leaf size : " + firstLeaf.getList().size)
+        for(listLeaf in firstLeaf.getList()) {
             println(listLeaf)
         }
 
-        val secondLeaf = Leaf(initHeight = 3)
-        println("second leaf size : " + secondLeaf.getLeafList().size)
-        for(listLeaf in secondLeaf.getLeafList()) {
+        val secondLeaf = Leaf(topHeight = 3)
+        println("second leaf size : " + secondLeaf.getList().size)
+        for(listLeaf in secondLeaf.getList()) {
             println(listLeaf)
         }
 
-        val randLeafIdx = Random.nextInt(firstLeaf.getLeafList().size)
+        val randLeafIdx = Random.nextInt(firstLeaf.getList().size)
 
-        val randLeaf = firstLeaf.getLeafList()[randLeafIdx]
+        val randLeaf = firstLeaf.getList()[randLeafIdx]
         println("rand first idx: $randLeafIdx")
         println("rand leaf uuid: ${randLeaf.uuid}")
-        println("rand leaf parent uuid: ${randLeaf.getParentLeaf()?.uuid}")
+        println("rand leaf parent uuid: ${randLeaf.getParent()?.uuid}")
 
-        randLeaf.getChildrenLeavesList()?.forEach { println("rand leaf child uuid: ${it.uuid}") }
+        randLeaf.getChildrenList()?.forEach { println("rand leaf child uuid: ${it.uuid}") }
         println("firstLeaf curHeight: " + firstLeaf.getCurrentHeight())
 
-        val updRandLeaf = firstLeaf.getLeafList()[randLeafIdx].addLeaf(secondLeaf)
+        val updRandLeaf = firstLeaf.getList()[randLeafIdx].add(secondLeaf)
         println("upd rand leaf uuid: ${updRandLeaf.uuid}")
-        println("upd rand leaf parent uuid: ${updRandLeaf.getParentLeaf()?.uuid}")
+        println("upd rand leaf parent uuid: ${updRandLeaf.getParent()?.uuid}")
 
-        println("updated first leaf size : " + firstLeaf.getLeafList().size)
+        println("updated first leaf size : " + firstLeaf.getList().size)
         println("upd firstLeaf curHeight: " + firstLeaf.getCurrentHeight())
-        for(listLeaf in firstLeaf.getLeafList()) {
+        for(listLeaf in firstLeaf.getList()) {
             println("upd firstLeaf: $listLeaf")
         }
 
-        updRandLeaf.getChildrenLeavesList()?.forEach { println("upd rand leaf child uuid: ${it.uuid}") }
+        updRandLeaf.getChildrenList()?.forEach { println("upd rand leaf child uuid: ${it.uuid}") }
     }
 
     @Test
     fun testLeafCoords() {
         val startingPoint = Point(512.0, 954.0)
 
-        val firstLeaf = Leaf(initHeight = 2, position = startingPoint, angleFromParent = Angle.fromDegrees(0))
+        val firstLeaf = Leaf(topHeight = 2, position = startingPoint, angleFromParent = Angle.fromDegrees(0))
 
-        val secondLeaf = Leaf(initHeight = 2, position = startingPoint, angleFromParent = Angle.fromDegrees(90))
+        val secondLeaf = Leaf(topHeight = 2, position = startingPoint, angleFromParent = Angle.fromDegrees(90))
 
-        val thirdLeaf = Leaf(initHeight = 2, position = startingPoint, angleFromParent = Angle.fromDegrees(180))
+        val thirdLeaf = Leaf(topHeight = 2, position = startingPoint, angleFromParent = Angle.fromDegrees(180))
 
-        val fourthLeaf = Leaf(initHeight = 2, position = startingPoint, angleFromParent = Angle.fromDegrees(270))
+        val fourthLeaf = Leaf(topHeight = 2, position = startingPoint, angleFromParent = Angle.fromDegrees(270))
 
         println(firstLeaf)
 
-        firstLeaf.getLeafList().forEach { leaf -> println("firstLeaf: $leaf") }
-        secondLeaf.getLeafList().forEach { leaf -> println("secondLeaf: $leaf") }
-        thirdLeaf.getLeafList().forEach { leaf -> println("thirdLeaf: $leaf") }
-        fourthLeaf.getLeafList().forEach { leaf -> println("fourthLeaf: $leaf") }
+        firstLeaf.getList().forEach { leaf -> println("firstLeaf: $leaf") }
+        secondLeaf.getList().forEach { leaf -> println("secondLeaf: $leaf") }
+        thirdLeaf.getList().forEach { leaf -> println("thirdLeaf: $leaf") }
+        fourthLeaf.getList().forEach { leaf -> println("fourthLeaf: $leaf") }
 
-        firstLeaf.getLeafLineList().forEach { leafLine -> println("leafLine: $leafLine") }
+        firstLeaf.getLineList().forEach { leafLine -> println("leafLine: $leafLine") }
 
     }
 }

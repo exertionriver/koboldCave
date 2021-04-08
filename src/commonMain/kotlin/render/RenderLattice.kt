@@ -14,30 +14,32 @@ import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.add
 import leaf.ILeaf.Companion.graft
 import leaf.Leaf
+import leaf.Lace
+import leaf.Lattice
 import kotlin.random.Random
 
-object RenderLeaf {
+object RenderLattice {
 
     @ExperimentalUnsignedTypes
-    suspend fun renderLeafStationary() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderLatticeStationary() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
 
         val startingPoint = Point(512.0, 512.0)
 
         (1..3).toList().forEach {
 
-            val leaf = Leaf(topHeight = 4, position = startingPoint)
+            val lattice = Lattice(topHeight = 6, position = startingPoint, topAngle = Angle.fromDegrees(270) )
 
             graphics {
                 stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
 
-                    for (line in leaf.getLineList() ) {
+                    for (line in lattice.getLineList() ) {
                         if (line != null) line(line.first, line.second)
                     }
                 }
                 stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
-                    for (listLeaf in leaf.getList() ) {
-                        circle(listLeaf.position, radius = 5.0)
+                    for (listLattice in lattice.getList() ) {
+                        circle(listLattice.position, radius = 5.0)
                     }
                 }
             }
@@ -168,11 +170,11 @@ object RenderLeaf {
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderLeafCircle() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderStreamCircle() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
 
         val centerPoint = Point(512.0, 512.0)
 
-        val leafHeight = 5
+        val leafHeight = 9
 
         val leafPoints = leafHeight + 1
 
@@ -187,7 +189,7 @@ object RenderLeaf {
 
         leafMap.forEach {
 
-            val leaf = Leaf(topHeight = leafHeight, topAngle = it.key, angleFromParent = it.key, position = it.value )
+            val leaf = Lace(topHeight = leafHeight, topAngle = it.key, angleFromParent = it.key, position = it.value )
 
 //                println ("tree: ${it.key.degrees}, ${it.value}")
 

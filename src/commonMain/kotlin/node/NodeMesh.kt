@@ -25,18 +25,18 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), overri
         , nodeLinks = updNodeLinks
     )
 
-    constructor(description : String = "nodeMesh${Random.nextInt(256)}", linkNodes: MutableList<Node>) : this (
+    constructor(description : String = "${NodeMesh::class.simpleName}${Random.nextInt(256)}", linkNodes: MutableList<Node>) : this (
         description = description
         , nodes = linkNodes
         , nodeLinks = linkNodes.linkNearNodes()
     )
 
-    constructor(description : String = "nodeMesh${Random.nextInt(256)}") : this (
+    constructor(description : String = "${NodeMesh::class.simpleName}${Random.nextInt(256)}") : this (
         description = description
         , nodes = mutableListOf()
         , nodeLinks = mutableListOf()
     )
 
-    override fun toString() = "Node.NodeMesh(${uuid}) : $description, $nodes, $nodeLinks"
+    override fun toString() = "${NodeMesh::class.simpleName}(${uuid}) : $description, $nodes, $nodeLinks"
 
 }

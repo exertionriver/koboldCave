@@ -1,23 +1,16 @@
 package node
 
-import com.soywiz.korge.view.graphics
-import com.soywiz.korim.color.Colors
-import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.normalized
 import com.soywiz.korma.geom.plus
-import com.soywiz.korma.geom.vector.circle
-import com.soywiz.korma.geom.vector.line
 import leaf.ILeaf
-import leaf.ILeaf.Companion.LeafDistancePx
+import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
-import leaf.Stream
 import node.Node.Companion.addNode
 import node.Node.Companion.addNodes
-import node.Node.Companion.buildNodePaths
 import node.Node.Companion.cluster
 import node.Node.Companion.consolidateNearNodes
 import node.Node.Companion.consolidateStackedNodes
@@ -25,7 +18,6 @@ import node.Node.Companion.getFarthestNode
 import node.Node.Companion.getNodeLineList
 import node.Node.Companion.getRandomNode
 import node.Node.Companion.linkNearNodes
-import node.Node.Companion.nearestNodesOrderedAsc
 import node.NodeLink.Companion.addNodeLinks
 import node.NodeLink.Companion.buildNodeLinkLines
 import node.NodeLink.Companion.consolidateNodeLinks
@@ -84,6 +76,14 @@ interface INodeMesh {
             this.consolidateStackedNodes()
         }
 
+        fun INodeMesh.addBorderingMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {
+            this.nodes.addNodes(nodeMeshToAdd.nodes, description)
+            this.nodeLinks.addNodeLinks(nodeMeshToAdd.nodeLinks)
+
+            this.nodes = this.nodes.distinct().toMutableList()
+            this.consolidateStackedNodes()
+        }
+
         fun INodeMesh.replaceMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {
             this.nodes.clear()
             nodeMeshToAdd.nodes.forEach { addNode -> this.nodes.addNode(addNode, description) }
@@ -114,12 +114,12 @@ interface INodeMesh {
                 val angleOnCircle = Angle.fromDegrees( 360 / leafPoints * leafIndex ).normalized
 
                 //angleInMap points back to the center of the circle
-                leafMap[(Angle.fromDegrees(180) + angleOnCircle).normalized] = ILeaf.getChildPosition(centerPoint, (height - 2) * LeafDistancePx, angleOnCircle)
+                leafMap[(Angle.fromDegrees(180) + angleOnCircle).normalized] = ILeaf.getChildPosition(centerPoint, (height - 2) * NextDistancePx, angleOnCircle)
             }
 
             leafMap.forEach {
 
-                roomMesh.addMesh( Leaf(initHeight = height, angleFromParent = it.key, position = it.value ).getLeafList().nodeMesh() )
+                roomMesh.addMesh( Leaf(topHeight = height, angleFromParent = it.key, position = it.value ).getList().nodeMesh() )
             }
 
             roomMesh.consolidateStackedNodes()

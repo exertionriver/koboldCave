@@ -11,7 +11,7 @@ import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
-import leaf.ILeaf.Companion.LeafDistancePx
+import leaf.ILeaf.Companion.NextDistancePx
 import node.INodeMesh.Companion.addMesh
 import node.Node
 import node.NodeLink.Companion.buildNodeLinkLine
@@ -39,7 +39,7 @@ object RenderNodeLine {
         val xOffset = Point(50, 0)
 
         val firstRefPoint = Point(300, 200)
-        val secondRefPoint = Point (300 + LeafDistancePx, 200)
+        val secondRefPoint = Point (300 + NextDistancePx, 200)
 
         val thirdRefPoint = Point(300, 250)
         val fourthRefPoint = Point (300 + consolidateNodeDistance, 250)
@@ -148,7 +148,7 @@ object RenderNodeLine {
         val xOffset = Point(250, 0)
 
         val firstRefPoint = Point(300, 200)
-        val secondRefPoint = Point (300 + LeafDistancePx, 200)
+        val secondRefPoint = Point (300 + NextDistancePx, 200)
 
         val thirdRefPoint = Point(300, 250)
         val fourthRefPoint = Point (300 + consolidateNodeDistance, 250)

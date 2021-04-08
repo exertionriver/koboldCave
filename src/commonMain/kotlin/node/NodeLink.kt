@@ -32,8 +32,8 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
     override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid)"
 
     companion object {
-        val consolidateNodeDistance = ILeaf.LeafDistancePx / 2
-        val linkNodeDistance = ILeaf.LeafDistancePx
+        val consolidateNodeDistance = ILeaf.NextDistancePx / 2
+        val linkNodeDistance = ILeaf.NextDistancePx
 
         fun NodeLink.getNodeChildUuid(uuid: UUID) : UUID? = if (this.firstNodeUuid == uuid) secondNodeUuid else if (this.secondNodeUuid == uuid) firstNodeUuid else null
 
@@ -46,7 +46,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
             val returnAngle = if (this.firstNodeUuid == uuid) firstNode.angleBetween(secondNode)
             else secondNode.angleBetween(firstNode)
 
-            println("getting angle $returnAngle between $firstNode and $secondNode")
+//            println("getting angle $returnAngle between $firstNode and $secondNode")
 
             return returnAngle.normalized
         }
@@ -299,7 +299,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
             val randomAngle = childrenAngles[Random.nextInt(childrenAngles.size)]
 
-            println("randomAngle : $randomAngle")
+//            println("randomAngle : $randomAngle")
 
             return randomAngle
         }
@@ -383,14 +383,14 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
                 thisAngleDiff += abs(angleIdx - (it.second.degrees % linkAngleMinDegree).toInt() )
             }
 
-            println ("thisAngleDiff @ $angleIdx: $thisAngleDiff")
+//            println ("thisAngleDiff @ $angleIdx: $thisAngleDiff")
 
             if (thisAngleDiff <= bestAngleDiff) {
                 bestAngleDiff = thisAngleDiff
                 bestAngle = angleIdx
             }
 
-            println ("bestAngleDiff @ $bestAngle: $bestAngleDiff")
+//            println ("bestAngleDiff @ $bestAngle: $bestAngleDiff")
         }
 
         val checkNodeAngles = mutableMapOf<Angle, Node>()
@@ -417,43 +417,43 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
                     abs((checkNodeAngle.degrees % linkAngleMinDegree) - bestAngle).toInt()
                 else abs(linkAngleMinDegree - (checkNodeAngle.degrees % -linkAngleMinDegree) - bestAngle).toInt()
 
-                println("node:${checkNodeAngles[checkNodeAngle]} angle:${checkNodeAngle.degrees} mod:${checkMod}")
+//                println("node:${checkNodeAngles[checkNodeAngle]} angle:${checkNodeAngle.degrees} mod:${checkMod}")
 
                 if (keepNodeAngles.isNotEmpty()) {
                     if (checkNodeAngle.degrees.toInt() in 0..360) keepNodeAngle = true
 
                     keepNodeAngles.forEach { keepNode ->
                         if ( abs(checkNodeAngle.degrees - keepNode.value.degrees) < linkAngleMinDegree) {
-                            println("angle diff : ${abs(checkNodeAngle.degrees - keepNode.value.degrees)}")
+//                            println("angle diff : ${abs(checkNodeAngle.degrees - keepNode.value.degrees)}")
                             keepNodeAngle = false
                         }
                     }
                 } else if (checkNodeAngle.degrees.toInt() in 0..360) keepNodeAngle = true
 
                 if (keepNodeAngle) {
-                    println("adding ${checkNodeAngles[checkNodeAngle]} = $checkNodeAngle")
+//                    println("adding ${checkNodeAngles[checkNodeAngle]} = $checkNodeAngle")
                     keepNodeAngles[checkNodeAngles[checkNodeAngle]!!] = checkNodeAngle
                 }
             }
         }
-        keepNodeAngles.forEach { println ("keepNodesAngles: ${it.key} : ${it.value}")}
+//        keepNodeAngles.forEach { println ("keepNodesAngles: ${it.key} : ${it.value}")}
 
          val removeNodeAngles = mutableMapOf<Node, Angle>()
 
          childNodeAngles.forEach { if (!keepNodeAngles.containsKey(it.first)) removeNodeAngles[it.first] = it.second }
 
-         removeNodeAngles.forEach { println ("removeNodesAngles: ${it.key} : ${it.value}")}
+//         removeNodeAngles.forEach { println ("removeNodesAngles: ${it.key} : ${it.value}")}
 
          return removeNodeAngles.map { it.key }.toMutableList()
        }
 
         fun MutableList<NodeLink>.consolidateNodeLinks(nodes : MutableList<Node>) : MutableList<NodeLink> {
-        println("checking for nodelinks to consolidate...")
+//        println("checking for nodelinks to consolidate...")
            val returnNodeLinks = this
 
             nodes.sortedBy { it.uuid.toString() }.forEach { node ->
                 this.consolidateNodeLinkNodes(nodes, node.uuid).forEach { returnNode ->
-                    println ("removing link(${node.uuid}, ${returnNode.uuid})")
+//                    println ("removing link(${node.uuid}, ${returnNode.uuid})")
                     returnNodeLinks.removeNodeLink(node.uuid, returnNode.uuid)
                 }
             }

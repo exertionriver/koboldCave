@@ -7,7 +7,6 @@ import com.soywiz.korge.input.onClick
 import com.soywiz.korge.resources.resourceBitmap
 import com.soywiz.korge.view.*
 import com.soywiz.korge.view.tween.moveBy
-import com.soywiz.korge.view.tween.rotateBy
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.text.TextAlignment
 import com.soywiz.korim.vector.StrokeInfo
@@ -15,7 +14,7 @@ import com.soywiz.korio.resources.ResourcesContainer
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
 import leaf.ILeaf
-import leaf.ILeaf.Companion.LeafDistancePx
+import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh
@@ -81,11 +80,11 @@ object RenderNavigation {
             angleView = text(text = "current node angle", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 45)
             roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
 
-            val leafFirst = Leaf(initHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
+            val nodeMesh = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList()).nodeMesh()
             val nodeClusters = nodeMesh.getClusters(rooms = nodeMesh.nodes.size / 20, maxIterations = 7)
             var colorIdx = 0
 
@@ -297,11 +296,11 @@ object RenderNavigation {
             angleView = text(text = "current node angle", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 45)
             roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
 
-            val leafFirst = Leaf(initHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
+            val nodeMesh = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList()).nodeMesh()
             val nodeClusters = nodeMesh.getClusters(rooms = nodeMesh.nodes.size / 20, maxIterations = 7)
             var colorIdx = 0
 
@@ -425,7 +424,7 @@ object RenderNavigation {
                 updateRoomText(currentNode.description)
 
                 if (outerNodes60.contains(currentNode)) {
-                    val newMeshLocation = ILeaf.getChildPosition(parentPosition = currentNode.position, distanceFromParent = 3 * LeafDistancePx, childAngle = centroid.angleBetween(currentNode))
+                    val newMeshLocation = ILeaf.getChildPosition(parentPosition = currentNode.position, distanceFromParent = 3 * NextDistancePx, childAngle = centroid.angleBetween(currentNode))
 
                     val newMesh = INodeMesh.buildRoomMesh(newMeshLocation, height = 5)
 
@@ -506,7 +505,7 @@ object RenderNavigation {
                 updateRoomText(currentNode.description)
 
                 if (outerNodes60.contains(currentNode)) {
-                    val newMeshLocation = ILeaf.getChildPosition(parentPosition = currentNode.position, distanceFromParent = 3 * LeafDistancePx, childAngle = centroid.angleBetween(currentNode))
+                    val newMeshLocation = ILeaf.getChildPosition(parentPosition = currentNode.position, distanceFromParent = 3 * NextDistancePx, childAngle = centroid.angleBetween(currentNode))
 
                     val newMesh = INodeMesh.buildRoomMesh(newMeshLocation, height = 5)
 

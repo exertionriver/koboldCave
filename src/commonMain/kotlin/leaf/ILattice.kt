@@ -11,7 +11,7 @@ import node.NodeLink.Companion.addNodeLinks
 import node.NodeMesh
 
 @ExperimentalUnsignedTypes
-interface ILeaf {
+interface ILattice {
 
     val uuid : UUID
 
@@ -29,17 +29,17 @@ interface ILeaf {
 
     val angleFromParent : Angle
 
-    val parent : MutableList<ILeaf>
+    val parent : MutableList<ILattice>
 
     fun parentEmpty() = parent.isNullOrEmpty()
 
-    fun getParent() : ILeaf? = if ( parentEmpty() ) null else parent[0]
+    fun getParent() : ILattice? = if ( parentEmpty() ) null else parent[0]
 
-    val children : MutableList<ILeaf>
+    val children : MutableList<ILattice>
 
     fun childrenEmpty() = children.isNullOrEmpty()
 
-    fun getChildrenList() : List<ILeaf>? = if ( childrenEmpty() ) null else children.toList()
+    fun getChildrenList() : List<ILattice>? = if ( childrenEmpty() ) null else children.toList()
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
 
@@ -52,7 +52,7 @@ interface ILeaf {
     fun getDivergentChildAngle(variance : Angle, divergeFromAngle : Angle = this.angleFromParent ) : Angle =
         ( ( Angle.fromDegrees(180) + divergeFromAngle).normalized.times(2) + getVarianceChildAngle(variance).times(2) ) / 4
 
-    fun getList() : List<ILeaf> =
+    fun getList() : List<ILattice> =
         if (childrenEmpty()) listOf(this)
         else listOf(this).plus(children.flatMap { child -> child.getList() } )
 
@@ -86,7 +86,7 @@ interface ILeaf {
             )
         ).getSelectedProbability()!!
 
-        fun getParentPosition(parent: MutableList<ILeaf>): Point =
+        fun getParentPosition(parent: MutableList<ILattice>): Point =
             if (!parent.isNullOrEmpty()) parent[0].position else Point(256, 256)
 
         fun getChildPosition(parentPosition: Point, distanceFromParent: Int, childAngle: Angle): Point {
@@ -126,8 +126,8 @@ interface ILeaf {
             return Point(childX, childY)
         }
 
-        fun List<ILeaf>.getList(): List<ILeaf> {
-            val returnList = mutableListOf<ILeaf>()
+        fun List<ILattice>.getList(): List<ILattice> {
+            val returnList = mutableListOf<ILattice>()
 
             this.forEach {
                 iLeaf -> iLeaf.getList().forEach {
@@ -138,7 +138,7 @@ interface ILeaf {
             return returnList
         }
 
-        fun List<ILeaf>.getLineList(): List<Pair<Point, Point>?> {
+        fun List<ILattice>.getLineList(): List<Pair<Point, Point>?> {
             val returnLineList = mutableListOf<Pair<Point, Point>?>()
 
             this.forEach {
@@ -150,7 +150,7 @@ interface ILeaf {
             return returnLineList.filterNotNull()
         }
 
-        fun ILeaf.add(child: ILeaf): ILeaf {
+        fun ILattice.add(child: ILattice): ILattice {
 
             this.children.add(child)
 
@@ -159,7 +159,7 @@ interface ILeaf {
             return this
         }
 
-        fun ILeaf.graft(child: ILeaf): ILeaf {
+        fun ILattice.graft(child: ILattice): ILattice {
 
             this.children.add(child)
             child.parent.add(this)
@@ -177,7 +177,7 @@ interface ILeaf {
             return this
         }
 
-        fun ILeaf.move(xOffset: Int, yOffset: Int): ILeaf {
+        fun ILattice.move(xOffset: Int, yOffset: Int): ILattice {
 
             this.position.x += xOffset
             this.position.y += yOffset
@@ -189,11 +189,11 @@ interface ILeaf {
             return this
         }
 
-        fun ILeaf.node(): Node {
+        fun ILattice.node(): Node {
             return Node(this.uuid, this.position)
         }
 
-        fun ILeaf.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {
+        fun ILattice.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {
             val returnNodeLinks = mutableListOf<NodeLink>()
 
             if (!parentEmpty()) returnNodeLinks.addNodeLink(nodes, this.uuid, getParent()!!.uuid)
@@ -204,32 +204,32 @@ interface ILeaf {
             return returnNodeLinks
         }
 
-        fun ILeaf.nodes(): MutableList<Node> {
+        fun ILattice.nodes(): MutableList<Node> {
             val returnNodes = mutableListOf<Node>()
 
-            returnNodes.addNode(this.node(), this.description)
+            returnNodes.addNode(this.node() )
 
-            if (!parentEmpty()) returnNodes.addNode(getParent()!!.node(), this.description)
+            if (!parentEmpty()) returnNodes.addNode(getParent()!!.node() )
 
             if (!childrenEmpty()) this.getChildrenList()!!
-                .forEach { child -> returnNodes.addNode(child.node(), this.description) }
+                .forEach { child -> returnNodes.addNode(child.node() ) }
 
             println("leaf nodes: $returnNodes")
 
             return returnNodes
         }
 
-        fun ILeaf.nodeMesh(): NodeMesh = NodeMesh(nodes = this.nodes(), nodeLinks = this.nodeLinks(this.nodes()))
+        fun ILattice.nodeMesh(): NodeMesh = NodeMesh(nodes = this.nodes(), nodeLinks = this.nodeLinks(this.nodes()))
 
-        fun List<ILeaf>.nodes(): MutableList<Node> {
+        fun List<ILattice>.nodes(): MutableList<Node> {
             val returnNodes = mutableListOf<Node>()
 
-            this.forEach { iLeaf -> returnNodes.addNode(iLeaf.node(), iLeaf.description) }
+            this.forEach { iLeaf -> returnNodes.addNode(iLeaf.node() ) }
 
             return returnNodes
         }
 
-        fun List<ILeaf>.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {
+        fun List<ILattice>.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {
             val returnNodeLinks = mutableListOf<NodeLink>()
 
             this.forEach { iLeaf -> returnNodeLinks.addNodeLinks(iLeaf.nodeLinks(nodes)) }
@@ -237,6 +237,6 @@ interface ILeaf {
             return returnNodeLinks
         }
 
-        fun List<ILeaf>.nodeMesh(): NodeMesh = NodeMesh(nodes = this.nodes(), nodeLinks = this.nodeLinks(this.nodes()))
+        fun List<ILattice>.nodeMesh(): NodeMesh = NodeMesh(nodes = this.nodes(), nodeLinks = this.nodeLinks(this.nodes()))
     }
 }

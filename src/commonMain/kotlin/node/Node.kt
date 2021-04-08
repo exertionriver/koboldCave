@@ -21,7 +21,7 @@ import kotlin.random.Random
 @ExperimentalUnsignedTypes
 class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Point, val description : String = "Node${Random.nextInt(2048)}") {
 
-    constructor(leaf : ILeaf, description : String = "LeafNode${Random.nextInt(2048)}") : this (
+    constructor(leaf : ILeaf, description : String = "${Node::class.simpleName}${Random.nextInt(2048)}") : this (
         uuid = leaf.uuid
         , position = leaf.position
         , description = description
@@ -87,7 +87,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return this.firstOrNull { node -> node.uuid == uuid }
         }
 
-        fun MutableList<Node>.addNode(nodeToAdd : Node, nodeDescription : String) : Boolean = this.add(Node(nodeToAdd, updDescription = nodeDescription))
+        fun MutableList<Node>.addNode(nodeToAdd : Node, nodeDescription : String = nodeToAdd.description) : Boolean = this.add(Node(nodeToAdd, updDescription = nodeDescription))
 
         fun MutableList<Node>.addNodes(nodesToAdd : MutableList<Node>, nodeDescription : String) : Unit = nodesToAdd.forEach { nodeToAdd -> this.add(Node(nodeToAdd, updDescription = nodeDescription)) }
 

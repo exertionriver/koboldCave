@@ -6,31 +6,34 @@ import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import leaf.ILeaf.Companion.getChildPosition
-import leaf.ILeaf.Companion.getLeafDistancePxProb
+import leaf.ILeaf.Companion.getNextDistancePxProb
 import leaf.ILeaf.Companion.getParentPosition
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
-class Leaf(override val initHeight : Int = 3
-        , override val description: String = "leaf${Random.nextInt(256)}"
-        , override val parentLeaf : MutableList<ILeaf> = mutableListOf()
+class Leaf(override val topHeight : Int = 3
+        , override val height : Int = topHeight
+        , override val description: String = "${Leaf::class.simpleName}${Random.nextInt(256)}"
+        , override val parent : MutableList<ILeaf> = mutableListOf()
         , override val distanceFromParent : Int = 0
-        , override val angleFromParent : Angle = Angle.fromDegrees(270.0) //270 == down
-        , override val position : Point = getChildPosition(getParentPosition(parentLeaf), distanceFromParent, angleFromParent)
+        , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
+        , override val angleFromParent : Angle = topAngle
+        , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
     ) : ILeaf {
 
     override val uuid : UUID = UUID.randomUUID(Random.Default)
 
-    override val childrenLeaves: MutableList<ILeaf> = if (initHeight == 0) mutableListOf()
-        else MutableList(size = getChildrenLeavesSize(initHeight)) {
-            Leaf(initHeight = initHeight - 1
-                , parentLeaf = mutableListOf(this)
-                , distanceFromParent = getLeafDistancePxProb()
-                , angleFromParent = this.getChildAngle(Angle.fromDegrees(30))
+    override val children: MutableList<ILeaf> = if (height == 0) mutableListOf()
+        else MutableList(size = getChildrenSize(height)) {
+            Leaf(topHeight = topHeight
+                , height = height - 1
+                , parent = mutableListOf(this)
+                , distanceFromParent = getNextDistancePxProb()
+                , angleFromParent = this.getVarianceChildAngle(Angle.fromDegrees(30))
             )
     }
 
-    override fun getChildrenLeavesSize(height : Int): Int {
+    override fun getChildrenSize(height : Int, topHeight : Int): Int {
         return when {
             (height > 2) -> ProbabilitySelect(
                 mapOf(
@@ -51,11 +54,11 @@ class Leaf(override val initHeight : Int = 3
         }
     }
 
-    override fun toString() = "${Leaf::class.simpleName}($uuid) : height:${initHeight}, curHeight:${getCurrentHeight()}, $position, dist:$distanceFromParent, $angleFromParent, ${getParentLeaf()?.uuid}, ${childrenLeaves.size}"
+    override fun toString() = "${Leaf::class.simpleName}($uuid) : topHeight:${topHeight}, curHeight:${height}, $position, dist:$distanceFromParent, $angleFromParent, ${getParent()?.uuid}, ${children.size}"
 
     companion object {
 
-        fun emptyLeaf() = Leaf(initHeight = 0)
+        fun emptyLeaf() = Leaf(topHeight = 0)
 
     }
 

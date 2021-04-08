@@ -12,11 +12,11 @@ class TestNode {
     @ExperimentalUnsignedTypes
     @Test
     fun testNodeList() {
-        val leaf = Leaf(initHeight = 5)
+        val leaf = Leaf(topHeight = 5)
         val nodeList = mutableListOf<Node>()
 
-        println("leafList(${leaf.getLeafList().size}):")
-        for (listLeaf in leaf.getLeafList()) {
+        println("leafList(${leaf.getList().size}):")
+        for (listLeaf in leaf.getList()) {
             println(listLeaf)
             nodeList.add(Node(listLeaf))
         }
@@ -30,11 +30,11 @@ class TestNode {
     @ExperimentalUnsignedTypes
     @Test
     fun testNodeLinkList() {
-        val leaf = Leaf(initHeight = 3)
+        val leaf = Leaf(topHeight = 3)
         val nodeLinkList = mutableListOf<NodeLink>()
 
-        println("leafList(${leaf.getLeafList().size}):")
-        for (listLeaf in leaf.getLeafList()) {
+        println("leafList(${leaf.getList().size}):")
+        for (listLeaf in leaf.getList()) {
             println(listLeaf)
             nodeLinkList.addAll(listLeaf.nodeLinks(listLeaf.nodes()))
         }
@@ -51,21 +51,21 @@ class TestNode {
     fun testNodeConsolidateLink() {
         val startingPoint = Point(512.0, 954.0)
 
-        val leafFirst = Leaf(initHeight = 3, position = startingPoint)
-        val leafSecond = Leaf(initHeight = 3, position = startingPoint)
-        val leafThird = Leaf(initHeight = 3, position = startingPoint)
+        val leafFirst = Leaf(topHeight = 3, position = startingPoint)
+        val leafSecond = Leaf(topHeight = 3, position = startingPoint)
+        val leafThird = Leaf(topHeight = 3, position = startingPoint)
 
-        println("leafNodeListFirst(" + leafFirst.getLeafList().size + "): ")
-        for (leafNode in leafFirst.getLeafList())
+        println("leafNodeListFirst(" + leafFirst.getList().size + "): ")
+        for (leafNode in leafFirst.getList())
             println(leafNode)
-        println("leafNodeListSecond(" + leafSecond.getLeafList().size + "): ")
-        for (leafNode in leafSecond.getLeafList())
+        println("leafNodeListSecond(" + leafSecond.getList().size + "): ")
+        for (leafNode in leafSecond.getList())
             println(leafNode)
-        println("leafNodeListThird(" + leafThird.getLeafList().size + "): ")
-        for (leafNode in leafThird.getLeafList())
+        println("leafNodeListThird(" + leafThird.getList().size + "): ")
+        for (leafNode in leafThird.getList())
             println(leafNode)
 
-        val nodeMesh = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList()).nodeMesh()
+        val nodeMesh = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList()).nodeMesh()
         println("nodeMesh(" + nodeMesh.nodes.size + "):")
         nodeMesh.nodes.forEach { println ("node: $it")}
         nodeMesh.nodeLinks.forEach { println ("nodeLink: $it")}

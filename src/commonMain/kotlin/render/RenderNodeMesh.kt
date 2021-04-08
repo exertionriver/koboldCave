@@ -11,9 +11,9 @@ import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
-import leaf.ILeaf.Companion.LeafDistancePx
-import leaf.ILeaf.Companion.getLeafLineList
-import leaf.ILeaf.Companion.getLeafList
+import leaf.ILeaf.Companion.NextDistancePx
+import leaf.ILeaf.Companion.getLineList
+import leaf.ILeaf.Companion.getList
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh.Companion.absorbMesh
@@ -49,7 +49,7 @@ object RenderNodeMesh {
         val yNodeOffset = Point(0.0, 400.0)
 
         val firstRefPoint = Point(300, 200)
-        val secondRefPoint = Point (300 + LeafDistancePx, 200)
+        val secondRefPoint = Point (300 + NextDistancePx, 200)
 
         val thirdRefPoint = Point(300, 250)
         val fourthRefPoint = Point (300 + consolidateNodeDistance, 250)
@@ -59,11 +59,11 @@ object RenderNodeMesh {
 
             RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
 
             stroke(Colors["#52b670"], StrokeInfo(thickness = 3.0)) {
@@ -82,12 +82,12 @@ object RenderNodeMesh {
 
             stroke(Colors["#20842b"], StrokeInfo(thickness = 3.0)) {
 
-                for (line in threeLeaf.getLeafLineList() ) {
+                for (line in threeLeaf.getLineList() ) {
                     if (line != null) line(line.first + leafOffset, line.second + leafOffset)
                 }
             }
 
-            for (listLeaf in threeLeaf.getLeafList() ) {
+            for (listLeaf in threeLeaf.getList() ) {
                 println (listLeaf)
                 circle {
                     position(listLeaf.position + leafOffset)
@@ -204,7 +204,7 @@ object RenderNodeMesh {
         val yNodeOffset = Point(0.0, 400.0)
 
         val firstRefPoint = Point(300, 200)
-        val secondRefPoint = Point (300 + LeafDistancePx, 200)
+        val secondRefPoint = Point (300 + NextDistancePx, 200)
 
         val thirdRefPoint = Point(300, 250)
         val fourthRefPoint = Point (300 + consolidateNodeDistance, 250)
@@ -214,11 +214,11 @@ object RenderNodeMesh {
 
             RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(initHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(330) )
 
-            val threeLeaf = leafFirst.getLeafList().plus(leafSecond.getLeafList()).plus(leafThird.getLeafList())
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
 
             stroke(Colors["#52b670"], StrokeInfo(thickness = 3.0)) {
@@ -237,12 +237,12 @@ object RenderNodeMesh {
 
             stroke(Colors["#20842b"], StrokeInfo(thickness = 3.0)) {
 
-                for (line in threeLeaf.getLeafLineList() ) {
+                for (line in threeLeaf.getLineList() ) {
                     if (line != null) line(line.first + leafOffset, line.second + leafOffset)
                 }
             }
 
-            for (listLeaf in threeLeaf.getLeafList() ) {
+            for (listLeaf in threeLeaf.getList() ) {
                 println (listLeaf)
                 circle {
                     position(listLeaf.position + leafOffset)

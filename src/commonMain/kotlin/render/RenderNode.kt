@@ -21,18 +21,18 @@ object RenderNode {
         val startingPointLeaf = Point(412.0, 512.0)
         val nodeOffset = Point(200.0, 0.0)
 
-        val leaf = Leaf(initHeight = 4, position = startingPointLeaf)
+        val leaf = Leaf(topHeight = 4, position = startingPointLeaf)
 
         graphics {
             stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
 
-                for (line in leaf.getLeafLineList()) {
+                for (line in leaf.getLineList()) {
                     if (line != null) line(line.first - nodeOffset, line.second - nodeOffset)
                 }
             }
             stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
-                for (listLeaf in leaf.getLeafList()) {
+                for (listLeaf in leaf.getList()) {
                     circle(listLeaf.position - nodeOffset, radius = 5.0)
                 }
             }
@@ -42,7 +42,7 @@ object RenderNode {
 
             stroke(Colors["#818436"], StrokeInfo(thickness = 3.0)) {
 
-                for (listLeaf in leaf.getLeafList()) {
+                for (listLeaf in leaf.getList()) {
 
                     listLeaf.nodes().forEach { node -> line(listLeaf.position + nodeOffset, node.position + nodeOffset) }
 
@@ -50,7 +50,7 @@ object RenderNode {
             }
             stroke(Colors["#f0f057"], StrokeInfo(thickness = 3.0)) {
 
-                for (listLeaf in leaf.getLeafList()) {
+                for (listLeaf in leaf.getList()) {
 
                     circle( Node(listLeaf).position + nodeOffset, radius = 5.0 )
                 }

@@ -1,6 +1,5 @@
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
-import node.NodeMesh
 import kotlin.test.Test
 
 class TestNodeRoom {
@@ -8,14 +7,14 @@ class TestNodeRoom {
     @ExperimentalUnsignedTypes
     @Test
     fun testNodeCluster() {
-        val leaf = Leaf(initHeight = 3)
-        println("leaf(" +leaf.childrenLeaves.count() + "): " + leaf)
+        val leaf = Leaf(topHeight = 3)
+        println("leaf(" +leaf.children.count() + "): " + leaf)
 
-        println("leafList(" + leaf.getLeafList().size + "): ")
-        for (listLeaf in leaf.getLeafList())
+        println("leafList(" + leaf.getList().size + "): ")
+        for (listLeaf in leaf.getList())
             println(listLeaf)
 
-        val nodeMesh = leaf.getLeafList().nodeMesh()
+        val nodeMesh = leaf.getList().nodeMesh()
         println("nodeMesh(${nodeMesh.nodes.size})")
         for (node in nodeMesh.nodes)
             println(node)
