@@ -13,6 +13,7 @@ import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.add
 import leaf.ILeaf.Companion.graft
+import leaf.Lace
 import leaf.Leaf
 import kotlin.random.Random
 
@@ -226,5 +227,50 @@ object RenderLeaf {
                 }
             }
         }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderBorderingLeaf() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        val leaf = Leaf(topHeight = 6, position = Point(256.0, 512.0), topAngle = Angle.fromDegrees(300) )
+
+        val firstBorderingLeaf = Leaf(topHeight = 12, position = Point(512.0, 256.0), topAngle = Angle.fromDegrees(250), refILeaf = leaf )
+
+        val secondBorderingLeaf = Leaf(topHeight = 12, position = Point(512.0, 256.0), topAngle = Angle.fromDegrees(350), refILeaf = leaf )
+
+        graphics {
+            stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in leaf.getLineList() ) {
+                    if (line != null) line(line.first, line.second)
+                }
+            }
+            stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
+
+                for (listLeaf in leaf.getList() ) {
+                    circle(listLeaf.position, radius = 5.0)
+                }
+            }
+            stroke(Colors["#818436"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in firstBorderingLeaf.getLineList() ) {
+                    if (line != null) line(line.first, line.second)
+                }
+                for (line in secondBorderingLeaf.getLineList() ) {
+                    if (line != null) line(line.first, line.second)
+                }
+            }
+            stroke(Colors["#f0f057"], StrokeInfo(thickness = 3.0)) {
+
+                for (listLeaf in firstBorderingLeaf.getList() ) {
+                    circle(listLeaf.position, radius = 5.0)
+                }
+                for (listLeaf in secondBorderingLeaf.getList() ) {
+                    circle(listLeaf.position, radius = 5.0)
+                }
+            }
+
+        }
+//            delay(TimeSpan(1500.0))
     }
 }

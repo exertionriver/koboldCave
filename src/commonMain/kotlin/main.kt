@@ -4,6 +4,7 @@ import render.RenderLaceLash.renderLaceLashStationary
 import render.RenderLaceLash.renderLashCircle
 import render.RenderLattice.renderLatticeStationary
 import render.RenderLeaf.renderAddLeafStationary
+import render.RenderLeaf.renderBorderingLeaf
 import render.RenderLeaf.renderLeafCircle
 import render.RenderLeaf.renderLeafStationary
 
@@ -14,7 +15,7 @@ suspend fun main() {
 
 //	renderLaceLashStationary()
 
-renderLatticeStationary()
+// renderLatticeStationary()
 
 //	renderAddLeafStationary()
 
@@ -27,6 +28,8 @@ renderLatticeStationary()
 //	renderLaceCircle()
 
 //	renderLashCircle()
+
+    renderBorderingLeaf()
 
 //	renderLeafAndNodes()
 

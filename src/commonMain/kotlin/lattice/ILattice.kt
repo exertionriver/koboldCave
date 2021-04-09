@@ -1,4 +1,4 @@
-package leaf
+package lattice
 
 import Probability
 import com.soywiz.korio.util.UUID

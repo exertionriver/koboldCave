@@ -12,13 +12,14 @@ import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
 class Leaf(override val topHeight : Int = 3
-        , override val height : Int = topHeight
-        , override val description: String = "${Leaf::class.simpleName}${Random.nextInt(256)}"
-        , override val parent : MutableList<ILeaf> = mutableListOf()
-        , override val distanceFromParent : Int = 0
-        , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
-        , override val angleFromParent : Angle = topAngle
-        , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
+                , override val height : Int = topHeight
+                , override val description: String = "${Leaf::class.simpleName}${Random.nextInt(256)}"
+                , override val parent : MutableList<ILeaf> = mutableListOf()
+                , override val distanceFromParent : Int = 0
+                , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
+                , override val angleFromParent : Angle = topAngle
+                , override val refILeaf : ILeaf? = null
+                , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
     ) : ILeaf {
 
     override val uuid : UUID = UUID.randomUUID(Random.Default)
@@ -29,7 +30,9 @@ class Leaf(override val topHeight : Int = 3
                 , height = height - 1
                 , parent = mutableListOf(this)
                 , distanceFromParent = getNextDistancePxProb()
-                , angleFromParent = this.getVarianceChildAngle(Angle.fromDegrees(30))
+                , angleFromParent = if (refILeaf != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refILeaf = refILeaf)
+                    else this.getVarianceChildAngle(Angle.fromDegrees(30))
+                , refILeaf = refILeaf
             )
     }
 

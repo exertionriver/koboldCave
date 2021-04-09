@@ -3,12 +3,14 @@ package leaf
 import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
+import com.soywiz.korui.layout.Length
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.addNodeLinks
 import node.NodeMesh
+import kotlin.math.min
 
 @ExperimentalUnsignedTypes
 interface ILeaf {
@@ -43,14 +45,50 @@ interface ILeaf {
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
 
+    val refILeaf : ILeaf?
+
     fun getVarianceChildAngle(variance : Angle) : Angle =
         this.angleFromParent + Angle.fromDegrees( Probability(0, variance.degrees.toInt()).getValue() )
 
-    fun getConvergentChildAngle(variance : Angle, convergeToAngle : Angle = this.angleFromParent ) : Angle =
+    fun getConvergentChildAngle(variance : Angle, convergeToAngle : Angle = this.topAngle ) : Angle =
         ( convergeToAngle.times(2) + getVarianceChildAngle(variance).times(2) ) / 4
 
-    fun getDivergentChildAngle(variance : Angle, divergeFromAngle : Angle = this.angleFromParent ) : Angle =
+    fun getDivergentChildAngle(variance : Angle, divergeFromAngle : Angle = this.topAngle ) : Angle =
         ( ( Angle.fromDegrees(180) + divergeFromAngle).normalized.times(2) + getVarianceChildAngle(variance).times(2) ) / 4
+
+    fun getBorderingChildAngle(variance : Angle, convergeToAngle : Angle = this.topAngle
+        , childDistance : Int = distanceFromParent, minBorderDistance : Double = NextDistancePx * 1.5, maxBorderDistance : Double = NextDistancePx * 1.5
+        , refILeaf: ILeaf) : Angle {
+
+        var bestConvergeAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
+        var bestMinAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
+        var bestMaxAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
+
+        println("Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
+
+        (0..360 step 30).forEach { angleOffset ->
+
+            val tryAngle = getConvergentChildAngle(variance, (convergeToAngle + Angle.Companion.fromDegrees(angleOffset) ).normalized )
+
+            val nextPosition = getChildPosition(this.position, childDistance, tryAngle)
+
+            val closestLeafDistance = refILeaf.getList().map { iLeaf -> Point.distance(iLeaf.position, nextPosition) }.reduce { distanceMin, iLeafDist -> min(distanceMin, iLeafDist) }
+
+            println ("closestLeafDistance: $closestLeafDistance")
+
+            if (closestLeafDistance >= minBorderDistance) bestMinAngle = tryAngle
+
+            if (closestLeafDistance <= maxBorderDistance) bestMaxAngle = tryAngle
+
+            val tryBestMinMaxAngle = ((bestMinAngle.times(3) + bestMaxAngle ) / 4).normalized
+
+            if ( abs(tryBestMinMaxAngle - convergeToAngle) < abs(bestConvergeAngle - convergeToAngle) ) bestConvergeAngle = tryBestMinMaxAngle
+
+            println("@AngleOffset:$angleOffset - Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
+
+        }
+        return bestConvergeAngle
+    }
 
     fun getList() : List<ILeaf> =
         if (childrenEmpty()) listOf(this)
@@ -238,5 +276,18 @@ interface ILeaf {
         }
 
         fun List<ILeaf>.nodeMesh(): NodeMesh = NodeMesh(nodes = this.nodes(), nodeLinks = this.nodeLinks(this.nodes()))
+
+        fun List<ILeaf>.nearestILeafOrderedAsc(refPosition : Point) : MutableList<ILeaf> {
+
+            val iLeafDistMap = mutableMapOf<ILeaf, Double>()
+
+            this.forEach { iLeaf ->
+                val iLeafToRefDistance = iLeaf.position.distanceTo(refPosition)
+
+                iLeafDistMap[iLeaf] = iLeafToRefDistance
+            }
+
+            return iLeafDistMap.toList().sortedBy { (_, dist) -> dist}.toMap().keys.toMutableList()
+        }
     }
 }

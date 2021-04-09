@@ -1,13 +1,11 @@
-package leaf
+package lattice
 
-import Probability
-import ProbabilitySelect
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
-import leaf.ILattice.Companion.getChildPosition
-import leaf.ILattice.Companion.getNextDistancePxProb
-import leaf.ILattice.Companion.getParentPosition
+import lattice.ILattice.Companion.getChildPosition
+import lattice.ILattice.Companion.getNextDistancePxProb
+import lattice.ILattice.Companion.getParentPosition
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes

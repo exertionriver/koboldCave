@@ -18,6 +18,7 @@ class Lash(override val topHeight : Int = 3
            , override val distanceFromParent : Int = 0
            , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
            , override val angleFromParent : Angle = topAngle
+           , override val refILeaf : ILeaf? = null
            , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
     ) : ILeaf {
 

@@ -15,7 +15,7 @@ import leaf.ILeaf.Companion.add
 import leaf.ILeaf.Companion.graft
 import leaf.Leaf
 import leaf.Lace
-import leaf.Lattice
+import lattice.Lattice
 import kotlin.random.Random
 
 object RenderLattice {
