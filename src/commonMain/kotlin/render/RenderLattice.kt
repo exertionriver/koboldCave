@@ -9,13 +9,15 @@ import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
+import lattice.ILattice.Companion.getLateralLineList
 import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.add
 import leaf.ILeaf.Companion.graft
 import leaf.Leaf
 import leaf.Lace
-import lattice.Lattice
+import lattice.ArrayLattice
+import lattice.RoundedLattice
 import kotlin.random.Random
 
 object RenderLattice {
@@ -23,11 +25,13 @@ object RenderLattice {
     @ExperimentalUnsignedTypes
     suspend fun renderLatticeStationary() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
 
-        val startingPoint = Point(512.0, 512.0)
+        val startingPoint = Point(128.0, 128.0)
 
-        (1..3).toList().forEach {
+     //   (1..3).toList().forEach {
 
-            val lattice = Lattice(topHeight = 6, position = startingPoint, topAngle = Angle.fromDegrees(270) )
+            val lattice = RoundedLattice(topHeight = 20, position = startingPoint, topAngle = Angle.fromDegrees(330) )
+//            val lattice = ArrayLattice(topHeight = 20, position = startingPoint, topAngle = Angle.fromDegrees(330) )
+
 
             graphics {
                 stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
@@ -35,6 +39,11 @@ object RenderLattice {
                     for (line in lattice.getLineList() ) {
                         if (line != null) line(line.first, line.second)
                     }
+
+                    for (line in lattice.getList().getLateralLineList() ) {
+                        if (line != null) line(line.first, line.second)
+                    }
+
                 }
                 stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
@@ -43,8 +52,8 @@ object RenderLattice {
                     }
                 }
             }
-            delay(TimeSpan(1500.0))
-        }
+      //      delay(TimeSpan(1500.0))
+    //    }
     }
 
     @ExperimentalUnsignedTypes

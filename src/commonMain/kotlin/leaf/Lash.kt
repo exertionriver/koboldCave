@@ -5,6 +5,8 @@ import ProbabilitySelect
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
+import com.soywiz.korma.geom.minus
+import com.soywiz.korma.geom.plus
 import leaf.ILeaf.Companion.getChildPosition
 import leaf.ILeaf.Companion.getNextDistancePxProb
 import leaf.ILeaf.Companion.getParentPosition
@@ -18,6 +20,7 @@ class Lash(override val topHeight : Int = 3
            , override val distanceFromParent : Int = 0
            , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
            , override val angleFromParent : Angle = topAngle
+           , override val cumlAngleFromTop : Angle = topAngle
            , override val refILeaf : ILeaf? = null
            , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
     ) : ILeaf {
@@ -31,7 +34,10 @@ class Lash(override val topHeight : Int = 3
                 , parent = mutableListOf(this)
                 , distanceFromParent = getNextDistancePxProb()
                 , topAngle = topAngle
-                , angleFromParent = this.getDivergentChildAngle(Angle.fromDegrees(120), topAngle)
+                , angleFromParent = if (refILeaf != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refILeaf = refILeaf)
+                else this.getDivergentChildAngle(Angle.fromDegrees(120), topAngle)
+                , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
+                , refILeaf = refILeaf
             )
     }
 

@@ -7,11 +7,14 @@ import render.RenderLeaf.renderAddLeafStationary
 import render.RenderLeaf.renderBorderingLeaf
 import render.RenderLeaf.renderLeafCircle
 import render.RenderLeaf.renderLeafStationary
+import render.RenderLeaf.renderPruneLeaf
 
 @ExperimentalUnsignedTypes
 suspend fun main() {
 
 //	renderLeafStationary()
+
+//	renderPruneLeaf()
 
 //	renderLaceLashStationary()
 

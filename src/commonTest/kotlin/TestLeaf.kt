@@ -2,6 +2,7 @@ import com.soywiz.klock.DateTime
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import leaf.ILeaf.Companion.add
+import leaf.ILeaf.Companion.prune
 import leaf.Leaf
 import kotlin.random.Random
 import kotlin.test.Test
@@ -64,14 +65,14 @@ class TestLeaf {
         println("rand leaf parent uuid: ${randLeaf.getParent()?.uuid}")
 
         randLeaf.getChildrenList()?.forEach { println("rand leaf child uuid: ${it.uuid}") }
-        println("firstLeaf curHeight: " + firstLeaf.getCurrentHeight())
+        println("firstLeaf curHeight: " + firstLeaf.height)
 
         val updRandLeaf = firstLeaf.getList()[randLeafIdx].add(secondLeaf)
         println("upd rand leaf uuid: ${updRandLeaf.uuid}")
         println("upd rand leaf parent uuid: ${updRandLeaf.getParent()?.uuid}")
 
         println("updated first leaf size : " + firstLeaf.getList().size)
-        println("upd firstLeaf curHeight: " + firstLeaf.getCurrentHeight())
+        println("upd firstLeaf curHeight: " + firstLeaf.height)
         for(listLeaf in firstLeaf.getList()) {
             println("upd firstLeaf: $listLeaf")
         }
@@ -100,5 +101,14 @@ class TestLeaf {
 
         firstLeaf.getLineList().forEach { leafLine -> println("leafLine: $leafLine") }
 
+    }
+
+    @Test
+    fun testPrune() {
+        val startingPoint = Point(512.0, 954.0)
+
+        val firstLeaf = Leaf(topHeight = 12, position = startingPoint, angleFromParent = Angle.fromDegrees(0))
+
+        firstLeaf.getList().prune(firstLeaf)
     }
 }

@@ -12,7 +12,10 @@ import com.soywiz.korma.geom.vector.line
 import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.add
+import leaf.ILeaf.Companion.getLineList
+import leaf.ILeaf.Companion.getList
 import leaf.ILeaf.Companion.graft
+import leaf.ILeaf.Companion.prune
 import leaf.Lace
 import leaf.Leaf
 import kotlin.random.Random
@@ -27,7 +30,7 @@ object RenderLeaf {
         (1..3).toList().forEach {
 
             val leaf = Leaf(topHeight = 4, position = startingPoint)
-
+        
             graphics {
                 stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
 
@@ -44,6 +47,51 @@ object RenderLeaf {
             }
             delay(TimeSpan(1500.0))
         }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderPruneLeaf() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        val startingPoint = Point(512.0, 512.0)
+
+        val positionOffset = Point(-100, -300)
+        
+        val leaf = Leaf(topHeight = 8, position = startingPoint)
+
+
+        graphics {
+            stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in leaf.getLineList() ) {
+                    if (line != null) line(line.first, line.second)
+                }
+            }
+            stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
+
+                for (listLeaf in leaf.getList() ) {
+                    circle(listLeaf.position, radius = 5.0)
+                }
+            }
+        }
+        delay(TimeSpan(1500.0))
+
+        val pruneLeaf = leaf.getList().prune()
+
+        graphics {
+            stroke(Colors["#368428"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in pruneLeaf.getLineList() ) {
+                    if (line != null) line(line.first + positionOffset, line.second + positionOffset)
+                }
+            }
+            stroke(Colors["#55f055"], StrokeInfo(thickness = 3.0)) {
+
+                for (listLeaf in pruneLeaf.getList() ) {
+                    circle(listLeaf.position + positionOffset, radius = 5.0)
+                }
+            }
+        }
+        
     }
 
     @ExperimentalUnsignedTypes
@@ -232,11 +280,12 @@ object RenderLeaf {
     @ExperimentalUnsignedTypes
     suspend fun renderBorderingLeaf() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
 
-        val leaf = Leaf(topHeight = 6, position = Point(256.0, 512.0), topAngle = Angle.fromDegrees(300) )
+        val leaf = Leaf(topHeight = 6, position = Point(256.0, 512.0), topAngle = Angle.fromDegrees(280) )
 
-        val firstBorderingLeaf = Leaf(topHeight = 12, position = Point(512.0, 256.0), topAngle = Angle.fromDegrees(250), refILeaf = leaf )
-
-        val secondBorderingLeaf = Leaf(topHeight = 12, position = Point(512.0, 256.0), topAngle = Angle.fromDegrees(350), refILeaf = leaf )
+        val firstBorderingLeaf = Leaf(topHeight = 12, position = Point(482.0, 256.0), topAngle = Angle.fromDegrees(220), refILeaf = leaf )
+        val secondBorderingLeaf = Leaf(topHeight = 12, position = Point(532.0, 256.0), topAngle = Angle.fromDegrees(350), refILeaf = leaf )
+//        val firstBorderingLace = Lace(topHeight = 12, position = Point(482.0, 256.0), topAngle = Angle.fromDegrees(240), refILeaf = leaf )
+//        val secondBorderingLace = Lace(topHeight = 12, position = Point(532.0, 256.0), topAngle = Angle.fromDegrees(310), refILeaf = leaf )
 
         graphics {
             stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {

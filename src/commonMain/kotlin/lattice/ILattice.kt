@@ -3,12 +3,15 @@ package lattice
 import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
+import leaf.ILeaf
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.addNodeLinks
 import node.NodeMesh
+import kotlin.math.hypot
+import kotlin.math.sqrt
 
 @ExperimentalUnsignedTypes
 interface ILattice {
@@ -29,6 +32,8 @@ interface ILattice {
 
     val angleFromParent : Angle
 
+    val cumlAngleFromTop : Angle
+
     val parent : MutableList<ILattice>
 
     fun parentEmpty() = parent.isNullOrEmpty()
@@ -42,6 +47,8 @@ interface ILattice {
     fun getChildrenList() : List<ILattice>? = if ( childrenEmpty() ) null else children.toList()
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
+
+    val refILattice : ILattice?
 
     fun getVarianceChildAngle(variance : Angle) : Angle =
         this.angleFromParent + Angle.fromDegrees( Probability(0, variance.degrees.toInt()).getValue() )
@@ -64,10 +71,6 @@ interface ILattice {
             childLeaf -> childLeaf.getLineList()
         } ).filterNotNull()
 
-//    fun getCurrentHeight() : Int =
-//        if (childrenEmpty()) 0
-//        else (1 + children.map { childLeaf -> childLeaf.getCurrentHeight() }.reduce { maxHeight : Int, childLeafHeight -> max(maxHeight, childLeafHeight) })
-
     companion object {
 
         val ViewPortXRangePx = 300
@@ -76,13 +79,9 @@ interface ILattice {
 
         fun getNextDistancePxProb(): Int = ProbabilitySelect.psAccumulating(
             listOf(
-                NextDistancePx,
-                NextDistancePx / 2,
-                NextDistancePx * 3 / 2,
-                NextDistancePx * 3 / 4,
-                NextDistancePx * 5 / 4,
-                NextDistancePx * 1 / 4,
-                NextDistancePx * 7 / 4
+                NextDistancePx
+                , NextDistancePx * 15 / 16
+                , NextDistancePx * 17 / 16
             )
         ).getSelectedProbability()!!
 
@@ -90,6 +89,49 @@ interface ILattice {
             if (!parent.isNullOrEmpty()) parent[0].position else Point(256, 256)
 
         fun getChildPosition(parentPosition: Point, distanceFromParent: Int, childAngle: Angle): Point {
+
+            val childX = when {
+                (childAngle.degrees >= 0) && (childAngle.degrees < 90) -> parentPosition.x + distanceFromParent * cos(
+                    childAngle
+                )
+                (childAngle.degrees >= 90) && (childAngle.degrees < 180) -> parentPosition.x - distanceFromParent * cos(
+                    Angle.fromDegrees(180) - childAngle
+                )
+                (childAngle.degrees >= 180) && (childAngle.degrees < 270) -> parentPosition.x - distanceFromParent * cos(
+                    childAngle - Angle.fromDegrees(180)
+                )
+                (childAngle.degrees >= 270) && (childAngle.degrees < 360) -> parentPosition.x + distanceFromParent * cos(
+                    Angle.fromDegrees(360) - childAngle
+                )
+                else -> parentPosition.x + distanceFromParent * cos(childAngle) //360 degrees
+            }
+
+            val childY = when {
+                (childAngle.degrees >= 0) && (childAngle.degrees < 90) -> parentPosition.y - distanceFromParent * sin(
+                    childAngle
+                )
+                (childAngle.degrees >= 90) && (childAngle.degrees < 180) -> parentPosition.y - distanceFromParent * sin(
+                    Angle.fromDegrees(180) - childAngle
+                )
+                (childAngle.degrees >= 180) && (childAngle.degrees < 270) -> parentPosition.y + distanceFromParent * sin(
+                    childAngle - Angle.fromDegrees(180)
+                )
+                (childAngle.degrees >= 270) && (childAngle.degrees <= 360) -> parentPosition.y + distanceFromParent * sin(
+                    Angle.fromDegrees(360) - childAngle
+                )
+                else -> parentPosition.y - distanceFromParent * sin(childAngle) //360 degrees
+            }
+
+            return Point(childX, childY)
+        }
+
+        fun getArrayedChildPosition(parentPosition: Point, topAngle: Angle, childAngle: Angle): Point {
+
+            val angleDiff = abs(topAngle - childAngle)
+
+            val arrayPosition = .5 * NextDistancePx * tan(angleDiff)
+
+            val distanceFromParent = hypot(.5 * NextDistancePx, arrayPosition)
 
             val childX = when {
                 (childAngle.degrees >= 0) && (childAngle.degrees < 90) -> parentPosition.x + distanceFromParent * cos(
@@ -144,6 +186,26 @@ interface ILattice {
             this.forEach {
                 iLeaf -> iLeaf.getLineList().forEach {
                     line -> returnLineList.add(line)
+                }
+            }
+
+            return returnLineList.filterNotNull()
+        }
+
+        fun List<ILattice>.getLateralLineList(): List<Pair<Point, Point>?> {
+            val returnLineList = mutableListOf<Pair<Point, Point>?>()
+
+            val topLatticeHeight = this[0].topHeight
+
+            (0..topLatticeHeight).forEach { curHeight ->
+                val sortedILattices = this.filter {
+                        iLattice -> iLattice.height == curHeight
+                }.sortedBy {
+                        filteredILattice -> filteredILattice.cumlAngleFromTop
+                }
+
+                sortedILattices.forEachIndexed { iLatticeIdx, sortedILattice ->
+                    if (iLatticeIdx > 0) returnLineList.add(Pair(sortedILattice.position, sortedILattices[iLatticeIdx - 1].position))
                 }
             }
 

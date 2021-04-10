@@ -3,14 +3,13 @@ package leaf
 import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
-import com.soywiz.korui.layout.Length
+import leaf.Line.intersects
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.addNodeLinks
 import node.NodeMesh
-import kotlin.math.min
 
 @ExperimentalUnsignedTypes
 interface ILeaf {
@@ -30,6 +29,8 @@ interface ILeaf {
     val topAngle : Angle
 
     val angleFromParent : Angle
+
+    val cumlAngleFromTop : Angle
 
     val parent : MutableList<ILeaf>
 
@@ -57,7 +58,7 @@ interface ILeaf {
         ( ( Angle.fromDegrees(180) + divergeFromAngle).normalized.times(2) + getVarianceChildAngle(variance).times(2) ) / 4
 
     fun getBorderingChildAngle(variance : Angle, convergeToAngle : Angle = this.topAngle
-        , childDistance : Int = distanceFromParent, minBorderDistance : Double = NextDistancePx * 1.5, maxBorderDistance : Double = NextDistancePx * 1.5
+        , childDistance : Int = distanceFromParent, minBorderDistance : Double = NextDistancePx * 1.0, maxBorderDistance : Double = NextDistancePx * 2.0
         , refILeaf: ILeaf) : Angle {
 
         var bestConvergeAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
@@ -66,19 +67,23 @@ interface ILeaf {
 
         println("Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
 
-        (0..360 step 30).forEach { angleOffset ->
+        (360 downTo 0 step 30).forEach { angleOffset ->
 
-            val tryAngle = getConvergentChildAngle(variance, (convergeToAngle + Angle.Companion.fromDegrees(angleOffset) ).normalized )
+            val tryAngle = getConvergentChildAngle(variance, (Angle.fromDegrees(180) + convergeToAngle + Angle.fromDegrees(angleOffset) ).normalized )
 
             val nextPosition = getChildPosition(this.position, childDistance, tryAngle)
 
-            val closestLeafDistance = refILeaf.getList().map { iLeaf -> Point.distance(iLeaf.position, nextPosition) }.reduce { distanceMin, iLeafDist -> min(distanceMin, iLeafDist) }
+            val closestLeafDistances = refILeaf.getList().map { iLeaf -> Point.distance(iLeaf.position, nextPosition) }.sortedBy { it }
 
-            println ("closestLeafDistance: $closestLeafDistance")
+            val closestLeafDistance = closestLeafDistances[0]
 
-            if (closestLeafDistance >= minBorderDistance) bestMinAngle = tryAngle
+            val closestLeafAvgDistance = closestLeafDistances.filterIndexed { index, _ -> index < 3 }.average()
 
-            if (closestLeafDistance <= maxBorderDistance) bestMaxAngle = tryAngle
+            println ("closestLeafDistance: $closestLeafDistance, $closestLeafAvgDistance")
+
+            if ( (closestLeafDistance >= minBorderDistance) && (closestLeafAvgDistance >= minBorderDistance) ) bestMinAngle = tryAngle
+
+            if ( (closestLeafDistance <= maxBorderDistance) && (closestLeafAvgDistance <= maxBorderDistance) ) bestMaxAngle = tryAngle
 
             val tryBestMinMaxAngle = ((bestMinAngle.times(3) + bestMaxAngle ) / 4).normalized
 
@@ -225,6 +230,62 @@ interface ILeaf {
             }
 
             return this
+        }
+
+        fun List<ILeaf>.prune(): List<ILeaf> {
+
+            val returnLeaves = this.toMutableList()
+
+            val orderedLeaves = this.sortedBy { it.height }.sortedByDescending { abs(it.topAngle - it.cumlAngleFromTop) }
+
+            orderedLeaves.forEach { outerLeaf ->
+                orderedLeaves.forEach { innerLeaf ->
+                    if ( (outerLeaf != innerLeaf) && (innerLeaf.height <= outerLeaf.height) ) {
+                        val outerChildren = outerLeaf.getChildrenList()
+                        val innerChildren = innerLeaf.getChildrenList()
+                        if ( (outerChildren != null) && (innerChildren != null) ) {
+                            outerChildren.forEach { outerChild ->
+                                innerChildren.forEach { innerChild ->
+                                    if (outerChild != innerLeaf) {
+                                        if ( Pair(outerLeaf.position, outerChild.position).intersects(Pair(innerLeaf.position, innerChild.position)) ) {
+                                            println("intersecion at ${outerLeaf.position} to ${outerChild.position} and ${innerLeaf.position} to ${innerChild.position}")
+
+                                            if ( returnLeaves.indexOf(innerChild.getParent()) != -1 ) {
+                                                returnLeaves[returnLeaves.indexOf(innerChild.getParent())].children.remove(innerChild)
+                                            }
+
+                                            innerChild.getList().forEach{ returnLeaves.remove(it) }
+                                        }
+                                    }
+                                }
+                            }
+                            innerChildren.sortedBy { it.angleFromParent }.forEach { outerInnerChild ->
+                                innerChildren.sortedBy { it.angleFromParent }.forEach { innerInnerChild ->
+                                    if (outerInnerChild != innerInnerChild) {
+                                        if ( abs(outerInnerChild.angleFromParent - innerInnerChild.angleFromParent) <= Angle.fromDegrees(10) )
+                                            if ( (outerInnerChild.getList().size) > (innerInnerChild.getList().size) ) {
+                                                if ( returnLeaves.indexOf(innerInnerChild.getParent()) != -1 ) {
+                                                    returnLeaves[returnLeaves.indexOf(innerInnerChild.getParent())].children.remove(innerInnerChild)
+                                                }
+
+                                                innerInnerChild.getList().forEach{ returnLeaves.remove(it) }
+                                            } else {
+                                                if ( returnLeaves.indexOf(outerInnerChild.getParent()) != -1 ) {
+                                                    returnLeaves[returnLeaves.indexOf(outerInnerChild.getParent())].children.remove(outerInnerChild)
+                                                }
+
+                                                outerInnerChild.getList().forEach{ returnLeaves.remove(it) }
+                                            }
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return returnLeaves.toList()
         }
 
         fun ILeaf.node(): Node {

@@ -5,6 +5,8 @@ import ProbabilitySelect
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
+import com.soywiz.korma.geom.minus
+import com.soywiz.korma.geom.plus
 import leaf.ILeaf.Companion.getChildPosition
 import leaf.ILeaf.Companion.getNextDistancePxProb
 import leaf.ILeaf.Companion.getParentPosition
@@ -18,6 +20,7 @@ class Leaf(override val topHeight : Int = 3
                 , override val distanceFromParent : Int = 0
                 , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
                 , override val angleFromParent : Angle = topAngle
+                , override val cumlAngleFromTop : Angle = topAngle
                 , override val refILeaf : ILeaf? = null
                 , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
     ) : ILeaf {
@@ -32,6 +35,7 @@ class Leaf(override val topHeight : Int = 3
                 , distanceFromParent = getNextDistancePxProb()
                 , angleFromParent = if (refILeaf != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refILeaf = refILeaf)
                     else this.getVarianceChildAngle(Angle.fromDegrees(30))
+                , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
                 , refILeaf = refILeaf
             )
     }
@@ -48,9 +52,9 @@ class Leaf(override val topHeight : Int = 3
             (height > 0) -> ProbabilitySelect(
                 mapOf(
                     "0" to Probability(5, 0),
-                    "1" to Probability(40, 0),
+                    "1" to Probability(20, 0),
                     "2" to Probability(50, 0),
-                    "3" to Probability(5, 0)
+                    "3" to Probability(20, 0)
                 )
             ).getSelectedProbability()!!.toInt()
             else -> 0
