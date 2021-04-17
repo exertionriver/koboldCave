@@ -27,7 +27,7 @@ object RenderLeaf {
 
         val startingPoint = Point(512.0, 512.0)
 
-        (1..3).toList().forEach {
+//        (1..3).toList().forEach {
 
             val leaf = Leaf(topHeight = 4, position = startingPoint)
         
@@ -45,8 +45,8 @@ object RenderLeaf {
                     }
                 }
             }
-            delay(TimeSpan(1500.0))
-        }
+  //          delay(TimeSpan(1500.0))
+   //     }
     }
 
     @ExperimentalUnsignedTypes
@@ -57,7 +57,6 @@ object RenderLeaf {
         val positionOffset = Point(-100, -300)
         
         val leaf = Leaf(topHeight = 8, position = startingPoint)
-
 
         graphics {
             stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {

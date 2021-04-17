@@ -8,6 +8,7 @@ class Probability(
     , val rangeIncreaseSpeed: Int = 0, val rangeIncreaseAccel: Int = 0
     ) {
 
+    //to do: exclude mean and range, e.g. for angles
     constructor(mean : Int, range : Int) : this (
         mean = mean.toDouble(), range = range
     )

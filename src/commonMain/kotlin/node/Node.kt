@@ -8,13 +8,16 @@ import com.soywiz.korma.geom.minus
 import com.soywiz.korma.geom.plus
 import leaf.ILeaf
 import node.INodeMesh.Companion.addMesh
+import node.Node.Companion.consolidateStackedNodes
 import node.Node.Companion.updateNode
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.areNodesLinked
 import node.NodeLink.Companion.buildNodeLinkLine
+import node.NodeLink.Companion.consolidateNodeDistance
 import node.NodeLink.Companion.getNodeChildrenUuids
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.linkNodeDistance
+import node.NodeLink.Companion.stackedNodeDistance
 import kotlin.math.atan
 import kotlin.random.Random
 
@@ -118,38 +121,6 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return returnNodeLineList
         }
 
-        fun MutableList<Node>.linkNearNodes(linkOrphans : Boolean = true) : MutableList<NodeLink> {
-
-//            println("checking for nodes to re-link...")
-
-            val nodeLinks : MutableList<NodeLink> = mutableListOf()
-            lateinit var closestNode : Node
-
-            this.forEach { outer ->
-                closestNode = Node (outer, updPosition = outer.position + Point(10000, 10000) ) //faraway point
-
-//                println("linking outer: $outer, $closestNode")
-                this.forEach { inner ->
-                    //in case outer node is orphaned
-                    if ( !nodeLinks.areNodesLinked(outer.uuid, inner.uuid) && (outer.uuid != inner.uuid) ) {
-                        if ( Point.distance(inner.position, outer.position) <= Point.distance(outer.position, closestNode.position) ) {
-                            closestNode = inner
-//                            println("new closestNode: $outer, $closestNode")
-                        }
-
-                        if (Point.distance(inner.position, outer.position).toInt() <= linkNodeDistance) {
-                            nodeLinks.addNodeLink(this, outer.uuid, inner.uuid)
-                        }
-                    }
-                }
-                //if outer node is orphaned, link to closest node
-                if ( (this.size > 1) && (nodeLinks.getNodeLinks(outer.uuid).isNullOrEmpty() ) && linkOrphans ) {
-//                    println ("adding link for orphan: $outer, $closestNode")
-                    nodeLinks.addNodeLink(this, outer.uuid, closestNode.uuid)
-                }
-            }
-            return nodeLinks
-        }
 
         //replaces firstUuid node, removes secondUuid node; does not handle updates to NodeLinks
         fun MutableList<Node>.consolidateNode(nodeLinks : MutableList<NodeLink>, firstUuid : UUID, secondUuid : UUID) : MutableList<NodeLink> {
@@ -177,11 +148,11 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 //update first node with new position, between two nodes
                 this.updateNode( Node( firstNode, updPosition = Point.middle(firstNode.position, secondNode.position) ) )
 
-//                println("post-consolidated first node: $firstNode")
-//                println("post-consolidated first node links: ${nodeLinks.getNodeLinks(firstUuid)}")
+ //               println("post-consolidated first node: $firstNode")
+ //               println("post-consolidated first node links: ${nodeLinks.getNodeLinks(firstUuid)}")
 
-//                println("post-consolidated second node: $secondNode")
-//                println("post-consolidated second node links: ${nodeLinks.getNodeLinks(secondUuid)}")
+ //               println("post-consolidated second node: $secondNode")
+ //               println("post-consolidated second node links: ${nodeLinks.getNodeLinks(secondUuid)}")
 
                 //remove second node and links
                 this.removeNode(nodeLinks, secondUuid)
@@ -191,31 +162,67 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
         }
 
         fun MutableList<Node>.consolidateNearNodes(nodeLinks : MutableList<NodeLink>) : MutableList<NodeLink> {
-//        println("checking for nodes to consolidate...")
+//        println("checking for near nodes to consolidate...")
             var returnNodeLinks = nodeLinks
+            val checkNodes = this.toList()
 
-            nodeLinks.filter { link -> link.getDistance(this) ?: NodeLink.consolidateNodeDistance + 1.0 <= NodeLink.consolidateNodeDistance }.forEach { consolidateNodeLink ->
-                returnNodeLinks = this.consolidateNode(nodeLinks, consolidateNodeLink.firstNodeUuid, consolidateNodeLink.secondNodeUuid)
+            checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
+                checkNodes.nearestNodesOrderedAsc(refNode).forEach { checkNode ->
+                    if (checkNode.uuid.toString() > refNode.uuid.toString()) {
+                        if ( Point.distance(refNode.position, checkNode.position) <= consolidateNodeDistance ) {
+//                            println("consolidating ${refNode.uuid} and ${checkNode.uuid}")
+                            returnNodeLinks = this.consolidateNode(nodeLinks, refNode.uuid, checkNode.uuid)
+                        }
+                    }
+                }
             }
 
             return returnNodeLinks
         }
 
         fun MutableList<Node>.consolidateStackedNodes(nodeLinks : MutableList<NodeLink>) : MutableList<NodeLink> {
-//        println("checking for nodes to consolidate...")
+//        println("checking for stacked nodes to consolidate...")
             var returnNodeLinks = nodeLinks
             val checkNodes = this.toList()
 
-            checkNodes.forEach { outer ->
-                if (getNode(outer.uuid) != null)
-                    checkNodes.forEach { inner ->
-                        if (getNode(inner.uuid) != null)
-                            if ( !nodeLinks.areNodesLinked(outer.uuid, inner.uuid) && (outer.uuid != inner.uuid) ) {
-                                if (Point.distance(inner.position, outer.position).toInt() <= 0.1) {
-                                    returnNodeLinks = this.consolidateNode(nodeLinks, outer.uuid, inner.uuid)
-                                }
-                            }
+            checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
+                checkNodes.nearestNodesOrderedAsc(refNode).forEach { checkNode ->
+                    if (checkNode.uuid.toString() > refNode.uuid.toString()) {
+                        if (Point.distance(checkNode.position, refNode.position).toInt() <= stackedNodeDistance) { //basically same node, "stacked"
+//                            println("consolidating ${refNode.uuid} and ${checkNode.uuid}")
+                            returnNodeLinks = this.consolidateNode(nodeLinks, refNode.uuid, checkNode.uuid)
+                        }
                     }
+                }
+            }
+
+            return returnNodeLinks
+        }
+
+        //TODO: retain previous links
+        fun MutableList<Node>.linkNearNodes(nodeLinks : MutableList<NodeLink> = mutableListOf(), linkOrphans : Boolean = true) : MutableList<NodeLink> {
+//            println("checking for nodes to link...")
+            val returnNodeLinks = nodeLinks
+            val checkNodes = this.toList()
+
+            lateinit var closestNode : Node
+
+            checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
+                val sortedCheckNodes = checkNodes.nearestNodesOrderedAsc(refNode)
+                sortedCheckNodes.forEach { checkNode ->
+                    if (checkNode.uuid.toString() > refNode.uuid.toString()) {
+                        if (Point.distance(checkNode.position, refNode.position).toInt() <= linkNodeDistance) {
+//                            println("linking ${refNode.uuid} and ${checkNode.uuid}")
+                            returnNodeLinks.addNodeLink(this, refNode.uuid, checkNode.uuid)
+                        }
+                    }
+                }
+
+                //if outer node is orphaned, link to closest node
+                if ((checkNodes.size > 1) && (returnNodeLinks.getNodeLinks(refNode.uuid).isNullOrEmpty()) && linkOrphans) {
+//                    println ("adding link for orphan: $outer, $closestNode")
+                    returnNodeLinks.addNodeLink(this, refNode.uuid, sortedCheckNodes[0].uuid)
+                }
             }
 
             return returnNodeLinks

@@ -16,20 +16,24 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), overri
 
     constructor(copyNodeMesh : NodeMesh
                 , updUuid: UUID = copyNodeMesh.uuid
-                , updDescription: String = copyNodeMesh.description
-                , updNodes: MutableList<Node> = copyNodeMesh.nodes
-                , updNodeLinks: MutableList<NodeLink> = copyNodeMesh.nodeLinks) : this (
+                , updDescription: String = copyNodeMesh.description) : this (
         uuid = updUuid
         , description = updDescription
-        , nodes = updNodes
-        , nodeLinks = updNodeLinks
-    )
+        , nodes = mutableListOf()
+        , nodeLinks = mutableListOf()
+    ) {
+        nodes.addAll(copyNodeMesh.nodes)
+        nodeLinks.addAll(copyNodeMesh.nodeLinks)
+    }
 
     constructor(description : String = "${NodeMesh::class.simpleName}${Random.nextInt(256)}", linkNodes: MutableList<Node>) : this (
         description = description
-        , nodes = linkNodes
-        , nodeLinks = linkNodes.linkNearNodes()
-    )
+        , nodes = mutableListOf()
+        , nodeLinks = mutableListOf()
+    ) {
+        nodes.addAll(linkNodes)
+        nodeLinks.addAll(linkNodes.linkNearNodes())
+    }
 
     constructor(description : String = "${NodeMesh::class.simpleName}${Random.nextInt(256)}") : this (
         description = description

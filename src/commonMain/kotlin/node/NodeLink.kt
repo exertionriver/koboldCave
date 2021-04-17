@@ -3,11 +3,15 @@ package node
 import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
+import com.soywiz.korma.geom.vector.VectorPath.Companion.intersects
 import leaf.ILeaf
+import leaf.Line.intersects
 import node.INodeMesh.Companion.addMesh
 import node.Node.Companion.addNode
 import node.Node.Companion.angleBetween
 import node.Node.Companion.getNode
+import node.Node.Companion.nearestNodesOrderedAsc
+import node.NodeLink.Companion.getNodeLinks
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.random.Random
@@ -32,8 +36,9 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
     override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid)"
 
     companion object {
-        val consolidateNodeDistance = ILeaf.NextDistancePx / 2
+        val consolidateNodeDistance = ILeaf.NextDistancePx / 4
         val linkNodeDistance = ILeaf.NextDistancePx
+        val stackedNodeDistance = 0.1 // px
 
         fun NodeLink.getNodeChildUuid(uuid: UUID) : UUID? = if (this.firstNodeUuid == uuid) secondNodeUuid else if (this.secondNodeUuid == uuid) firstNodeUuid else null
 
@@ -368,6 +373,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
         val linkAngleMinDegree = 30
 
+    //consolidates nodeLinks if degree difference of minor links is < linkAngleMinDegrees
      fun MutableList<NodeLink>.consolidateNodeLinkNodes(nodes : MutableList<Node>, nodeUuid : UUID) : MutableList<Node> {
     //        println("pre-consolidation nodeLinks: $this")
 
@@ -460,6 +466,41 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
             return returnNodeLinks
         }
+
+        fun MutableList<NodeLink>.pruneNodeLinks(nodes : MutableList<Node>) : MutableList<NodeLink> {
+
+            val returnNodeLinks = this
+
+            nodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
+                val nearestNodes = nodes.nearestNodesOrderedAsc(refNode)
+
+                //cycle through quarter of nearest nodelinks to check for intersect
+                if (!nearestNodes.isNullOrEmpty()) {
+                    val quarterNearestNodesSize = nearestNodes.size / 4
+
+                    val refNodeLinks = this.getNodeLinks(refNode.uuid)
+
+                    (0..quarterNearestNodesSize).forEach { closeNodeAscIdx ->
+                        val closeNodeLinks = this.getNodeLinks(nearestNodes[closeNodeAscIdx].uuid)
+
+                        refNodeLinks.forEach { refNodeLink ->
+                            closeNodeLinks.forEach { closeNodeLink ->
+                                if ( Pair(nodes.getNode(refNodeLink.firstNodeUuid)!!.position, nodes.getNode (refNodeLink.secondNodeUuid)!!.position).intersects(
+                                        Pair(nodes.getNode(closeNodeLink.firstNodeUuid)!!.position, nodes.getNode (closeNodeLink.secondNodeUuid)!!.position)
+                                    )
+                                ) if ( refNodeLink.firstNodeUuid.toString() < closeNodeLink.firstNodeUuid.toString() )
+                                    returnNodeLinks.removeNodeLink(closeNodeLink)
+                                else
+                                    returnNodeLinks.removeNodeLink(refNodeLink)
+                            }
+                        }
+                    }
+                }
+            }
+
+            return returnNodeLinks
+        }
+
     }
 
 }

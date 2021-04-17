@@ -25,6 +25,7 @@ import node.NodeLink.Companion.getNextAngle
 import node.NodeLink.Companion.getNextNodeAngle
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.getRandomNextNodeAngle
+import node.NodeLink.Companion.pruneNodeLinks
 
 @ExperimentalUnsignedTypes
 interface INodeMesh {
@@ -39,13 +40,15 @@ interface INodeMesh {
 
     var roomIdx : Int
 
-    fun linkNearNodes(linkOrphans : Boolean = true) { nodeLinks = nodes.linkNearNodes(linkOrphans) }
+    fun linkNearNodes(linkOrphans : Boolean = true) { nodeLinks = nodes.linkNearNodes(nodeLinks, linkOrphans) }
 
     fun consolidateNearNodes() { nodeLinks = nodes.consolidateNearNodes(nodeLinks) }
 
     fun consolidateNodeLinks() { nodeLinks = nodeLinks.consolidateNodeLinks(nodes) }
 
     fun consolidateStackedNodes() { nodeLinks = nodes.consolidateStackedNodes(nodeLinks) }
+
+    fun pruneNodeLinks() { nodeLinks = nodeLinks.pruneNodeLinks(nodes) }
 
     fun getClusters(rooms : Int = 4, maxIterations : Int = 4) : Map<Node, MutableList<Node>> = nodes.cluster(rooms, maxIterations)
 
@@ -102,6 +105,7 @@ interface INodeMesh {
             this.consolidateStackedNodes()
         }
 
+
         fun buildRoomMesh(centerPoint : Point, height : Int) : INodeMesh {
 
             val leafPoints = height + 1
@@ -130,6 +134,8 @@ interface INodeMesh {
 
             roomMesh.consolidateNodeLinks()
 
+            roomMesh.pruneNodeLinks()
+
             roomMesh.setClusters(rooms = roomMesh.nodes.size / 20, maxIterations = roomMesh.nodes.size / 20)
 
             roomMesh.consolidateStackedNodes()
@@ -139,6 +145,8 @@ interface INodeMesh {
             roomMesh.linkNearNodes()
 
             roomMesh.consolidateNodeLinks()
+
+//            roomMesh.pruneNodeLinks()
 
             return roomMesh
         }

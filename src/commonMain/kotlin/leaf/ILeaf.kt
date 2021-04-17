@@ -73,21 +73,28 @@ interface ILeaf {
 
             val nextPosition = getChildPosition(this.position, childDistance, tryAngle)
 
-            val closestLeafDistances = refILeaf.getList().map { iLeaf -> Point.distance(iLeaf.position, nextPosition) }.sortedBy { it }
+            val closestLeaf = refILeaf.getList().sortedBy { iLeaf -> Point.distance(iLeaf.position, nextPosition) }
 
-            val closestLeafDistance = closestLeafDistances[0]
+            var closestLeafIntersect = false
 
-            val closestLeafAvgDistance = closestLeafDistances.filterIndexed { index, _ -> index < 3 }.average()
+            val checkLeafIdx = refILeaf.getList().size - 1
 
-            println ("closestLeafDistance: $closestLeafDistance, $closestLeafAvgDistance")
+            (0..checkLeafIdx).forEach { idx ->
+                closestLeafIntersect = closestLeafIntersect || Pair(this.position, nextPosition).checkLeafIntersect(closestLeaf[idx])
+            }
 
-            if ( (closestLeafDistance >= minBorderDistance) && (closestLeafAvgDistance >= minBorderDistance) ) bestMinAngle = tryAngle
+            if (!closestLeafIntersect) {
 
-            if ( (closestLeafDistance <= maxBorderDistance) && (closestLeafAvgDistance <= maxBorderDistance) ) bestMaxAngle = tryAngle
+                val closestLeafDistance = Point.distance(closestLeaf[0].position, nextPosition)
 
-            val tryBestMinMaxAngle = ((bestMinAngle.times(3) + bestMaxAngle ) / 4).normalized
+                if (closestLeafDistance >= minBorderDistance) bestMinAngle = tryAngle
 
-            if ( abs(tryBestMinMaxAngle - convergeToAngle) < abs(bestConvergeAngle - convergeToAngle) ) bestConvergeAngle = tryBestMinMaxAngle
+                if (closestLeafDistance <= maxBorderDistance) bestMaxAngle = tryAngle
+
+                val tryBestMinMaxAngle = ((bestMinAngle.times(3) + bestMaxAngle ) / 4).normalized
+
+                if ( abs(tryBestMinMaxAngle - convergeToAngle) < abs(bestConvergeAngle - convergeToAngle) ) bestConvergeAngle = tryBestMinMaxAngle
+            }
 
             println("@AngleOffset:$angleOffset - Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
 
@@ -259,6 +266,7 @@ interface ILeaf {
                                     }
                                 }
                             }
+                            //prune child angles < 10 degrees
                             innerChildren.sortedBy { it.angleFromParent }.forEach { outerInnerChild ->
                                 innerChildren.sortedBy { it.angleFromParent }.forEach { innerInnerChild ->
                                     if (outerInnerChild != innerInnerChild) {
@@ -287,6 +295,18 @@ interface ILeaf {
             }
             return returnLeaves.toList()
         }
+
+        fun Pair<Point, Point>.checkLeafIntersect(iLeaf : ILeaf) : Boolean {
+
+            var isLeafIntersect = false
+
+            if (!iLeaf.parentEmpty()) isLeafIntersect = isLeafIntersect || this.intersects(Pair(iLeaf.getParent()!!.position, iLeaf.position))
+
+            if (!iLeaf.childrenEmpty()) iLeaf.getChildrenList()!!.forEach { child -> isLeafIntersect = isLeafIntersect || this.intersects(Pair(iLeaf.position, child.position) ) }
+
+            return isLeafIntersect
+        }
+
 
         fun ILeaf.node(): Node {
             return Node(this.uuid, this.position)

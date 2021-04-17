@@ -8,6 +8,8 @@ import render.RenderLeaf.renderBorderingLeaf
 import render.RenderLeaf.renderLeafCircle
 import render.RenderLeaf.renderLeafStationary
 import render.RenderLeaf.renderPruneLeaf
+import render.RenderNodeMesh.renderNodeMeshRooms
+import render.RenderNodeMesh.renderNodeMeshStationaryOperations
 
 @ExperimentalUnsignedTypes
 suspend fun main() {
@@ -32,11 +34,11 @@ suspend fun main() {
 
 //	renderLashCircle()
 
-    renderBorderingLeaf()
+//    renderBorderingLeaf()
 
 //	renderLeafAndNodes()
 
-//	renderNodeMeshStationary()
+	renderNodeMeshStationaryOperations()
 
 //	renderAbsorbedNodeMesh()
 
