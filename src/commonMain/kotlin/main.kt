@@ -10,6 +10,8 @@ import render.RenderLeaf.renderLeafStationary
 import render.RenderLeaf.renderPruneLeaf
 import render.RenderNodeMesh.renderNodeMeshRooms
 import render.RenderNodeMesh.renderNodeMeshStationaryOperations
+import render.RenderNodeMesh.renderNodeMeshStationaryOperationsExtended
+import render.RenderNodeRooms.renderConnectedNodeRooms
 
 @ExperimentalUnsignedTypes
 suspend fun main() {
@@ -38,7 +40,9 @@ suspend fun main() {
 
 //	renderLeafAndNodes()
 
-	renderNodeMeshStationaryOperations()
+//	renderNodeMeshStationaryOperations()
+
+//	renderNodeMeshStationaryOperationsExtended()
 
 //	renderAbsorbedNodeMesh()
 
@@ -53,7 +57,7 @@ suspend fun main() {
 	//proof of concept only
 //	renderNodeRoomsBuiltLines()
 
-//	renderConnectedNodeRooms()
+	renderConnectedNodeRooms()
 
 //	renderConnectedNodeRoomBorder()
 

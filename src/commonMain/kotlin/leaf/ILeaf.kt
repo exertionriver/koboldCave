@@ -333,7 +333,7 @@ interface ILeaf {
             if (!childrenEmpty()) this.getChildrenList()!!
                 .forEach { child -> returnNodes.addNode(child.node(), this.description) }
 
-            println("leaf nodes: $returnNodes")
+//            println("leaf nodes: $returnNodes")
 
             return returnNodes
         }

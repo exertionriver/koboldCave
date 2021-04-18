@@ -132,9 +132,9 @@ interface INodeMesh {
 
             roomMesh.linkNearNodes()
 
-            roomMesh.consolidateNodeLinks()
-
             roomMesh.pruneNodeLinks()
+
+            roomMesh.consolidateNodeLinks()
 
             roomMesh.setClusters(rooms = roomMesh.nodes.size / 20, maxIterations = roomMesh.nodes.size / 20)
 
@@ -144,9 +144,9 @@ interface INodeMesh {
 
             roomMesh.linkNearNodes()
 
-            roomMesh.consolidateNodeLinks()
+            roomMesh.pruneNodeLinks()
 
-//            roomMesh.pruneNodeLinks()
+            roomMesh.consolidateNodeLinks()
 
             return roomMesh
         }

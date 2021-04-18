@@ -9,6 +9,7 @@ import leaf.Line.intersects
 import node.INodeMesh.Companion.addMesh
 import node.Node.Companion.addNode
 import node.Node.Companion.angleBetween
+import node.Node.Companion.consolidateNode
 import node.Node.Companion.getNode
 import node.Node.Companion.nearestNodesOrderedAsc
 import node.NodeLink.Companion.getNodeLinks
@@ -371,7 +372,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
             return nextAngle.normalized
         }
 
-        val linkAngleMinDegree = 30
+        val linkAngleMinDegree = 15
 
     //consolidates nodeLinks if degree difference of minor links is < linkAngleMinDegrees
      fun MutableList<NodeLink>.consolidateNodeLinkNodes(nodes : MutableList<Node>, nodeUuid : UUID) : MutableList<Node> {
@@ -456,6 +457,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
         fun MutableList<NodeLink>.consolidateNodeLinks(nodes : MutableList<Node>) : MutableList<NodeLink> {
 //        println("checking for nodelinks to consolidate...")
            val returnNodeLinks = this
+            val checkNodeLinks = this.toList()
 
             nodes.sortedBy { it.uuid.toString() }.forEach { node ->
                 this.consolidateNodeLinkNodes(nodes, node.uuid).forEach { returnNode ->
@@ -470,34 +472,37 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
         fun MutableList<NodeLink>.pruneNodeLinks(nodes : MutableList<Node>) : MutableList<NodeLink> {
 
             val returnNodeLinks = this
+            val checkNodes = nodes.toList()
 
-            nodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
+            checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
                 val nearestNodes = nodes.nearestNodesOrderedAsc(refNode)
 
-                //cycle through quarter of nearest nodelinks to check for intersect
-                if (!nearestNodes.isNullOrEmpty()) {
-                    val quarterNearestNodesSize = nearestNodes.size / 4
+                val refNodeLinks = this.getNodeLinks(refNode.uuid)
 
-                    val refNodeLinks = this.getNodeLinks(refNode.uuid)
+//                refNodeLinks.forEach { println("refNodeLink: $it") }
 
-                    (0..quarterNearestNodesSize).forEach { closeNodeAscIdx ->
-                        val closeNodeLinks = this.getNodeLinks(nearestNodes[closeNodeAscIdx].uuid)
+                nearestNodes.forEach { checkNode ->
+                    if (checkNode.uuid.toString() > refNode.uuid.toString()) {
+
+                        val checkNodeLinks = this.getNodeLinks(checkNode.uuid)
+
+//                        checkNodeLinks.forEach { println("checkNodeLink: $it") }
 
                         refNodeLinks.forEach { refNodeLink ->
-                            closeNodeLinks.forEach { closeNodeLink ->
-                                if ( Pair(nodes.getNode(refNodeLink.firstNodeUuid)!!.position, nodes.getNode (refNodeLink.secondNodeUuid)!!.position).intersects(
-                                        Pair(nodes.getNode(closeNodeLink.firstNodeUuid)!!.position, nodes.getNode (closeNodeLink.secondNodeUuid)!!.position)
-                                    )
-                                ) if ( refNodeLink.firstNodeUuid.toString() < closeNodeLink.firstNodeUuid.toString() )
-                                    returnNodeLinks.removeNodeLink(closeNodeLink)
-                                else
-                                    returnNodeLinks.removeNodeLink(refNodeLink)
+                            checkNodeLinks.forEach { checkNodeLink ->
+                                val checkSet = mutableSetOf(refNodeLink.firstNodeUuid, refNodeLink.secondNodeUuid, checkNodeLink.firstNodeUuid, checkNodeLink.secondNodeUuid)
+                                    if (checkSet.size == 4) // check four unique points for intersect
+                                        if ( Pair(nodes.getNode(refNodeLink.firstNodeUuid)!!.position, nodes.getNode (refNodeLink.secondNodeUuid)!!.position).intersects(
+                                            Pair(nodes.getNode(checkNodeLink.firstNodeUuid)!!.position, nodes.getNode (checkNodeLink.secondNodeUuid)!!.position)
+                                        ) ) {
+//                                        println ("removing $checkNodeLink")
+                                        returnNodeLinks.removeNodeLink(checkNodeLink)
+                                }
                             }
                         }
                     }
                 }
             }
-
             return returnNodeLinks
         }
 

@@ -232,6 +232,224 @@ object RenderNodeMesh {
     }
 
     @ExperimentalUnsignedTypes
+    suspend fun renderNodeMeshStationaryOperationsExtended() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        val startingPoint = Point(212, 374)
+
+        val textOffset = Point(-200, -200)
+        val centerMeshOffset = Point(250, 200)
+
+        val xNodeOffset = Point(600.0, 0.0)
+        val yNodeOffset = Point(0.0, 400.0)
+
+        val firstRefPoint = Point(350, 200)
+        val secondRefPoint = Point (350 + linkNodeDistance, 200)
+
+        val thirdRefPoint = Point(350, 250)
+        val fourthRefPoint = Point (350 + consolidateNodeDistance, 250)
+
+
+        graphics {
+
+            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+
+            val leafFirst = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(330) )
+
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
+            val nodeMesh = threeLeaf.nodeMesh()
+
+            text(text = "linkNodeDistance", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(firstRefPoint + Point(-10, -25))
+            text(text = "consolidateNodeDistance", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(thirdRefPoint + Point(-10, -25))
+
+            stroke(Colors["#52b670"], StrokeInfo(thickness = 3.0)) {
+
+                line(firstRefPoint, secondRefPoint)
+                line(thirdRefPoint, fourthRefPoint)
+            }
+
+            stroke(Colors["#45f049"], StrokeInfo(thickness = 3.0)) {
+
+                circle(firstRefPoint, radius = 5.0)
+                circle(secondRefPoint, radius = 5.0)
+                circle(thirdRefPoint, radius = 5.0)
+                circle(fourthRefPoint, radius = 5.0)
+            }
+
+//            text(text = "threeLeaf", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + leafOffset + textOffset)
+
+            stroke(Colors["#20842b"], StrokeInfo(thickness = 3.0)) {
+
+                for (line in threeLeaf.getLineList() ) {
+                    if (line != null) line(line.first + centerMeshOffset, line.second + centerMeshOffset)
+                }
+            }
+
+            for (listLeaf in threeLeaf.getList() ) {
+//                println (listLeaf)
+                circle {
+                    position(listLeaf.position + centerMeshOffset)
+                    radius = 5.0
+                    color = Colors["#42f048"]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(listLeaf.uuid.toString())
+                    }
+                }
+            }
+
+            val consolidatedLinkedNodeMesh = NodeMesh(nodeMesh)
+
+            consolidatedLinkedNodeMesh.consolidateNearNodes()
+
+            consolidatedLinkedNodeMesh.linkNearNodes()
+
+            text(text = "consolidated + linked nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + centerMeshOffset + textOffset)
+
+            stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
+
+                for (nodeLine in consolidatedLinkedNodeMesh.getNodeLineList() ) {
+                    line(nodeLine!!.first + centerMeshOffset, nodeLine.second + centerMeshOffset )
+                }
+            }
+
+            for (node in consolidatedLinkedNodeMesh.nodes) {
+                circle {
+                    position(node.position + centerMeshOffset)
+                    radius = 5.0
+                    color = Colors["#5f5ff0"]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                    }
+                }
+            }
+
+            val clcProcessedNodeMesh = NodeMesh(nodeMesh)
+
+            clcProcessedNodeMesh.consolidateNearNodes()
+
+            clcProcessedNodeMesh.linkNearNodes()
+
+            clcProcessedNodeMesh.consolidateNodeLinks()
+
+            text(text = "cons + link + consLink nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + textOffset)
+
+            stroke(Colors["#9f9a3f"], StrokeInfo(thickness = 3.0)) {
+
+                for (nodeLine in clcProcessedNodeMesh.getNodeLineList() ) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+            for (node in clcProcessedNodeMesh.nodes ) {
+                circle {
+                    position(node.position )
+                    radius = 5.0
+                    color = Colors["#f4ff0b"]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                    }
+                }
+            }
+
+            val clpProcessedNodeMesh = NodeMesh(nodeMesh)
+
+            clpProcessedNodeMesh.consolidateNearNodes()
+
+            clpProcessedNodeMesh.linkNearNodes()
+
+            clpProcessedNodeMesh.pruneNodeLinks()
+
+            text(text = "cons + link + pruned links nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + xNodeOffset + textOffset)
+
+            stroke(Colors["#9f3762"], StrokeInfo(thickness = 3.0)) {
+
+                for (nodeLine in clpProcessedNodeMesh.getNodeLineList() ) {
+                    line(nodeLine!!.first+ xNodeOffset, nodeLine.second + xNodeOffset )
+                }
+            }
+
+            for (node in clpProcessedNodeMesh.nodes) {
+                circle {
+                    position(node.position + xNodeOffset)
+                    radius = 5.0
+                    color = Colors["#ff4494"]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                    }
+                }
+            }
+
+            val clpcProcessedNodeMesh = NodeMesh(nodeMesh)
+
+            clpcProcessedNodeMesh.consolidateNearNodes()
+
+            clpcProcessedNodeMesh.linkNearNodes()
+
+            clpcProcessedNodeMesh.pruneNodeLinks()
+
+            clpcProcessedNodeMesh.consolidateNodeLinks()
+
+            text(text = "cons + link + pruned + cl nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + yNodeOffset + textOffset)
+
+            stroke(Colors["#7e519f"], StrokeInfo(thickness = 3.0)) {
+
+                for (nodeLine in clpcProcessedNodeMesh.getNodeLineList() ) {
+                    line(nodeLine!!.first + yNodeOffset, nodeLine.second + yNodeOffset )
+                }
+            }
+
+            for (node in clpcProcessedNodeMesh.nodes) {
+                circle {
+                    position(node.position + yNodeOffset)
+                    radius = 5.0
+                    color = Colors["#b685ff"]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                    }
+                }
+            }
+
+            val clcpProcessedNodeMesh = NodeMesh(nodeMesh)
+
+            clcpProcessedNodeMesh.consolidateNearNodes()
+
+            clcpProcessedNodeMesh.linkNearNodes()
+
+            clcpProcessedNodeMesh.consolidateNodeLinks()
+
+            clcpProcessedNodeMesh.pruneNodeLinks()
+
+            text(text = "cons + link + cl + pruned nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + xNodeOffset + yNodeOffset + textOffset)
+
+            stroke(Colors["#5c9f58"], StrokeInfo(thickness = 3.0)) {
+
+                for (nodeLine in clcpProcessedNodeMesh.getNodeLineList() ) {
+                    line(nodeLine!!.first + xNodeOffset + yNodeOffset, nodeLine.second + xNodeOffset + yNodeOffset )
+                }
+            }
+
+            for (node in clcpProcessedNodeMesh.nodes) {
+                circle {
+                    position(node.position + xNodeOffset + yNodeOffset)
+                    radius = 5.0
+                    color = Colors["#9dffa1"]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                    }
+                }
+            }
+        }
+    }
+
+
+    @ExperimentalUnsignedTypes
     suspend fun renderAbsorbedNodeMesh() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
 
         val startingMap = mapOf(

@@ -59,7 +59,11 @@ object Line {
     }
 
     fun Pair<Point, Point>.intersects(line: Pair<Point, Point>) : Boolean {
-        return doIntersect(this.first, this.second, line.first, line.second)
+        val intersect = doIntersect(this.first, this.second, line.first, line.second)
+
+  //      println ("intersect(${this.first}, ${this.second} to ${line.first}, ${line.second}) == $intersect")
+
+        return intersect
     }
 
 
