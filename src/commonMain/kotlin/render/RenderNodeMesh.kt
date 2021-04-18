@@ -21,8 +21,11 @@ import node.INodeMesh.Companion.buildRoomMesh
 import node.Node
 import node.Node.Companion.randomPosition
 import node.NodeLink.Companion.consolidateNodeDistance
+import node.NodeLink.Companion.getRandomNodeLink
 import node.NodeLink.Companion.linkNodeDistance
 import node.NodeMesh
+import render.RenderPalette.BackColors
+import render.RenderPalette.ForeColors
 
 object RenderNodeMesh {
 
@@ -572,11 +575,9 @@ object RenderNodeMesh {
             }
         }
     }
+
     @ExperimentalUnsignedTypes
     suspend fun renderNodeMeshRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
-
-        val roomColors = listOf(Colors.DARKRED, Colors.DARKGREEN,  Colors.BLUE, Colors.DARKMAGENTA, Colors.DARKSEAGREEN, Colors.DARKTURQUOISE
-            , Colors.DARKORANGE, Colors.DARKOLIVEGREEN, Colors.DARKSALMON)
 
         graphics {
 
@@ -584,17 +585,17 @@ object RenderNodeMesh {
 
             RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
 
-            val roomMesh = buildRoomMesh(Point(512, 512), height = 5)
+            val roomMesh = buildRoomMesh(Point(512, 512), height = 4)
 
-            println("drawing lines")
+//            println("drawing lines")
             for (nodeLine in roomMesh.getNodeLineList()) {
 
-                stroke(Colors["#343ab6"], StrokeInfo(thickness = 3.0)) {
+                stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
                     line(nodeLine!!.first, nodeLine.second )
                 }
             }
 
-            println("drawing nodes")
+//            println("drawing nodes")
             roomMesh.nodes.forEach { node ->
 
           //      println(node.description)
@@ -605,7 +606,74 @@ object RenderNodeMesh {
 
                 circle { position(node.position)
                     radius = 5.0
-                    color = roomColors[colorIdx % 9]
+                    color = ForeColors[colorIdx % ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderOrphanedNodeMesh() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        graphics {
+
+            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+
+            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
+
+            val roomMesh = buildRoomMesh(Point(512, 512), height = 4)
+
+            (0..20).forEach { roomMesh.nodeLinks.remove( roomMesh.nodeLinks.getRandomNodeLink() ) }
+
+//            println("drawing lines")
+            for (nodeLine in roomMesh.getNodeLineList()) {
+
+                stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+//            println("drawing nodes")
+            roomMesh.nodes.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = ForeColors[0]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.removeOrphans()
+
+            roomMesh.nodes.forEach { node ->
+
+                //      println(node.description)
+
+                for (nodeLine in roomMesh.getNodeLineList()) {
+
+                    stroke(BackColors[3], StrokeInfo(thickness = 3.0)) {
+                        line(nodeLine!!.first, nodeLine.second )
+                    }
+                }
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = ForeColors[4]
                     strokeThickness = 3.0
                     onClick{
                         RenderNodeRooms.updateNodeText(node.uuid.toString())

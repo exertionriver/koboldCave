@@ -14,9 +14,12 @@ import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.areNodesLinked
 import node.NodeLink.Companion.buildNodeLinkLine
 import node.NodeLink.Companion.consolidateNodeDistance
+import node.NodeLink.Companion.consolidateNodeLinkNodes
+import node.NodeLink.Companion.consolidateNodeLinks
 import node.NodeLink.Companion.getNodeChildrenUuids
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.linkNodeDistance
+import node.NodeLink.Companion.removeNodeLink
 import node.NodeLink.Companion.stackedNodeDistance
 import kotlin.math.atan
 import kotlin.random.Random
@@ -43,19 +46,6 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
     fun nearestCentroid(centroids : List<Node>) : Node {
 
-/*        var minimumDistance = 1024.0
-        lateinit var nearestCentroid : Node
-
-        centroids.forEach { centroid ->
-            val currentDistance = position.distanceTo(centroid.position)
-
-            if (currentDistance < minimumDistance) {
-                minimumDistance = currentDistance
-                nearestCentroid = centroid
-            }
-        }
-*/
-
         return centroids.nearestNodesOrderedAsc(this)[0]
     }
 
@@ -68,6 +58,8 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
     }
 
     override fun toString() = "${Node::class.simpleName}($uuid) : $position"
+
+    fun getNodeChildren(nodes : MutableList<Node>, nodeLinks : MutableList<NodeLink>) = nodeLinks.getNodeChildrenUuids(this.uuid, this.uuid).mapNotNull { nodes.getNode(it) }
 
     companion object {
         fun emptyNode() = Node(position = Point(0, 0))
@@ -306,7 +298,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
         fun List<Node>.buildNodePaths(noise : Int = 0, paths : Int = 4, nodeDescription : String) : INodeMesh {
 
-            val returnPathMeshes = NodeMesh("pathMesh${Random.nextInt(256)}")
+            val returnPathMeshes = NodeMesh(description = "pathMesh${Random.nextInt(256)}")
 
             println("building node paths..")
 
@@ -333,5 +325,60 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
         }
 
         fun List<Node>.getRandomNode() : Node = this[Random.nextInt(this.size)]
+
+        fun MutableList<Node>.removeOrphans(nodeLinks : MutableList<NodeLink>, minPercent : Double) : MutableList<Node> {
+
+ //           println("checking for orphaned Nodes to remove...")
+
+            val nodeCountThreshhold = this.size * minPercent
+
+            val processedNodes = mutableSetOf<Node>()
+            val checkNodes = mutableSetOf<Node>()
+            val previousCheckNodes = mutableSetOf<Node>()
+            val returnNodes = mutableListOf<Node>()
+
+
+            while (processedNodes.size < this.size) {
+
+                val totalList = this
+                totalList.removeAll(returnNodes)
+
+                checkNodes.clear()
+                previousCheckNodes.clear()
+
+                previousCheckNodes.add(totalList.getRandomNode())
+//                println("adding randomNode, pcn:$previousCheckNodes")
+
+                while(checkNodes != previousCheckNodes) {
+                    previousCheckNodes.addAll(checkNodes)
+//                    println("pcn(${previousCheckNodes.size}): $previousCheckNodes")
+
+                    previousCheckNodes.forEach { previousCheckNode ->
+//                        println("adding $previousCheckNode children to checkNodes")
+
+                        val nodeChildren = previousCheckNode.getNodeChildren(this, nodeLinks)
+
+//                        println("nodeChildren: $nodeChildren")
+
+                        if (nodeChildren.isNullOrEmpty())
+                            checkNodes.add(previousCheckNode)
+                        else
+                            checkNodes.addAll(nodeChildren)
+                    }
+
+//                    println("cn(${checkNodes.size}): $checkNodes")
+                }
+
+                if (checkNodes.size > nodeCountThreshhold) {
+//                    println("${checkNodes.size} < $nodeCountThreshhold: removing orphaned nodes: $checkNodes")
+                    returnNodes.addAll(checkNodes)
+                }
+
+                processedNodes.addAll(checkNodes)
+
+            }
+
+            return returnNodes
+        }
     }
 }

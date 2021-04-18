@@ -71,7 +71,7 @@ object RenderNavigation {
         var rightNextAngle : Angle = Angle.fromDegrees(0)
 
         val renderNodeMap : MutableMap<Node, View> = mutableMapOf()
-        val allRooms = NodeMesh("allRooms")
+        val allRooms = NodeMesh(description = "allRooms")
         lateinit var arrowImage : Image
 
         graphics {
@@ -282,7 +282,7 @@ object RenderNavigation {
         var rightNextAngle : Angle = Angle.fromDegrees(0)
 
         val renderNodeMap : MutableMap<Node, View> = mutableMapOf()
-        val allRooms = NodeMesh("allRooms")
+        val allRooms = NodeMesh(description = "allRooms")
         lateinit var arrowImage : Image
 
         var centroid = Node()

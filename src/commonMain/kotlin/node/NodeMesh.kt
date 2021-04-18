@@ -5,10 +5,10 @@ import node.Node.Companion.linkNearNodes
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
-class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), override val description: String = "nodeMesh${Random.nextInt(256)}", override var nodes : MutableList<Node>, override var nodeLinks : MutableList<NodeLink> ) : INodeMesh {
+class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), override val description: String = "nodeMesh${Random.nextInt(256)}", override var nodes : MutableList<Node> = mutableListOf(), override var nodeLinks : MutableList<NodeLink> = mutableListOf(), override var centroids : MutableList<Node> = mutableListOf() ) : INodeMesh {
 
     init {
-        this.consolidateStackedNodes()
+ //       this.consolidateStackedNodes()
  //       println("consolidating stacked nodes..!")
     }
 
@@ -19,8 +19,6 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), overri
                 , updDescription: String = copyNodeMesh.description) : this (
         uuid = updUuid
         , description = updDescription
-        , nodes = mutableListOf()
-        , nodeLinks = mutableListOf()
     ) {
         nodes.addAll(copyNodeMesh.nodes)
         nodeLinks.addAll(copyNodeMesh.nodeLinks)
@@ -28,18 +26,10 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(Random.Default), overri
 
     constructor(description : String = "${NodeMesh::class.simpleName}${Random.nextInt(256)}", linkNodes: MutableList<Node>) : this (
         description = description
-        , nodes = mutableListOf()
-        , nodeLinks = mutableListOf()
     ) {
         nodes.addAll(linkNodes)
         nodeLinks.addAll(linkNodes.linkNearNodes())
     }
-
-    constructor(description : String = "${NodeMesh::class.simpleName}${Random.nextInt(256)}") : this (
-        description = description
-        , nodes = mutableListOf()
-        , nodeLinks = mutableListOf()
-    )
 
     override fun toString() = "${NodeMesh::class.simpleName}(${uuid}) : $description, $nodes, $nodeLinks"
 

@@ -37,7 +37,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
     override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid)"
 
     companion object {
-        val consolidateNodeDistance = ILeaf.NextDistancePx / 4
+        val consolidateNodeDistance = ILeaf.NextDistancePx / 2
         val linkNodeDistance = ILeaf.NextDistancePx
         val stackedNodeDistance = 0.1 // px
 
@@ -76,6 +76,8 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
             this.firstOrNull { nodeLink -> nodeLink.firstNodeUuid == firstUuid && nodeLink.secondNodeUuid == secondUuid }
              ?: this.firstOrNull { nodeLink -> nodeLink.firstNodeUuid == secondUuid && nodeLink.secondNodeUuid == firstUuid }
 
+        fun MutableList<NodeLink>.getRandomNodeLink() : NodeLink = this[Random.nextInt(this.size)]
+
         fun MutableList<NodeLink>.areNodesLinked(firstUuid: UUID, secondUuid: UUID) : Boolean = getNodeLink(firstUuid, secondUuid) != null
 
         fun MutableList<NodeLink>.addNodeLink(nodes: MutableList<Node>, firstUuid : UUID, secondUuid: UUID) : Boolean = if ( !areNodesLinked(firstUuid, secondUuid) && nodes.getNode(firstUuid) != null && nodes.getNode(secondUuid) != null ) this.add( NodeLink(firstUuid, secondUuid) ) else false
@@ -105,6 +107,17 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
 
             return this.getNodeLinks( uuid ).map{ childLink -> childLink.getNodeChildAngle(nodes, uuid) ?: Angle.fromDegrees(0) }.toMutableList()
 
+        }
+
+        fun MutableList<NodeLink>.removeOrphanLinks(nodes: MutableList<Node>) : MutableList<NodeLink> {
+
+            val returnLinks = mutableListOf<NodeLink>()
+
+            val nodeUuids = nodes.map { it.uuid }
+
+            this.forEach { nodeLink -> if( nodeUuids.contains(nodeLink.firstNodeUuid) && nodeUuids.contains(nodeLink.secondNodeUuid) ) returnLinks.add(nodeLink) }
+
+            return returnLinks
         }
 
         //noise goes from 0 to 100

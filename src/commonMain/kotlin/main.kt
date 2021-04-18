@@ -11,7 +11,11 @@ import render.RenderLeaf.renderPruneLeaf
 import render.RenderNodeMesh.renderNodeMeshRooms
 import render.RenderNodeMesh.renderNodeMeshStationaryOperations
 import render.RenderNodeMesh.renderNodeMeshStationaryOperationsExtended
+import render.RenderNodeMesh.renderOrphanedNodeMesh
+import render.RenderNodeRooms.renderConnectedNodeRoomBorder
+import render.RenderNodeRooms.renderConnectedNodeRoomElaboration
 import render.RenderNodeRooms.renderConnectedNodeRooms
+import render.RenderNodeRooms.renderNodeRoomsBuiltLines
 
 @ExperimentalUnsignedTypes
 suspend fun main() {
@@ -48,16 +52,18 @@ suspend fun main() {
 
 //	renderNodeMeshRooms()
 
+	renderOrphanedNodeMesh()
+
 //	renderNodeLineStationary()
 
 //	renderNodeLinesBetweenPoints()
 
 //	renderNodeRooms()
 
-	//proof of concept only
+	//proof of concept only -- not used, takes too long to run
 //	renderNodeRoomsBuiltLines()
 
-	renderConnectedNodeRooms()
+//	renderConnectedNodeRooms()
 
 //	renderConnectedNodeRoomBorder()
 
