@@ -17,9 +17,12 @@ import leaf.ILeaf.Companion.getList
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh.Companion.absorbMesh
+import node.INodeMesh.Companion.buildCentroidRoomMesh
 import node.INodeMesh.Companion.buildRoomMesh
 import node.Node
+import node.Node.Companion.moveNodes
 import node.Node.Companion.randomPosition
+import node.Node.Companion.scaleNodes
 import node.NodeLink.Companion.consolidateNodeDistance
 import node.NodeLink.Companion.getRandomNodeLink
 import node.NodeLink.Companion.linkNodeDistance
@@ -606,6 +609,109 @@ object RenderNodeMesh {
 
                 circle { position(node.position)
                     radius = 5.0
+                    color = ForeColors[colorIdx % ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.centroids.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 10.0
+                    color = ForeColors[colorIdx % ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderNodeMeshRoomsSetCentroids() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        graphics {
+
+            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+
+            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
+
+            val centroidMesh = buildRoomMesh(Point(200, 200), height = 2)
+
+            println("centroidMesh:$centroidMesh")
+
+            for (nodeLine in centroidMesh.getNodeLineList()) {
+
+                stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+            centroidMesh.nodes.forEach { node ->
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = ForeColors[2]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            val roomMesh = buildCentroidRoomMesh(height = 2, centroids = centroidMesh.nodes.moveNodes(Point(312, 312)).scaleNodes(scale = 1.5) )
+
+//            println("drawing lines")
+            for (nodeLine in roomMesh.getNodeLineList()) {
+
+                stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+//            println("drawing nodes")
+            roomMesh.nodes.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = ForeColors[colorIdx % ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.centroids.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 10.0
                     color = ForeColors[colorIdx % ForeColors.size]
                     strokeThickness = 3.0
                     onClick{

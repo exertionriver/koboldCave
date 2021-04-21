@@ -51,10 +51,10 @@ class Leaf(override val topHeight : Int = 3
             ).getSelectedProbability()!!.toInt()
             (height > 0) -> ProbabilitySelect(
                 mapOf(
-                    "0" to Probability(5, 0),
-                    "1" to Probability(20, 0),
+//                    "0" to Probability(5, 0),
+                    "1" to Probability(25, 0),
                     "2" to Probability(50, 0),
-                    "3" to Probability(20, 0)
+                    "3" to Probability(25, 0)
                 )
             ).getSelectedProbability()!!.toInt()
             else -> 0

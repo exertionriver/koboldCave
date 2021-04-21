@@ -264,15 +264,21 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return nodeDistMap.toList().sortedBy { (_, dist) -> dist}.toMap().keys.toMutableList()
         }
 
-        fun MutableList<Node>.cluster(rooms : Int = 4, maxIterations : Int = 4, roomIdx : Int = 0) : MutableMap<Node, MutableList<Node>> {
+        fun MutableList<Node>.cluster(rooms : Int = 4, maxIterations : Int = 4, roomIdx : Int = 0, setCentroids : MutableList<Node> = mutableListOf()) : MutableMap<Node, MutableList<Node>> {
 
             var roomIdxVar = roomIdx
 
-            val centroids = MutableList(size = rooms) { Node(position = this.randomPosition(), description = "Room${roomIdxVar++}" ) }
+            val centroids = if (setCentroids.size > 0)
+                MutableList(size = setCentroids.size) { idx -> Node(position = setCentroids[idx].position, description = "Room${roomIdxVar++}" ) }
+                    else
+                MutableList(size = rooms) { Node(position = this.randomPosition(), description = "Room${roomIdxVar++}" ) }
+
+            val totalRooms = if (setCentroids.size > 0) setCentroids.size else rooms
+
             val nodeClusters = mutableMapOf<Node, MutableList<Node>>()
 
 //        println("init nodeRooms: $nodeRooms")
-            (0 until rooms).toList().forEach {
+            (0 until totalRooms).toList().forEach {
                 nodeClusters[centroids[it]] = mutableListOf()
             }
 
@@ -328,7 +334,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
         fun MutableList<Node>.removeOrphans(nodeLinks : MutableList<NodeLink>, minPercent : Double) : MutableList<Node> {
 
- //           println("checking for orphaned Nodes to remove...")
+//            println("checking for orphaned Nodes to remove...")
 
             val nodeCountThreshhold = this.size * minPercent
 
@@ -376,6 +382,29 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
                 processedNodes.addAll(checkNodes)
 
+            }
+
+            return returnNodes
+        }
+
+        fun MutableList<Node>.moveNodes(offset : Point) : MutableList<Node> {
+
+            val returnNodes = mutableListOf<Node>()
+
+            this.forEach { returnNodes.add(Node(it, updPosition = it.position + offset))}
+
+            return returnNodes
+        }
+
+        fun MutableList<Node>.scaleNodes(pivot : Point = this.averagePositionWithinNodes(), scale : Double) : MutableList<Node> {
+
+            val returnNodes = mutableListOf<Node>()
+
+            this.forEach {
+                val xOffset = (it.position.x - pivot.x) * scale
+                val yOffset = (it.position.y - pivot.y) * scale
+
+                returnNodes.add( Node(it, updPosition = Point(it.position.x + xOffset, it.position.y + yOffset) ) )
             }
 
             return returnNodes

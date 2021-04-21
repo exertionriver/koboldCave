@@ -9,6 +9,7 @@ import render.RenderLeaf.renderLeafCircle
 import render.RenderLeaf.renderLeafStationary
 import render.RenderLeaf.renderPruneLeaf
 import render.RenderNodeMesh.renderNodeMeshRooms
+import render.RenderNodeMesh.renderNodeMeshRoomsSetCentroids
 import render.RenderNodeMesh.renderNodeMeshStationaryOperations
 import render.RenderNodeMesh.renderNodeMeshStationaryOperationsExtended
 import render.RenderNodeMesh.renderOrphanedNodeMesh
@@ -52,7 +53,9 @@ suspend fun main() {
 
 //	renderNodeMeshRooms()
 
-	renderOrphanedNodeMesh()
+	renderNodeMeshRoomsSetCentroids()
+
+//	renderOrphanedNodeMesh()
 
 //	renderNodeLineStationary()
 
