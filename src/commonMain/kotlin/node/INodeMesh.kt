@@ -11,6 +11,7 @@ import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.Node.Companion.addNode
 import node.Node.Companion.addNodes
+import node.Node.Companion.adoptRoomOrphans
 import node.Node.Companion.averagePositionWithinNodes
 import node.Node.Companion.cluster
 import node.Node.Companion.consolidateNearNodes
@@ -57,6 +58,8 @@ interface INodeMesh {
 
     fun removeOrphans() { nodes = nodes.removeOrphans(nodeLinks, minPercent = 0.2); nodeLinks = nodeLinks.removeOrphanLinks(nodes) }
 
+    fun adoptRoomOrphans() { nodes = nodes.adoptRoomOrphans(nodeLinks, getRoomNodes()) }
+
     fun getClusters(rooms : Int = 4, maxIterations : Int = 4) : Map<Node, MutableList<Node>> = nodes.cluster(rooms, maxIterations)
 
     fun setClusters(rooms : Int = 4, maxIterations : Int = 4, setCentroids : MutableList<Node> = mutableListOf()) {
@@ -80,6 +83,19 @@ interface INodeMesh {
     fun getNodeLineList() : List<Pair<Point, Point>?> = nodes.getNodeLineList(nodeLinks)
 
     fun buildNodeLinkLines(noise : Int = 0, description : String = this.description) { this.addMesh( nodeLinks.buildNodeLinkLines(nodes, noise, description) ) }
+
+    fun getRoomNodes() : Map<String, MutableList<Node>> {
+
+        val returnMap = mutableMapOf<String, MutableList<Node>>()
+
+        nodes.forEach { node ->
+            if (returnMap[node.description].isNullOrEmpty()) returnMap[node.description] = mutableListOf()
+
+            returnMap[node.description]!!.add(node)
+        }
+
+        return returnMap
+    }
 
     companion object {
 
@@ -121,27 +137,27 @@ interface INodeMesh {
 
             this.consolidateStackedNodes()
 
-            println("consolidated stacked: $this")
+//            println("consolidated stacked: $this")
 
             this.consolidateNearNodes()
 
-            println("consolidated near: $this")
+//            println("consolidated near: $this")
 
             this.linkNearNodes()
 
-            println("linked near: $this")
+//            println("linked near: $this")
 
             this.pruneNodeLinks()
 
-            println("pruned: $this")
+//            println("pruned: $this")
 
             this.consolidateNodeLinks()
 
-            println("consolidated node links: $this")
+//            println("consolidated node links: $this")
 
             this.removeOrphans()
 
-            println("orphans removed: $this")
+//            println("orphans removed: $this")
 
         }
 
@@ -164,11 +180,11 @@ interface INodeMesh {
 
             leafMap.forEach {
 
-                println("leafMap: $it")
+ //               println("leafMap: $it")
                 val leaf = Leaf(topHeight = height, angleFromParent = it.key, position = it.value )
-                println("leaf: $leaf")
+ //               println("leaf: $leaf")
                 roomMesh.addMesh( leaf.getList().nodeMesh() )
-                println("mesh: $roomMesh")
+ //               println("mesh: $roomMesh")
             }
 
             roomMesh.processMesh()

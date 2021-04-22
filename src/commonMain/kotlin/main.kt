@@ -12,6 +12,7 @@ import render.RenderNodeMesh.renderNodeMeshRooms
 import render.RenderNodeMesh.renderNodeMeshRoomsSetCentroids
 import render.RenderNodeMesh.renderNodeMeshStationaryOperations
 import render.RenderNodeMesh.renderNodeMeshStationaryOperationsExtended
+import render.RenderNodeMesh.renderOrphanHandlingNodeMeshRooms
 import render.RenderNodeMesh.renderOrphanedNodeMesh
 import render.RenderNodeRooms.renderConnectedNodeRoomBorder
 import render.RenderNodeRooms.renderConnectedNodeRoomElaboration
@@ -53,9 +54,11 @@ suspend fun main() {
 
 //	renderNodeMeshRooms()
 
-	renderNodeMeshRoomsSetCentroids()
+//	renderNodeMeshRoomsSetCentroids()
 
 //	renderOrphanedNodeMesh()
+
+	renderOrphanHandlingNodeMeshRooms()
 
 //	renderNodeLineStationary()
 

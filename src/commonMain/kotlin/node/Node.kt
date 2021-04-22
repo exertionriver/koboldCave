@@ -343,16 +343,15 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             val previousCheckNodes = mutableSetOf<Node>()
             val returnNodes = mutableListOf<Node>()
 
-
             while (processedNodes.size < this.size) {
 
-                val totalList = this
-                totalList.removeAll(returnNodes)
+                val nodesRemaining = this
+                nodesRemaining.removeAll(returnNodes)
 
                 checkNodes.clear()
                 previousCheckNodes.clear()
 
-                previousCheckNodes.add(totalList.getRandomNode())
+                previousCheckNodes.add(nodesRemaining.getRandomNode())
 //                println("adding randomNode, pcn:$previousCheckNodes")
 
                 while(checkNodes != previousCheckNodes) {
@@ -382,6 +381,96 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
                 processedNodes.addAll(checkNodes)
 
+            }
+
+            return returnNodes
+        }
+
+        fun MutableList<Node>.adoptRoomOrphans(nodeLinks : MutableList<NodeLink>, roomNodes : Map<String, MutableList<Node>>) : MutableList<Node> {
+
+            println("checking for orphaned room Nodes to adopt...")
+
+            val returnNodes = mutableListOf<Node>()
+
+            roomNodes.keys.forEach { roomNodeDescription ->
+
+                val nodeCountThreshhold = roomNodes[roomNodeDescription]!!.size * 0.25
+
+                val processedNodes = mutableSetOf<Node>()
+                val checkNodes = mutableSetOf<Node>()
+                val previousCheckNodes = mutableSetOf<Node>()
+                val returnRoomNodes = mutableSetOf<Node>()
+
+                println("processing $roomNodeDescription")
+
+                //first, identify connected nodes
+                while (processedNodes.size < roomNodes[roomNodeDescription]!!.size) {
+
+                    val nodesRemaining = roomNodes[roomNodeDescription]!!
+                    nodesRemaining.removeAll(returnRoomNodes)
+
+                    checkNodes.clear()
+                    previousCheckNodes.clear()
+
+                    previousCheckNodes.add(nodesRemaining.getRandomNode())
+//                println("adding randomNode, pcn:$previousCheckNodes")
+
+                    while(checkNodes != previousCheckNodes) {
+                        previousCheckNodes.addAll(checkNodes)
+//                    println("pcn(${previousCheckNodes.size}): $previousCheckNodes")
+
+                        previousCheckNodes.forEach { previousCheckNode ->
+//                        println("adding $previousCheckNode children to checkNodes")
+
+                            val nodeChildren = previousCheckNode.getNodeChildren(roomNodes[roomNodeDescription]!!, nodeLinks).filter { childNode -> childNode.description == roomNodeDescription }
+
+//                        println("nodeChildren: $nodeChildren")
+
+                            if (nodeChildren.isNullOrEmpty())
+                                checkNodes.add(previousCheckNode)
+                            else
+                                checkNodes.addAll(nodeChildren)
+                        }
+
+//                    println("cn(${checkNodes.size}): $checkNodes")
+                    }
+
+                    if (checkNodes.size > nodeCountThreshhold) {
+//                    println("${checkNodes.size} < $nodeCountThreshhold: removing orphaned nodes: $checkNodes")
+                        returnRoomNodes.addAll(checkNodes)
+                    }
+
+                    processedNodes.addAll(checkNodes)
+
+                }
+
+                //next, associated disconnected nodes with other rooms
+                val adoptNodes = processedNodes.minus(returnRoomNodes)
+
+                //create adoptNode associated with child room
+                adoptNodes.forEach { adoptNode ->
+
+                    var adoptRoom = adoptNode.description
+                    var adoptNodeScan = adoptNode
+                    val adoptNodeScanList = mutableListOf<Node>()
+
+                    while (adoptRoom == adoptNode.description) {
+                        val adoptRoomChildren = adoptNodeScan.getNodeChildren(this, nodeLinks).filter{ nodeChild -> nodeChild.description != roomNodeDescription }
+
+                        if (!adoptRoomChildren.isNullOrEmpty()) {
+                            adoptRoom = adoptRoomChildren[0].description
+                            println("adoptNode: $adoptNode going to ${adoptRoomChildren[0].description}")
+                            returnRoomNodes.add(Node(adoptNode, updDescription = adoptRoomChildren[0].description))
+                        } else {
+                            adoptNodeScanList.add(adoptNodeScan)
+                            adoptNodeScan = adoptNodeScan.getNodeChildren(this, nodeLinks).filter{ nodeChild -> !adoptNodeScanList.contains(nodeChild) }[0]
+                        }
+                    }
+
+
+                }
+
+                returnNodes.addAll(returnRoomNodes)
             }
 
             return returnNodes

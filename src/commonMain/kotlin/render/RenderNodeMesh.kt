@@ -650,7 +650,7 @@ object RenderNodeMesh {
 
             val centroidMesh = buildRoomMesh(Point(200, 200), height = 2)
 
-            println("centroidMesh:$centroidMesh")
+ //           println("centroidMesh:$centroidMesh")
 
             for (nodeLine in centroidMesh.getNodeLineList()) {
 
@@ -672,7 +672,7 @@ object RenderNodeMesh {
                 }
             }
 
-            val roomMesh = buildCentroidRoomMesh(height = 2, centroids = centroidMesh.nodes.moveNodes(Point(312, 312)).scaleNodes(scale = 1.5) )
+            val roomMesh = buildCentroidRoomMesh(height = 3, centroids = centroidMesh.nodes.moveNodes(Point(312, 312)).scaleNodes(scale = 1.5) )
 
 //            println("drawing lines")
             for (nodeLine in roomMesh.getNodeLineList()) {
@@ -780,6 +780,138 @@ object RenderNodeMesh {
                 circle { position(node.position)
                     radius = 5.0
                     color = ForeColors[4]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderOrphanHandlingNodeMeshRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+
+        graphics {
+
+            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+
+            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
+
+            val orphanAdoptOffset = Point(0, 400)
+
+            val centroidMesh = buildRoomMesh(Point(100, 200), height = 2)
+
+            //           println("centroidMesh:$centroidMesh")
+
+            for (nodeLine in centroidMesh.getNodeLineList()) {
+
+                stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+            centroidMesh.nodes.forEach { node ->
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = ForeColors[2]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            val roomMesh = buildCentroidRoomMesh(height = 3, centroids = centroidMesh.nodes.moveNodes(Point(412, 112)).scaleNodes(scale = 1.5) )
+
+            for (nodeLine in roomMesh.getNodeLineList()) {
+
+                stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+//            println("drawing nodes")
+            roomMesh.nodes.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = ForeColors[colorIdx % ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.centroids.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 10.0
+                    color = ForeColors[colorIdx % ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.adoptRoomOrphans()
+
+            for (nodeLine in roomMesh.getNodeLineList()) {
+
+                stroke(BackColors[3], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first + orphanAdoptOffset, nodeLine.second + orphanAdoptOffset )
+                }
+            }
+
+            roomMesh.nodes.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position + orphanAdoptOffset)
+                    radius = 5.0
+                    color = ForeColors[colorIdx % ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.centroids.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position + orphanAdoptOffset)
+                    radius = 10.0
+                    color = ForeColors[colorIdx % ForeColors.size]
                     strokeThickness = 3.0
                     onClick{
                         RenderNodeRooms.updateNodeText(node.uuid.toString())
