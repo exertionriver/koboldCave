@@ -1,10 +1,19 @@
+import com.soywiz.korge.Korge
+import com.soywiz.korge.resources.resourceBitmap
+import com.soywiz.korge.view.*
+import com.soywiz.korim.color.Colors
+import com.soywiz.korim.color.scale
+import com.soywiz.korio.resources.ResourcesContainer
+import com.soywiz.korma.geom.Angle
+import com.soywiz.korma.geom.Point
+import render.ButtonCommand
 import render.RenderLaceLash.renderLaceCircle
 import render.RenderLaceLash.renderLaceLashAngled
 import render.RenderLaceLash.renderLaceLashStationary
-import render.RenderLaceLash.renderLashCircle
 import render.RenderLattice.renderLatticeStationary
-import render.RenderLeaf.renderAddLeafStationary
+import render.RenderLeaf
 import render.RenderLeaf.renderBorderingLeaf
+import render.RenderLeaf.renderLeaf
 import render.RenderLeaf.renderLeafCircle
 import render.RenderLeaf.renderLeafStationary
 import render.RenderLeaf.renderPruneLeaf
@@ -18,31 +27,22 @@ import render.RenderNodeRooms.renderConnectedNodeRoomBorder
 import render.RenderNodeRooms.renderConnectedNodeRoomElaboration
 import render.RenderNodeRooms.renderConnectedNodeRooms
 import render.RenderNodeRooms.renderNodeRoomsBuiltLines
+import render.RenderPalette
 
 @ExperimentalUnsignedTypes
-suspend fun main() {
+suspend fun main() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
 
-//	renderLeafStationary()
+	val commandViews = RenderPalette.initDemoScreen(this.containerRoot)
 
-//	renderPruneLeaf()
+	renderLeaf(this.containerRoot, commandViews)
 
 //	renderLaceLashStationary()
 
 // renderLatticeStationary()
 
-//	renderAddLeafStationary()
-
-//	renderLeafAngled()
-
 //	renderLaceLashAngled()
 
-//	renderLeafCircle()
-
 //	renderLaceCircle()
-
-//	renderLashCircle()
-
-//    renderBorderingLeaf()
 
 //	renderLeafAndNodes()
 
@@ -58,7 +58,7 @@ suspend fun main() {
 
 //	renderOrphanedNodeMesh()
 
-	renderOrphanHandlingNodeMeshRooms()
+//	renderOrphanHandlingNodeMeshRooms()
 
 //	renderNodeLineStationary()
 

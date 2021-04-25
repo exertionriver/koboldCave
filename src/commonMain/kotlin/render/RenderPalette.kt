@@ -1,7 +1,11 @@
 package render
 
+import com.soywiz.korge.input.onClick
+import com.soywiz.korge.ui.uiTextButton
+import com.soywiz.korge.view.*
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.text.TextAlignment
+import com.soywiz.korma.geom.Point
 
 object RenderPalette {
 
@@ -13,5 +17,32 @@ object RenderPalette {
 
     val TextColor = Colors.AZURE
     val TextSize = 24.0
-    val TextAlign = TextAlignment.BASELINE_LEFT
+    val TextAlignLeft = TextAlignment.BASELINE_LEFT
+    val TextAlignRight = TextAlignment.BASELINE_RIGHT
+
+    var returnClick : ButtonCommand? = null
+
+    suspend fun initDemoScreen(renderContainer : Container) : Map<CommandView, View> {
+
+        val labelTextPosition = Point(renderContainer.width.toInt() - 50, 40)
+        val descriptionTextPosition = Point(renderContainer.width.toInt() - 50, 65)
+        val commentTextPosition = Point(renderContainer.width.toInt() - 50, 90)
+        val loadingTextPosition = Point(renderContainer.width.toInt() / 2, renderContainer.height.toInt() / 2)
+        val prevClickablePosition = Point(renderContainer.width.toInt() - 50, 0)
+        val nextClickablePosition = Point(renderContainer.width.toInt() - 50, 50)
+
+        val returnMap = mapOf(
+            CommandView.LABEL_TEXT to renderContainer.text(text = CommandView.LABEL_TEXT.label(), color = TextColor, textSize = TextSize, alignment = TextAlignRight).position(labelTextPosition)
+            , CommandView.DESCRIPTION_TEXT to renderContainer.text(text = CommandView.DESCRIPTION_TEXT.label(), color = TextColor, textSize = TextSize, alignment = TextAlignRight).position(descriptionTextPosition)
+            , CommandView.COMMENT_TEXT to renderContainer.text(text = CommandView.COMMENT_TEXT.label(), color = TextColor, textSize = TextSize, alignment = TextAlignRight).position(commentTextPosition)
+            , CommandView.LOADING_TEXT to renderContainer.text(text = CommandView.LOADING_TEXT.label(), color = TextColor, textSize = TextSize, alignment = TextAlignRight).position(loadingTextPosition)
+            , CommandView.PREV_CLICKABLE to renderContainer.uiTextButton(text= CommandView.PREV_CLICKABLE_TEXT.label(), width = 50.0, height = 50.0).position(prevClickablePosition)
+            , CommandView.NEXT_CLICKABLE to renderContainer.uiTextButton(text= CommandView.NEXT_CLICKABLE_TEXT.label(), width = 50.0, height = 50.0).position(nextClickablePosition)
+        )
+
+        returnMap[CommandView.PREV_CLICKABLE].onClick { println ("prev clicked!") ; returnClick = ButtonCommand.PREV }
+        returnMap[CommandView.NEXT_CLICKABLE].onClick { println ("next clicked!") ; returnClick = ButtonCommand.NEXT }
+
+        return returnMap
+    }
 }

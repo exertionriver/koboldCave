@@ -3,13 +3,11 @@ package node
 import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.vector.VectorPath.Companion.intersects
 import leaf.ILeaf
 import leaf.Line.intersects
 import node.INodeMesh.Companion.addMesh
 import node.Node.Companion.addNode
 import node.Node.Companion.angleBetween
-import node.Node.Companion.consolidateNode
 import node.Node.Companion.getNode
 import node.Node.Companion.nearestNodesOrderedAsc
 import node.NodeLink.Companion.getNodeLinks

@@ -65,7 +65,7 @@ interface ILeaf {
         var bestMinAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
         var bestMaxAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
 
-        println("Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
+//        println("Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
 
         (360 downTo 0 step 30).forEach { angleOffset ->
 
@@ -96,7 +96,7 @@ interface ILeaf {
                 if ( abs(tryBestMinMaxAngle - convergeToAngle) < abs(bestConvergeAngle - convergeToAngle) ) bestConvergeAngle = tryBestMinMaxAngle
             }
 
-            println("@AngleOffset:$angleOffset - Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
+//            println("@AngleOffset:$angleOffset - Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
 
         }
         return bestConvergeAngle
@@ -255,7 +255,7 @@ interface ILeaf {
                                 innerChildren.forEach { innerChild ->
                                     if (outerChild != innerLeaf) {
                                         if ( Pair(outerLeaf.position, outerChild.position).intersects(Pair(innerLeaf.position, innerChild.position)) ) {
-                                            println("intersecion at ${outerLeaf.position} to ${outerChild.position} and ${innerLeaf.position} to ${innerChild.position}")
+//                                            println("intersecion at ${outerLeaf.position} to ${outerChild.position} and ${innerLeaf.position} to ${innerChild.position}")
 
                                             if ( returnLeaves.indexOf(innerChild.getParent()) != -1 ) {
                                                 returnLeaves[returnLeaves.indexOf(innerChild.getParent())].children.remove(innerChild)

@@ -34,7 +34,7 @@ class Lace(override val topHeight : Int = 3
                 , parent = mutableListOf(this)
                 , distanceFromParent = getNextDistancePxProb()
                 , topAngle = topAngle
-                , angleFromParent = if (refILeaf != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refILeaf = refILeaf)
+                , angleFromParent = if (refILeaf != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refILeaf = refILeaf) //experimental at v0.3
                     else this.getConvergentChildAngle(Angle.fromDegrees(120), topAngle)
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
                 , refILeaf = refILeaf
