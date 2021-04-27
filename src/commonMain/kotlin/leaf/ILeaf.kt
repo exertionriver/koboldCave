@@ -266,7 +266,7 @@ interface ILeaf {
                                     }
                                 }
                             }
-                            //prune child angles < 10 degrees
+                            //prune child angles <= 10 degrees
                             innerChildren.sortedBy { it.angleFromParent }.forEach { outerInnerChild ->
                                 innerChildren.sortedBy { it.angleFromParent }.forEach { innerInnerChild ->
                                     if (outerInnerChild != innerInnerChild) {

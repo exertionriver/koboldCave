@@ -30,6 +30,7 @@ class Leaf(override val topHeight : Int = 3
     override val children: MutableList<ILeaf> = if (height == 0) mutableListOf()
         else MutableList(size = getChildrenSize(height)) {
             Leaf(topHeight = topHeight
+                , description = description
                 , height = height - 1
                 , parent = mutableListOf(this)
                 , distanceFromParent = getNextDistancePxProb()

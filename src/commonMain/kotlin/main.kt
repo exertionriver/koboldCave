@@ -14,7 +14,6 @@ import render.RenderLattice.renderLatticeStationary
 import render.RenderLeaf
 import render.RenderLeaf.renderBorderingLeaf
 import render.RenderLeaf.renderLeaf
-import render.RenderLeaf.renderLeafCircle
 import render.RenderLeaf.renderLeafStationary
 import render.RenderLeaf.renderPruneLeaf
 import render.RenderNodeMesh.renderNodeMeshRooms
