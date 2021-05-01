@@ -27,7 +27,7 @@ object RenderLeaf {
     @ExperimentalUnsignedTypes
     suspend fun renderLeaf(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 5
+        var funIdx = 0
         val funSize = 6
 
         while (funIdx < funSize) {
@@ -36,12 +36,15 @@ object RenderLeaf {
             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
 
             when (funIdx) {
-                0 -> if ( renderLeafStationary(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++
-                1 -> if ( renderAddGraftLeafStationary(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                2 -> if ( renderPruneLeaf(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                0 -> if ( renderLeafHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++
+                1 -> if ( renderLeafAddGraft(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                2 -> if ( renderLeafPrune(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 3 -> if ( renderLeafAngled(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 4 -> if ( renderLeafSpiral(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                5 -> if ( renderBorderingLeaf(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                5 -> if ( renderLeafBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//  future directions:
+//                6 -> if ( renderGraftedLeafs(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+
             }
         }
 
@@ -49,7 +52,7 @@ object RenderLeaf {
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderLeafStationary(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+    suspend fun renderLeafHeights(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         commandViews[CommandView.LABEL_TEXT].setText("renderLeafStationary() [v0.1]")
         commandViews[CommandView.DESCRIPTION_TEXT].setText("testing Leaf() at various heights")
@@ -64,7 +67,7 @@ object RenderLeaf {
         secondContainer.graphics {
 
             leafList.reversed().forEachIndexed {leafIdx, leaf ->
-                secondContainer.text(text= "Leaf(height=${8 - leafIdx})", color = ForeColors[leafIdx % ForeColors.size], alignment = TextAlignCenter).position(Point(leaf.position.x, leaf.position.y - 30))
+                secondContainer.text(text= "Leaf(height=${leaf.topHeight})", color = ForeColors[leafIdx % ForeColors.size], alignment = TextAlignCenter).position(Point(leaf.position.x, leaf.position.y - 30))
 
                 stroke(BackColors[leafIdx % BackColors.size], StrokeInfo(thickness = 3.0)) {
 
@@ -95,7 +98,7 @@ object RenderLeaf {
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderAddGraftLeafStationary(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+    suspend fun renderLeafAddGraft(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         commandViews[CommandView.LABEL_TEXT].setText("renderAddGraftLeafStationary() [v0.2]")
         commandViews[CommandView.DESCRIPTION_TEXT].setText("testing firstLeaf.getList().add(secondLeaf) and thirdLeaf.getList().graft(fourthLeaf)")
@@ -125,7 +128,7 @@ object RenderLeaf {
         val secondContainer = renderContainer.container()
         secondContainer.graphics {
 
-            secondContainer.text(text= "Leaf(height=5) added to Leaf(height=5)", color = ForeColors[1], alignment = TextAlignCenter).position(Point(firstLeaf.position.x, firstLeaf.position.y - 30))
+            secondContainer.text(text= "Leaf(height=${secondLeaf.topHeight}) added to Leaf(height=${firstLeaf.topHeight})", color = ForeColors[1], alignment = TextAlignCenter).position(Point(firstLeaf.position.x, firstLeaf.position.y - 30))
 
             stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
 
@@ -165,7 +168,7 @@ object RenderLeaf {
                 }
             }
 
-            secondContainer.text(text= "Leaf(height=5) grafted to Leaf(height=5)", color = ForeColors[2], alignment = TextAlignCenter).position(Point(thirdLeaf.position.x, thirdLeaf.position.y - 30))
+            secondContainer.text(text= "Leaf(height=${fourthLeaf.topHeight}) grafted to Leaf(height=${thirdLeaf.topHeight})", color = ForeColors[2], alignment = TextAlignCenter).position(Point(thirdLeaf.position.x, thirdLeaf.position.y - 30))
 
             stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
 
@@ -214,7 +217,7 @@ object RenderLeaf {
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderPruneLeaf(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+    suspend fun renderLeafPrune(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         commandViews[CommandView.LABEL_TEXT].setText("renderPruneLeaf() [v0.3]")
         commandViews[CommandView.DESCRIPTION_TEXT].setText("testing leaf.getList().prune()")
@@ -231,7 +234,7 @@ object RenderLeaf {
         val secondContainer = renderContainer.container()
         secondContainer.graphics {
 
-            secondContainer.text(text= "Leaf(height=5) pruned atop Leaf(height=5)", color = ForeColors[1], alignment = TextAlignCenter).position(Point(leaf.position.x, leaf.position.y - 30))
+            secondContainer.text(text= "Leaf() pruned atop Leaf(height=${leaf.topHeight})", color = ForeColors[1], alignment = TextAlignCenter).position(Point(leaf.position.x, leaf.position.y - 30))
 
             stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
 
@@ -273,7 +276,7 @@ object RenderLeaf {
                 }
             }
 
-            secondContainer.text(text= "Leaf(height=5) pruned", color = ForeColors[0], alignment = TextAlignCenter).position(Point(leaf.position.x + positionOffset.x, leaf.position.y + positionOffset.y - 30))
+            secondContainer.text(text= "Leaf(height=${leaf.topHeight}) pruned", color = ForeColors[0], alignment = TextAlignCenter).position(Point(leaf.position.x + positionOffset.x, leaf.position.y + positionOffset.y - 30))
 
             stroke(BackColors[0], StrokeInfo(thickness = 3.0)) {
 
@@ -333,9 +336,9 @@ object RenderLeaf {
 
                 when {
                     (idx in 0..3) ->
-                        secondContainer.text(text= "Leaf(height=4)\nangled ${it.key} degrees", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(Point(it.value.x, it.value.y + 30))
+                        secondContainer.text(text= "Leaf(height=${leaf.topHeight})\nangled ${it.key} degrees", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(Point(it.value.x, it.value.y + 30))
                     else ->
-                        secondContainer.text(text= "Leaf(height=4)\nangled ${it.key} degrees", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(Point(it.value.x, it.value.y - 30))
+                        secondContainer.text(text= "Leaf(height=${leaf.topHeight})\nangled ${it.key} degrees", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(Point(it.value.x, it.value.y - 30))
                 }
 
                 stroke(ForeColors[idx % ForeColors.size], StrokeInfo(thickness = 3.0)) {
@@ -456,7 +459,7 @@ object RenderLeaf {
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderBorderingLeaf(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+    suspend fun renderLeafBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         commandViews[CommandView.LABEL_TEXT].setText("renderBorderingLeaf() [v0.3]")
         commandViews[CommandView.DESCRIPTION_TEXT].setText("testing bordering with refILeaf")
@@ -472,9 +475,9 @@ object RenderLeaf {
         val secondContainer = renderContainer.container()
         secondContainer.graphics {
 
-            secondContainer.text(text= "Leaf(height=6)", color = ForeColors[1], alignment = TextAlignCenter).position(Point(650.0, 712.0))
-            secondContainer.text(text= "Leaf(height=12), refILeaf == Leaf(height=6)", color = ForeColors[2], alignment = TextAlignRight).position(Point(350.0, 306.0 ))
-            secondContainer.text(text= "Leaf(height=12), refILeaf == Leaf(height=6)", color = ForeColors[4], alignment = TextAlignLeft).position(Point(650.0, 306.0 ))
+            secondContainer.text(text= "Leaf(height=${leaf.topHeight})", color = ForeColors[1], alignment = TextAlignCenter).position(Point(650.0, 712.0))
+            secondContainer.text(text= "Leaf(height=${firstBorderingLeaf.topHeight}), refILeaf == Leaf(height=${leaf.topHeight})", color = ForeColors[2], alignment = TextAlignRight).position(Point(350.0, 306.0 ))
+            secondContainer.text(text= "Leaf(height=${secondBorderingLeaf.topHeight}), refILeaf == Leaf(height=${leaf.topHeight})", color = ForeColors[4], alignment = TextAlignLeft).position(Point(650.0, 306.0 ))
 
             stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
 

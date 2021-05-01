@@ -30,12 +30,13 @@ class Lace(override val topHeight : Int = 3
     override val children: MutableList<ILeaf> = if (height == 0) mutableListOf()
         else MutableList(size = getChildrenSize(height)) {
             Lace(topHeight = topHeight
+                , description = description
                 , height = height - 1
                 , parent = mutableListOf(this)
                 , distanceFromParent = getNextDistancePxProb()
                 , topAngle = topAngle
                 , angleFromParent = if (refILeaf != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refILeaf = refILeaf) //experimental at v0.3
-                    else this.getConvergentChildAngle(Angle.fromDegrees(120), topAngle)
+                    else this.getConvergentChildAngle(Angle.fromDegrees(60), topAngle)
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
                 , refILeaf = refILeaf
             )

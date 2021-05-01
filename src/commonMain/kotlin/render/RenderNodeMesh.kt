@@ -1,56 +1,79 @@
 package render
 
-import com.soywiz.korge.Korge
+import com.soywiz.klock.TimeSpan
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.view.*
-import com.soywiz.korim.color.Colors
-import com.soywiz.korim.text.TextAlignment
 import com.soywiz.korim.vector.StrokeInfo
+import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
-import kotlinx.coroutines.delay
-import leaf.ILeaf.Companion.NextDistancePx
-import leaf.ILeaf.Companion.getLineList
-import leaf.ILeaf.Companion.getList
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh.Companion.absorbMesh
-import node.INodeMesh.Companion.buildCentroidRoomMesh
-import node.INodeMesh.Companion.buildRoomMesh
 import node.Node
-import node.Node.Companion.moveNodes
+import node.Node.Companion.averagePositionWithinNodes
+import node.Node.Companion.getFarthestNode
+import node.Node.Companion.nearestNodesOrderedAsc
 import node.Node.Companion.randomPosition
-import node.Node.Companion.scaleNodes
 import node.NodeLink.Companion.consolidateNodeDistance
 import node.NodeLink.Companion.getRandomNodeLink
 import node.NodeLink.Companion.linkNodeDistance
 import node.NodeMesh
 import render.RenderPalette.BackColors
 import render.RenderPalette.ForeColors
+import render.RenderPalette.TextAlignCenter
+import render.RenderPalette.TextAlignLeft
+import render.RenderPalette.TextAlignRight
+import render.RenderPalette.TextSize
 
 object RenderNodeMesh {
 
-    lateinit var textView : View
+    @ExperimentalUnsignedTypes
+    suspend fun renderNodeMesh(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-    fun updateNodeText(uuidString : String) {
-        textView.setText(uuidString)
-    }
+        var funIdx = 4
+        val funSize = 5
 
-    fun updateRoomText(roomDescription : String) {
-        RenderNavigation.roomView.setText(roomDescription)
+        while ( (funIdx >= 0) && (funIdx < funSize) ) {
+//            println ("funMapIdx : $funIdx")
+            commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
+            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
+
+            when (funIdx) {
+                0 -> if ( renderNodeMeshOperations(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                1 -> if ( renderNodeMeshOperationsExtended(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                2 -> if ( renderNodeMeshAbsorbing(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                3 -> if ( renderNodeMeshOrphans(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                4 -> if ( renderNodeMeshEdges(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+            //  future directions:
+//                5 -> if ( renderGraftedNodeMeshes(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                6 -> if ( renderLeafGraftedNodeMesh(renderContainer, commandViews) == ButtonCommand.NEXT) funIdx++ else funIdx--
+            }
+        }
+
+        return if (funIdx > 0) ButtonCommand.NEXT else ButtonCommand.PREV
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderNodeMeshStationaryOperations() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeMeshOperations(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+
+        val leafHeight = 3
+
+        commandViews[CommandView.LABEL_TEXT].setText("renderNodeMeshOperations() [v0.3]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("showing operations upon a NodeMesh generated from three Leaf(height=$leafHeight)")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = false
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
+
+        RenderPalette.returnClick = null
 
         val startingPoint = Point(212, 374)
 
-        val textOffset = Point(-200, -200)
+        val textOffset = Point(0, -30)
         val centerMeshOffset = Point(250, 200)
 
-        val xNodeOffset = Point(600.0, 0.0)
+        val xNodeOffset = Point(550.0, 0.0)
         val yNodeOffset = Point(0.0, 400.0)
 
         val firstRefPoint = Point(350, 200)
@@ -59,28 +82,26 @@ object RenderNodeMesh {
         val thirdRefPoint = Point(350, 250)
         val fourthRefPoint = Point (350 + consolidateNodeDistance, 250)
 
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
 
-        graphics {
-
-            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
-
-            val leafFirst = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(330) )
 
             val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
 
-            text(text = "linkNodeDistance", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(firstRefPoint + Point(-10, -25))
-            text(text = "consolidateNodeDistance", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(thirdRefPoint + Point(-10, -25))
+            secondContainer.text(text = "linkNodeDistance", color = ForeColors[0], textSize = TextSize, alignment = TextAlignLeft).position(firstRefPoint + Point(-10, -25))
+            secondContainer.text(text = "consolidateNodeDistance", color = ForeColors[0], textSize = TextSize, alignment = TextAlignLeft).position(thirdRefPoint + Point(-10, -25))
 
-            stroke(Colors["#52b670"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[0], StrokeInfo(thickness = 3.0)) {
 
                 line(firstRefPoint, secondRefPoint)
                 line(thirdRefPoint, fourthRefPoint)
             }
 
-            stroke(Colors["#45f049"], StrokeInfo(thickness = 3.0)) {
+            stroke(ForeColors[0], StrokeInfo(thickness = 3.0)) {
 
                 circle(firstRefPoint, radius = 5.0)
                 circle(secondRefPoint, radius = 5.0)
@@ -88,31 +109,9 @@ object RenderNodeMesh {
                 circle(fourthRefPoint, radius = 5.0)
             }
 
-//            text(text = "threeLeaf", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + leafOffset + textOffset)
+            secondContainer.text(text = "NodeMesh() from threeLeaf", color = ForeColors[1], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + centerMeshOffset + textOffset)
 
-            stroke(Colors["#20842b"], StrokeInfo(thickness = 3.0)) {
-
-                for (line in threeLeaf.getLineList() ) {
-                    if (line != null) line(line.first + centerMeshOffset, line.second + centerMeshOffset)
-                }
-            }
-
-            for (listLeaf in threeLeaf.getList() ) {
-                println (listLeaf)
-                circle {
-                    position(listLeaf.position + centerMeshOffset)
-                    radius = 5.0
-                    color = Colors["#42f048"]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(listLeaf.uuid.toString())
-                    }
-                }
-            }
-
-            text(text = "nodeMesh from threeLeaf", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + centerMeshOffset + textOffset)
-
-            stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in nodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first + centerMeshOffset, nodeLine.second + centerMeshOffset )
@@ -120,13 +119,14 @@ object RenderNodeMesh {
             }
 
             for (node in nodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position + centerMeshOffset)
                     radius = 5.0
-                    color = Colors["#5f5ff0"]
+                    color = ForeColors[1]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
@@ -135,9 +135,9 @@ object RenderNodeMesh {
 
             consolidateNodeMesh.consolidateNearNodes()
 
-            text(text = "consolidatedNode nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + textOffset)
+            secondContainer.text(text = "INodeMesh.consolidateNearNodes()", color = ForeColors[2], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + textOffset)
 
-            stroke(Colors["#9f9a3f"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in consolidateNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first, nodeLine.second )
@@ -145,13 +145,14 @@ object RenderNodeMesh {
             }
 
             for (node in consolidateNodeMesh.nodes ) {
-                circle {
-                    position(node.position )
+                secondContainer.circle {
+                    position(node.position)
                     radius = 5.0
-                    color = Colors["#f4ff0b"]
+                    color = ForeColors[2]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
@@ -160,9 +161,9 @@ object RenderNodeMesh {
 
             linkedNodeMesh.linkNearNodes()
 
-            text(text = "linkedNode nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + xNodeOffset + textOffset)
+            secondContainer.text(text = "INodeMesh.linkNearNodes()", color = ForeColors[3], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + xNodeOffset + textOffset)
 
-            stroke(Colors["#9f3762"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[3], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in linkedNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first+ xNodeOffset, nodeLine.second + xNodeOffset )
@@ -170,13 +171,14 @@ object RenderNodeMesh {
             }
 
             for (node in linkedNodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position + xNodeOffset)
                     radius = 5.0
-                    color = Colors["#ff4494"]
+                    color = ForeColors[3]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
@@ -187,9 +189,9 @@ object RenderNodeMesh {
 
             consolidatedLinkedNodeMesh.linkNearNodes()
 
-            text(text = "consolidated + linked nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + yNodeOffset + textOffset)
+            secondContainer.text(text = "INodeMesh consolidated + linked", color = ForeColors[4], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + yNodeOffset + textOffset)
 
-            stroke(Colors["#7e519f"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[4], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in consolidatedLinkedNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first + yNodeOffset, nodeLine.second + yNodeOffset )
@@ -197,13 +199,14 @@ object RenderNodeMesh {
             }
 
             for (node in consolidatedLinkedNodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position + yNodeOffset)
                     radius = 5.0
-                    color = Colors["#b685ff"]
+                    color = ForeColors[4]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
@@ -214,9 +217,9 @@ object RenderNodeMesh {
 
             linkedConsolidatedNodeMesh.consolidateNearNodes()
 
-            text(text = "linked + consolidated nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + xNodeOffset + yNodeOffset + textOffset)
+            secondContainer.text(text = "INodeMesh linked + consolidated", color = ForeColors[5], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + xNodeOffset + yNodeOffset + textOffset)
 
-            stroke(Colors["#5c9f58"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[5], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in linkedConsolidatedNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first + xNodeOffset + yNodeOffset, nodeLine.second + xNodeOffset + yNodeOffset )
@@ -224,28 +227,45 @@ object RenderNodeMesh {
             }
 
             for (node in linkedConsolidatedNodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position + xNodeOffset + yNodeOffset)
                     radius = 5.0
-                    color = Colors["#9dffa1"]
+                    color = ForeColors[5]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
         }
+        while (RenderPalette.returnClick == null) {
+            delay(TimeSpan(100.0))
+        }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderNodeMeshStationaryOperationsExtended() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeMeshOperationsExtended(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+
+        val leafHeight = 3
+
+        commandViews[CommandView.LABEL_TEXT].setText("renderNodeMeshOperationsExtended() [v0.3]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("showing extended operations upon a NodeMesh generated from three Leaf(height=$leafHeight)")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = false
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
+
+        RenderPalette.returnClick = null
 
         val startingPoint = Point(212, 374)
 
-        val textOffset = Point(-200, -200)
+        val textOffset = Point(0, -30)
         val centerMeshOffset = Point(250, 200)
 
-        val xNodeOffset = Point(600.0, 0.0)
+        val xNodeOffset = Point(550.0, 0.0)
         val yNodeOffset = Point(0.0, 400.0)
 
         val firstRefPoint = Point(350, 200)
@@ -254,55 +274,31 @@ object RenderNodeMesh {
         val thirdRefPoint = Point(350, 250)
         val fourthRefPoint = Point (350 + consolidateNodeDistance, 250)
 
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
 
-        graphics {
-
-            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
-
-            val leafFirst = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(topHeight = 3, position = startingPoint, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(330) )
 
             val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
 
-            text(text = "linkNodeDistance", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(firstRefPoint + Point(-10, -25))
-            text(text = "consolidateNodeDistance", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(thirdRefPoint + Point(-10, -25))
+            secondContainer.text(text = "linkNodeDistance", color = ForeColors[0], textSize = TextSize, alignment = TextAlignLeft).position(firstRefPoint + Point(-10, -25))
+            secondContainer.text(text = "consolidateNodeDistance", color = ForeColors[0], textSize = TextSize, alignment = TextAlignLeft).position(thirdRefPoint + Point(-10, -25))
 
-            stroke(Colors["#52b670"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[0], StrokeInfo(thickness = 3.0)) {
 
                 line(firstRefPoint, secondRefPoint)
                 line(thirdRefPoint, fourthRefPoint)
             }
 
-            stroke(Colors["#45f049"], StrokeInfo(thickness = 3.0)) {
+            stroke(ForeColors[0], StrokeInfo(thickness = 3.0)) {
 
                 circle(firstRefPoint, radius = 5.0)
                 circle(secondRefPoint, radius = 5.0)
                 circle(thirdRefPoint, radius = 5.0)
                 circle(fourthRefPoint, radius = 5.0)
-            }
-
-//            text(text = "threeLeaf", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + leafOffset + textOffset)
-
-            stroke(Colors["#20842b"], StrokeInfo(thickness = 3.0)) {
-
-                for (line in threeLeaf.getLineList() ) {
-                    if (line != null) line(line.first + centerMeshOffset, line.second + centerMeshOffset)
-                }
-            }
-
-            for (listLeaf in threeLeaf.getList() ) {
-//                println (listLeaf)
-                circle {
-                    position(listLeaf.position + centerMeshOffset)
-                    radius = 5.0
-                    color = Colors["#42f048"]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(listLeaf.uuid.toString())
-                    }
-                }
             }
 
             val consolidatedLinkedNodeMesh = NodeMesh(nodeMesh)
@@ -311,9 +307,9 @@ object RenderNodeMesh {
 
             consolidatedLinkedNodeMesh.linkNearNodes()
 
-            text(text = "consolidated + linked nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + centerMeshOffset + textOffset)
+            secondContainer.text(text = "INodeMesh consolidated + linked", color = ForeColors[1], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + centerMeshOffset + textOffset)
 
-            stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in consolidatedLinkedNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first + centerMeshOffset, nodeLine.second + centerMeshOffset )
@@ -321,13 +317,14 @@ object RenderNodeMesh {
             }
 
             for (node in consolidatedLinkedNodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position + centerMeshOffset)
                     radius = 5.0
-                    color = Colors["#5f5ff0"]
+                    color = ForeColors[1]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
@@ -340,9 +337,9 @@ object RenderNodeMesh {
 
             clcProcessedNodeMesh.consolidateNodeLinks()
 
-            text(text = "cons + link + consLink nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + textOffset)
+            secondContainer.text(text = "INodeMesh cons + link + consLinks", color = ForeColors[2], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + textOffset)
 
-            stroke(Colors["#9f9a3f"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in clcProcessedNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first, nodeLine.second )
@@ -350,13 +347,14 @@ object RenderNodeMesh {
             }
 
             for (node in clcProcessedNodeMesh.nodes ) {
-                circle {
+                secondContainer.circle {
                     position(node.position )
                     radius = 5.0
-                    color = Colors["#f4ff0b"]
+                    color = ForeColors[2]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
@@ -369,9 +367,9 @@ object RenderNodeMesh {
 
             clpProcessedNodeMesh.pruneNodeLinks()
 
-            text(text = "cons + link + pruned links nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + xNodeOffset + textOffset)
+            secondContainer.text(text = "INodeMesh cons + link + prunedLinks", color = ForeColors[3], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + xNodeOffset + textOffset)
 
-            stroke(Colors["#9f3762"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[3], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in clpProcessedNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first+ xNodeOffset, nodeLine.second + xNodeOffset )
@@ -379,13 +377,14 @@ object RenderNodeMesh {
             }
 
             for (node in clpProcessedNodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position + xNodeOffset)
                     radius = 5.0
-                    color = Colors["#ff4494"]
+                    color = ForeColors[3]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
@@ -400,9 +399,9 @@ object RenderNodeMesh {
 
             clpcProcessedNodeMesh.consolidateNodeLinks()
 
-            text(text = "cons + link + pruned + cl nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + yNodeOffset + textOffset)
+            secondContainer.text(text = "INodeMesh cons + link + prunedLinks + consLinks", color = ForeColors[4], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + yNodeOffset + textOffset)
 
-            stroke(Colors["#7e519f"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[4], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in clpcProcessedNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first + yNodeOffset, nodeLine.second + yNodeOffset )
@@ -410,13 +409,14 @@ object RenderNodeMesh {
             }
 
             for (node in clpcProcessedNodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position + yNodeOffset)
                     radius = 5.0
-                    color = Colors["#b685ff"]
+                    color = ForeColors[4]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
@@ -431,9 +431,9 @@ object RenderNodeMesh {
 
             clcpProcessedNodeMesh.pruneNodeLinks()
 
-            text(text = "cons + link + cl + pruned nodeMesh", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(startingPoint + xNodeOffset + yNodeOffset + textOffset)
+            secondContainer.text(text = "INodeMesh cons + link + consLinks + prunedLinks", color = ForeColors[5], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + xNodeOffset + yNodeOffset + textOffset)
 
-            stroke(Colors["#5c9f58"], StrokeInfo(thickness = 3.0)) {
+            stroke(ForeColors[5], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in clcpProcessedNodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first + xNodeOffset + yNodeOffset, nodeLine.second + xNodeOffset + yNodeOffset )
@@ -441,99 +441,63 @@ object RenderNodeMesh {
             }
 
             for (node in clcpProcessedNodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position + xNodeOffset + yNodeOffset)
                     radius = 5.0
-                    color = Colors["#9dffa1"]
+                    color = ForeColors[5]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
         }
+        while (RenderPalette.returnClick == null) {
+            delay(TimeSpan(100.0))
+        }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
     }
 
 
     @ExperimentalUnsignedTypes
-    suspend fun renderAbsorbedNodeMesh() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeMeshAbsorbing(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        val startingMap = mapOf(
-            90 to Point(212, 374)
-            , 210 to Point(212, 374)
-            , 330 to Point(812, 374)
-        )
-        val leafOffset = Point(250, 200)
+        val leafHeight = 5
 
-        val xNodeOffset = Point(600.0, 0.0)
-        val yNodeOffset = Point(0.0, 400.0)
+        commandViews[CommandView.LABEL_TEXT].setText("renderNodeMeshAbsorbing() [v0.3]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("demonstration of absorbMesh() upon a NodeMesh generated from three Leaf(height=$leafHeight)")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = false
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
 
-        val firstRefPoint = Point(300, 200)
-        val secondRefPoint = Point (300 + NextDistancePx, 200)
+        RenderPalette.returnClick = null
 
-        val thirdRefPoint = Point(300, 250)
-        val fourthRefPoint = Point (300 + consolidateNodeDistance, 250)
+        val startingPoint = Point(462, 574)
 
+        val textOffset = Point(0, -30)
 
-        graphics {
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
 
-            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
-
-            val leafFirst = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(topHeight = 3, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(330) )
+            val leafFirst = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(330) )
 
             val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
             val nodeMesh = threeLeaf.nodeMesh()
 
-            stroke(Colors["#52b670"], StrokeInfo(thickness = 3.0)) {
+            nodeMesh.consolidateStackedNodes()
+            nodeMesh.consolidateNearNodes()
+            nodeMesh.linkNearNodes()
+            nodeMesh.pruneNodeLinks()
+            nodeMesh.consolidateNodeLinks()
 
-                line(firstRefPoint, secondRefPoint)
-                line(thirdRefPoint, fourthRefPoint)
-            }
+            secondContainer.text(text = "NodeMesh() from threeLeaf", color = ForeColors[1], textSize = TextSize, alignment = TextAlignCenter).position(startingPoint + textOffset)
 
-            stroke(Colors["#45f049"], StrokeInfo(thickness = 3.0)) {
-
-                circle(firstRefPoint, radius = 5.0)
-                circle(secondRefPoint, radius = 5.0)
-                circle(thirdRefPoint, radius = 5.0)
-                circle(fourthRefPoint, radius = 5.0)
-            }
-
-            stroke(Colors["#20842b"], StrokeInfo(thickness = 3.0)) {
-
-                for (line in threeLeaf.getLineList() ) {
-                    if (line != null) line(line.first + leafOffset, line.second + leafOffset)
-                }
-            }
-
-            for (listLeaf in threeLeaf.getList() ) {
-                println (listLeaf)
-                circle {
-                    position(listLeaf.position + leafOffset)
-                    radius = 5.0
-                    color = Colors["#42f048"]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(listLeaf.uuid.toString())
-                    }
-                }
-            }
-
-            val absorbingNodeMesh = NodeMesh()
-            val randomNode = Node(position = nodeMesh.nodes.randomPosition())
-
-            circle {
-                position(randomNode.position)
-                radius = 10.0
-                color = Colors["#e9f06e"]
-                strokeThickness = 3.0
-                onClick{
-                    RenderNodeRooms.updateNodeText(randomNode.uuid.toString())
-                }
-            }
-            
-            stroke(Colors["#4646b6"], StrokeInfo(thickness = 3.0)) {
+            stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
 
                 for (nodeLine in nodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first, nodeLine.second )
@@ -541,384 +505,383 @@ object RenderNodeMesh {
             }
 
             for (node in nodeMesh.nodes) {
-                circle {
+                secondContainer.circle {
                     position(node.position)
                     radius = 5.0
-                    color = Colors["#5f5ff0"]
+                    color = ForeColors[1]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
+                }
+            }
+
+            val absorbingNodeMesh500 = NodeMesh()
+            val randomNode500 = Node(position = nodeMesh.nodes.randomPosition())
+
+            secondContainer.text(text = "Centroid 1 (radius=500px)", color = ForeColors[3], textSize = TextSize, alignment = TextAlignCenter).position(randomNode500.position + textOffset)
+
+            secondContainer.circle {
+                position(randomNode500.position)
+                radius = 10.0
+                color = ForeColors[3]
+                strokeThickness = 3.0
+                onClick{
+                    commandViews[CommandView.NODE_UUID_TEXT].setText(randomNode500.uuid.toString())
+                    commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(randomNode500.description)
                 }
             }
 
             (0..10).toList().forEach { index ->
-                absorbingNodeMesh.absorbMesh(randomNode, index * 50.0, nodeMesh)
+                absorbingNodeMesh500.absorbMesh(randomNode500, index * 50.0, nodeMesh)
 
-                stroke(Colors["#b6b297"], StrokeInfo(thickness = 3.0)) {
+                stroke(BackColors[3], StrokeInfo(thickness = 3.0)) {
 
-                    for (nodeLine in absorbingNodeMesh.getNodeLineList() ) {
+                    for (nodeLine in absorbingNodeMesh500.getNodeLineList() ) {
                         line(nodeLine!!.first, nodeLine.second )
                     }
                 }
 
-                for (node in absorbingNodeMesh.nodes) {
-                    circle {
+                for (node in absorbingNodeMesh500.nodes) {
+                    secondContainer.circle {
                         position(node.position)
                         radius = 5.0
-                        color = Colors["#edf0a5"]
+                        color = ForeColors[3]
                         strokeThickness = 3.0
                         onClick{
-                            RenderNodeRooms.updateNodeText(node.uuid.toString())
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                         }
                     }
                 }
+                delay(TimeSpan(500.0) )
+            }
 
-                delay(1000)
+            val absorbingNodeMesh300 = NodeMesh()
+            val randomNode300 = Node(position = nodeMesh.nodes.randomPosition())
+
+            secondContainer.text(text = "Centroid 2 (radius=300px)", color = ForeColors[4], textSize = TextSize, alignment = TextAlignCenter).position(randomNode300.position + textOffset)
+
+            secondContainer.circle {
+                position(randomNode300.position)
+                radius = 10.0
+                color = ForeColors[4]
+                strokeThickness = 3.0
+                onClick{
+                    commandViews[CommandView.NODE_UUID_TEXT].setText(randomNode300.uuid.toString())
+                    commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(randomNode300.description)
+                }
+            }
+
+            (0..6).toList().forEach { index ->
+                absorbingNodeMesh300.absorbMesh(randomNode300, index * 50.0, nodeMesh)
+
+                stroke(BackColors[4], StrokeInfo(thickness = 3.0)) {
+
+                    for (nodeLine in absorbingNodeMesh300.getNodeLineList() ) {
+                        line(nodeLine!!.first, nodeLine.second )
+                    }
+                }
+
+                for (node in absorbingNodeMesh300.nodes) {
+                    secondContainer.circle {
+                        position(node.position)
+                        radius = 5.0
+                        color = ForeColors[4]
+                        strokeThickness = 3.0
+                        onClick{
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        }
+                    }
+                }
+                delay(TimeSpan(500.0) )
+            }
+
+            val absorbingNodeMesh200 = NodeMesh()
+            val randomNode200 = Node(position = nodeMesh.nodes.randomPosition())
+
+            secondContainer.text(text = "Centroid 3 (radius=200px)", color = ForeColors[5], textSize = TextSize, alignment = TextAlignCenter).position(randomNode200.position + textOffset)
+
+            secondContainer.circle {
+                position(randomNode200.position)
+                radius = 10.0
+                color = ForeColors[5]
+                strokeThickness = 3.0
+                onClick{
+                    commandViews[CommandView.NODE_UUID_TEXT].setText(randomNode200.uuid.toString())
+                    commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(randomNode200.description)
+                }
+            }
+
+            (0..4).toList().forEach { index ->
+                absorbingNodeMesh200.absorbMesh(randomNode200, index * 50.0, nodeMesh)
+
+                stroke(BackColors[5], StrokeInfo(thickness = 3.0)) {
+
+                    for (nodeLine in absorbingNodeMesh200.getNodeLineList() ) {
+                        line(nodeLine!!.first, nodeLine.second )
+                    }
+                }
+
+                for (node in absorbingNodeMesh200.nodes) {
+                    secondContainer.circle {
+                        position(node.position)
+                        radius = 5.0
+                        color = ForeColors[5]
+                        strokeThickness = 3.0
+                        onClick{
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        }
+                    }
+                }
+                delay(TimeSpan(500.0) )
             }
         }
+
+        while (RenderPalette.returnClick == null) {
+            delay(TimeSpan(100.0))
+        }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderNodeMeshRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeMeshOrphans(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        graphics {
+        val leafHeight = 5
 
-            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+        commandViews[CommandView.LABEL_TEXT].setText("renderNodeMeshOrphanDiff() [v0.3]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("demonstration of removeOrphans() upon a NodeMesh generated from three Leaf(height=$leafHeight)")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = false
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
 
-            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
+        RenderPalette.returnClick = null
 
-            val roomMesh = buildRoomMesh(Point(512, 512), height = 4)
+        val startingPoint = Point(462, 574)
 
-//            println("drawing lines")
-            for (nodeLine in roomMesh.getNodeLineList()) {
+        val topTextOffset = Point(500, -300)
+        val bottomTextOffset = Point(500, -240)
+
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
+
+            val leafFirst = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(330) )
+
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
+            val nodeMesh = threeLeaf.nodeMesh()
+
+            nodeMesh.consolidateStackedNodes()
+            nodeMesh.consolidateNearNodes()
+            nodeMesh.linkNearNodes()
+            nodeMesh.pruneNodeLinks()
+            nodeMesh.consolidateNodeLinks()
+
+            (0 until 20).forEach { _ -> nodeMesh.nodeLinks.remove( nodeMesh.nodeLinks.getRandomNodeLink() ) }
+
+            secondContainer.text(text = "NodeMesh() from threeLeaf with 20 links removed", color = ForeColors[1], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + topTextOffset)
+
+            for (nodeLine in nodeMesh.getNodeLineList()) {
 
                 stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
                     line(nodeLine!!.first, nodeLine.second )
                 }
             }
 
-//            println("drawing nodes")
-            roomMesh.nodes.forEach { node ->
-
-          //      println(node.description)
-
-                val numberRegex = Regex("\\d+")
-
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position)
+            nodeMesh.nodes.forEach { node ->
+                secondContainer.circle {
+                    position(node.position)
                     radius = 5.0
-                    color = ForeColors[colorIdx % ForeColors.size]
+                    color = ForeColors[1]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
 
-            roomMesh.centroids.forEach { node ->
+            delay(TimeSpan(1000.0))
 
-                //      println(node.description)
+            nodeMesh.removeOrphans()
 
-                val numberRegex = Regex("\\d+")
+            nodeMesh.nodes.forEach { node ->
 
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position)
-                    radius = 10.0
-                    color = ForeColors[colorIdx % ForeColors.size]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
-                    }
-                }
-            }
-        }
-    }
-
-    @ExperimentalUnsignedTypes
-    suspend fun renderNodeMeshRoomsSetCentroids() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
-
-        graphics {
-
-            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
-
-            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
-
-            val centroidMesh = buildRoomMesh(Point(200, 200), height = 2)
-
- //           println("centroidMesh:$centroidMesh")
-
-            for (nodeLine in centroidMesh.getNodeLineList()) {
-
-                stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
-
-            centroidMesh.nodes.forEach { node ->
-
-                circle { position(node.position)
-                    radius = 5.0
-                    color = ForeColors[2]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
-                    }
-                }
-            }
-
-            val roomMesh = buildCentroidRoomMesh(height = 3, centroids = centroidMesh.nodes.moveNodes(Point(312, 312)).scaleNodes(scale = 1.5) )
-
-//            println("drawing lines")
-            for (nodeLine in roomMesh.getNodeLineList()) {
-
-                stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
-
-//            println("drawing nodes")
-            roomMesh.nodes.forEach { node ->
-
-                //      println(node.description)
-
-                val numberRegex = Regex("\\d+")
-
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position)
-                    radius = 5.0
-                    color = ForeColors[colorIdx % ForeColors.size]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
-                    }
-                }
-            }
-
-            roomMesh.centroids.forEach { node ->
-
-                //      println(node.description)
-
-                val numberRegex = Regex("\\d+")
-
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position)
-                    radius = 10.0
-                    color = ForeColors[colorIdx % ForeColors.size]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
-                    }
-                }
-            }
-        }
-    }
-
-    @ExperimentalUnsignedTypes
-    suspend fun renderOrphanedNodeMesh() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
-
-        graphics {
-
-            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
-
-            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
-
-            val roomMesh = buildRoomMesh(Point(512, 512), height = 4)
-
-            (0..20).forEach { roomMesh.nodeLinks.remove( roomMesh.nodeLinks.getRandomNodeLink() ) }
-
-//            println("drawing lines")
-            for (nodeLine in roomMesh.getNodeLineList()) {
-
-                stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
-
-//            println("drawing nodes")
-            roomMesh.nodes.forEach { node ->
-
-                //      println(node.description)
-
-                val numberRegex = Regex("\\d+")
-
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position)
-                    radius = 5.0
-                    color = ForeColors[0]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
-                    }
-                }
-            }
-
-            roomMesh.removeOrphans()
-
-            roomMesh.nodes.forEach { node ->
-
-                //      println(node.description)
-
-                for (nodeLine in roomMesh.getNodeLineList()) {
+                for (nodeLine in nodeMesh.getNodeLineList()) {
 
                     stroke(BackColors[3], StrokeInfo(thickness = 3.0)) {
                         line(nodeLine!!.first, nodeLine.second )
                     }
                 }
 
-                circle { position(node.position)
+                secondContainer.circle {
+                    position(node.position)
                     radius = 5.0
-                    color = ForeColors[4]
+                    color = ForeColors[3]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
+
+            secondContainer.text(text = "NodeMesh() network(s) containing at least 25% of total mesh nodes", color = ForeColors[3], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + bottomTextOffset)
+
         }
+
+        while (RenderPalette.returnClick == null) {
+            delay(TimeSpan(100.0))
+        }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
     }
 
+
     @ExperimentalUnsignedTypes
-    suspend fun renderOrphanHandlingNodeMeshRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeMeshEdges(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        graphics {
+        val leafHeight = 7
 
-            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+        commandViews[CommandView.LABEL_TEXT].setText("renderNodeMeshEdges() [v0.3]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("demonstration of edge finding upon a NodeMesh generated from three Leaf(height=$leafHeight)")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = false
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
 
-            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
+        RenderPalette.returnClick = null
 
-            val orphanAdoptOffset = Point(0, 400)
+        val startingPoint = Point(462, 574)
 
-            val centroidMesh = buildRoomMesh(Point(100, 200), height = 2)
+        val meshTextOffset = Point(500, -300)
+        val textOffset60 = Point(500, -250)
+        val textOffset70 = Point(500, -200)
+        val textOffset80 = Point(500, -150)
 
-            //           println("centroidMesh:$centroidMesh")
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
 
-            for (nodeLine in centroidMesh.getNodeLineList()) {
+            val leafFirst = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
+            val leafSecond = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(210) )
+            val leafThird = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(330) )
 
-                stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
+            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
+            val nodeMesh = threeLeaf.nodeMesh()
+
+            nodeMesh.consolidateStackedNodes()
+            nodeMesh.consolidateNearNodes()
+            nodeMesh.linkNearNodes()
+            nodeMesh.pruneNodeLinks()
+            nodeMesh.consolidateNodeLinks()
+
+            secondContainer.text(text = "threeLeaf.nodeMesh()", color = ForeColors[1], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + meshTextOffset)
+
+            stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
+
+                for (nodeLine in nodeMesh.getNodeLineList() ) {
                     line(nodeLine!!.first, nodeLine.second )
                 }
             }
 
-            centroidMesh.nodes.forEach { node ->
+            for (node in nodeMesh.nodes) {
+                secondContainer.circle {
+                    position(node.position)
+                    radius = 5.0
+                    color = ForeColors[1]
+                    strokeThickness = 3.0
+                    onClick{
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                    }
+                }
+            }
 
-                circle { position(node.position)
+            val centroid = Node(position = nodeMesh.nodes.averagePositionWithinNodes())
+
+            secondContainer.circle {
+                position(centroid.position)
+                radius = 12.0
+                color = ForeColors[1]
+                strokeThickness = 3.0
+                onClick{
+                    commandViews[CommandView.NODE_UUID_TEXT].setText(centroid.uuid.toString())
+                    commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(centroid.description)
+                }
+            }
+
+            val farthestNode = nodeMesh.nodes.getFarthestNode(centroid)
+
+            val outerNodes80 = nodeMesh.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .8 }
+
+            val outerNodes70 = nodeMesh.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .7 }
+
+            val outerNodes60 = nodeMesh.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .6 }
+
+            delay(TimeSpan(500.0) )
+
+            secondContainer.text(text = "nodes >= 60% distance from centroid", color = ForeColors[2], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset60)
+
+            for (node in outerNodes60) {
+                secondContainer.circle {
+                    position(node.position)
                     radius = 5.0
                     color = ForeColors[2]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
 
-            val roomMesh = buildCentroidRoomMesh(height = 3, centroids = centroidMesh.nodes.moveNodes(Point(412, 112)).scaleNodes(scale = 1.5) )
+            delay(TimeSpan(500.0) )
 
-            for (nodeLine in roomMesh.getNodeLineList()) {
+            secondContainer.text(text = "nodes >= 70% distance from centroid", color = ForeColors[3], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset70)
 
-                stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
-
-//            println("drawing nodes")
-            roomMesh.nodes.forEach { node ->
-
-                //      println(node.description)
-
-                val numberRegex = Regex("\\d+")
-
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position)
+            for (node in outerNodes70) {
+                secondContainer.circle {
+                    position(node.position)
                     radius = 5.0
-                    color = ForeColors[colorIdx % ForeColors.size]
+                    color = ForeColors[3]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
 
-            roomMesh.centroids.forEach { node ->
+            delay(TimeSpan(500.0) )
 
-                //      println(node.description)
+            secondContainer.text(text = "nodes >= 80% distance from centroid", color = ForeColors[4], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset80)
 
-                val numberRegex = Regex("\\d+")
-
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position)
-                    radius = 10.0
-                    color = ForeColors[colorIdx % ForeColors.size]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
-                    }
-                }
-            }
-
-            roomMesh.adoptRoomOrphans()
-
-            for (nodeLine in roomMesh.getNodeLineList()) {
-
-                stroke(BackColors[3], StrokeInfo(thickness = 3.0)) {
-                    line(nodeLine!!.first + orphanAdoptOffset, nodeLine.second + orphanAdoptOffset )
-                }
-            }
-
-            roomMesh.nodes.forEach { node ->
-
-                //      println(node.description)
-
-                val numberRegex = Regex("\\d+")
-
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position + orphanAdoptOffset)
+            for (node in outerNodes80) {
+                secondContainer.circle {
+                    position(node.position)
                     radius = 5.0
-                    color = ForeColors[colorIdx % ForeColors.size]
+                    color = ForeColors[4]
                     strokeThickness = 3.0
                     onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
-                    }
-                }
-            }
-
-            roomMesh.centroids.forEach { node ->
-
-                //      println(node.description)
-
-                val numberRegex = Regex("\\d+")
-
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                circle { position(node.position + orphanAdoptOffset)
-                    radius = 10.0
-                    color = ForeColors[colorIdx % ForeColors.size]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
+                        commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
                     }
                 }
             }
         }
+
+        while (RenderPalette.returnClick == null) {
+            delay(TimeSpan(100.0))
+        }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
     }
 }

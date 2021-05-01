@@ -14,354 +14,325 @@ import com.soywiz.korma.geom.vector.line
 import kotlinx.coroutines.delay
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
+import node.INodeMesh
 import node.INodeMesh.Companion.addMesh
 import node.Node
 import node.Node.Companion.angleBetween
 import node.Node.Companion.averagePositionWithinNodes
 import node.Node.Companion.getFarthestNode
 import node.Node.Companion.getRandomNode
+import node.Node.Companion.moveNodes
 import node.Node.Companion.nearestNodesOrderedAsc
+import node.Node.Companion.scaleNodes
 
 object RenderNodeRooms {
-
-    lateinit var textView : View
-
-    fun updateNodeText(uuidString : String) {
-        textView.setText(uuidString)
-    }
-
+/*
     @ExperimentalUnsignedTypes
-    suspend fun renderNodeRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeRooms(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        val roomColors = listOf(Colors.DARKRED, Colors.DARKGREEN,  Colors.BLUE, Colors.DARKMAGENTA, Colors.DARKSEAGREEN, Colors.DARKTURQUOISE
-            , Colors.DARKORANGE, Colors.DARKOLIVEGREEN, Colors.DARKSALMON)
+        var funIdx = 0
+        val funSize = 4
 
-        val roomPathColor = Colors["#427d7a"]
+        while ( (funIdx >= 0) && (funIdx < funSize) ) {
+//            println ("funMapIdx : $funIdx")
+            commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
+            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
 
-        val startingMap = mapOf(
-            90 to Point(750, 600)
-            , 330 to Point(600, 400)
-            , 210 to Point(900, 400)
-        )
-        graphics {
-
-            textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
-
-            val leafFirst = Leaf(topHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(topHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(topHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
-
-            val nodeMesh = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList()).nodeMesh()
-            val nodeClusters = nodeMesh.getClusters(rooms = 12, maxIterations = 5)
-            var colorIdx = 0
-
-            nodeMesh.consolidateNearNodes()
-
-            nodeMesh.linkNearNodes()
-
-            stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
-
-                for (nodeLine in nodeMesh.getNodeLineList() ) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
-
-            stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
-
-                for (node in nodeMesh.nodes) {
-                    circle(node.position, radius = 5.0)
-                }
-            }
-
-            nodeClusters.forEach { nodeCluster ->
-                val nodeRoom = NodeMesh(linkNodes = nodeCluster.value)
-
-                nodeRoom.consolidateNearNodes()
-
-                nodeRoom.linkNearNodes()
-
-                stroke(roomColors[colorIdx % 9], StrokeInfo(thickness = 2.0)) {
-
-                    for (nodeLine in nodeRoom.getNodeLineList()) {
-                        line(nodeLine!!.first, nodeLine.second)
-                    }
-                }
-
-                nodeRoom.nodes.forEach { node ->
-                     circle { position(node.position)
-                                radius = 5.0
-                                color = roomColors[colorIdx % 9]
-                                strokeThickness = 3.0
-                                onClick{ updateNodeText(node.uuid.toString())
-                            }
-                     }
-                }
-
-                colorIdx++
+            when (funIdx) {
+                0 -> if ( renderNodeRoomsSizes(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                1 -> if ( renderNodeRoomsSetCentroids(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                2 -> if ( renderNodeRoomsOrphanAdoptingDiff(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                3 -> if ( renderNodeRoomsElaboration(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             }
         }
+
+        return if (funIdx > 0) ButtonCommand.NEXT else ButtonCommand.PREV
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderNodeRoomsBuiltLines() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeRoomsSizes(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        val roomColors = listOf(Colors.DARKRED, Colors.DARKGREEN,  Colors["#0000ce"], Colors.DARKMAGENTA, Colors.DARKSEAGREEN, Colors.DARKTURQUOISE
-            , Colors.DARKORANGE, Colors.DARKOLIVEGREEN, Colors.DARKSALMON)
-
-        val roomPathColor = Colors["#427d7a"]
-
-        val startingMap = mapOf(
-            90 to Point(750, 600)
-            , 330 to Point(600, 400)
-            , 210 to Point(900, 400)
-        )
         graphics {
 
-            textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(topHeight = 6, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(topHeight = 6, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(topHeight = 6, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
 
-            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
-            val nodeMesh = threeLeaf.nodeMesh()
-            val nodeClusters = nodeMesh.getClusters(rooms = 12, maxIterations = 5)
-            var colorIdx = 0
+            val roomMesh = INodeMesh.buildRoomMesh(Point(512, 512), height = 4)
 
-            nodeMesh.buildNodeLinkLines()
+//            println("drawing lines")
+            for (nodeLine in roomMesh.getNodeLineList()) {
 
-            nodeMesh.linkNearNodes()
-
-            nodeMesh.consolidateNearNodes()
-
-            stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
-
-                for (nodeLine in nodeMesh.getNodeLineList() ) {
+                stroke(RenderPalette.BackColors[1], StrokeInfo(thickness = 3.0)) {
                     line(nodeLine!!.first, nodeLine.second )
                 }
             }
 
-            stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
+//            println("drawing nodes")
+            roomMesh.nodes.forEach { node ->
 
-                for (node in nodeMesh.nodes) {
-                    circle(node.position, radius = 5.0)
-                }
-            }
+                //      println(node.description)
 
-            nodeClusters.values.forEachIndexed { nodeClusterIndex, nodeCluster ->
-                val nodeRoom = NodeMesh(description = "nodeRoom${nodeClusterIndex}", linkNodes = nodeCluster)
+                val numberRegex = Regex("\\d+")
 
-                nodeRoom.consolidateNearNodes()
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
 
-                stroke(roomColors[colorIdx % 9], StrokeInfo(thickness = 2.0)) {
-
-                    for (nodeLine in nodeRoom.getNodeLineList()) {
-                        line(nodeLine!!.first, nodeLine.second)
-                    }
-                }
-
-                nodeRoom.nodes.forEach { node ->
-                    circle { position(node.position)
-                        radius = 5.0
-                        color = roomColors[colorIdx % 9]
-                        strokeThickness = 3.0
-                        onClick{ updateNodeText(node.uuid.toString())
-                        }
-                    }
-                }
-
-                colorIdx++
-            }
-        }
-    }
-    @ExperimentalUnsignedTypes
-    suspend fun renderConnectedNodeRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
-
-        val roomColors = listOf(Colors.DARKRED, Colors.DARKGREEN,  Colors.DARKBLUE, Colors.DARKMAGENTA, Colors.DARKSEAGREEN, Colors.DARKTURQUOISE
-            , Colors.DARKORANGE, Colors.DARKOLIVEGREEN, Colors.DARKSALMON)
-
-        val roomPathColor = Colors["#427d7a"]
-
-        val startingMap = mapOf(
-            90 to Point(750, 600)
-            , 330 to Point(600, 400)
-            , 210 to Point(900, 400)
-        )
-        graphics {
-
-            textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
-
-            val leafFirst = Leaf(topHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(topHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(topHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
-
-            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
-            val nodeMesh = threeLeaf.nodeMesh()
-            val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
-
-            var colorIdx = 0
-
-            nodeMesh.consolidateNearNodes()
-
-            nodeMesh.linkNearNodes()
-
-            val allRooms = NodeMesh()
-
-            nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
-
-            allRooms.consolidateNearNodes()
-
-            allRooms.linkNearNodes()
-
-            stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
-
-                for (nodeLine in allRooms.getNodeLineList() ) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
-
-            stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
-
-                for (node in allRooms.nodes) {
-                    circle(node.position, radius = 5.0)
-                }
-            }
-
-            colorIdx = 0
-
-            nodeClusters.keys.forEach { centroid ->
-
-                circle { position(centroid.position)
-                    radius = 10.0
-                    color = roomColors[colorIdx % 9]
+                circle { position(node.position)
+                    radius = 5.0
+                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
                     strokeThickness = 3.0
-                    onClick{ updateNodeText(centroid.uuid.toString())
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
                     }
                 }
-                colorIdx++
             }
 
-            colorIdx = 0
+            roomMesh.centroids.forEach { node ->
 
-            nodeClusters.values.forEachIndexed { nodeClusterIndex, nodeCluster ->
-                val nodeRoom = NodeMesh(description = "nodeRoom${nodeClusterIndex}", linkNodes = nodeCluster)
+                //      println(node.description)
 
+                val numberRegex = Regex("\\d+")
 
-                nodeRoom.consolidateNearNodes()
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
 
-                stroke(roomColors[colorIdx % 9], StrokeInfo(thickness = 2.0)) {
-
-                    for (nodeLine in nodeRoom.getNodeLineList()) {
-                        line(nodeLine!!.first, nodeLine.second)
+                circle { position(node.position)
+                    radius = 10.0
+                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
                     }
                 }
-
-                nodeRoom.nodes.forEach { node ->
-                    circle { position(node.position)
-                        radius = 5.0
-                        color = roomColors[colorIdx % 9]
-                        strokeThickness = 3.0
-                        onClick{ updateNodeText(node.uuid.toString())
-                        }
-                    }
-                }
-
-                colorIdx++
             }
         }
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderConnectedNodeRoomBorder() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeRoomsSetCentroids(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        val startingMap = mapOf(
-            90 to Point(750, 600)
-            , 330 to Point(600, 400)
-            , 210 to Point(900, 400)
-        )
         graphics {
 
-            textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
 
-            val leafFirst = Leaf(topHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(topHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(topHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
+            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
 
-            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
-            val nodeMesh = threeLeaf.nodeMesh()
-            val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
+            val centroidMesh = INodeMesh.buildRoomMesh(Point(200, 200), height = 2)
 
-            var colorIdx = 0
+            //           println("centroidMesh:$centroidMesh")
 
-            nodeMesh.consolidateNearNodes()
+            for (nodeLine in centroidMesh.getNodeLineList()) {
 
-            nodeMesh.linkNearNodes()
-
-            val allRooms = NodeMesh()
-
-            nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
-
-            allRooms.consolidateNearNodes()
-
-            allRooms.linkNearNodes()
-
-            stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
-
-                for (nodeLine in allRooms.getNodeLineList() ) {
+                stroke(RenderPalette.BackColors[2], StrokeInfo(thickness = 3.0)) {
                     line(nodeLine!!.first, nodeLine.second )
                 }
             }
 
-            stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
+            centroidMesh.nodes.forEach { node ->
 
-                for (node in allRooms.nodes) {
-                    circle(node.position, radius = 5.0)
+                circle { position(node.position)
+                    radius = 5.0
+                    color = RenderPalette.ForeColors[2]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
                 }
             }
 
-            val centroid = Node(position = allRooms.nodes.averagePositionWithinNodes())
+            val roomMesh = INodeMesh.buildCentroidRoomMesh(
+                height = 3,
+                centroids = centroidMesh.nodes.moveNodes(Point(312, 312)).scaleNodes(scale = 1.5)
+            )
 
-            stroke(Colors["#3939ad"], StrokeInfo(thickness = 3.0)) {
-                 circle(centroid.position, radius = 5.0)
-            }
+//            println("drawing lines")
+            for (nodeLine in roomMesh.getNodeLineList()) {
 
-            val farthestNode = allRooms.nodes.getFarthestNode(centroid)
-            
-            val outerNodes80 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .8 }
-
-            val outerNodes70 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .7 }
-
-            val outerNodes60 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .6 }
-
-            stroke(Colors["#56f636"], StrokeInfo(thickness = 3.0)) {
-
-                for (node in outerNodes60) {
-                    circle(node.position, radius = 5.0)
+                stroke(RenderPalette.BackColors[1], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
                 }
             }
 
-            delay(1000)
+//            println("drawing nodes")
+            roomMesh.nodes.forEach { node ->
 
-            stroke(Colors["#1d8a1e"], StrokeInfo(thickness = 3.0)) {
+                //      println(node.description)
 
-                for (node in outerNodes70) {
-                    circle(node.position, radius = 5.0)
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
                 }
             }
 
-            delay(1000)
+            roomMesh.centroids.forEach { node ->
 
-            stroke(Colors["#0d431b"], StrokeInfo(thickness = 3.0)) {
+                //      println(node.description)
 
-                for (node in outerNodes80) {
-                    circle(node.position, radius = 5.0)
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 10.0
+                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
                 }
             }
         }
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderConnectedNodeRoomElaboration() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeRoomsOrphanAdoptingDiff(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+
+        graphics {
+
+            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+
+            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
+
+            val orphanAdoptOffset = Point(0, 400)
+
+            val centroidMesh = INodeMesh.buildRoomMesh(Point(100, 200), height = 2)
+
+            //           println("centroidMesh:$centroidMesh")
+
+            for (nodeLine in centroidMesh.getNodeLineList()) {
+
+                stroke(RenderPalette.BackColors[2], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+            centroidMesh.nodes.forEach { node ->
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = RenderPalette.ForeColors[2]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            val roomMesh = INodeMesh.buildCentroidRoomMesh(
+                height = 3,
+                centroids = centroidMesh.nodes.moveNodes(Point(412, 112)).scaleNodes(scale = 1.5)
+            )
+
+            for (nodeLine in roomMesh.getNodeLineList()) {
+
+                stroke(RenderPalette.BackColors[1], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first, nodeLine.second )
+                }
+            }
+
+//            println("drawing nodes")
+            roomMesh.nodes.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 5.0
+                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.centroids.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position)
+                    radius = 10.0
+                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.adoptRoomOrphans()
+
+            for (nodeLine in roomMesh.getNodeLineList()) {
+
+                stroke(RenderPalette.BackColors[3], StrokeInfo(thickness = 3.0)) {
+                    line(nodeLine!!.first + orphanAdoptOffset, nodeLine.second + orphanAdoptOffset )
+                }
+            }
+
+            roomMesh.nodes.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position + orphanAdoptOffset)
+                    radius = 5.0
+                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+
+            roomMesh.centroids.forEach { node ->
+
+                //      println(node.description)
+
+                val numberRegex = Regex("\\d+")
+
+                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                circle { position(node.position + orphanAdoptOffset)
+                    radius = 10.0
+                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                    strokeThickness = 3.0
+                    onClick{
+                        RenderNodeRooms.updateNodeText(node.uuid.toString())
+                        RenderNavigation.updateRoomText(node.description)
+                    }
+                }
+            }
+        }
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderNodeRoomsElaboration(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         val startingMap = mapOf(
             90 to Point(450, 600)
@@ -450,5 +421,5 @@ object RenderNodeRooms {
 
             }
         }
-    }
+    }*/
 }

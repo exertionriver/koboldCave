@@ -56,7 +56,7 @@ interface INodeMesh {
 
     fun pruneNodeLinks() { nodeLinks = nodeLinks.pruneNodeLinks(nodes) }
 
-    fun removeOrphans() { nodes = nodes.removeOrphans(nodeLinks, minPercent = 0.2); nodeLinks = nodeLinks.removeOrphanLinks(nodes) }
+    fun removeOrphans() { nodes = nodes.removeOrphans(nodeLinks, minPercent = 0.25); nodeLinks = nodeLinks.removeOrphanLinks(nodes) }
 
     fun adoptRoomOrphans() { nodes = nodes.adoptRoomOrphans(nodeLinks, getRoomNodes()) }
 
@@ -69,7 +69,6 @@ interface INodeMesh {
         centroids = nodeClusters.keys.toMutableList()
     }
 
-    //todo: combine next two
     fun getRandomNode() = nodes.getRandomNode()
 
     fun getRandomNextNodeAngle(node : Node) = nodeLinks.getRandomNextNodeAngle(nodes, node)
@@ -82,6 +81,7 @@ interface INodeMesh {
 
     fun getNodeLineList() : List<Pair<Point, Point>?> = nodes.getNodeLineList(nodeLinks)
 
+    //todo: move this to Line
     fun buildNodeLinkLines(noise : Int = 0, description : String = this.description) { this.addMesh( nodeLinks.buildNodeLinkLines(nodes, noise, description) ) }
 
     fun getRoomNodes() : Map<String, MutableList<Node>> {

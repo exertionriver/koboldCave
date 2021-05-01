@@ -18,15 +18,36 @@ import node.NodeLink.Companion.buildNodeLinkLine
 import node.NodeLink.Companion.consolidateNodeDistance
 
 object RenderNodeLine {
+/*
+    @ExperimentalUnsignedTypes
+    suspend fun renderNodeLine(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-    lateinit var textView : View
+        var funIdx = 0
+        val funSize = 2
 
-    fun updateNodeText(uuidString : String) {
-        textView.setText(uuidString)
+        while ( (funIdx >= 0) && (funIdx < funSize) ) {
+//            println ("funMapIdx : $funIdx")
+            commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
+            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
+
+            when (funIdx) {
+                0 -> if ( renderNodeLineHeightsNoises(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                1 -> if ( renderNodeLineMesh(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//  future directions:
+//                2 -> if ( renderGraftedNodeLines(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                3 -> if ( renderMeshGraftedNodeLine(renderContainer, commandViews) == ButtonCommand.NEXT) funIdx++ else funIdx--
+            }
+        }
+
+        return if (funIdx > 0) ButtonCommand.NEXT else ButtonCommand.PREV
     }
 
+    //	renderNodeLineStationary()
+
+    //	renderNodeLineMesh()
+
     @ExperimentalUnsignedTypes
-    suspend fun renderNodeLineStationary() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeLineHeightsNoises(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         val startingMap = mutableListOf(
             Node( position = Point(212, 374) )
@@ -135,7 +156,7 @@ object RenderNodeLine {
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderNodeLinesBetweenPoints() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNodeLineMesh(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         val startingMap = mutableListOf(
             Node( position = Point(352, 474) )
@@ -228,5 +249,5 @@ object RenderNodeLine {
                 }
             }
         }
-    }
+    }*/
 }

@@ -29,25 +29,34 @@ import node.NodeMesh
 object RenderNavigation {
 
     val ResourcesContainer.arrow_png by resourceBitmap("brightarrow.png")
+/*
+    @ExperimentalUnsignedTypes
+    suspend fun renderNavigation(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-    lateinit var nodeView : View
-    lateinit var angleView : View
-    lateinit var roomView : View
+        var funIdx = 0
+        val funSize = 2
 
-    fun updateNodeText(uuidString : String) {
-        nodeView.setText(uuidString)
+        while ( (funIdx >= 0) && (funIdx < funSize) ) {
+//            println ("funMapIdx : $funIdx")
+            commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
+            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
+
+            when (funIdx) {
+                0 -> if ( renderNavigationRooms(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                1 -> if ( renderNavigationElaboratingRooms(renderContainer, commandViews) == ButtonCommand.PREV ) funIdx--
+            }
+        }
+
+        return if (funIdx > 0) ButtonCommand.NEXT else ButtonCommand.PREV
     }
 
-    fun updateAngleText(angleDegrees : String) {
-        angleView.setText(angleDegrees)
-    }
+    //  renderNavigationRooms()
 
-    fun updateRoomText(roomDescription : String) {
-        roomView.setText(roomDescription)
-    }
+//	renderNavigationElaboratingRooms()
+
 
     @ExperimentalUnsignedTypes
-    suspend fun renderNavigation() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNavigationRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
 
         val container = this.containerRoot
 
@@ -258,7 +267,7 @@ object RenderNavigation {
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderElaboratingNavigation() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderNavigationElaboratingRooms() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
 
         val container = this.containerRoot
 
@@ -550,5 +559,5 @@ object RenderNavigation {
                 outerNodes60 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .5 }
             }
         }
-    }
+    }*/
 }

@@ -1,40 +1,61 @@
 package render
 
 import com.soywiz.klock.TimeSpan
-import com.soywiz.korge.Korge
-import com.soywiz.korge.view.graphics
-import com.soywiz.korim.color.Colors
+import com.soywiz.korge.input.onClick
+import com.soywiz.korge.view.*
 import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
-import lattice.ILattice.Companion.getLateralLineList
-import leaf.ILeaf
-import leaf.ILeaf.Companion.NextDistancePx
-import leaf.ILeaf.Companion.add
-import leaf.ILeaf.Companion.graft
-import leaf.Leaf
-import leaf.Lace
 import lattice.ArrayLattice
+import lattice.ILattice.Companion.getLateralLineList
 import lattice.RoundedLattice
-import kotlin.random.Random
 
 object RenderLattice {
 
     @ExperimentalUnsignedTypes
-    suspend fun renderLatticeStationary() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderLattice(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        val startingPoint = Point(128.0, 128.0)
+        var funIdx = 0
+        val funSize = 2
 
-     //   (1..3).toList().forEach {
+        while ( (funIdx >= 0) && (funIdx < funSize) ) {
+//            println ("funMapIdx : $funIdx")
+            commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
+            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
 
-            val lattice = RoundedLattice(topHeight = 20, position = startingPoint, topAngle = Angle.fromDegrees(330) )
-//            val lattice = ArrayLattice(topHeight = 20, position = startingPoint, topAngle = Angle.fromDegrees(330) )
+            when (funIdx) {
+                0 -> if ( renderArrayLatticeHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                1 -> if ( renderRoundedLatticeHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//  future directions:
+//                2 -> if ( renderGraftedLattices(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                3 -> if ( renderLaceGraftedLattice(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                4 -> if ( renderLeafGraftedLattice(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+            }
+        }
 
+        return if (funIdx > 0) ButtonCommand.NEXT else ButtonCommand.PREV
+    }
 
-            graphics {
-                stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
+    @ExperimentalUnsignedTypes
+    suspend fun renderArrayLatticeHeights(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+
+        commandViews[CommandView.LABEL_TEXT].setText("renderArrayLattice() [v0.3]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing ArrayLattice() at various heights")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = false
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
+
+        RenderPalette.returnClick = null
+
+        val latticeList = List(8) { ArrayLattice(topHeight = (it * 2) + 1, topAngle = Angle.fromDegrees(250), position = Point((8 - it) * 100 + 100, (8 - it) * 100 + 100) ) }
+
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
+
+            latticeList.reversed().forEachIndexed { latticeIdx, lattice ->
+                secondContainer.text(text= "ArrayLattice(height=${lattice.topHeight})", color = RenderPalette.ForeColors[latticeIdx % RenderPalette.ForeColors.size], alignment = RenderPalette.TextAlignCenter).position(Point(lattice.position.x, lattice.position.y - 30))
+
+                stroke(RenderPalette.BackColors[latticeIdx % RenderPalette.BackColors.size], StrokeInfo(thickness = 3.0)) {
 
                     for (line in lattice.getLineList() ) {
                         if (line != null) line(line.first, line.second)
@@ -43,199 +64,77 @@ object RenderLattice {
                     for (line in lattice.getList().getLateralLineList() ) {
                         if (line != null) line(line.first, line.second)
                     }
-
                 }
-                stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
 
-                    for (listLattice in lattice.getList() ) {
-                        circle(listLattice.position, radius = 5.0)
-                    }
-                }
-            }
-      //      delay(TimeSpan(1500.0))
-    //    }
-    }
-
-    @ExperimentalUnsignedTypes
-    suspend fun renderAddLeafStationary() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
-
-        val firstStartingPoint = Point(64.0, 64.0)
-        val secondStartingPoint = Point(256.0, 256.0)
-
-        val thirdStartingPoint = Point(512.0, 512.0)
-        val fourthStartingPoint = Point(768.0, 768.0)
-
-        val firstLeaf = Leaf(topHeight = 5, position = firstStartingPoint)
-        val secondLeaf = Leaf(topHeight = 5, position = secondStartingPoint)
-
-        val thirdLeaf = Leaf(topHeight = 5, position = thirdStartingPoint)
-        val fourthLeaf = Leaf(topHeight = 5, position = fourthStartingPoint)
-
-        val firstRandLeafIdx = Random.nextInt(firstLeaf.getList().size)
-        val thirdRandLeafIdx = Random.nextInt(thirdLeaf.getList().size)
-
-        firstLeaf.getList()[firstRandLeafIdx].add(secondLeaf)
-        thirdLeaf.getList()[thirdRandLeafIdx].graft(fourthLeaf)
-
-        graphics {
-            stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
-
-                for (line in firstLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-            stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
-
-                for (leaf in firstLeaf.getList() ) {
-                    circle(leaf.position, radius = 5.0)
-                }
-            }
-
-            stroke(Colors["#268184"], StrokeInfo(thickness = 3.0)) {
-
-                for (line in secondLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-            stroke(Colors["#59eef0"], StrokeInfo(thickness = 3.0)) {
-
-                for (leaf in secondLeaf.getList() ) {
-                    circle(leaf.position, radius = 5.0)
-                }
-            }
-
-            stroke(Colors["#818436"], StrokeInfo(thickness = 3.0)) {
-
-                for (line in thirdLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-            stroke(Colors["#f0f057"], StrokeInfo(thickness = 3.0)) {
-
-                for (leaf in thirdLeaf.getList() ) {
-                    circle(leaf.position, radius = 5.0)
-                }
-            }
-
-            stroke(Colors["#844a32"], StrokeInfo(thickness = 3.0)) {
-
-                for (line in fourthLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-            stroke(Colors["#f08154"], StrokeInfo(thickness = 3.0)) {
-
-                for (leaf in fourthLeaf.getList() ) {
-                    circle(leaf.position, radius = 5.0)
-                }
-            }
-        }
-    }
-
-    @ExperimentalUnsignedTypes
-    suspend fun renderLeafAngled() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
-
-        val startingPoint = Point(512.0, 974.0)
-
-        val startingMap = mapOf(
-            90 to startingPoint
-            , 45 to Point(512 - 462 * sin(Angle.fromDegrees(45)), 512 + 462 * sin(Angle.fromDegrees(45)) )
-            , 0 to Point(50.0, 512.0)
-            , 315 to Point(512 - 462 * sin(Angle.fromDegrees(45)), 512 - 462 * sin(Angle.fromDegrees(45)) )
-            , 270 to Point(512.0, 50.0)
-            , 225 to Point(512 + 462 * sin(Angle.fromDegrees(45)), 512 - 462 * sin(Angle.fromDegrees(45)) )
-            , 180 to Point(974.0, 512.0)
-            , 135 to Point(512 + 462 * sin(Angle.fromDegrees(45)), 512 + 462 * sin(Angle.fromDegrees(45)) )
-        )
-
-        while (true) {
-            startingMap.forEach {
-
-                val leaf = Leaf(topHeight = 4, angleFromParent = Angle.fromDegrees(it.key), position = it.value )
-
-//                println ("tree: ${Angle.fromDegrees(it.key)}, ${it.value}")
-
-                graphics {
-
-                    stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
-
-                        for (line in leaf.getLineList() ) {
-                            if (line != null) line(line.first, line.second)
+                for (listLeaf in lattice.getList() ) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = RenderPalette.ForeColors[latticeIdx % RenderPalette.ForeColors.size]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
                         }
                     }
-
-                    stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
-
-                        for (listLeaf in leaf.getList() ) {
-                            circle(listLeaf.position, radius = 5.0)
-                        }
-                    }
-
-                    delay(TimeSpan(1500.0))
-
                 }
             }
         }
+
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
     }
 
+
     @ExperimentalUnsignedTypes
-    suspend fun renderStreamCircle() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2b"]) {
+    suspend fun renderRoundedLatticeHeights(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        val centerPoint = Point(512.0, 512.0)
+        commandViews[CommandView.LABEL_TEXT].setText("renderRoundedLattice() [v0.3]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing ReoundedLattice() at various heights")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = false
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
 
-        val leafHeight = 9
+        RenderPalette.returnClick = null
 
-        val leafPoints = leafHeight + 1
+        val latticeList = List(8) { RoundedLattice(topHeight = (it * 2) + 1, topAngle = Angle.fromDegrees(250), position = Point((8 - it) * 100 + 100, (8 - it) * 100 + 100) ) }
 
-        val leafMap = mutableMapOf<Angle, Point>()
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
 
-        (0 until leafPoints).toList().forEach{ leafIndex ->
-            val angleOnCircle = Angle.fromDegrees( 360 / leafPoints * leafIndex ).normalized
+            latticeList.reversed().forEachIndexed { latticeIdx, lattice ->
+                secondContainer.text(text= "RoundedLattice(height=${lattice.topHeight})", color = RenderPalette.ForeColors[latticeIdx % RenderPalette.ForeColors.size], alignment = RenderPalette.TextAlignCenter).position(Point(lattice.position.x, lattice.position.y - 30))
 
-            //angleInMap points back to the center of the circle
-            leafMap[(Angle.fromDegrees(180) + angleOnCircle).normalized] = ILeaf.getChildPosition(centerPoint, (leafHeight - 2) * NextDistancePx, angleOnCircle)
-        }
+                stroke(RenderPalette.BackColors[latticeIdx % RenderPalette.BackColors.size], StrokeInfo(thickness = 3.0)) {
 
-        leafMap.forEach {
+                    for (line in lattice.getLineList() ) {
+                        if (line != null) line(line.first, line.second)
+                    }
 
-            val leaf = Lace(topHeight = leafHeight, topAngle = it.key, angleFromParent = it.key, position = it.value )
-
-//                println ("tree: ${it.key.degrees}, ${it.value}")
-
-            val finalPoints = mutableListOf<Point>()
-
-            graphics {
-
-                stroke(Colors["#848323"], StrokeInfo(thickness = 1.0)) {
-
-                    line(it.value, centerPoint)
-                }
-                
-                stroke(Colors["#343484"], StrokeInfo(thickness = 3.0)) {
-
-                    for (line in leaf.getLineList() ) {
+                    for (line in lattice.getList().getLateralLineList() ) {
                         if (line != null) line(line.first, line.second)
                     }
                 }
 
-                stroke(Colors["#5f5ff0"], StrokeInfo(thickness = 3.0)) {
-
-                    val leafList = leaf.getList()
-                    val leafListSize = leafList.size
-
-                    leafList.forEachIndexed { leafIndex, listLeaf ->
-                        circle(listLeaf.position, radius = 5.0)
-
-                        if (leafIndex == leafListSize - 1) finalPoints.add(listLeaf.position)
-                    }
-                }
-                stroke(Colors["#842b27"], StrokeInfo(thickness = 3.0)) {
-
-                    finalPoints.forEach { finalPoint ->
-                        line(finalPoint, centerPoint)
+                for (listLeaf in lattice.getList() ) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = RenderPalette.ForeColors[latticeIdx % RenderPalette.ForeColors.size]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
                     }
                 }
             }
         }
+
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
     }
 }
