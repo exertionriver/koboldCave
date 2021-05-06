@@ -33,7 +33,7 @@ object RenderNodeMesh {
     @ExperimentalUnsignedTypes
     suspend fun renderNodeMesh(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 4
+        var funIdx = 0
         val funSize = 5
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {

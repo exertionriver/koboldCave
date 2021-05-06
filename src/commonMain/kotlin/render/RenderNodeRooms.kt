@@ -1,5 +1,6 @@
 package render
 
+import com.soywiz.klock.TimeSpan
 import node.NodeMesh
 import com.soywiz.korge.Korge
 import com.soywiz.korge.input.onClick
@@ -7,11 +8,11 @@ import com.soywiz.korge.view.*
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.text.TextAlignment
 import com.soywiz.korim.vector.StrokeInfo
+import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
-import kotlinx.coroutines.delay
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh
@@ -24,9 +25,10 @@ import node.Node.Companion.getRandomNode
 import node.Node.Companion.moveNodes
 import node.Node.Companion.nearestNodesOrderedAsc
 import node.Node.Companion.scaleNodes
+import render.RenderPalette.ForeColors
 
 object RenderNodeRooms {
-/*
+
     @ExperimentalUnsignedTypes
     suspend fun renderNodeRooms(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
@@ -40,9 +42,9 @@ object RenderNodeRooms {
 
             when (funIdx) {
                 0 -> if ( renderNodeRoomsSizes(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                1 -> if ( renderNodeRoomsSetCentroids(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                2 -> if ( renderNodeRoomsOrphanAdoptingDiff(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                3 -> if ( renderNodeRoomsElaboration(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                1 -> if ( renderNodeRoomsSetCentroids(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                2 -> if ( renderNodeRoomsOrphanAdoptingDiff(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                3 -> if ( renderNodeRoomsElaboration(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             }
         }
 
@@ -52,63 +54,100 @@ object RenderNodeRooms {
     @ExperimentalUnsignedTypes
     suspend fun renderNodeRoomsSizes(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        graphics {
+        commandViews[CommandView.LABEL_TEXT].setText("renderNodeRoomsSizes() [v0.3]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing INodeMesh.buildRoomMesh() at various heights (sizes)")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = true
+        commandViews[CommandView.COMMENT_TEXT].setText("rooms are determined by k-means clustering with getClusters()")
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
 
-            RenderNodeRooms.textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
+        RenderPalette.returnClick = null
 
-            RenderNavigation.roomView = text(text = "current room", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 70)
+        val meshListSize = 7
 
-            val roomMesh = INodeMesh.buildRoomMesh(Point(512, 512), height = 4)
+        val meshListPosition = listOf(
+            Point(500, 300)
+            , Point(200, 600)
+            , Point(800, 600)
+            , Point(300, 900)
+            , Point(700, 900)
+            , Point(400, 1200)
+            , Point(600, 1200)
+        )
 
-//            println("drawing lines")
-            for (nodeLine in roomMesh.getNodeLineList()) {
+        val meshList = List(meshListSize) { idx -> INodeMesh.buildRoomMesh(centerPoint = meshListPosition[meshListSize - 1 - idx], height = idx) }
 
-                stroke(RenderPalette.BackColors[1], StrokeInfo(thickness = 3.0)) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
 
-//            println("drawing nodes")
-            roomMesh.nodes.forEach { node ->
+            meshList.reversed().forEachIndexed { nodeMeshIdx, nodeMesh ->
 
-                //      println(node.description)
+                val rooms = nodeMesh.nodes.size / 8
+                val maxIter = nodeMesh.nodes.size / 3
 
-                val numberRegex = Regex("\\d+")
+                secondContainer.text(text = "NodeMesh(height=${meshListSize - nodeMeshIdx}, rooms=${rooms}, maxIter=${maxIter})"
+                    , color = ForeColors[nodeMeshIdx % ForeColors.size]
+                    , alignment = RenderPalette.TextAlignCenter
+                ).position(Point(meshListPosition[nodeMeshIdx].x, meshListPosition[nodeMeshIdx].y - 100))
 
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+                val clusters = nodeMesh.getClusters(rooms = rooms, maxIterations = maxIter)
 
-                circle { position(node.position)
-                    radius = 5.0
-                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
+                stroke(RenderPalette.BackColors[nodeMeshIdx % RenderPalette.BackColors.size], StrokeInfo(thickness = 3.0)) {
+
+                    for (meshLine in nodeMesh.getNodeLineList()) {
+                        if (meshLine != null) line(meshLine.first, meshLine.second)
                     }
                 }
-            }
 
-            roomMesh.centroids.forEach { node ->
+                val renderPoints = if (clusters.isNotEmpty()) clusters.values.flatten() else nodeMesh.nodes
 
-                //      println(node.description)
+                for (meshNode in renderPoints ) {
+                    val numberRegex = Regex("\\d+")
 
-                val numberRegex = Regex("\\d+")
+                    val colorIdx = numberRegex.find(meshNode.description, 0)?.value?.toInt() ?: 0
 
-                val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+                    secondContainer.circle {
+                        position(meshNode.position)
+                        radius = 5.0
+                        color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(meshNode.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(meshNode.description)
+                        }
+                    }
+                }
 
-                circle { position(node.position)
-                    radius = 10.0
-                    color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
-                    strokeThickness = 3.0
-                    onClick{
-                        RenderNodeRooms.updateNodeText(node.uuid.toString())
-                        RenderNavigation.updateRoomText(node.description)
+                if (clusters.isNotEmpty()) {
+
+                    clusters.keys.forEach { node ->
+
+                        val numberRegex = Regex("\\d+")
+
+                        val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
+
+                        secondContainer.circle {
+                            position(node.position)
+                            radius = 10.0
+                            color = RenderPalette.ForeColors[colorIdx % RenderPalette.ForeColors.size]
+                            strokeThickness = 3.0
+                            onClick {
+                                commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
+                                commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                            }
+                        }
                     }
                 }
             }
         }
-    }
+        while (RenderPalette.returnClick == null) {
+            delay(TimeSpan(100.0))
+        }
 
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
+    }
+/*
     @ExperimentalUnsignedTypes
     suspend fun renderNodeRoomsSetCentroids(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 

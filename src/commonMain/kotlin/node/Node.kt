@@ -46,7 +46,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
     fun nearestCentroid(centroids : List<Node>) : Node {
 
-        return centroids.nearestNodesOrderedAsc(this)[0]
+        return if ( centroids.isNotEmpty() ) centroids.nearestNodesOrderedAsc(this)[0] else this
     }
 
     override fun equals(other: Any?): Boolean {
@@ -266,6 +266,8 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
         fun MutableList<Node>.cluster(rooms : Int = 4, maxIterations : Int = 4, roomIdx : Int = 0, setCentroids : MutableList<Node> = mutableListOf()) : MutableMap<Node, MutableList<Node>> {
 
+            if (rooms == 0) return mutableMapOf(this.toList().getRandomNode() to this)
+
             var roomIdxVar = roomIdx
 
             val centroids = if (setCentroids.size > 0)
@@ -330,7 +332,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return if (nearestNodes.size > 1) nearestNodes[nearestNodes.size - 1] else refNode
         }
 
-        fun List<Node>.getRandomNode() : Node = this[Random.nextInt(this.size)]
+        fun List<Node>.getRandomNode() : Node = if (this.isNotEmpty()) this[Random.nextInt(this.size)] else Node()
 
         fun MutableList<Node>.removeOrphans(nodeLinks : MutableList<NodeLink>, minPercent : Double) : MutableList<Node> {
 

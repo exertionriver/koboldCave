@@ -66,7 +66,7 @@ object RenderLeaf {
         val secondContainer = renderContainer.container()
         secondContainer.graphics {
 
-            leafList.reversed().forEachIndexed {leafIdx, leaf ->
+            leafList.reversed().forEachIndexed { leafIdx, leaf ->
                 secondContainer.text(text= "Leaf(height=${leaf.topHeight})", color = ForeColors[leafIdx % ForeColors.size], alignment = TextAlignCenter).position(Point(leaf.position.x, leaf.position.y - 30))
 
                 stroke(BackColors[leafIdx % BackColors.size], StrokeInfo(thickness = 3.0)) {
