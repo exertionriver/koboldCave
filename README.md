@@ -13,21 +13,17 @@ Example usage, after cloning / downloading:
 
 Hope this may help you in your development work. - IanP
 
+v0.3 - presenting various line demos with navigable UI, adding lace and lattice
+
+Two leaves 'bordering' a reference 'leaf' (in progress)
+![v0 3_bordering_leaf](https://user-images.githubusercontent.com/13192685/123573819-e0fc7700-d78b-11eb-9e10-0e23b741aa6b.png)
+
+Operations upon node meshes
+![v0 3_mesh_ops](https://user-images.githubusercontent.com/13192685/123573820-e35ed100-d78b-11eb-9604-f839e46243ab.png)
+
+Node rooms of a few sizes
+![v0 3_node_rooms](https://user-images.githubusercontent.com/13192685/123573823-e5289480-d78b-11eb-989b-59925fcec66b.png)
+
 v0.2 - refactoring leaves and nodes, nodeline with noise, k-means clustering
 
-meshline between five points with 60% noise :
-
-![meshline](https://user-images.githubusercontent.com/13192685/112913775-a9602f00-90b7-11eb-900b-950758d1ce18.png)
-
-clustering nodes into 10 rooms :
-
-![kmeans_cluster](https://user-images.githubusercontent.com/13192685/112913824-c72d9400-90b7-11eb-99ed-77d15e4a3f16.png)
-
-v0.1 - modelling organic cave-like environment rooms network :
-
-![example output for renderOakLeafAngled()](nodes_oakLeaf.png "example output for renderOakLeafAngled()")
-
-yellow nodes are from three 'oakleaf trees', blue nodes are connectivity and consolidation along the yellow node lines :
-
-![example output for renderNodeMeshStationary()](nodes_mesh_consolidated.png "example output for renderNodeMeshStationary()")
-
+v0.1 - modelling organic cave-like environment rooms network
