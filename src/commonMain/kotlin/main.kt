@@ -15,7 +15,7 @@ suspend fun main() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2
 	val commandViews = RenderPalette.initDemoScreen(this.containerRoot)
 
 	var demoIdx = 5
-	val demoSize = 7
+	val demoSize = 6
 
 	while (demoIdx < demoSize) {
 
@@ -25,7 +25,9 @@ suspend fun main() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2
 			2 -> if ( renderLattice(this.containerRoot, commandViews) == ButtonCommand.NEXT ) demoIdx++ else demoIdx--
 			3 -> if ( renderNodeMesh(this.containerRoot, commandViews) == ButtonCommand.NEXT ) demoIdx++ else demoIdx--
 			4 -> if ( renderNodeLine(this.containerRoot, commandViews) == ButtonCommand.NEXT ) demoIdx++ else demoIdx--
-			5 -> if ( renderNodeRooms(this.containerRoot, commandViews) == ButtonCommand.NEXT ) demoIdx++ else demoIdx--
+			5 -> if ( renderNodeRooms(this.containerRoot, commandViews) == ButtonCommand.PREV ) demoIdx--
+//			5 -> if ( renderNodeRooms(this.containerRoot, commandViews) == ButtonCommand.NEXT ) demoIdx++ else demoIdx--
+//  future directions:
 //			6 -> if ( renderNavigation(this.containerRoot, commandViews) == ButtonCommand.PREV ) demoIdx--
 		}
 	}

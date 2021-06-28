@@ -100,11 +100,14 @@ interface INodeMesh {
     companion object {
 
         fun INodeMesh.addMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {
+//            println("adding nodes and links")
             this.nodes.addNodes(nodeMeshToAdd.nodes, description)
             this.nodeLinks.addNodeLinks(nodeMeshToAdd.nodeLinks)
 
+//            println("distinct")
             this.nodes = this.nodes.distinct().toMutableList()
-            this.consolidateStackedNodes()
+//            println("consolidate stacked")
+//            this.consolidateStackedNodes()
         }
 
         fun INodeMesh.addBorderingMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {
@@ -137,33 +140,33 @@ interface INodeMesh {
 
             this.consolidateStackedNodes()
 
-//            println("consolidated stacked: $this")
+//            println("consolidated stacked")
 
             this.consolidateNearNodes()
 
-//            println("consolidated near: $this")
+//            println("consolidated near")
 
             this.linkNearNodes()
 
-//            println("linked near: $this")
+//            println("linked near")
 
             this.pruneNodeLinks()
 
-//            println("pruned: $this")
+//            println("pruned")
 
             this.consolidateNodeLinks()
 
-//            println("consolidated node links: $this")
+//            println("consolidated node links")
 
             this.removeOrphans()
 
-//            println("orphans removed: $this")
+//            println("orphans removed")
 
         }
 
         fun buildRoomMesh(centerPoint : Point, height : Int) : INodeMesh {
 
-            val leafPoints = height
+            val leafPoints = height + 1
 
             val leafMap = mutableMapOf<Angle, Point>()
 
@@ -180,23 +183,21 @@ interface INodeMesh {
 
             leafMap.forEach {
 
- //               println("leafMap: $it")
-                val leaf = Leaf(topHeight = height, angleFromParent = it.key, position = it.value )
- //               println("leaf: $leaf")
-                roomMesh.addMesh( leaf.getList().nodeMesh() )
- //               println("mesh: $roomMesh")
+                roomMesh.addMesh( Leaf(topHeight = height, angleFromParent = it.key, position = it.value ).getList().nodeMesh() )
+
             }
 
-            roomMesh.processMesh()
+//            println("processing Mesh")
 
-            //roomMesh.setClusters(rooms = roomMesh.nodes.size / 8, maxIterations = roomMesh.nodes.size / 8)
+
+            roomMesh.processMesh()
 
             return roomMesh
         }
 
         fun buildCentroidRoomMesh(height : Int = 3, centroids : MutableList<Node> = mutableListOf()) : INodeMesh {
 
-            val leafPoints = height
+            val leafPoints = height + 1
 
             val leafMap = mutableMapOf<Angle, Point>()
 
@@ -207,22 +208,24 @@ interface INodeMesh {
 
                     val angleOnCircle = Angle.fromDegrees( 360 / leafPoints * leafIndex ).normalized
 
-//                       println("building leaf mesh: $leafIndex, $angleOnCircle")
+                    println("building leaf mesh: $leafIndex, $angleOnCircle")
 
                     //angleInMap points back to the center of the circle
                     leafMap[(Angle.fromDegrees(180) + angleOnCircle).normalized] = ILeaf.getChildPosition(centroid.position, (height - 2) * NextDistancePx, angleOnCircle)
                 }
-
-                leafMap.forEach {
-
-                    //     println("leafMap: $it")
-                    roomMesh.addMesh( Leaf(topHeight = height, angleFromParent = it.key, position = it.value ).getList().nodeMesh() )
-                }
             }
+
+            leafMap.forEach {
+
+                println("adding Mesh")
+                roomMesh.addMesh( Leaf(topHeight = height, angleFromParent = it.key, position = it.value ).getList().nodeMesh() )
+            }
+
+            println("processing Mesh")
 
             roomMesh.processMesh()
 
-            roomMesh.setClusters(rooms = roomMesh.nodes.size / 8, maxIterations = roomMesh.nodes.size / 8, centroids)
+            roomMesh.setClusters(rooms = centroids.size, maxIterations = centroids.size, centroids)
 
             return roomMesh
         }

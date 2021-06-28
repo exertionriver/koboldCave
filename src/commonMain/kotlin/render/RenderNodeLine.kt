@@ -50,6 +50,7 @@ object RenderNodeLine {
         commandViews[CommandView.LABEL_TEXT].setText("renderNodeLineHeightsNoises() [v0.3]")
         commandViews[CommandView.DESCRIPTION_TEXT].setText("testing buildNodeLinkLines() at various lengths and noises")
         commandViews[CommandView.COMMENT_TEXT]!!.visible = false
+        commandViews[CommandView.NEXT_BUTTON]!!.visible = true
         commandViews[CommandView.PREV_BUTTON]!!.visible = true
 
         RenderPalette.returnClick = null

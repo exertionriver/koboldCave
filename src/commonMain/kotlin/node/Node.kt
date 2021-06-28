@@ -160,6 +160,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
                 checkNodes.nearestNodesOrderedAsc(refNode).forEach { checkNode ->
+//                checkNodes.sortedBy { it.uuid.toString() }.forEach { checkNode ->
                     if (checkNode.uuid.toString() > refNode.uuid.toString()) {
                         if ( Point.distance(refNode.position, checkNode.position) <= consolidateNodeDistance ) {
 //                            println("consolidating ${refNode.uuid} and ${checkNode.uuid}")
@@ -179,6 +180,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
                 checkNodes.nearestNodesOrderedAsc(refNode).forEach { checkNode ->
+//                checkNodes.sortedBy { it.uuid.toString() }.forEach { checkNode ->
                     if (checkNode.uuid.toString() > refNode.uuid.toString()) {
                         if (Point.distance(checkNode.position, refNode.position).toInt() <= stackedNodeDistance) { //basically same node, "stacked"
 //                            println("consolidating ${refNode.uuid} and ${checkNode.uuid}")
@@ -202,6 +204,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
                 val sortedCheckNodes = checkNodes.nearestNodesOrderedAsc(refNode)
                 sortedCheckNodes.forEach { checkNode ->
+//                checkNodes.sortedBy { it.uuid.toString() }.forEach { checkNode ->
                     if (checkNode.uuid.toString() > refNode.uuid.toString()) {
                         if (Point.distance(checkNode.position, refNode.position).toInt() <= linkNodeDistance) {
 //                            println("linking ${refNode.uuid} and ${checkNode.uuid}")
@@ -213,6 +216,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 //if outer node is orphaned, link to closest node
                 if ((checkNodes.size > 1) && (returnNodeLinks.getNodeLinks(refNode.uuid).isNullOrEmpty()) && linkOrphans) {
 //                    println ("adding link for orphan: $outer, $closestNode")
+//                    returnNodeLinks.addNodeLink(this, refNode.uuid, checkNodes.nearestNodesOrderedAsc(refNode)[0].uuid)
                     returnNodeLinks.addNodeLink(this, refNode.uuid, sortedCheckNodes[0].uuid)
                 }
             }
