@@ -15,6 +15,10 @@ import leaf.ILeaf.Companion.getList
 import leaf.ILeaf.Companion.graft
 import leaf.ILeaf.Companion.prune
 import leaf.Leaf
+import node.INodeMesh
+import node.Node
+import node.NodeLink
+import node.NodeMesh
 import render.RenderPalette.BackColors
 import render.RenderPalette.ForeColors
 import render.RenderPalette.TextAlignCenter
@@ -27,8 +31,8 @@ object RenderLeaf {
     @ExperimentalUnsignedTypes
     suspend fun renderLeaf(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 0
-        val funSize = 6
+        var funIdx = 4
+        val funSize = 5
 
         while (funIdx < funSize) {
 //            println ("funMapIdx : $funIdx")
@@ -37,14 +41,10 @@ object RenderLeaf {
 
             when (funIdx) {
                 0 -> if ( renderLeafHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++
-                1 -> if ( renderLeafAddGraft(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                2 -> if ( renderLeafPrune(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                3 -> if ( renderLeafAngled(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                4 -> if ( renderLeafSpiral(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                5 -> if ( renderLeafBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//  future directions:
-//                6 -> if ( renderGraftedLeafs(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-
+                1 -> if ( renderLeafPrune(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                2 -> if ( renderLeafAngled(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                3 -> if ( renderLeafSpiral(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                4 -> if ( renderLeafBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             }
         }
 
@@ -97,8 +97,9 @@ object RenderLeaf {
         return RenderPalette.returnClick as ButtonCommand
     }
 
+    /* Deprecated, grafting moved to NodeMesh operation
     @ExperimentalUnsignedTypes
-    suspend fun renderLeafAddGraft(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+    suspend fun renderLeafAddGraft_02(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         commandViews[CommandView.LABEL_TEXT].setText("renderAddGraftLeafStationary() [v0.2]")
         commandViews[CommandView.DESCRIPTION_TEXT].setText("testing firstLeaf.getList().add(secondLeaf) and thirdLeaf.getList().graft(fourthLeaf)")
@@ -215,7 +216,7 @@ object RenderLeaf {
 
         return RenderPalette.returnClick as ButtonCommand
     }
-
+*/
     @ExperimentalUnsignedTypes
     suspend fun renderLeafPrune(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
@@ -459,9 +460,9 @@ object RenderLeaf {
     }
 
     @ExperimentalUnsignedTypes
-    suspend fun renderLeafBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+    suspend fun renderLeafBordering_03(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        commandViews[CommandView.LABEL_TEXT].setText("renderBorderingLeaf() [v0.3]")
+        commandViews[CommandView.LABEL_TEXT].setText("renderLeafBordering() [v0.3]")
         commandViews[CommandView.DESCRIPTION_TEXT].setText("testing bordering with refILeaf")
         commandViews[CommandView.COMMENT_TEXT]!!.visible = true
         commandViews[CommandView.COMMENT_TEXT].setText("(work in progress)")
@@ -469,8 +470,8 @@ object RenderLeaf {
 
         val leaf = Leaf(topHeight = 6, position = Point(256.0, 512.0), topAngle = Angle.fromDegrees(280) )
 
-        val firstBorderingLeaf = Leaf(topHeight = 12, position = Point(482.0, 256.0), topAngle = Angle.fromDegrees(220), refILeaf = leaf )
-        val secondBorderingLeaf = Leaf(topHeight = 12, position = Point(532.0, 256.0), topAngle = Angle.fromDegrees(350), refILeaf = leaf )
+        val firstBorderingLeaf = Leaf(topHeight = 12, position = Point(482.0, 256.0), topAngle = Angle.fromDegrees(220), refINodeMesh = null )
+        val secondBorderingLeaf = Leaf(topHeight = 12, position = Point(532.0, 256.0), topAngle = Angle.fromDegrees(350), refINodeMesh = null )
 
         val secondContainer = renderContainer.container()
         secondContainer.graphics {
@@ -531,6 +532,105 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                    }
+                }
+            }
+        }
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderLeafBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+
+        commandViews[CommandView.LABEL_TEXT].setText("renderBorderingLeaf() [v0.4]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing bordering with refILeaf")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = true
+        commandViews[CommandView.COMMENT_TEXT].setText("(work in progress)")
+        RenderPalette.returnClick = null
+
+        val refNodesCases = listOf(
+            listOf(Node(position = Point(150, 100)), Node(position = Point(200, 150)), Node(position = Point(100, 200)))
+            , listOf(Node(position = Point(100, 400)), Node(position = Point(200, 450)), Node(position = Point(150, 500)))
+            , listOf(Node(position = Point(200, 700)), Node(position = Point(150, 750)), Node(position = Point(100, 800)))
+            , listOf(Node(position = Point(700, 200)), Node(position = Point(600, 250)), Node(position = Point(650, 300)))
+            , listOf(Node(position = Point(600, 500)), Node(position = Point(650, 550)), Node(position = Point(700, 600)))
+            , listOf(Node(position = Point(650, 800)), Node(position = Point(600, 850)), Node(position = Point(700, 900)))
+        )
+
+        val refNodeLinksCases = listOf(
+            listOf(NodeLink(firstNodeUuid = refNodesCases[0][0].uuid, secondNodeUuid = refNodesCases[0][1].uuid), NodeLink(firstNodeUuid = refNodesCases[0][1].uuid, secondNodeUuid = refNodesCases[0][2].uuid))
+            , listOf(NodeLink(firstNodeUuid = refNodesCases[1][0].uuid, secondNodeUuid = refNodesCases[1][1].uuid), NodeLink(firstNodeUuid = refNodesCases[1][1].uuid, secondNodeUuid = refNodesCases[1][2].uuid))
+            , listOf(NodeLink(firstNodeUuid = refNodesCases[2][0].uuid, secondNodeUuid = refNodesCases[2][1].uuid), NodeLink(firstNodeUuid = refNodesCases[2][1].uuid, secondNodeUuid = refNodesCases[2][2].uuid))
+            , listOf(NodeLink(firstNodeUuid = refNodesCases[3][0].uuid, secondNodeUuid = refNodesCases[3][1].uuid), NodeLink(firstNodeUuid = refNodesCases[3][1].uuid, secondNodeUuid = refNodesCases[3][2].uuid))
+            , listOf(NodeLink(firstNodeUuid = refNodesCases[4][0].uuid, secondNodeUuid = refNodesCases[4][1].uuid), NodeLink(firstNodeUuid = refNodesCases[4][1].uuid, secondNodeUuid = refNodesCases[4][2].uuid))
+            , listOf(NodeLink(firstNodeUuid = refNodesCases[5][0].uuid, secondNodeUuid = refNodesCases[5][1].uuid), NodeLink(firstNodeUuid = refNodesCases[5][1].uuid, secondNodeUuid = refNodesCases[5][2].uuid))
+        )
+
+        val refNodeMeshCases = mutableListOf<INodeMesh>(
+            NodeMesh( nodes = refNodesCases[0].toMutableList(), nodeLinks = refNodeLinksCases[0].toMutableList())
+            , NodeMesh( nodes = refNodesCases[1].toMutableList(), nodeLinks = refNodeLinksCases[1].toMutableList())
+            , NodeMesh( nodes = refNodesCases[2].toMutableList(), nodeLinks = refNodeLinksCases[2].toMutableList())
+            , NodeMesh( nodes = refNodesCases[3].toMutableList(), nodeLinks = refNodeLinksCases[3].toMutableList())
+            , NodeMesh( nodes = refNodesCases[4].toMutableList(), nodeLinks = refNodeLinksCases[4].toMutableList())
+            , NodeMesh( nodes = refNodesCases[5].toMutableList(), nodeLinks = refNodeLinksCases[5].toMutableList())
+        )
+
+        val borderingLeafCases = mutableListOf<ILeaf>(
+            Leaf(topHeight = 5, position = Point(300, 150), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[0] )
+            , Leaf(topHeight = 5, position = Point(300, 450), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[1] )
+            , Leaf(topHeight = 5, position = Point(300, 750), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[2] )
+            , Leaf(topHeight = 5, position = Point(700, 250), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[3] )
+            , Leaf(topHeight = 5, position = Point(700, 550), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[4] )
+            , Leaf(topHeight = 5, position = Point(700, 850), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[5] )
+        )
+        val textOffsetPosition = Point(0, -30)
+
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
+
+            (0..5).forEach { idx ->
+                secondContainer.text(text= "Test Case $idx", color = ForeColors[idx % BackColors.size], alignment = TextAlignCenter).position(refNodeMeshCases[idx].nodes[0].position + textOffsetPosition)
+                secondContainer.text(text= "Leaf(height=${borderingLeafCases[idx].height})", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(borderingLeafCases[idx].position + textOffsetPosition)
+
+                stroke(BackColors[idx], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in refNodeMeshCases[idx].getNodeLineList() ) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                }
+
+                for (listPoint in refNodeMeshCases[idx].nodes ) {
+                    secondContainer.circle { position(listPoint.position)
+                        radius = 5.0
+                        color = BackColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listPoint.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listPoint.description)
+                        }
+                    }
+                }
+
+                stroke(ForeColors[idx], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in borderingLeafCases[idx].getLineList()) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                }
+
+                for (listLeaf in borderingLeafCases[idx].getList() ) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = ForeColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
                     }
                 }
             }

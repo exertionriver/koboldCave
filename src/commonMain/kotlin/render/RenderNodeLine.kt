@@ -35,9 +35,8 @@ object RenderNodeLine {
             when (funIdx) {
                 0 -> if ( renderNodeLineLengthsNoises(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 1 -> if ( renderNodeLineMesh(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//  future directions:
-//                2 -> if ( renderGraftedNodeLines(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//                3 -> if ( renderMeshGraftedNodeLine(renderContainer, commandViews) == ButtonCommand.NEXT) funIdx++ else funIdx--
+//                2 -> if ( renderNodeLineBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+
             }
         }
 

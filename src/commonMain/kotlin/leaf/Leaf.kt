@@ -10,6 +10,8 @@ import com.soywiz.korma.geom.plus
 import leaf.ILeaf.Companion.getChildPosition
 import leaf.ILeaf.Companion.getNextDistancePxProb
 import leaf.ILeaf.Companion.getParentPosition
+import node.INodeMesh
+import node.NodeMesh
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -21,7 +23,7 @@ class Leaf(override val topHeight : Int = 3
             , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
             , override val angleFromParent : Angle = topAngle
             , override val cumlAngleFromTop : Angle = topAngle
-            , override val refILeaf : ILeaf? = null
+            , override val refINodeMesh : INodeMesh? = null
             , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
     ) : ILeaf {
 
@@ -34,10 +36,10 @@ class Leaf(override val topHeight : Int = 3
                 , height = height - 1
                 , parent = mutableListOf(this)
                 , distanceFromParent = getNextDistancePxProb()
-                , angleFromParent = if (refILeaf != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refILeaf = refILeaf)
+                , angleFromParent = if (refINodeMesh != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refINodeMesh = refINodeMesh)
                     else this.getVarianceChildAngle(Angle.fromDegrees(30))
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
-                , refILeaf = refILeaf
+                , refINodeMesh = refINodeMesh
             )
     }
 

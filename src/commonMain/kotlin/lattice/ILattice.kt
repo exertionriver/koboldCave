@@ -4,6 +4,7 @@ import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
 import leaf.ILeaf
+import node.INodeMesh
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
@@ -48,7 +49,7 @@ interface ILattice {
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
 
-    val refILattice : ILattice?
+    val refINodeMesh : INodeMesh? //used for bordering and other complementary operations
 
     fun getVarianceChildAngle(variance : Angle) : Angle =
         this.angleFromParent + Angle.fromDegrees( Probability(0, variance.degrees.toInt()).getValue() )

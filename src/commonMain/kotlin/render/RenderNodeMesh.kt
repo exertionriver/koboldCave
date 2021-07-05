@@ -48,8 +48,12 @@ object RenderNodeMesh {
                 3 -> if ( renderNodeMeshOrphans(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 4 -> if ( renderNodeMeshEdges(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             //  future directions:
-//                5 -> if ( renderGraftedNodeMeshes(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//                6 -> if ( renderLeafGraftedNodeMesh(renderContainer, commandViews) == ButtonCommand.NEXT) funIdx++ else funIdx--
+//                5 -> if ( renderGraftedLeaves(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                6 -> if ( renderGraftedLaces(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                7 -> if ( renderGraftedArrayLattices(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                8 -> if ( renderGraftedRoundedLattices(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                9 -> if ( renderGraftedNodeLines(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                10 -> if ( renderGraftedNodeRooms(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             }
         }
 

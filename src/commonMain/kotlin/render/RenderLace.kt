@@ -10,6 +10,7 @@ import com.soywiz.korma.geom.vector.line
 import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
 import leaf.Lace
+import kotlin.random.Random
 
 object RenderLace {
 
@@ -28,9 +29,7 @@ object RenderLace {
                 0 -> if ( renderLaceHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 1 -> if ( renderLaceAngled(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 2 -> if ( renderLaceSpiral(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//  future directions:
-//                3 -> if ( renderGraftedLaces(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//                4 -> if ( renderLeafGraftedLace(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                3 -> if ( renderLaceBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             }
         }
 

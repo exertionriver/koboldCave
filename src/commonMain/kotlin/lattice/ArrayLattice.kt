@@ -9,6 +9,7 @@ import lattice.ILattice.Companion.getArrayedChildPosition
 import lattice.ILattice.Companion.getChildPosition
 import lattice.ILattice.Companion.getNextDistancePxProb
 import lattice.ILattice.Companion.getParentPosition
+import node.INodeMesh
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -20,7 +21,7 @@ class ArrayLattice(override val topHeight : Int = 3
                    , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
                    , override val angleFromParent : Angle = topAngle
                    , override val cumlAngleFromTop : Angle = topAngle
-                   , override val refILattice : ILattice? = null
+                   , override val refINodeMesh : INodeMesh? = null
                    , override val position : Point = if (height == topHeight - 1)
                   getArrayedChildPosition(getParentPosition(parent), topAngle, angleFromParent)
                   else getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
@@ -40,7 +41,7 @@ class ArrayLattice(override val topHeight : Int = 3
                         this.getConvergentChildAngle(Angle.fromDegrees(4), topAngle)
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
                 , distanceFromParent = getNextDistancePxProb()
-                , refILattice = refILattice
+                , refINodeMesh = refINodeMesh
             )
     }
 

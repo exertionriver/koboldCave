@@ -4,6 +4,7 @@ import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
 import leaf.Line.intersects
+import node.INodeMesh
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
@@ -46,7 +47,7 @@ interface ILeaf {
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
 
-    val refILeaf : ILeaf?
+    val refINodeMesh : INodeMesh? //used for bordering and other complementary operations
 
     fun getVarianceChildAngle(variance : Angle) : Angle =
         this.angleFromParent + Angle.fromDegrees( Probability(0, variance.degrees.toInt()).getValue() )
@@ -59,7 +60,7 @@ interface ILeaf {
 
     fun getBorderingChildAngle(variance : Angle, convergeToAngle : Angle = this.topAngle
         , childDistance : Int = distanceFromParent, minBorderDistance : Double = NextDistancePx * 1.0, maxBorderDistance : Double = NextDistancePx * 2.0
-        , refILeaf: ILeaf) : Angle {
+        , refINodeMesh: INodeMesh) : Angle {
 
         var bestConvergeAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
         var bestMinAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
@@ -73,14 +74,14 @@ interface ILeaf {
 
             val nextPosition = getChildPosition(this.position, childDistance, tryAngle)
 
-            val closestLeaf = refILeaf.getList().sortedBy { iLeaf -> Point.distance(iLeaf.position, nextPosition) }
+            val closestLeaf = refINodeMesh.nodes.sortedBy { iLeaf -> Point.distance(iLeaf.position, nextPosition) }
 
             var closestLeafIntersect = false
 
-            val checkLeafIdx = refILeaf.getList().size - 1
+            val checkLeafIdx = refINodeMesh.nodes.size - 1
 
             (0..checkLeafIdx).forEach { idx ->
-                closestLeafIntersect = closestLeafIntersect || Pair(this.position, nextPosition).checkLeafIntersect(closestLeaf[idx])
+       //         closestLeafIntersect = closestLeafIntersect || Pair(this.position, nextPosition).checkLeafIntersect(closestLeaf[idx])
             }
 
             if (!closestLeafIntersect) {
@@ -306,7 +307,6 @@ interface ILeaf {
 
             return isLeafIntersect
         }
-
 
         fun ILeaf.node(): Node {
             return Node(this.uuid, this.position)

@@ -27,10 +27,8 @@ object RenderLattice {
             when (funIdx) {
                 0 -> if ( renderArrayLatticeHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 1 -> if ( renderRoundedLatticeHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//  future directions:
-//                2 -> if ( renderGraftedLattices(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//                3 -> if ( renderLaceGraftedLattice(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//                4 -> if ( renderLeafGraftedLattice(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                2 -> if ( renderArrayLatticeBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+//                3 -> if ( renderRoundedLatticeBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             }
         }
 

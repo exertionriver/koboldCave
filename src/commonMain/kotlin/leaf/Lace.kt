@@ -10,6 +10,7 @@ import com.soywiz.korma.geom.plus
 import leaf.ILeaf.Companion.getChildPosition
 import leaf.ILeaf.Companion.getNextDistancePxProb
 import leaf.ILeaf.Companion.getParentPosition
+import node.INodeMesh
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -21,7 +22,7 @@ class Lace(override val topHeight : Int = 3
            , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
            , override val angleFromParent : Angle = topAngle
            , override val cumlAngleFromTop : Angle = topAngle
-           , override val refILeaf : ILeaf? = null
+           , override val refINodeMesh : INodeMesh? = null
            , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
     ) : ILeaf {
 
@@ -35,10 +36,10 @@ class Lace(override val topHeight : Int = 3
                 , parent = mutableListOf(this)
                 , distanceFromParent = getNextDistancePxProb()
                 , topAngle = topAngle
-                , angleFromParent = if (refILeaf != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refILeaf = refILeaf) //experimental at v0.3
+                , angleFromParent = if (refINodeMesh != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refINodeMesh = refINodeMesh) //experimental at v0.3
                     else this.getConvergentChildAngle(Angle.fromDegrees(60), topAngle)
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
-                , refILeaf = refILeaf
+                , refINodeMesh = refINodeMesh
             )
     }
 
