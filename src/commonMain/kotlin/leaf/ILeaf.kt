@@ -3,7 +3,7 @@ package leaf
 import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
-import leaf.Line.intersects
+import leaf.Line.Companion.intersects
 import node.INodeMesh
 import node.Node
 import node.Node.Companion.addNode
@@ -285,8 +285,6 @@ interface ILeaf {
 
                                                 outerInnerChild.getList().forEach{ returnLeaves.remove(it) }
                                             }
-
-
                                     }
                                 }
                             }

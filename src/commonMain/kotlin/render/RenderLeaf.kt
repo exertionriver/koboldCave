@@ -15,6 +15,7 @@ import leaf.ILeaf.Companion.getList
 import leaf.ILeaf.Companion.graft
 import leaf.ILeaf.Companion.prune
 import leaf.Leaf
+import leaf.Line.Companion.borders
 import node.INodeMesh
 import node.Node
 import node.NodeLink
@@ -561,23 +562,13 @@ object RenderLeaf {
             , listOf(Node(position = Point(650, 800)), Node(position = Point(600, 850)), Node(position = Point(700, 900)))
         )
 
-        val refNodeLinksCases = listOf(
-            listOf(NodeLink(firstNodeUuid = refNodesCases[0][0].uuid, secondNodeUuid = refNodesCases[0][1].uuid), NodeLink(firstNodeUuid = refNodesCases[0][1].uuid, secondNodeUuid = refNodesCases[0][2].uuid))
-            , listOf(NodeLink(firstNodeUuid = refNodesCases[1][0].uuid, secondNodeUuid = refNodesCases[1][1].uuid), NodeLink(firstNodeUuid = refNodesCases[1][1].uuid, secondNodeUuid = refNodesCases[1][2].uuid))
-            , listOf(NodeLink(firstNodeUuid = refNodesCases[2][0].uuid, secondNodeUuid = refNodesCases[2][1].uuid), NodeLink(firstNodeUuid = refNodesCases[2][1].uuid, secondNodeUuid = refNodesCases[2][2].uuid))
-            , listOf(NodeLink(firstNodeUuid = refNodesCases[3][0].uuid, secondNodeUuid = refNodesCases[3][1].uuid), NodeLink(firstNodeUuid = refNodesCases[3][1].uuid, secondNodeUuid = refNodesCases[3][2].uuid))
-            , listOf(NodeLink(firstNodeUuid = refNodesCases[4][0].uuid, secondNodeUuid = refNodesCases[4][1].uuid), NodeLink(firstNodeUuid = refNodesCases[4][1].uuid, secondNodeUuid = refNodesCases[4][2].uuid))
-            , listOf(NodeLink(firstNodeUuid = refNodesCases[5][0].uuid, secondNodeUuid = refNodesCases[5][1].uuid), NodeLink(firstNodeUuid = refNodesCases[5][1].uuid, secondNodeUuid = refNodesCases[5][2].uuid))
-        )
+        val refNodeLinksCases = refNodesCases.map { nodesCases: List<Node> ->
+            listOf(NodeLink(firstNodeUuid = nodesCases[0].uuid, secondNodeUuid = nodesCases[1].uuid), NodeLink(firstNodeUuid = nodesCases[1].uuid, secondNodeUuid = nodesCases[2].uuid))
+        }
 
-        val refNodeMeshCases = mutableListOf<INodeMesh>(
-            NodeMesh( nodes = refNodesCases[0].toMutableList(), nodeLinks = refNodeLinksCases[0].toMutableList())
-            , NodeMesh( nodes = refNodesCases[1].toMutableList(), nodeLinks = refNodeLinksCases[1].toMutableList())
-            , NodeMesh( nodes = refNodesCases[2].toMutableList(), nodeLinks = refNodeLinksCases[2].toMutableList())
-            , NodeMesh( nodes = refNodesCases[3].toMutableList(), nodeLinks = refNodeLinksCases[3].toMutableList())
-            , NodeMesh( nodes = refNodesCases[4].toMutableList(), nodeLinks = refNodeLinksCases[4].toMutableList())
-            , NodeMesh( nodes = refNodesCases[5].toMutableList(), nodeLinks = refNodeLinksCases[5].toMutableList())
-        )
+        val refNodeMeshCases = refNodesCases.mapIndexed { idx : Int, nodesCases: List<Node> ->
+            NodeMesh( nodes = nodesCases.toMutableList(), nodeLinks = refNodeLinksCases[idx].toMutableList())
+        }
 
         val borderingLeafCases = mutableListOf<ILeaf>(
             Leaf(topHeight = 5, position = Point(300, 150), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[0] )
@@ -600,6 +591,21 @@ object RenderLeaf {
 
                     for (line in refNodeMeshCases[idx].getNodeLineList() ) {
                         if (line != null) line(line.first, line.second)
+
+                        val minBorderLines = line?.let { Pair(line.first, it.second).borders((NextDistancePx * 0.2).toInt() ) }
+
+                        if (minBorderLines != null) {
+                            for (borderLine in minBorderLines) {
+                                line(borderLine.first, borderLine.second)
+                            }
+                        }
+                        val maxBorderLines = line?.let { Pair(line.first, it.second).borders((NextDistancePx * 0.6).toInt()) }
+
+                        if (maxBorderLines != null) {
+                            for (borderLine in maxBorderLines) {
+                                line(borderLine.first, borderLine.second)
+                            }
+                        }
                     }
                 }
 

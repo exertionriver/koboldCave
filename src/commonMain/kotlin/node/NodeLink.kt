@@ -4,13 +4,12 @@ import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
 import leaf.ILeaf
-import leaf.Line.intersects
+import leaf.Line.Companion.intersects
 import node.INodeMesh.Companion.addMesh
 import node.Node.Companion.addNode
 import node.Node.Companion.angleBetween
 import node.Node.Companion.getNode
 import node.Node.Companion.nearestNodesOrderedAsc
-import node.NodeLink.Companion.getNodeLinks
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.random.Random
