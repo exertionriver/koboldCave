@@ -126,13 +126,26 @@ interface INodeMesh {
                 //get nodelinks associated with this node
                 val borderingLeafNodeLinks = this.nodeLinks.getNodeLinks(node.uuid)
 
-                //find the node in the ref structure closest to the node in the bordering leaf case
+                //find nodes in the ref structure within four times border distance in the bordering leaf case
                 val closestOrderedRefNodes = nodeMeshToBorder.nodes.sortedBy { iRef -> Point.distance(iRef.position, node.position) }
-                val closestRefNode = closestOrderedRefNodes[0]
 
-                //get the nodelinks and nodelink lines associated with the closest ref node
-                val closestRefNodeLinks = nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid)
-                val closestRefNodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+                var checkNodeIdx = 0
+                val closestRefNodeLinks : MutableList<NodeLink> = mutableListOf()
+                val closestRefNodeLines : MutableList<Pair<Point, Point>> = mutableListOf()
+
+                while (Point.distance(node.position, closestOrderedRefNodes[checkNodeIdx].position) <= orthoBorderDistance * 4) {
+                    val closestRefNode = closestOrderedRefNodes[checkNodeIdx]
+
+                    //get the nodelinks and nodelink lines associated with the closest ref node
+                    closestRefNodeLinks.addAll(nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid))
+
+                    val nodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+
+                    if (!nodeLines.isNullOrEmpty())
+                        closestRefNodeLines.addAll(nodeLines.toMutableList() as MutableList<Pair<Point, Point>>)
+
+                    checkNodeIdx++
+                }
 
                 //check each line related to the closest node
                 closestRefNodeLines.forEach { closestRefNodeLine ->

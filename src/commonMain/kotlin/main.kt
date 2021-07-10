@@ -14,7 +14,7 @@ suspend fun main() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2
 
 	val commandViews = RenderPalette.initDemoScreen(this.containerRoot)
 
-	var demoIdx = 1
+	var demoIdx = 2
 	val demoSize = 6
 
 	while (demoIdx < demoSize) {

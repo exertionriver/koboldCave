@@ -583,12 +583,12 @@ object RenderLeaf {
 
         val topHeight = 5
         val borderingLeafCases = mutableListOf<INodeMesh>(
-            Leaf(topHeight = topHeight, position = Point(300, 150), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[0] )
-            , Leaf(topHeight = topHeight, position = Point(300, 450), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[1] )
-            , Leaf(topHeight = topHeight, position = Point(300, 750), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[2] )
-            , Leaf(topHeight = topHeight, position = Point(800, 250), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[3] )
-            , Leaf(topHeight = topHeight, position = Point(800, 550), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[4] )
-            , Leaf(topHeight = topHeight, position = Point(800, 850), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[5] )
+            Leaf(topHeight = topHeight, position = Point(300, 150), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Leaf(topHeight = topHeight, position = Point(300, 450), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Leaf(topHeight = topHeight, position = Point(300, 750), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Leaf(topHeight = topHeight, position = Point(800, 250), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Leaf(topHeight = topHeight, position = Point(800, 550), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Leaf(topHeight = topHeight, position = Point(800, 850), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
         )
 
         val textOffsetPosition = Point(0, -30)

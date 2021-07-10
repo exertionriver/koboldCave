@@ -215,11 +215,24 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                             else {
                                 //find the node in the ref structure closest to the node in the bordering leaf case
                                 val closestOrderedRefNodes = nodeMeshToBorder.nodes.sortedBy { iRef -> Point.distance(iRef.position, checkNode.position) }
-                                val closestRefNode = closestOrderedRefNodes[0]
 
-                                //get the nodelinks and nodelink lines associated with the closest ref node
-                                val closestRefNodeLinks = nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid)
-                                val closestRefNodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+                                var checkNodeIdx = 0
+                                val closestRefNodeLinks : MutableList<NodeLink> = mutableListOf()
+                                val closestRefNodeLines : MutableList<Pair<Point, Point>> = mutableListOf()
+
+                                while (Point.distance(checkNode.position, closestOrderedRefNodes[checkNodeIdx].position) <= orthoBorderDistance * 4) {
+                                    val closestRefNode = closestOrderedRefNodes[checkNodeIdx]
+
+                                    //get the nodelinks and nodelink lines associated with the closest ref node
+                                    closestRefNodeLinks.addAll(nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid))
+
+                                    val nodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+
+                                    if (!nodeLines.isNullOrEmpty())
+                                        closestRefNodeLines.addAll(nodeLines.toMutableList() as MutableList<Pair<Point, Point>>)
+
+                                    checkNodeIdx++
+                                }
 
                                 var noIntersect = true
 
@@ -247,12 +260,24 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                         while ( (!nodeFound) && (sortedIdx < sortedCheckNodes.size) ) {
                             //find the node in the ref structure closest to the node in the bordering leaf case
                             val closestOrderedRefNodes = nodeMeshToBorder.nodes.sortedBy { iRef -> Point.distance(iRef.position, sortedCheckNodes[sortedIdx].position) }
-                            val closestRefNode = closestOrderedRefNodes[0]
 
-                            //get the nodelinks and nodelink lines associated with the closest ref node
-                            val closestRefNodeLinks = nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid)
-                            val closestRefNodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+                            var checkNodeIdx = 0
+                            val closestRefNodeLinks : MutableList<NodeLink> = mutableListOf()
+                            val closestRefNodeLines : MutableList<Pair<Point, Point>> = mutableListOf()
 
+                            while (Point.distance(sortedCheckNodes[sortedIdx].position, closestOrderedRefNodes[checkNodeIdx].position) <= orthoBorderDistance * 4) {
+                                val closestRefNode = closestOrderedRefNodes[checkNodeIdx]
+
+                                //get the nodelinks and nodelink lines associated with the closest ref node
+                                closestRefNodeLinks.addAll(nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid))
+
+                                val nodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+
+                                if (!nodeLines.isNullOrEmpty())
+                                    closestRefNodeLines.addAll(nodeLines.toMutableList() as MutableList<Pair<Point, Point>>)
+
+                                checkNodeIdx++
+                            }
                             var noIntersect = true
 
                             closestRefNodeLines.forEach { closestRefNodeLine ->

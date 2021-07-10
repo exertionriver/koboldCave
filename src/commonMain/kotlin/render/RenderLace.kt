@@ -242,6 +242,7 @@ object RenderLace {
 
         return RenderPalette.returnClick as ButtonCommand
     }
+
     @ExperimentalUnsignedTypes
     suspend fun renderLaceBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
@@ -270,18 +271,18 @@ object RenderLace {
 
         val topHeight = 5
         val borderingLaceCases = mutableListOf<INodeMesh>(
-            Lace(topHeight = topHeight, position = Point(300, 150), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[0] )
-            , Lace(topHeight = topHeight, position = Point(300, 450), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[1] )
-            , Lace(topHeight = topHeight, position = Point(300, 750), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[2] )
-            , Lace(topHeight = topHeight, position = Point(800, 250), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[3] )
-            , Lace(topHeight = topHeight, position = Point(800, 550), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[4] )
-            , Lace(topHeight = topHeight, position = Point(800, 850), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[5] )
-            , Lace(topHeight = topHeight, position = Point(50, 150), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[0] )
-            , Lace(topHeight = topHeight, position = Point(50, 450), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[1] )
-            , Lace(topHeight = topHeight, position = Point(50, 750), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[2] )
-            , Lace(topHeight = topHeight, position = Point(550, 250), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[3] )
-            , Lace(topHeight = topHeight, position = Point(550, 550), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[4] )
-            , Lace(topHeight = topHeight, position = Point(550, 850), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[5] )
+            Lace(topHeight = topHeight, position = Point(300, 150), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(300, 450), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(300, 750), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(800, 250), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(800, 550), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(800, 850), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(50, 150), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(50, 450), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(50, 750), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(550, 250), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(550, 550), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()
+            , Lace(topHeight = topHeight, position = Point(550, 850), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()
         )
 
         val textOffsetPosition = Point(0, -30)

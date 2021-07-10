@@ -23,7 +23,6 @@ class RoundedLattice(override val topHeight : Int = 3
                      , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
                      , override val angleFromParent : Angle = topAngle
                      , override val cumlAngleFromTop : Angle = topAngle
-                     , override val refINodeMesh : INodeMesh? = null
                      , override val position : Point = if (height == topHeight - 1)
                   getArrayedChildPosition(getParentPosition(parent), topAngle, angleFromParent)
                   else getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
@@ -43,7 +42,6 @@ class RoundedLattice(override val topHeight : Int = 3
                         this.getConvergentChildAngle(Angle.fromDegrees(30), angleFromParent)
                 , distanceFromParent = getNextDistancePxProb()
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
-                , refINodeMesh = refINodeMesh
             )
     }
 

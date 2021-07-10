@@ -1,10 +1,9 @@
 package lattice
 
 import Probability
+import com.soywiz.korio.async.BaseSignal2
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
-import leaf.ILeaf
-import node.INodeMesh
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
@@ -12,7 +11,6 @@ import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.addNodeLinks
 import node.NodeMesh
 import kotlin.math.hypot
-import kotlin.math.sqrt
 
 @ExperimentalUnsignedTypes
 interface ILattice {
@@ -49,8 +47,6 @@ interface ILattice {
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
 
-    val refINodeMesh : INodeMesh? //used for bordering and other complementary operations
-
     fun getVarianceChildAngle(variance : Angle) : Angle =
         this.angleFromParent + Angle.fromDegrees( Probability(0, variance.degrees.toInt()).getValue() )
 
@@ -67,9 +63,9 @@ interface ILattice {
     fun getLineList() : List<Pair<Point, Point>?> =
         if (childrenEmpty()) listOf(null)
         else children.map {
-            childLeaf -> Point(this.position.x, this.position.y) to Point(childLeaf.position.x, childLeaf.position.y)
+            childLattice -> Point(this.position.x, this.position.y) to Point(childLattice.position.x, childLattice.position.y)
         }.plus(children.flatMap {
-            childLeaf -> childLeaf.getLineList()
+            childLattice -> childLattice.getLineList()
         } ).filterNotNull()
 
     companion object {
@@ -213,6 +209,26 @@ interface ILattice {
             return returnLineList.filterNotNull()
         }
 
+        fun List<ILattice>.getLateralNodeLinkList(): List<NodeLink?> {
+            val returnLineList = mutableListOf<NodeLink?>()
+
+            val topLatticeHeight = this[0].topHeight
+
+            (0..topLatticeHeight).forEach { curHeight ->
+                val sortedILattices = this.filter {
+                        iLattice -> iLattice.height == curHeight
+                }.sortedBy {
+                        filteredILattice -> filteredILattice.cumlAngleFromTop
+                }
+
+                sortedILattices.forEachIndexed { iLatticeIdx, sortedILattice ->
+                    if (iLatticeIdx > 0) returnLineList.add(NodeLink(sortedILattice.uuid, sortedILattices[iLatticeIdx - 1].uuid))
+                }
+            }
+
+            return returnLineList.filterNotNull()
+        }
+
         fun ILattice.add(child: ILattice): ILattice {
 
             this.children.add(child)
@@ -295,7 +311,12 @@ interface ILattice {
         fun List<ILattice>.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {
             val returnNodeLinks = mutableListOf<NodeLink>()
 
-            this.forEach { iLeaf -> returnNodeLinks.addNodeLinks(iLeaf.nodeLinks(nodes)) }
+            this.forEach { iLattice -> returnNodeLinks.addNodeLinks(iLattice.nodeLinks(nodes)) }
+
+            val lateralNodeLinks = this.getLateralNodeLinkList()
+
+            if (!lateralNodeLinks.isNullOrEmpty())
+                returnNodeLinks.addAll(lateralNodeLinks.toMutableList() as MutableList<NodeLink>)
 
             return returnNodeLinks
         }
