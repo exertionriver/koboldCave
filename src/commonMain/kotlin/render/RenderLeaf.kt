@@ -21,6 +21,8 @@ import leaf.Line.Companion.borderLines
 import leaf.Line.Companion.intersectsBorder
 import leaf.Line.Companion.isInBorder
 import node.INodeMesh
+import node.INodeMesh.Companion.getBorderingMesh
+import node.INodeMesh.Companion.processMesh
 import node.Node
 import node.Node.Companion.getNode
 import node.Node.Companion.removeNode
@@ -602,13 +604,11 @@ object RenderLeaf {
                 stroke(BackColors[idx], StrokeInfo(thickness = 3.0)) {
 
                     for (line in borderingLeafCases[idx].getNodeLineList()) {
-//                    for (line in borderingLeafCases[idx].getLineList()) {
                         if (line != null) line(line.first, line.second)
                     }
                 }
 
                 for (listLeaf in borderingLeafCases[idx].nodes) {
-//                for (listLeaf in borderingLeafCases[idx].getList()) {
                     secondContainer.circle { position(listLeaf.position)
                         radius = 5.0
                         color = BackColors[idx]
@@ -631,12 +631,6 @@ object RenderLeaf {
                             for (minBorderLine in minBorderLines) {
                                 line(minBorderLine.first, minBorderLine.second)
                             }
-
-                            val maxBorderLines = line.borderLines((NextDistancePx * 0.6).toInt())
-
-                            for (maxBorderLine in maxBorderLines) {
-                                line(maxBorderLine.first, maxBorderLine.second)
-                            }
                         }
                     }
                 }
@@ -653,65 +647,20 @@ object RenderLeaf {
                     }
                 }
 
-                //result nodeMesh
-                val borderingLeaf = NodeMesh(copyNodeMesh = borderingLeafCases[idx] as NodeMesh)
-
-                borderingLeafCases[idx].nodes.forEach { node ->
-                    //get nodelinks associated with this node
-                    val borderingLeafNodeLinks = borderingLeafCases[idx].nodeLinks.getNodeLinks(node.uuid)
-
-                    //find the node in the ref structure closest to the node in the bordering leaf case
-                    val closestOrderedRefNodes = refNodeMeshCases[idx].nodes.sortedBy { iRef -> Point.distance(iRef.position, node.position) }
-                    val closestRefNode = closestOrderedRefNodes[0]
-
-                    //get the nodelinks and nodelink lines associated with the closest ref node
-                    val closestRefNodeLinks = refNodeMeshCases[idx].nodeLinks.getNodeLinks(closestRefNode.uuid)
-                    val closestRefNodeLines = closestRefNodeLinks.getNodeLineList(refNodeMeshCases[idx].nodes)
-
-                    //check each line related to the closest node
-                    closestRefNodeLines.forEach { closestRefNodeLine ->
-                        //check if this node falls within the borders of any line related to closest ref node
-                        println("node within border? node:$node, refLine:$closestRefNodeLine")
-                        if (node.position.isInBorder(closestRefNodeLine!!, (NextDistancePx * 0.2).toInt())) {
-                            //if node in border, remove from result nodeMesh
-                            borderingLeaf.nodes.removeNode(borderingLeafCases[idx].nodeLinks, node.uuid)
-                            println("node within border! node:$node, refLine:$closestRefNodeLine")
-                        }
-
-                        //if this node has links
-                        if ( borderingLeafNodeLinks.isNotEmpty() ) {
-
-                            //for each of these links,
-                            borderingLeafNodeLinks.forEach { borderingLeafNodeLink ->
-
-                                //get the first and second nodes
-                                val firstNode = borderingLeafCases[idx].nodes.getNode(borderingLeafNodeLink.firstNodeUuid)
-                                val secondNode = borderingLeafCases[idx].nodes.getNode(borderingLeafNodeLink.secondNodeUuid)
-
-                                //if these nodes are not null
-                                if ( (firstNode != null) && (secondNode != null) ) {
-                                    //check if the nodeLink intersects with borderline
-                                    println("intersects? nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
-                                    if ( Pair(firstNode.position, secondNode.position)
-                                            .intersectsBorder(closestRefNodeLine, (NextDistancePx * 0.2).toInt()) ) {
-                                        //if nodeLink intersects border, remove from result nodeMesh
-                                        borderingLeaf.nodeLinks.removeNodeLink(borderingLeafNodeLink)
-                                        println("intersection! nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                val borderingMesh = borderingLeafCases[idx].getBorderingMesh(refNodeMeshCases[idx])
+                borderingMesh.linkNearNodesBordering(nodeMeshToBorder = refNodeMeshCases[idx])
+                borderingMesh.pruneNodeLinks()
+                borderingMesh.consolidateNodeLinks()
+                borderingMesh.removeOrphans()
 
                 stroke(ForeColors[idx], StrokeInfo(thickness = 3.0)) {
 
-                    for (line in borderingLeaf.getNodeLineList()) {
+                    for (line in borderingMesh.getNodeLineList()) {
                         if (line != null) line(line.first, line.second)
                     }
                 }
 
-                for (listLeaf in borderingLeaf.nodes) {
+                for (listLeaf in borderingMesh.nodes) {
                     secondContainer.circle { position(listLeaf.position)
                         radius = 5.0
                         color = ForeColors[idx]

@@ -7,6 +7,7 @@ import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.minus
 import com.soywiz.korma.geom.plus
 import leaf.ILeaf
+import leaf.Line.Companion.intersectsBorder
 import node.INodeMesh.Companion.addMesh
 import node.Node.Companion.consolidateStackedNodes
 import node.Node.Companion.updateNode
@@ -17,6 +18,7 @@ import node.NodeLink.Companion.consolidateNodeDistance
 import node.NodeLink.Companion.consolidateNodeLinkNodes
 import node.NodeLink.Companion.consolidateNodeLinks
 import node.NodeLink.Companion.getNodeChildrenUuids
+import node.NodeLink.Companion.getNodeLineList
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.linkNodeDistance
 import node.NodeLink.Companion.removeNodeLink
@@ -194,7 +196,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
         }
 
         //TODO: retain previous links
-        fun MutableList<Node>.linkNearNodes(nodeLinks : MutableList<NodeLink> = mutableListOf(), linkOrphans : Boolean = true) : MutableList<NodeLink> {
+        fun MutableList<Node>.linkNearNodes(nodeLinks : MutableList<NodeLink> = mutableListOf(), nodeMeshToBorder : INodeMesh? = null, orthoBorderDistance : Double = ILeaf.NextDistancePx * 0.2, linkOrphans : Boolean = true) : MutableList<NodeLink> {
 //            println("checking for nodes to link...")
             val returnNodeLinks = nodeLinks
             val checkNodes = this.toList()
@@ -208,7 +210,26 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                     if (checkNode.uuid.toString() > refNode.uuid.toString()) {
                         if (Point.distance(checkNode.position, refNode.position).toInt() <= linkNodeDistance) {
 //                            println("linking ${refNode.uuid} and ${checkNode.uuid}")
-                            returnNodeLinks.addNodeLink(this, refNode.uuid, checkNode.uuid)
+                            if (nodeMeshToBorder == null)
+                                returnNodeLinks.addNodeLink(this, refNode.uuid, checkNode.uuid)
+                            else {
+                                //find the node in the ref structure closest to the node in the bordering leaf case
+                                val closestOrderedRefNodes = nodeMeshToBorder.nodes.sortedBy { iRef -> Point.distance(iRef.position, checkNode.position) }
+                                val closestRefNode = closestOrderedRefNodes[0]
+
+                                //get the nodelinks and nodelink lines associated with the closest ref node
+                                val closestRefNodeLinks = nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid)
+                                val closestRefNodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+
+                                var noIntersect = true
+
+                                closestRefNodeLines.forEach { closestRefNodeLine ->
+                                    if (Pair(refNode.position, checkNode.position).intersectsBorder(closestRefNodeLine!!, orthoBorderDistance.toInt()))
+                                        noIntersect = false
+                                }
+                                if (noIntersect)
+                                    returnNodeLinks.addNodeLink(this, refNode.uuid, checkNode.uuid)
+                            }
                         }
                     }
                 }
@@ -217,7 +238,35 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 if ((checkNodes.size > 1) && (returnNodeLinks.getNodeLinks(refNode.uuid).isNullOrEmpty()) && linkOrphans) {
 //                    println ("adding link for orphan: $outer, $closestNode")
 //                    returnNodeLinks.addNodeLink(this, refNode.uuid, checkNodes.nearestNodesOrderedAsc(refNode)[0].uuid)
-                    returnNodeLinks.addNodeLink(this, refNode.uuid, sortedCheckNodes[0].uuid)
+                    if (nodeMeshToBorder == null)
+                        returnNodeLinks.addNodeLink(this, refNode.uuid, sortedCheckNodes[0].uuid)
+                    else {
+                        var nodeFound = false
+                        var sortedIdx = 0
+
+                        while ( (!nodeFound) && (sortedIdx < sortedCheckNodes.size) ) {
+                            //find the node in the ref structure closest to the node in the bordering leaf case
+                            val closestOrderedRefNodes = nodeMeshToBorder.nodes.sortedBy { iRef -> Point.distance(iRef.position, sortedCheckNodes[sortedIdx].position) }
+                            val closestRefNode = closestOrderedRefNodes[0]
+
+                            //get the nodelinks and nodelink lines associated with the closest ref node
+                            val closestRefNodeLinks = nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid)
+                            val closestRefNodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+
+                            var noIntersect = true
+
+                            closestRefNodeLines.forEach { closestRefNodeLine ->
+                                if (Pair(refNode.position, sortedCheckNodes[sortedIdx].position).intersectsBorder(closestRefNodeLine!!, orthoBorderDistance.toInt()))
+                                    noIntersect = false
+                            }
+
+                            if (noIntersect) {
+                                nodeFound = true
+                                returnNodeLinks.addNodeLink(this, refNode.uuid, sortedCheckNodes[sortedIdx].uuid)
+                            }
+                            else sortedIdx++
+                        }
+                    }
                 }
             }
 

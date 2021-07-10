@@ -9,6 +9,8 @@ import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
+import leaf.Line.Companion.intersectsBorder
+import leaf.Line.Companion.isInBorder
 import node.Node.Companion.addNode
 import node.Node.Companion.addNodes
 import node.Node.Companion.adoptRoomOrphans
@@ -17,18 +19,22 @@ import node.Node.Companion.cluster
 import node.Node.Companion.consolidateNearNodes
 import node.Node.Companion.consolidateStackedNodes
 import node.Node.Companion.getFarthestNode
+import node.Node.Companion.getNode
 import node.Node.Companion.getNodeLineList
 import node.Node.Companion.getRandomNode
 import node.Node.Companion.linkNearNodes
+import node.Node.Companion.removeNode
 import node.Node.Companion.removeOrphans
 import node.NodeLink.Companion.addNodeLinks
 import node.NodeLink.Companion.buildNodeLinkLines
 import node.NodeLink.Companion.consolidateNodeLinks
 import node.NodeLink.Companion.getNextAngle
 import node.NodeLink.Companion.getNextNodeAngle
+import node.NodeLink.Companion.getNodeLineList
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.getRandomNextNodeAngle
 import node.NodeLink.Companion.pruneNodeLinks
+import node.NodeLink.Companion.removeNodeLink
 import node.NodeLink.Companion.removeOrphanLinks
 
 @ExperimentalUnsignedTypes
@@ -46,7 +52,9 @@ interface INodeMesh {
 
     var roomIdx : Int
 
-    fun linkNearNodes(linkOrphans : Boolean = true) { nodeLinks = nodes.linkNearNodes(nodeLinks, linkOrphans) }
+    fun linkNearNodes(linkOrphans : Boolean = true) { nodeLinks = nodes.linkNearNodes(nodeLinks, linkOrphans = linkOrphans) }
+
+    fun linkNearNodesBordering(nodeMeshToBorder : INodeMesh, orthoBorderDistance : Double = NextDistancePx * 0.2, linkOrphans : Boolean = true) { nodeLinks = nodes.linkNearNodes(nodeLinks, nodeMeshToBorder, orthoBorderDistance, linkOrphans) }
 
     fun consolidateNearNodes() { nodeLinks = nodes.consolidateNearNodes(nodeLinks) }
 
@@ -110,12 +118,58 @@ interface INodeMesh {
 //            this.consolidateStackedNodes()
         }
 
-        fun INodeMesh.addBorderingMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {
-            this.nodes.addNodes(nodeMeshToAdd.nodes, description)
-            this.nodeLinks.addNodeLinks(nodeMeshToAdd.nodeLinks)
+        fun INodeMesh.getBorderingMesh(nodeMeshToBorder : INodeMesh, orthoBorderDistance : Double = NextDistancePx * 0.2, description : String = this.description) : INodeMesh {
+            //result nodeMesh
+            val borderingMesh = NodeMesh(copyNodeMesh = this as NodeMesh)
 
-            this.nodes = this.nodes.distinct().toMutableList()
-            this.consolidateStackedNodes()
+            this.nodes.forEach { node ->
+                //get nodelinks associated with this node
+                val borderingLeafNodeLinks = this.nodeLinks.getNodeLinks(node.uuid)
+
+                //find the node in the ref structure closest to the node in the bordering leaf case
+                val closestOrderedRefNodes = nodeMeshToBorder.nodes.sortedBy { iRef -> Point.distance(iRef.position, node.position) }
+                val closestRefNode = closestOrderedRefNodes[0]
+
+                //get the nodelinks and nodelink lines associated with the closest ref node
+                val closestRefNodeLinks = nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid)
+                val closestRefNodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+
+                //check each line related to the closest node
+                closestRefNodeLines.forEach { closestRefNodeLine ->
+                    //check if this node falls within the borders of any line related to closest ref node
+//                    println("node within border? node:$node, refLine:$closestRefNodeLine")
+                    if (node.position.isInBorder(closestRefNodeLine!!, orthoBorderDistance.toInt())) {
+                        //if node in border, remove from result nodeMesh
+                        borderingMesh.nodes.removeNode(this.nodeLinks, node.uuid)
+    //                    println("node within border! node:$node, refLine:$closestRefNodeLine")
+                    }
+
+                    //if this node has links
+                    if ( borderingLeafNodeLinks.isNotEmpty() ) {
+
+                        //for each of these links,
+                        borderingLeafNodeLinks.forEach { borderingLeafNodeLink ->
+
+                            //get the first and second nodes
+                            val firstNode = this.nodes.getNode(borderingLeafNodeLink.firstNodeUuid)
+                            val secondNode = this.nodes.getNode(borderingLeafNodeLink.secondNodeUuid)
+
+                            //if these nodes are not null
+                            if ( (firstNode != null) && (secondNode != null) ) {
+                                //check if the nodeLink intersects with borderline
+  //                              println("intersects? nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
+                                if ( Pair(firstNode.position, secondNode.position)
+                                        .intersectsBorder(closestRefNodeLine, orthoBorderDistance.toInt()) ) {
+                                    //if nodeLink intersects border, remove from result nodeMesh
+                                    borderingMesh.nodeLinks.removeNodeLink(borderingLeafNodeLink)
+//                                    println("intersection! nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return borderingMesh
         }
 
         fun INodeMesh.replaceMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {

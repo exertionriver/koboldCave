@@ -199,7 +199,7 @@ class Line(val first : Point, val second: Point) {
         fun Point.isInBorder(line : Pair<Point, Point>, offset : Int) : Boolean {
             val borderPoints = line.borderPoints(offset)
 
-            println("check borderPoints: $borderPoints contain $this")
+//            println("check borderPoints: $borderPoints contain $this")
             return this.isInRect(listOf(borderPoints[0], borderPoints[1], borderPoints[2], borderPoints[3]) )
         }
 
@@ -209,7 +209,7 @@ class Line(val first : Point, val second: Point) {
             var intersection = false
 
             for (borderLine in borderLines) {
-                println("check borderLine: ${borderLine.first}, ${borderLine.second} intersects with $line")
+//                println("check borderLine: ${borderLine.first}, ${borderLine.second} intersects with $line")
                 if ( this.intersects(borderLine.asPoints()) ) intersection = true
             }
 
