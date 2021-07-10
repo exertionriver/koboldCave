@@ -9,16 +9,22 @@ import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
 import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
+import leaf.ILeaf.Companion.nodeMesh
 import leaf.Lace
-import kotlin.random.Random
+import leaf.Line.Companion.borderLines
+import node.INodeMesh
+import node.INodeMesh.Companion.getBorderingMesh
+import node.Node
+import node.NodeLink
+import node.NodeMesh
 
 object RenderLace {
 
     @ExperimentalUnsignedTypes
     suspend fun renderLace(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 0
-        val funSize = 3
+        var funIdx = 3
+        val funSize = 4
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {
 //            println ("funMapIdx : $funIdx")
@@ -29,7 +35,7 @@ object RenderLace {
                 0 -> if ( renderLaceHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 1 -> if ( renderLaceAngled(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 2 -> if ( renderLaceSpiral(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//                3 -> if ( renderLaceBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                3 -> if ( renderLaceBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             }
         }
 
@@ -230,6 +236,164 @@ object RenderLace {
             }
         }
 
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
+    }
+    @ExperimentalUnsignedTypes
+    suspend fun renderLaceBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+
+        commandViews[CommandView.LABEL_TEXT].setText("renderLaceBordering() [v0.4]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing getBorderingMesh()")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = true
+        commandViews[CommandView.COMMENT_TEXT].setText("Original Lace NodeMesh (bg) and bordering Lace NodeMesh (fg) shown")
+        RenderPalette.returnClick = null
+
+        val refNodesCases = listOf(
+            listOf(Node(position = Point(150, 100)), Node(position = Point(200, 150)), Node(position = Point(100, 200)))
+            , listOf(Node(position = Point(100, 400)), Node(position = Point(200, 450)), Node(position = Point(150, 500)))
+            , listOf(Node(position = Point(200, 700)), Node(position = Point(150, 750)), Node(position = Point(100, 800)))
+            , listOf(Node(position = Point(700, 200)), Node(position = Point(600, 250)), Node(position = Point(650, 300)))
+            , listOf(Node(position = Point(600, 500)), Node(position = Point(650, 550)), Node(position = Point(700, 600)))
+            , listOf(Node(position = Point(650, 800)), Node(position = Point(600, 850)), Node(position = Point(700, 900)))
+        )
+
+        val refNodeLinksCases = refNodesCases.map { nodesCases: List<Node> ->
+            listOf(NodeLink(firstNodeUuid = nodesCases[0].uuid, secondNodeUuid = nodesCases[1].uuid), NodeLink(firstNodeUuid = nodesCases[1].uuid, secondNodeUuid = nodesCases[2].uuid))
+        }
+
+        val refNodeMeshCases = refNodesCases.mapIndexed { idx : Int, nodesCases: List<Node> ->
+            NodeMesh( nodes = nodesCases.toMutableList(), nodeLinks = refNodeLinksCases[idx].toMutableList())
+        }
+
+        val topHeight = 5
+        val borderingLaceCases = mutableListOf<INodeMesh>(
+            Lace(topHeight = topHeight, position = Point(300, 150), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[0] )
+            , Lace(topHeight = topHeight, position = Point(300, 450), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[1] )
+            , Lace(topHeight = topHeight, position = Point(300, 750), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[2] )
+            , Lace(topHeight = topHeight, position = Point(800, 250), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[3] )
+            , Lace(topHeight = topHeight, position = Point(800, 550), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[4] )
+            , Lace(topHeight = topHeight, position = Point(800, 850), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[5] )
+            , Lace(topHeight = topHeight, position = Point(50, 150), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[0] )
+            , Lace(topHeight = topHeight, position = Point(50, 450), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[1] )
+            , Lace(topHeight = topHeight, position = Point(50, 750), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[2] )
+            , Lace(topHeight = topHeight, position = Point(550, 250), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[3] )
+            , Lace(topHeight = topHeight, position = Point(550, 550), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[4] )
+            , Lace(topHeight = topHeight, position = Point(550, 850), topAngle = Angle.fromDegrees(0) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[5] )
+        )
+
+        val textOffsetPosition = Point(0, -30)
+
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
+
+            (0..5).forEach { idx ->
+                val secondLaceIdx = idx + 6
+                secondContainer.text(text= "Test Case $idx", color = RenderPalette.ForeColors[idx % RenderPalette.BackColors.size], alignment = RenderPalette.TextAlignCenter).position(refNodeMeshCases[idx].nodes[0].position + textOffsetPosition)
+                secondContainer.text(text= "Lace(height=$topHeight)", color = RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size], alignment = RenderPalette.TextAlignCenter).position(borderingLaceCases[idx].nodes[0].position + textOffsetPosition)
+                secondContainer.text(text= "Lace(height=$topHeight)", color = RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size], alignment = RenderPalette.TextAlignCenter).position(borderingLaceCases[secondLaceIdx].nodes[0].position + textOffsetPosition)
+
+                stroke(RenderPalette.BackColors[idx], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in borderingLaceCases[idx].getNodeLineList()) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                    for (line in borderingLaceCases[secondLaceIdx].getNodeLineList()) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                }
+
+                for (listLeaf in borderingLaceCases[idx].nodes) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = RenderPalette.BackColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
+                    }
+                }
+
+                for (listLeaf in borderingLaceCases[secondLaceIdx].nodes) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = RenderPalette.BackColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
+                    }
+                }
+
+                stroke(RenderPalette.BackColors[idx], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in refNodeMeshCases[idx].getNodeLineList() ) {
+                        if (line != null) {
+                            line(line.first, line.second)
+
+                            val minBorderLines = line.borderLines((NextDistancePx * 0.2).toInt())
+
+                            for (minBorderLine in minBorderLines) {
+                                line(minBorderLine.first, minBorderLine.second)
+                            }
+                        }
+                    }
+                }
+
+                for (listPoint in refNodeMeshCases[idx].nodes ) {
+                    secondContainer.circle { position(listPoint.position)
+                        radius = 5.0
+                        color = RenderPalette.BackColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listPoint.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listPoint.description)
+                        }
+                    }
+                }
+
+                val borderingMesh = borderingLaceCases[idx].getBorderingMesh(refNodeMeshCases[idx])
+                val secondBorderingMesh = borderingLaceCases[secondLaceIdx].getBorderingMesh(refNodeMeshCases[idx])
+
+                stroke(RenderPalette.ForeColors[idx], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in borderingMesh.getNodeLineList()) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                    for (line in secondBorderingMesh.getNodeLineList()) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                }
+
+                for (listLeaf in borderingMesh.nodes) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = RenderPalette.ForeColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
+                    }
+                }
+
+                for (listLeaf in secondBorderingMesh.nodes) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = RenderPalette.ForeColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
+                    }
+                }
+            }
+        }
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()

@@ -43,7 +43,7 @@ object RenderLeaf {
     @ExperimentalUnsignedTypes
     suspend fun renderLeaf(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 4
+        var funIdx = 0
         val funSize = 5
 
         while (funIdx < funSize) {
@@ -558,10 +558,10 @@ object RenderLeaf {
     @ExperimentalUnsignedTypes
     suspend fun renderLeafBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        commandViews[CommandView.LABEL_TEXT].setText("renderBorderingLeaf() [v0.4]")
-        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing bordering with refILeaf")
+        commandViews[CommandView.LABEL_TEXT].setText("renderLeafBordering() [v0.4]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing getBorderingMesh()")
         commandViews[CommandView.COMMENT_TEXT]!!.visible = true
-        commandViews[CommandView.COMMENT_TEXT].setText("(work in progress)")
+        commandViews[CommandView.COMMENT_TEXT].setText("Original Leaf NodeMesh (bg) and bordering Leaf NodeMesh (fg) shown")
         RenderPalette.returnClick = null
 
         val refNodesCases = listOf(
@@ -599,7 +599,6 @@ object RenderLeaf {
             (0..5).forEach { idx ->
                 secondContainer.text(text= "Test Case $idx", color = ForeColors[idx % BackColors.size], alignment = TextAlignCenter).position(refNodeMeshCases[idx].nodes[0].position + textOffsetPosition)
                 secondContainer.text(text= "Leaf(height=$topHeight)", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(borderingLeafCases[idx].nodes[0].position + textOffsetPosition)
-//                secondContainer.text(text= "Leaf(height=$topHeight)", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(borderingLeafCases[idx].position + textOffsetPosition)
 
                 stroke(BackColors[idx], StrokeInfo(thickness = 3.0)) {
 
@@ -648,10 +647,6 @@ object RenderLeaf {
                 }
 
                 val borderingMesh = borderingLeafCases[idx].getBorderingMesh(refNodeMeshCases[idx])
-                borderingMesh.linkNearNodesBordering(nodeMeshToBorder = refNodeMeshCases[idx])
-                borderingMesh.pruneNodeLinks()
-                borderingMesh.consolidateNodeLinks()
-                borderingMesh.removeOrphans()
 
                 stroke(ForeColors[idx], StrokeInfo(thickness = 3.0)) {
 
