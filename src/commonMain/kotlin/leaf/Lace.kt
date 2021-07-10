@@ -22,7 +22,7 @@ class Lace(override val topHeight : Int = 3
            , override val topAngle : Angle = Angle.fromDegrees(270.0) // 270 == down
            , override val angleFromParent : Angle = topAngle
            , override val cumlAngleFromTop : Angle = topAngle
-           , override val refINodeMesh : INodeMesh? = null
+           //, override val refINodeMesh : INodeMesh? = null
            , override val position : Point = getChildPosition(getParentPosition(parent), distanceFromParent, angleFromParent)
     ) : ILeaf {
 
@@ -36,10 +36,11 @@ class Lace(override val topHeight : Int = 3
                 , parent = mutableListOf(this)
                 , distanceFromParent = getNextDistancePxProb()
                 , topAngle = topAngle
-                , angleFromParent = if (refINodeMesh != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refINodeMesh = refINodeMesh) //experimental at v0.3
-                    else this.getConvergentChildAngle(Angle.fromDegrees(60), topAngle)
+                , angleFromParent = //if (refINodeMesh != null) this.getBorderingChildAngle(Angle.fromDegrees(30), refINodeMesh = refINodeMesh) //experimental at v0.3
+                    //else
+                        this.getConvergentChildAngle(Angle.fromDegrees(60), topAngle)
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
-                , refINodeMesh = refINodeMesh
+                //, refINodeMesh = refINodeMesh
             )
     }
 

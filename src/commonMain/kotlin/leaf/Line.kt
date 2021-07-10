@@ -1,6 +1,7 @@
 package leaf
 
 import com.soywiz.korma.geom.Point
+import leaf.Line.Companion.borderLines
 import leaf.Line.Companion.extend
 import leaf.Line.Companion.isQ1
 import kotlin.math.*
@@ -9,7 +10,7 @@ class Line(val first : Point, val second: Point) {
 
     fun intersects(line: Line) = Pair(this.first, this.second).intersects(Pair(line.first, line.second))
 
-    fun borders(offsetThreshold: Int) = Pair(this.first, this.second).borders(offsetThreshold)
+    fun asPoints() = Pair(first, second)
 
     companion object {
 
@@ -90,7 +91,7 @@ class Line(val first : Point, val second: Point) {
             return ( (this.second.x - this.first.x) >= 0  && (this.second.y - this.first.y) < 0 )
         }
 
-        fun Pair<Point, Point>.extend(offset: Int) : Line {
+        fun Pair<Point, Point>.extend(offset: Int) : Pair<Point, Point> {
             val slope = (this.second.y - this.first.y) / (this.second.x - this.first.x)
             val arctanSlope = atan(slope)
             val extendByX = sqrt(offset.toDouble().pow(2) - (sin(arctanSlope) * offset).pow(2))
@@ -118,10 +119,10 @@ class Line(val first : Point, val second: Point) {
                 }
             }
 
-            return Line(first = p3, second = p4)
+            return Pair(p3, p4)
         }
 
-        fun Pair<Point, Point>.borders(offset: Int): List<Line> {
+        fun Pair<Point, Point>.borderPoints(offset: Int) : List<Point> {
             val slope = (this.second.y - this.first.y) / (this.second.x - this.first.x)
             val arctanSlope = atan(slope)
             val orthoExtendByX = sqrt(offset.toDouble().pow(2) - (cos(arctanSlope) * offset).pow(2))
@@ -161,7 +162,58 @@ class Line(val first : Point, val second: Point) {
                 }
             }
 
-            return listOf( Line(first = p3, second = p4), Line(first = p5, second = p6), Line(first=p3, second=p5), Line(first=p4, second=p6) )
+            return listOf(p3, p4, p5, p6)
+        }
+
+        fun Pair<Point, Point>.borderLines(offset: Int) : List<Line> {
+            val points : List<Point> = Pair(this.first, this.second).borderPoints(offset)
+
+            return listOf(Line(first = points[0], second = points[2]), Line(first = points[1], second = points[3])
+                , Line(first = points[0], second = points[1]), Line(first = points[2], second = points[3]) )
+        }
+
+        //        https://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
+        fun Pair<Point, Point>.vector() : Point = Point(x = this.second.x - this.first.x, y = this.second.y - this.first.y)
+
+        fun Pair<Line, Line>.dot() : Double {
+            val u = Pair(this.first.first, this.first.second).vector()
+            val v = Pair(this.second.first, this.second.second).vector()
+
+            return u.x * v.x + u.y * v.y
+        }
+
+        //only first three points in rectPoints are used
+        //AB and BC must be perpendicular
+        fun Point.isInRect(rectPoints : List<Point>) : Boolean {
+            val ab = Line(rectPoints[0], rectPoints[1])
+            val am = Line(rectPoints[0], this)
+            val bc = Line(rectPoints[1], rectPoints[3])
+            val bm = Line(rectPoints[1], this)
+
+            return ( ( 0 <= Pair(ab, am).dot() ) &&
+                    ( Pair(ab, am).dot() <= Pair(ab, ab).dot() ) &&
+                    ( 0 <= Pair(bc, bm).dot() ) &&
+                    ( Pair(bc, bm).dot() <= Pair(bc, bc).dot() ) )
+        }
+
+        fun Point.isInBorder(line : Pair<Point, Point>, offset : Int) : Boolean {
+            val borderPoints = line.borderPoints(offset)
+
+            println("check borderPoints: $borderPoints contain $this")
+            return this.isInRect(listOf(borderPoints[0], borderPoints[1], borderPoints[2], borderPoints[3]) )
+        }
+
+        fun Pair<Point, Point>.intersectsBorder(line : Pair<Point, Point>, offset : Int) : Boolean {
+            val borderLines = line.borderLines(offset)
+
+            var intersection = false
+
+            for (borderLine in borderLines) {
+                println("check borderLine: ${borderLine.first}, ${borderLine.second} intersects with $line")
+                if ( this.intersects(borderLine.asPoints()) ) intersection = true
+            }
+
+            return intersection
         }
     }
 }

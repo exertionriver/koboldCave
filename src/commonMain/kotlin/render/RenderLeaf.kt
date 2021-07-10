@@ -13,12 +13,21 @@ import leaf.ILeaf.Companion.add
 import leaf.ILeaf.Companion.getLineList
 import leaf.ILeaf.Companion.getList
 import leaf.ILeaf.Companion.graft
+import leaf.ILeaf.Companion.nodeMesh
 import leaf.ILeaf.Companion.prune
 import leaf.Leaf
-import leaf.Line.Companion.borders
+import leaf.Line
+import leaf.Line.Companion.borderLines
+import leaf.Line.Companion.intersectsBorder
+import leaf.Line.Companion.isInBorder
 import node.INodeMesh
 import node.Node
+import node.Node.Companion.getNode
+import node.Node.Companion.removeNode
 import node.NodeLink
+import node.NodeLink.Companion.getNodeLineList
+import node.NodeLink.Companion.getNodeLinks
+import node.NodeLink.Companion.removeNodeLink
 import node.NodeMesh
 import render.RenderPalette.BackColors
 import render.RenderPalette.ForeColors
@@ -471,8 +480,8 @@ object RenderLeaf {
 
         val leaf = Leaf(topHeight = 6, position = Point(256.0, 512.0), topAngle = Angle.fromDegrees(280) )
 
-        val firstBorderingLeaf = Leaf(topHeight = 12, position = Point(482.0, 256.0), topAngle = Angle.fromDegrees(220), refINodeMesh = null )
-        val secondBorderingLeaf = Leaf(topHeight = 12, position = Point(532.0, 256.0), topAngle = Angle.fromDegrees(350), refINodeMesh = null )
+        val firstBorderingLeaf = Leaf(topHeight = 12, position = Point(482.0, 256.0), topAngle = Angle.fromDegrees(220) ) //, refINodeMesh = null )
+        val secondBorderingLeaf = Leaf(topHeight = 12, position = Point(532.0, 256.0), topAngle = Angle.fromDegrees(350) ) //, refINodeMesh = null )
 
         val secondContainer = renderContainer.container()
         secondContainer.graphics {
@@ -570,14 +579,16 @@ object RenderLeaf {
             NodeMesh( nodes = nodesCases.toMutableList(), nodeLinks = refNodeLinksCases[idx].toMutableList())
         }
 
-        val borderingLeafCases = mutableListOf<ILeaf>(
-            Leaf(topHeight = 5, position = Point(300, 150), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[0] )
-            , Leaf(topHeight = 5, position = Point(300, 450), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[1] )
-            , Leaf(topHeight = 5, position = Point(300, 750), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[2] )
-            , Leaf(topHeight = 5, position = Point(700, 250), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[3] )
-            , Leaf(topHeight = 5, position = Point(700, 550), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[4] )
-            , Leaf(topHeight = 5, position = Point(700, 850), topAngle = Angle.fromDegrees(180), refINodeMesh = refNodeMeshCases[5] )
+        val topHeight = 5
+        val borderingLeafCases = mutableListOf<INodeMesh>(
+            Leaf(topHeight = topHeight, position = Point(300, 150), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[0] )
+            , Leaf(topHeight = topHeight, position = Point(300, 450), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[1] )
+            , Leaf(topHeight = topHeight, position = Point(300, 750), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[2] )
+            , Leaf(topHeight = topHeight, position = Point(800, 250), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[3] )
+            , Leaf(topHeight = topHeight, position = Point(800, 550), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[4] )
+            , Leaf(topHeight = topHeight, position = Point(800, 850), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()//, refINodeMesh = refNodeMeshCases[5] )
         )
+
         val textOffsetPosition = Point(0, -30)
 
         val secondContainer = renderContainer.container()
@@ -585,25 +596,46 @@ object RenderLeaf {
 
             (0..5).forEach { idx ->
                 secondContainer.text(text= "Test Case $idx", color = ForeColors[idx % BackColors.size], alignment = TextAlignCenter).position(refNodeMeshCases[idx].nodes[0].position + textOffsetPosition)
-                secondContainer.text(text= "Leaf(height=${borderingLeafCases[idx].height})", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(borderingLeafCases[idx].position + textOffsetPosition)
+                secondContainer.text(text= "Leaf(height=$topHeight)", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(borderingLeafCases[idx].nodes[0].position + textOffsetPosition)
+//                secondContainer.text(text= "Leaf(height=$topHeight)", color = ForeColors[idx % ForeColors.size], alignment = TextAlignCenter).position(borderingLeafCases[idx].position + textOffsetPosition)
+
+                stroke(BackColors[idx], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in borderingLeafCases[idx].getNodeLineList()) {
+//                    for (line in borderingLeafCases[idx].getLineList()) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                }
+
+                for (listLeaf in borderingLeafCases[idx].nodes) {
+//                for (listLeaf in borderingLeafCases[idx].getList()) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = BackColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
+                    }
+                }
 
                 stroke(BackColors[idx], StrokeInfo(thickness = 3.0)) {
 
                     for (line in refNodeMeshCases[idx].getNodeLineList() ) {
-                        if (line != null) line(line.first, line.second)
+                        if (line != null) {
+                            line(line.first, line.second)
 
-                        val minBorderLines = line?.let { Pair(line.first, it.second).borders((NextDistancePx * 0.2).toInt() ) }
+                            val minBorderLines = line.borderLines((NextDistancePx * 0.2).toInt())
 
-                        if (minBorderLines != null) {
-                            for (borderLine in minBorderLines) {
-                                line(borderLine.first, borderLine.second)
+                            for (minBorderLine in minBorderLines) {
+                                line(minBorderLine.first, minBorderLine.second)
                             }
-                        }
-                        val maxBorderLines = line?.let { Pair(line.first, it.second).borders((NextDistancePx * 0.6).toInt()) }
 
-                        if (maxBorderLines != null) {
-                            for (borderLine in maxBorderLines) {
-                                line(borderLine.first, borderLine.second)
+                            val maxBorderLines = line.borderLines((NextDistancePx * 0.6).toInt())
+
+                            for (maxBorderLine in maxBorderLines) {
+                                line(maxBorderLine.first, maxBorderLine.second)
                             }
                         }
                     }
@@ -621,14 +653,65 @@ object RenderLeaf {
                     }
                 }
 
+                //result nodeMesh
+                val borderingLeaf = NodeMesh(copyNodeMesh = borderingLeafCases[idx] as NodeMesh)
+
+                borderingLeafCases[idx].nodes.forEach { node ->
+                    //get nodelinks associated with this node
+                    val borderingLeafNodeLinks = borderingLeafCases[idx].nodeLinks.getNodeLinks(node.uuid)
+
+                    //find the node in the ref structure closest to the node in the bordering leaf case
+                    val closestOrderedRefNodes = refNodeMeshCases[idx].nodes.sortedBy { iRef -> Point.distance(iRef.position, node.position) }
+                    val closestRefNode = closestOrderedRefNodes[0]
+
+                    //get the nodelinks and nodelink lines associated with the closest ref node
+                    val closestRefNodeLinks = refNodeMeshCases[idx].nodeLinks.getNodeLinks(closestRefNode.uuid)
+                    val closestRefNodeLines = closestRefNodeLinks.getNodeLineList(refNodeMeshCases[idx].nodes)
+
+                    //check each line related to the closest node
+                    closestRefNodeLines.forEach { closestRefNodeLine ->
+                        //check if this node falls within the borders of any line related to closest ref node
+                        println("node within border? node:$node, refLine:$closestRefNodeLine")
+                        if (node.position.isInBorder(closestRefNodeLine!!, (NextDistancePx * 0.2).toInt())) {
+                            //if node in border, remove from result nodeMesh
+                            borderingLeaf.nodes.removeNode(borderingLeafCases[idx].nodeLinks, node.uuid)
+                            println("node within border! node:$node, refLine:$closestRefNodeLine")
+                        }
+
+                        //if this node has links
+                        if ( borderingLeafNodeLinks.isNotEmpty() ) {
+
+                            //for each of these links,
+                            borderingLeafNodeLinks.forEach { borderingLeafNodeLink ->
+
+                                //get the first and second nodes
+                                val firstNode = borderingLeafCases[idx].nodes.getNode(borderingLeafNodeLink.firstNodeUuid)
+                                val secondNode = borderingLeafCases[idx].nodes.getNode(borderingLeafNodeLink.secondNodeUuid)
+
+                                //if these nodes are not null
+                                if ( (firstNode != null) && (secondNode != null) ) {
+                                    //check if the nodeLink intersects with borderline
+                                    println("intersects? nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
+                                    if ( Pair(firstNode.position, secondNode.position)
+                                            .intersectsBorder(closestRefNodeLine, (NextDistancePx * 0.2).toInt()) ) {
+                                        //if nodeLink intersects border, remove from result nodeMesh
+                                        borderingLeaf.nodeLinks.removeNodeLink(borderingLeafNodeLink)
+                                        println("intersection! nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 stroke(ForeColors[idx], StrokeInfo(thickness = 3.0)) {
 
-                    for (line in borderingLeafCases[idx].getLineList()) {
+                    for (line in borderingLeaf.getNodeLineList()) {
                         if (line != null) line(line.first, line.second)
                     }
                 }
 
-                for (listLeaf in borderingLeafCases[idx].getList() ) {
+                for (listLeaf in borderingLeaf.nodes) {
                     secondContainer.circle { position(listLeaf.position)
                         radius = 5.0
                         color = ForeColors[idx]
