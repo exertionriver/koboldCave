@@ -1,9 +1,9 @@
 # koboldCave
 Demonstration of probabilistically-generated oakLeaf and nodeMesh using Korge Multiplatform Kotlin Game Engine
 
-Built using IntelliJ Community Edition 2020.3.2 / Kotlin Plugin 1.4.31 on Ubuntu 20.04
+Built using IntelliJ Community Edition 2021.1.2 / Kotlin Plugin 1.5.20 on Ubuntu 20.04
 
-And using Korge 2.0.7.1 (Apache 2.0 License) Korge Project template
+And using Korge 2.1.1.6 (Apache 2.0 License) Korge Project template
 
 Repo found at: https://github.com/korlibs/korge
 
