@@ -470,7 +470,7 @@ object RenderLeaf {
 
         return RenderPalette.returnClick as ButtonCommand
     }
-
+/*
     @ExperimentalUnsignedTypes
     suspend fun renderLeafBordering_03(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
@@ -554,7 +554,7 @@ object RenderLeaf {
 
         return RenderPalette.returnClick as ButtonCommand
     }
-
+*/
     @ExperimentalUnsignedTypes
     suspend fun renderLeafBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 

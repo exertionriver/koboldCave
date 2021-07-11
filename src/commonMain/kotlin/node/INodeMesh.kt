@@ -107,7 +107,7 @@ interface INodeMesh {
 
     companion object {
 
-        fun INodeMesh.addMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) {
+        fun INodeMesh.addMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) : INodeMesh {
 //            println("adding nodes and links")
             this.nodes.addNodes(nodeMeshToAdd.nodes, description)
             this.nodeLinks.addNodeLinks(nodeMeshToAdd.nodeLinks)
@@ -116,6 +116,7 @@ interface INodeMesh {
             this.nodes = this.nodes.distinct().toMutableList()
 //            println("consolidate stacked")
 //            this.consolidateStackedNodes()
+            return this
         }
 
         fun INodeMesh.getBorderingMesh(nodeMeshToBorder : INodeMesh, orthoBorderDistance : Double = NextDistancePx * 0.2, description : String = this.description) : INodeMesh {

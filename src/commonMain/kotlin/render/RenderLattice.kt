@@ -27,7 +27,7 @@ object RenderLattice {
     @ExperimentalUnsignedTypes
     suspend fun renderLattice(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 3
+        var funIdx = 0
         val funSize = 4
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {

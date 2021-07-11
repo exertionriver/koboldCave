@@ -6,12 +6,19 @@ import node.NodeMesh
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.view.*
 import com.soywiz.korim.vector.StrokeInfo
+import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import leaf.ILeaf.Companion.NextDistancePx
+import leaf.ILeaf.Companion.nodeMesh
+import leaf.Leaf
+import leaf.Line.Companion.borderLines
+import node.INodeMesh
 import node.INodeMesh.Companion.addMesh
+import node.INodeMesh.Companion.getBorderingMesh
 import node.Node
+import node.NodeLink
 import node.NodeLink.Companion.buildNodeLinkLine
 import node.NodeLink.Companion.consolidateNodeDistance
 import render.RenderPalette.BackColors
@@ -24,8 +31,8 @@ object RenderNodeLine {
     @ExperimentalUnsignedTypes
     suspend fun renderNodeLine(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 0
-        val funSize = 2
+        var funIdx = 2
+        val funSize = 3
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {
 //            println ("funMapIdx : $funIdx")
@@ -35,7 +42,7 @@ object RenderNodeLine {
             when (funIdx) {
                 0 -> if ( renderNodeLineLengthsNoises(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 1 -> if ( renderNodeLineMesh(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-//                2 -> if ( renderNodeLineBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
+                2 -> if ( renderNodeLinesBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
 
             }
         }
@@ -236,6 +243,97 @@ object RenderNodeLine {
         while (RenderPalette.returnClick == null) {
             delay(TimeSpan(100.0))
         }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
+    }
+
+    @ExperimentalUnsignedTypes
+    suspend fun renderNodeLinesBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+
+        commandViews[CommandView.LABEL_TEXT].setText("renderNodeLinesBordering() [v0.4]")
+        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing getBorderingMesh()")
+        commandViews[CommandView.COMMENT_TEXT]!!.visible = true
+        commandViews[CommandView.COMMENT_TEXT].setText("Original NodeLine NodeMesh (bg) and bordering NodeLine NodeMesh (fg) shown")
+        RenderPalette.returnClick = null
+
+        val refNodesCases = listOf(
+            listOf(Node(position = Point(100, 200)), Node(position = Point(950, 300)))
+            , listOf(Node(position = Point(300, 150)), Node(position = Point(250, 900)))
+            , listOf(Node(position = Point(100, 400)), Node(position = Point(950, 550)))
+            , listOf(Node(position = Point(600, 150)), Node(position = Point(550, 900)))
+            , listOf(Node(position = Point(100, 700)), Node(position = Point(950, 800)))
+            , listOf(Node(position = Point(900, 150)), Node(position = Point(800, 900)))
+        )
+
+        val adjLineNoise = 90
+
+        val borderingNodeLineCases = refNodesCases.map { nodesCases: List<Node> ->
+            Pair(nodesCases[0], nodesCases[1]).buildNodeLinkLine(noise = adjLineNoise).addMesh(
+                Pair(nodesCases[0], nodesCases[1]).buildNodeLinkLine(noise = adjLineNoise).addMesh(
+                    Pair(nodesCases[0], nodesCases[1]).buildNodeLinkLine(noise = adjLineNoise)
+                )
+            )
+        }
+
+        val borderingMesh = listOf(
+            NodeMesh(copyNodeMesh = borderingNodeLineCases[0] as NodeMesh).getBorderingMesh(borderingNodeLineCases[1]).getBorderingMesh(borderingNodeLineCases[5])
+            , NodeMesh(copyNodeMesh = borderingNodeLineCases[1] as NodeMesh).getBorderingMesh(borderingNodeLineCases[2])
+            , NodeMesh(copyNodeMesh = borderingNodeLineCases[2] as NodeMesh).getBorderingMesh(borderingNodeLineCases[3])
+            , NodeMesh(copyNodeMesh = borderingNodeLineCases[3] as NodeMesh).getBorderingMesh(borderingNodeLineCases[0]).getBorderingMesh(borderingNodeLineCases[4])
+            , NodeMesh(copyNodeMesh = borderingNodeLineCases[4] as NodeMesh).getBorderingMesh(borderingNodeLineCases[1]).getBorderingMesh(borderingNodeLineCases[5])
+            , NodeMesh(copyNodeMesh = borderingNodeLineCases[5] as NodeMesh).getBorderingMesh(borderingNodeLineCases[2])
+        )
+
+        val textOffsetPosition = Point(0, -30)
+
+        val secondContainer = renderContainer.container()
+        secondContainer.graphics {
+
+            (0..5).forEach { idx ->
+                secondContainer.text(text= "NodeLine Test Case $idx", color = ForeColors[idx % BackColors.size], alignment = RenderPalette.TextAlignCenter).position(refNodesCases[idx][0].position + textOffsetPosition)
+
+                stroke(BackColors[idx], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in borderingNodeLineCases[idx].getNodeLineList()) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                }
+
+                for (listLeaf in borderingNodeLineCases[idx].nodes) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = BackColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
+                    }
+                }
+
+                stroke(ForeColors[idx], StrokeInfo(thickness = 3.0)) {
+
+                    for (line in borderingMesh[idx].getNodeLineList()) {
+                        if (line != null) line(line.first, line.second)
+                    }
+                }
+
+                for (listLeaf in borderingMesh[idx].nodes) {
+                    secondContainer.circle { position(listLeaf.position)
+                        radius = 5.0
+                        color = ForeColors[idx]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        }
+                    }
+                }
+            }
+        }
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
 

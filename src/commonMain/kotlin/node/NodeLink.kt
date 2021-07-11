@@ -118,7 +118,8 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
         }
 
         //noise goes from 0 to 100
-        fun Pair<Node?, Node?>.buildNodeLinkLine(noise : Int = 0, nodeDescription : String) : INodeMesh {
+        //does node / node need to be "?" ?
+        fun Pair<Node?, Node?>.buildNodeLinkLine(noise : Int = 0, nodeDescription : String = this.first!!.description) : INodeMesh {
 
             if ( (this.first == null) || (this.second == null) ) return NodeMesh()
 
