@@ -11,16 +11,10 @@ import lattice.ArrayLattice
 import lattice.ILattice.Companion.getLateralLineList
 import lattice.ILattice.Companion.nodeMesh
 import lattice.RoundedLattice
-import leaf.ILeaf
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Lace
 import leaf.Leaf
-import leaf.Line.Companion.borderLines
-import node.INodeMesh
 import node.INodeMesh.Companion.getBorderingMesh
-import node.Node
-import node.NodeLink
-import node.NodeMesh
 
 object RenderLattice {
 
@@ -34,6 +28,7 @@ object RenderLattice {
 //            println ("funMapIdx : $funIdx")
             commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
+            commandViews[CommandView.NODE_POSITION_TEXT].setText(CommandView.NODE_POSITION_TEXT.label())
 
             when (funIdx) {
                 0 -> if ( renderArrayLatticeHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
@@ -83,6 +78,7 @@ object RenderLattice {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -134,6 +130,7 @@ object RenderLattice {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -199,6 +196,7 @@ object RenderLattice {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -226,6 +224,7 @@ object RenderLattice {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listPoint.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listPoint.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listPoint.position.toString())
                         }
                     }
                 }
@@ -247,6 +246,7 @@ object RenderLattice {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -311,6 +311,7 @@ object RenderLattice {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -338,6 +339,7 @@ object RenderLattice {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listPoint.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listPoint.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listPoint.position.toString())
                         }
                     }
                 }
@@ -359,6 +361,7 @@ object RenderLattice {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }

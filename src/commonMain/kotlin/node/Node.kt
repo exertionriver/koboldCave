@@ -481,7 +481,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 val previousCheckNodes = mutableSetOf<Node>()
                 val returnRoomNodes = mutableSetOf<Node>()
 
-                println("processing $roomNodeDescription")
+//                println("processing $roomNodeDescription")
 
                 //first, identify connected nodes
                 while (processedNodes.size < roomNodes[roomNodeDescription]!!.size) {

@@ -30,6 +30,7 @@ object RenderLace {
 //            println ("funMapIdx : $funIdx")
             commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
+            commandViews[CommandView.NODE_POSITION_TEXT].setText(CommandView.NODE_POSITION_TEXT.label())
 
             when (funIdx) {
                 0 -> if ( renderLaceHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
@@ -78,6 +79,7 @@ object RenderLace {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -142,6 +144,7 @@ object RenderLace {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLace.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLace.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLace.position.toString())
                         }
                     }
                 }
@@ -221,6 +224,7 @@ object RenderLace {
                             onClick {
                                 commandViews[CommandView.NODE_UUID_TEXT].setText(listLace.uuid.toString())
                                 commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLace.description)
+                                commandViews[CommandView.NODE_POSITION_TEXT].setText(listLace.position.toString())
                             }
                         }
 
@@ -314,6 +318,7 @@ object RenderLace {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -326,6 +331,7 @@ object RenderLace {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -353,6 +359,7 @@ object RenderLace {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listPoint.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listPoint.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listPoint.position.toString())
                         }
                     }
                 }
@@ -378,6 +385,7 @@ object RenderLace {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -390,6 +398,7 @@ object RenderLace {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }

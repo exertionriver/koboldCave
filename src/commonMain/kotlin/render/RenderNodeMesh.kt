@@ -40,6 +40,7 @@ object RenderNodeMesh {
 //            println ("funMapIdx : $funIdx")
             commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
+            commandViews[CommandView.NODE_POSITION_TEXT].setText(CommandView.NODE_POSITION_TEXT.label())
 
             when (funIdx) {
                 0 -> if ( renderNodeMeshOperations(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
@@ -124,6 +125,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -150,6 +152,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -176,6 +179,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -204,6 +208,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -232,6 +237,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -322,6 +328,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -352,6 +359,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -382,6 +390,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -414,6 +423,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -446,6 +456,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -510,6 +521,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -527,6 +539,7 @@ object RenderNodeMesh {
                 onClick{
                     commandViews[CommandView.NODE_UUID_TEXT].setText(randomNode500.uuid.toString())
                     commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(randomNode500.description)
+                    commandViews[CommandView.NODE_POSITION_TEXT].setText(randomNode500.position.toString())
                 }
             }
 
@@ -549,6 +562,7 @@ object RenderNodeMesh {
                         onClick{
                             commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                         }
                     }
                 }
@@ -568,6 +582,7 @@ object RenderNodeMesh {
                 onClick{
                     commandViews[CommandView.NODE_UUID_TEXT].setText(randomNode300.uuid.toString())
                     commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(randomNode300.description)
+                    commandViews[CommandView.NODE_POSITION_TEXT].setText(randomNode300.position.toString())
                 }
             }
 
@@ -590,6 +605,7 @@ object RenderNodeMesh {
                         onClick{
                             commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                         }
                     }
                 }
@@ -609,6 +625,7 @@ object RenderNodeMesh {
                 onClick{
                     commandViews[CommandView.NODE_UUID_TEXT].setText(randomNode200.uuid.toString())
                     commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(randomNode200.description)
+                    commandViews[CommandView.NODE_POSITION_TEXT].setText(randomNode200.position.toString())
                 }
             }
 
@@ -631,6 +648,7 @@ object RenderNodeMesh {
                         onClick{
                             commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                         }
                     }
                 }
@@ -700,6 +718,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -725,6 +744,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -796,6 +816,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -810,6 +831,7 @@ object RenderNodeMesh {
                 onClick{
                     commandViews[CommandView.NODE_UUID_TEXT].setText(centroid.uuid.toString())
                     commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(centroid.description)
+                    commandViews[CommandView.NODE_POSITION_TEXT].setText(centroid.position.toString())
                 }
             }
 
@@ -834,6 +856,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -851,6 +874,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -868,6 +892,7 @@ object RenderNodeMesh {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }

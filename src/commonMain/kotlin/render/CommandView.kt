@@ -9,6 +9,7 @@ enum class CommandView {
     , NEXT_BUTTON
     , NODE_UUID_TEXT { override fun label() = "Click a node for Uuid" }
     , NODE_DESCRIPTION_TEXT { override fun label() = "Click a node for Description"}
+    , NODE_POSITION_TEXT { override fun label() = "Click a node for Position"}
     ;
 
     open fun label() : String = ""

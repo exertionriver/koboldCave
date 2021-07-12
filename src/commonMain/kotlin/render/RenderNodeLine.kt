@@ -6,19 +6,13 @@ import node.NodeMesh
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.view.*
 import com.soywiz.korim.vector.StrokeInfo
-import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
 import leaf.ILeaf.Companion.NextDistancePx
-import leaf.ILeaf.Companion.nodeMesh
-import leaf.Leaf
-import leaf.Line.Companion.borderLines
-import node.INodeMesh
 import node.INodeMesh.Companion.addMesh
 import node.INodeMesh.Companion.getBorderingMesh
 import node.Node
-import node.NodeLink
 import node.NodeLink.Companion.buildNodeLinkLine
 import node.NodeLink.Companion.consolidateNodeDistance
 import render.RenderPalette.BackColors
@@ -38,6 +32,7 @@ object RenderNodeLine {
 //            println ("funMapIdx : $funIdx")
             commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
+            commandViews[CommandView.NODE_POSITION_TEXT].setText(CommandView.NODE_POSITION_TEXT.label())
 
             when (funIdx) {
                 0 -> if ( renderNodeLineLengthsNoises(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
@@ -108,6 +103,7 @@ object RenderNodeLine {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                         }
                     }
                 }
@@ -205,6 +201,7 @@ object RenderNodeLine {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -234,6 +231,7 @@ object RenderNodeLine {
                     onClick{
                         commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(node.position.toString())
                     }
                 }
             }
@@ -308,6 +306,7 @@ object RenderNodeLine {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -327,6 +326,7 @@ object RenderNodeLine {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }

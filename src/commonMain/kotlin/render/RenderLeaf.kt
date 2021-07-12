@@ -9,34 +9,20 @@ import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
 import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
-import leaf.ILeaf.Companion.add
 import leaf.ILeaf.Companion.getLineList
 import leaf.ILeaf.Companion.getList
-import leaf.ILeaf.Companion.graft
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.ILeaf.Companion.prune
 import leaf.Leaf
-import leaf.Line
 import leaf.Line.Companion.borderLines
-import leaf.Line.Companion.intersectsBorder
-import leaf.Line.Companion.isInBorder
 import node.INodeMesh
 import node.INodeMesh.Companion.getBorderingMesh
-import node.INodeMesh.Companion.processMesh
 import node.Node
-import node.Node.Companion.getNode
-import node.Node.Companion.removeNode
 import node.NodeLink
-import node.NodeLink.Companion.getNodeLineList
-import node.NodeLink.Companion.getNodeLinks
-import node.NodeLink.Companion.removeNodeLink
 import node.NodeMesh
 import render.RenderPalette.BackColors
 import render.RenderPalette.ForeColors
 import render.RenderPalette.TextAlignCenter
-import render.RenderPalette.TextAlignLeft
-import render.RenderPalette.TextAlignRight
-import kotlin.random.Random
 
 object RenderLeaf {
 
@@ -50,6 +36,7 @@ object RenderLeaf {
 //            println ("funMapIdx : $funIdx")
             commandViews[CommandView.NODE_UUID_TEXT].setText(CommandView.NODE_UUID_TEXT.label())
             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(CommandView.NODE_DESCRIPTION_TEXT.label())
+            commandViews[CommandView.NODE_POSITION_TEXT].setText(CommandView.NODE_POSITION_TEXT.label())
 
             when (funIdx) {
                 0 -> if ( renderLeafHeights(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++
@@ -96,6 +83,7 @@ object RenderLeaf {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -158,6 +146,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -177,6 +166,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -198,6 +188,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -217,6 +208,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -236,6 +228,7 @@ object RenderLeaf {
         commandViews[CommandView.DESCRIPTION_TEXT].setText("testing leaf.getList().prune()")
         commandViews[CommandView.COMMENT_TEXT]!!.visible = true
         commandViews[CommandView.COMMENT_TEXT].setText("Leaf pruning removes intersections and children nodes within 10deg apart")
+        commandViews[CommandView.PREV_BUTTON]!!.visible = true
         RenderPalette.returnClick = null
 
         val startingPoint = Point(612.0, 512.0)
@@ -264,6 +257,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -285,6 +279,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -306,6 +301,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -369,6 +365,7 @@ object RenderLeaf {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -449,6 +446,7 @@ object RenderLeaf {
                             onClick {
                                 commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                                 commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                                commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                             }
                         }
 
@@ -507,6 +505,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -532,6 +531,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -544,6 +544,7 @@ object RenderLeaf {
                     onClick {
                         commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                         commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                     }
                 }
             }
@@ -615,6 +616,7 @@ object RenderLeaf {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }
@@ -642,6 +644,7 @@ object RenderLeaf {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listPoint.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listPoint.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listPoint.position.toString())
                         }
                     }
                 }
@@ -663,6 +666,7 @@ object RenderLeaf {
                         onClick {
                             commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
                             commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
                         }
                     }
                 }

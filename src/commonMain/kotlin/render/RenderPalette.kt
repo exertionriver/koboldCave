@@ -33,6 +33,7 @@ object RenderPalette {
         val nextClickablePosition = Point(renderContainer.width.toInt() - 50, 50)
         val nodeUuidTextPosition = Point(25, 25)
         val nodeDecsriptionTextPosition = Point(25, 50)
+        val nodePositionTextPosition = Point(25, 75)
 
         val returnMap = mapOf(
             CommandView.LABEL_TEXT to renderContainer.text(text = CommandView.LABEL_TEXT.label(), color = TextColor, textSize = TextSize, alignment = TextAlignRight).position(labelTextPosition)
@@ -43,6 +44,7 @@ object RenderPalette {
             , CommandView.NEXT_BUTTON to renderContainer.uiTextButton(text= ButtonCommand.NEXT.label(), width = 50.0, height = 50.0).position(nextClickablePosition)
             , CommandView.NODE_UUID_TEXT to renderContainer.text(text = CommandView.NODE_UUID_TEXT.label(), color = TextColor, textSize = TextSize, alignment = TextAlignLeft).position(nodeUuidTextPosition)
             , CommandView.NODE_DESCRIPTION_TEXT to renderContainer.text(text = CommandView.NODE_DESCRIPTION_TEXT.label(), color = TextColor, textSize = TextSize, alignment = TextAlignLeft).position(nodeDecsriptionTextPosition)
+            , CommandView.NODE_POSITION_TEXT to renderContainer.text(text = CommandView.NODE_POSITION_TEXT.label(), color = TextColor, textSize = TextSize, alignment = TextAlignLeft).position(nodePositionTextPosition)
         )
 
         returnMap[CommandView.PREV_BUTTON].onClick { returnClick = ButtonCommand.PREV }
