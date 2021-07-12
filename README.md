@@ -13,16 +13,18 @@ Example usage, after cloning / downloading:
 
 Hope this may help you in your development work. - IanP
 
+v0.4 - bordering functionality for leaf, lace, lattice, nodeLine, nodeMesh; top-down centroid rooms
+
+Leaf bordering a simple nodemesh (borders shown)
+![v0 4_leaf_bordering](https://user-images.githubusercontent.com/13192685/125235014-05ce0f80-e29f-11eb-9e94-2e5e38764048.png)
+
+Room meshes bordering out from the center mesh
+![v0 4_roomMesh_border](https://user-images.githubusercontent.com/13192685/125235012-05357900-e29f-11eb-99a5-6aebae12e136.png)
+
+Room meshes generated from centroid mesh
+![v0 4_centroidRooms](https://user-images.githubusercontent.com/13192685/125235010-049ce280-e29f-11eb-9ee5-6766215a7613.png)
+
 v0.3 - presenting various line demos with navigable UI, adding lace and lattice
-
-Two leaves 'bordering' a reference 'leaf' (in progress)
-![v0 3_bordering_leaf](https://user-images.githubusercontent.com/13192685/123573819-e0fc7700-d78b-11eb-9e10-0e23b741aa6b.png)
-
-Operations upon node meshes
-![v0 3_mesh_ops](https://user-images.githubusercontent.com/13192685/123573820-e35ed100-d78b-11eb-9604-f839e46243ab.png)
-
-Node rooms of a few sizes
-![v0 3_node_rooms](https://user-images.githubusercontent.com/13192685/123573823-e5289480-d78b-11eb-989b-59925fcec66b.png)
 
 v0.2 - refactoring leaves and nodes, nodeline with noise, k-means clustering
 
