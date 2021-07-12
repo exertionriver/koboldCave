@@ -31,7 +31,7 @@ object RenderNodeLine {
     @ExperimentalUnsignedTypes
     suspend fun renderNodeLine(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 2
+        var funIdx = 0
         val funSize = 3
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {
@@ -43,7 +43,6 @@ object RenderNodeLine {
                 0 -> if ( renderNodeLineLengthsNoises(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 1 -> if ( renderNodeLineMesh(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 2 -> if ( renderNodeLinesBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-
             }
         }
 

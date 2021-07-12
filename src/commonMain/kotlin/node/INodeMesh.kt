@@ -272,24 +272,24 @@ interface INodeMesh {
             val roomMesh = NodeMesh()
 
             centroids.forEach { centroid ->
+//                println("centroid: $centroid")
                 (0 until leafPoints).toList().forEach{ leafIndex ->
 
                     val angleOnCircle = Angle.fromDegrees( 360 / leafPoints * leafIndex ).normalized
 
-                    println("building leaf mesh: $leafIndex, $angleOnCircle")
+//                    println("building leaf mesh: $leafIndex, $angleOnCircle")
 
                     //angleInMap points back to the center of the circle
                     leafMap[(Angle.fromDegrees(180) + angleOnCircle).normalized] = ILeaf.getChildPosition(centroid.position, (height - 2) * NextDistancePx, angleOnCircle)
                 }
+                leafMap.forEach {
+
+//                    println("adding Mesh")
+                    roomMesh.addMesh( Leaf(topHeight = height, angleFromParent = it.key, position = it.value ).getList().nodeMesh() )
+                }
             }
 
-            leafMap.forEach {
-
-                println("adding Mesh")
-                roomMesh.addMesh( Leaf(topHeight = height, angleFromParent = it.key, position = it.value ).getList().nodeMesh() )
-            }
-
-            println("processing Mesh")
+//            println("processing Mesh")
 
             roomMesh.processMesh()
 
