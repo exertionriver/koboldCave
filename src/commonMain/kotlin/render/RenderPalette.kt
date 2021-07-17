@@ -1,7 +1,7 @@
 package render
 
 import com.soywiz.korge.input.onClick
-import com.soywiz.korge.ui.uiTextButton
+import com.soywiz.korge.ui.*
 import com.soywiz.korge.view.*
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.text.TextAlignment

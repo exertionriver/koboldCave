@@ -1,10 +1,12 @@
 package leaf
 
-import com.soywiz.korma.geom.Point
+import com.soywiz.korma.geom.*
 import leaf.Line.Companion.borderLines
 import leaf.Line.Companion.extend
 import leaf.Line.Companion.isQ1
+import node.Node
 import kotlin.math.*
+import kotlin.math.cos
 
 class Line(val first : Point, val second: Point) {
 
@@ -214,6 +216,38 @@ class Line(val first : Point, val second: Point) {
             }
 
             return intersection
+        }
+
+        fun MutableList<Point>.averagePositionWithinPoints() : Point {
+            val averageX = this.map {point -> point.x.toInt()}.average()
+            val averageY = this.map {point -> point.y.toInt()}.average()
+
+            return Point(averageX, averageY)
+        }
+
+        fun Angle.isQ1() = (this.degrees >= 0) && (this.degrees < 90)
+        fun Angle.isQ2() = (this.degrees >= 90) && (this.degrees < 180)
+        fun Angle.isQ3() = (this.degrees >= 180) && (this.degrees < 270)
+        fun Angle.isQ4() = (this.degrees >= 270) && (this.degrees <= 360)
+
+
+        fun getPositionByDistanceAndAngle(first: Point, distance: Int, angle: Angle): Point {
+
+            val secondX = when {
+                angle.isQ1() -> first.x + distance * cos(angle)
+                angle.isQ2() -> first.x - distance * cos(Angle.fromDegrees(180) - angle )
+                angle.isQ3() -> first.x - distance * cos(angle - Angle.fromDegrees(180) )
+                else -> first.x + distance * cos(Angle.fromDegrees(360) - angle )
+            }
+
+            val secondY = when {
+                angle.isQ1() -> first.y - distance * sin(angle)
+                angle.isQ2() -> first.y - distance * sin(Angle.fromDegrees(180) - angle )
+                angle.isQ3() -> first.y + distance * sin(angle - Angle.fromDegrees(180) )
+                else -> first.y + distance * sin(Angle.fromDegrees(360) - angle)
+            }
+
+            return Point(secondX, secondY)
         }
     }
 }

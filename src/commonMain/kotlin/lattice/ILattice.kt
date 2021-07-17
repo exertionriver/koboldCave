@@ -4,6 +4,7 @@ import Probability
 import com.soywiz.korio.async.BaseSignal2
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
+import leaf.ILeaf.Companion.NextDistancePx
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
@@ -70,10 +71,10 @@ interface ILattice {
 
     companion object {
 
-        val ViewPortXRangePx = 300
+/*        val ViewPortXRangePx = 300
         val ViewPortYRangePx = 200
         val NextDistancePx = (ViewPortXRangePx / 100) * (ViewPortYRangePx / 100) * 10
-
+*/
         fun getNextDistancePxProb(): Int = ProbabilitySelect.psAccumulating(
             listOf(
                 NextDistancePx

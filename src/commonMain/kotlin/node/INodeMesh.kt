@@ -140,10 +140,14 @@ interface INodeMesh {
                     //get the nodelinks and nodelink lines associated with the closest ref node
                     closestRefNodeLinks.addAll(nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid))
 
-                    val nodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+                    if (!nodeMeshToBorder.nodes.isNullOrEmpty() && !closestRefNodeLinks.isNullOrEmpty()) {
 
-                    if (!nodeLines.isNullOrEmpty())
-                        closestRefNodeLines.addAll(nodeLines.toMutableList() as MutableList<Pair<Point, Point>>)
+                        val nodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
+
+                        if (!nodeLines.isNullOrEmpty())
+                            closestRefNodeLines.addAll(nodeLines.toMutableList() as MutableList<Pair<Point, Point>>)
+
+                    }
 
                     checkNodeIdx++
                 }
@@ -183,6 +187,11 @@ interface INodeMesh {
                     }
                 }
             }
+            borderingMesh.linkNearNodesBordering(nodeMeshToBorder)
+            borderingMesh.pruneNodeLinks()
+            borderingMesh.consolidateNodeLinks()
+            borderingMesh.removeOrphans()
+
             return borderingMesh
         }
 

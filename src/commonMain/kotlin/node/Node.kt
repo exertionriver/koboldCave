@@ -7,22 +7,18 @@ import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.minus
 import com.soywiz.korma.geom.plus
 import leaf.ILeaf
+import leaf.Line.Companion.getPositionByDistanceAndAngle
 import leaf.Line.Companion.intersectsBorder
 import node.INodeMesh.Companion.addMesh
-import node.Node.Companion.consolidateStackedNodes
-import node.Node.Companion.updateNode
 import node.NodeLink.Companion.addNodeLink
-import node.NodeLink.Companion.areNodesLinked
 import node.NodeLink.Companion.buildNodeLinkLine
 import node.NodeLink.Companion.consolidateNodeDistance
-import node.NodeLink.Companion.consolidateNodeLinkNodes
-import node.NodeLink.Companion.consolidateNodeLinks
 import node.NodeLink.Companion.getNodeChildrenUuids
 import node.NodeLink.Companion.getNodeLineList
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.linkNodeDistance
-import node.NodeLink.Companion.removeNodeLink
 import node.NodeLink.Companion.stackedNodeDistance
+import kotlin.math.asin
 import kotlin.math.atan
 import kotlin.random.Random
 
@@ -569,11 +565,22 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             val returnNodes = mutableListOf<Node>()
 
-            this.forEach {
-                val xOffset = (it.position.x - pivot.x) * scale
-                val yOffset = (it.position.y - pivot.y) * scale
+            println ("pivot: $pivot, scale: $scale")
 
-                returnNodes.add( Node(it, updPosition = Point(it.position.x + xOffset, it.position.y + yOffset) ) )
+            this.forEach { node ->
+                val secondPoint = node.position
+
+                val distance = Point.distance(pivot, secondPoint)
+                val scaledDistance = distance * scale
+                val angleBetween = Node(position = pivot).angleBetween(node)
+
+                println ("distance: $distance, scaledDistance: $scaledDistance, angleBetween: $angleBetween")
+
+                val scaledPoint = getPositionByDistanceAndAngle(pivot, scaledDistance.toInt(), angleBetween)
+
+                println ("node $node scaled : (${scaledPoint.x}, ${scaledPoint.y})")
+
+                returnNodes.add( Node(node, updPosition = Point(scaledPoint.x, scaledPoint.y) ) )
             }
 
             return returnNodes

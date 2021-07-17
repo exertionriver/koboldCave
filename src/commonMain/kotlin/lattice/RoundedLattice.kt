@@ -5,13 +5,10 @@ import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.minus
 import com.soywiz.korma.geom.plus
-import lattice.ILattice.Companion.NextDistancePx
 import lattice.ILattice.Companion.getArrayedChildPosition
 import lattice.ILattice.Companion.getChildPosition
 import lattice.ILattice.Companion.getNextDistancePxProb
 import lattice.ILattice.Companion.getParentPosition
-import leaf.ILeaf
-import node.INodeMesh
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes

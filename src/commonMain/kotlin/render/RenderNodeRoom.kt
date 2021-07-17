@@ -16,10 +16,10 @@ import node.Node.Companion.scaleNodes
 import render.RenderPalette.BackColors
 import render.RenderPalette.ForeColors
 
-object RenderNodeRooms {
+object RenderNodeRoom {
 
     @ExperimentalUnsignedTypes
-    suspend fun renderNodeRooms(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+    suspend fun renderNodeRoom(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
         var funIdx = 0
         val funSize = 4
@@ -35,8 +35,6 @@ object RenderNodeRooms {
                 1 -> if ( renderNodeRoomsBordering(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 2 -> if ( renderNodeRoomsSetCentroids(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
                 3 -> if ( renderNodeRoomsOrphanAdoptingDiff(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
-                //  future directions:
-//                4 -> if ( renderNodeRoomsElaboration(renderContainer, commandViews) == ButtonCommand.NEXT ) funIdx++ else funIdx--
             }
         }
 
@@ -170,24 +168,23 @@ object RenderNodeRooms {
         val borderingMesh = listOf(
             NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh)
             , NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0])
-            , NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0]).getBorderingMesh(borderingNodeRoomCases[1])
-            , NodeMesh(copyNodeMesh = borderingNodeRoomCases[3] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0]).getBorderingMesh(borderingNodeRoomCases[1]).getBorderingMesh(borderingNodeRoomCases[2])
-            , NodeMesh(copyNodeMesh = borderingNodeRoomCases[4] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0]).getBorderingMesh(borderingNodeRoomCases[1]).getBorderingMesh(borderingNodeRoomCases[2]).getBorderingMesh(borderingNodeRoomCases[3])
-            , NodeMesh(copyNodeMesh = borderingNodeRoomCases[5] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0]).getBorderingMesh(borderingNodeRoomCases[1]).getBorderingMesh(borderingNodeRoomCases[2]).getBorderingMesh(borderingNodeRoomCases[3]).getBorderingMesh(borderingNodeRoomCases[4])
+            , NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0].addMesh(borderingNodeRoomCases[1]))
+            , NodeMesh(copyNodeMesh = borderingNodeRoomCases[3] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0].addMesh(borderingNodeRoomCases[1]).addMesh(borderingNodeRoomCases[2]))
+            , NodeMesh(copyNodeMesh = borderingNodeRoomCases[4] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0].addMesh(borderingNodeRoomCases[1]).addMesh(borderingNodeRoomCases[2]).addMesh(borderingNodeRoomCases[3]))
+            , NodeMesh(copyNodeMesh = borderingNodeRoomCases[5] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0].addMesh(borderingNodeRoomCases[1]).addMesh(borderingNodeRoomCases[2]).addMesh(borderingNodeRoomCases[3]).addMesh(borderingNodeRoomCases[4]))
         )
 
 //        val borderMesh = borderingMesh[0].addMesh(borderingMesh[1]).addMesh(borderingMesh[2]).addMesh(borderingMesh[3]).addMesh(borderingMesh[4]).addMesh(borderingMesh[5])
 //        borderMesh.linkNearNodes()
 //        borderMesh.removeOrphans()
 
-        borderingMesh.forEach { mesh -> mesh.removeOrphans() }
+//        borderingMesh.forEach { mesh -> mesh.removeOrphans() }
 
-        borderingMesh[1].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh))
-        borderingMesh[2].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh)))
-        borderingMesh[3].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh))))
-        borderingMesh[4].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[3] as NodeMesh)))))
-        borderingMesh[5].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[3] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[4] as NodeMesh))))))
-
+//        borderingMesh[1].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh))
+//        borderingMesh[2].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh)))
+//        borderingMesh[3].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh))))
+//        borderingMesh[4].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[3] as NodeMesh)))))
+//        borderingMesh[5].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[3] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[4] as NodeMesh))))))
 
         val textOffsetPosition = Point(0, -50)
 
@@ -214,7 +211,7 @@ object RenderNodeRooms {
 
                 val renderPoints = if (clusters.isNotEmpty()) clusters.values.flatten() else borderingMesh[idx].nodes
 
-                for (meshNode in renderPoints ) {
+                for (meshNode in renderPoints) {
                     val numberRegex = Regex("\\d+")
 
                     val colorIdx = numberRegex.find(meshNode.description, 0)?.value?.toInt() ?: 0
@@ -378,7 +375,7 @@ object RenderNodeRooms {
         commandViews[CommandView.COMMENT_TEXT]!!.visible = true
         commandViews[CommandView.COMMENT_TEXT].setText("text console displays orphaned node adoptions between rooms (work in progress)")
         commandViews[CommandView.PREV_BUTTON]!!.visible = true
-        commandViews[CommandView.NEXT_BUTTON]!!.visible = false
+        commandViews[CommandView.NEXT_BUTTON]!!.visible = true
 
         RenderPalette.returnClick = null
 
@@ -539,96 +536,4 @@ object RenderNodeRooms {
 
         return RenderPalette.returnClick as ButtonCommand
     }
-/*
-    @ExperimentalUnsignedTypes
-    suspend fun renderNodeRoomsElaboration(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
-
-        val startingMap = mapOf(
-            90 to Point(450, 600)
-            , 330 to Point(300, 400)
-            , 210 to Point(600, 400)
-        )
-        graphics {
-
-            textView = text(text = "click a node to get uuid", color = Colors.AZURE, textSize = 24.0, alignment = TextAlignment.BASELINE_LEFT).position(20, 20)
-
-            val leafFirst = Leaf(topHeight = 7, position = startingMap[90]!!, angleFromParent = Angle.fromDegrees(90) )
-            val leafSecond = Leaf(topHeight = 7, position = startingMap[210]!!, angleFromParent = Angle.fromDegrees(210) )
-            val leafThird = Leaf(topHeight = 7, position = startingMap[330]!!, angleFromParent = Angle.fromDegrees(330) )
-
-            val threeLeaf = leafFirst.getList().plus(leafSecond.getList()).plus(leafThird.getList())
-            val nodeMesh = threeLeaf.nodeMesh()
-            val nodeClusters = nodeMesh.getClusters(rooms = 14, maxIterations = 7)
-
-            var colorIdx = 0
-
-            nodeMesh.consolidateNearNodes()
-
-            nodeMesh.linkNearNodes()
-
-            val allRooms = NodeMesh()
-
-            nodeClusters.values.forEachIndexed { clusterIdx, clusterNodes -> allRooms.addMesh(NodeMesh("room$clusterIdx", clusterNodes)) }
-
-            allRooms.consolidateNearNodes()
-
-            allRooms.linkNearNodes()
-
-            (1..5).forEach {
-
-                stroke(Colors["#0f0f28"], StrokeInfo(thickness = 3.0)) {
-
-                    for (nodeLine in allRooms.getNodeLineList() ) {
-                        line(nodeLine!!.first, nodeLine.second )
-                    }
-                }
-
-                stroke(Colors["#151540"], StrokeInfo(thickness = 3.0)) {
-
-                    for (node in allRooms.nodes) {
-                        circle(node.position, radius = 5.0)
-                    }
-                }
-
-                val centroid = Node(position = allRooms.nodes.averagePositionWithinNodes())
-
-                stroke(Colors["#3939ad"], StrokeInfo(thickness = 3.0)) {
-                    circle(centroid.position, radius = 5.0)
-                }
-
-                val farthestNode = allRooms.nodes.getFarthestNode(centroid)
-
-                val outerNodes60 = allRooms.nodes.nearestNodesOrderedAsc(centroid).filter { node -> Point.distance(centroid.position, node.position) >= Point.distance(centroid.position, farthestNode.position) * .5 }
-
-                stroke(Colors["#56f636"], StrokeInfo(thickness = 3.0)) {
-
-                    for (node in outerNodes60) {
-                        circle(node.position, radius = 5.0)
-                    }
-                }
-
-                val randomOuter60Node = outerNodes60.getRandomNode()
-
-                stroke(Colors["#f65862"], StrokeInfo(thickness = 3.0)) {
-
-                    circle(randomOuter60Node.position, radius = 5.0)
-                }
-
-                delay(3000)
-
-                println("elaboration position: ${randomOuter60Node.position}")
-
-                println("elaboration angle: ${centroid.angleBetween(randomOuter60Node)}")
-
-                val newMesh = Leaf(topHeight = 5, position = randomOuter60Node.position, angleFromParent = centroid.angleBetween(randomOuter60Node) ).getList().nodeMesh()
-
-                newMesh.consolidateNearNodes()
-
-                newMesh.linkNearNodes()
-
-                allRooms.addMesh(newMesh)
-
-            }
-        }
-    }*/
 }

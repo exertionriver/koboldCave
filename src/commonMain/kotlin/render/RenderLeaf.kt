@@ -3,6 +3,11 @@ package render
 import com.soywiz.klock.TimeSpan
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.view.*
+import com.soywiz.korge.view.camera.CameraContainer
+import com.soywiz.korge.view.camera.cameraContainer
+import com.soywiz.korge.view.tween.moveBy
+import com.soywiz.korge.view.tween.moveTo
+import com.soywiz.korge.view.tween.scaleTo
 import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.*
@@ -89,138 +94,28 @@ object RenderLeaf {
                 }
             }
         }
+        /* experimenting with container zoom and move
+        delay(TimeSpan(10000.0))
 
-        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
+        secondContainer.moveBy(-100, -100)
 
-        secondContainer.removeChildren()
+        delay(TimeSpan(100.0))
 
-        return RenderPalette.returnClick as ButtonCommand
-    }
+        secondContainer.moveTo(100, 100)
 
-    /* Deprecated, grafting moved to NodeMesh operation
-    @ExperimentalUnsignedTypes
-    suspend fun renderLeafAddGraft_02(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
+        delay(TimeSpan(100.0))
 
-        commandViews[CommandView.LABEL_TEXT].setText("renderAddGraftLeafStationary() [v0.2]")
-        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing firstLeaf.getList().add(secondLeaf) and thirdLeaf.getList().graft(fourthLeaf)")
-        commandViews[CommandView.COMMENT_TEXT]!!.visible = false
-        commandViews[CommandView.PREV_BUTTON]!!.visible = true
+        secondContainer.scaleTo(100, 100)
 
-        RenderPalette.returnClick = null
-
-        val firstStartingPoint = Point(200.0, 200.0)
-        val secondStartingPoint = Point(300.0, 300.0)
-
-        val thirdStartingPoint = Point(600.0, 400.0)
-        val fourthStartingPoint = Point(800.0, 800.0)
-
-        val firstLeaf = Leaf(topHeight = 5, position = firstStartingPoint)
-        val secondLeaf = Leaf(topHeight = 5, position = secondStartingPoint)
-
-        val thirdLeaf = Leaf(topHeight = 5, position = thirdStartingPoint)
-        val fourthLeaf = Leaf(topHeight = 5, position = fourthStartingPoint)
-
-        val firstRandLeafIdx = Random.nextInt(firstLeaf.getList().size)
-        val thirdRandLeafIdx = Random.nextInt(thirdLeaf.getList().size)
-
-        firstLeaf.getList()[firstRandLeafIdx].add(secondLeaf)
-        thirdLeaf.getList()[thirdRandLeafIdx].graft(fourthLeaf)
-
-        val secondContainer = renderContainer.container()
-        secondContainer.graphics {
-
-            secondContainer.text(text= "Leaf(height=${secondLeaf.topHeight}) added to Leaf(height=${firstLeaf.topHeight})", color = ForeColors[1], alignment = TextAlignCenter).position(Point(firstLeaf.position.x, firstLeaf.position.y - 30))
-
-            stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
-
-                for (line in firstLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-
-            for (listLeaf in firstLeaf.getList() ) {
-                secondContainer.circle { position(listLeaf.position)
-                    radius = 5.0
-                    color = ForeColors[1]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
-                    }
-                }
-            }
-
-            stroke(BackColors[5], StrokeInfo(thickness = 3.0)) {
-
-                for (line in secondLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-
-            for (listLeaf in secondLeaf.getList() ) {
-                secondContainer.circle { position(listLeaf.position)
-                    radius = 5.0
-                    color = ForeColors[5]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
-                    }
-                }
-            }
-
-            secondContainer.text(text= "Leaf(height=${fourthLeaf.topHeight}) grafted to Leaf(height=${thirdLeaf.topHeight})", color = ForeColors[2], alignment = TextAlignCenter).position(Point(thirdLeaf.position.x, thirdLeaf.position.y - 30))
-
-            stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
-
-                for (line in thirdLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-
-            for (listLeaf in thirdLeaf.getList() ) {
-                secondContainer.circle { position(listLeaf.position)
-                    radius = 5.0
-                    color = ForeColors[2]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
-                    }
-                }
-            }
-
-            stroke(BackColors[6], StrokeInfo(thickness = 3.0)) {
-
-                for (line in fourthLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-
-            for (listLeaf in fourthLeaf.getList() ) {
-                secondContainer.circle { position(listLeaf.position)
-                    radius = 5.0
-                    color = ForeColors[6]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
-                    }
-                }
-            }
-        }
-
-        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
-
-        secondContainer.removeChildren()
-
-        return RenderPalette.returnClick as ButtonCommand
-    }
+        delay(TimeSpan(100.0))
 */
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
+
+        secondContainer.removeChildren()
+
+        return RenderPalette.returnClick as ButtonCommand
+    }
+
     @ExperimentalUnsignedTypes
     suspend fun renderLeafPrune(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
@@ -468,94 +363,7 @@ object RenderLeaf {
 
         return RenderPalette.returnClick as ButtonCommand
     }
-/*
-    @ExperimentalUnsignedTypes
-    suspend fun renderLeafBordering_03(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        commandViews[CommandView.LABEL_TEXT].setText("renderLeafBordering() [v0.3]")
-        commandViews[CommandView.DESCRIPTION_TEXT].setText("testing bordering with refILeaf")
-        commandViews[CommandView.COMMENT_TEXT]!!.visible = true
-        commandViews[CommandView.COMMENT_TEXT].setText("(work in progress)")
-        RenderPalette.returnClick = null
-
-        val leaf = Leaf(topHeight = 6, position = Point(256.0, 512.0), topAngle = Angle.fromDegrees(280) )
-
-        val firstBorderingLeaf = Leaf(topHeight = 12, position = Point(482.0, 256.0), topAngle = Angle.fromDegrees(220) ) //, refINodeMesh = null )
-        val secondBorderingLeaf = Leaf(topHeight = 12, position = Point(532.0, 256.0), topAngle = Angle.fromDegrees(350) ) //, refINodeMesh = null )
-
-        val secondContainer = renderContainer.container()
-        secondContainer.graphics {
-
-            secondContainer.text(text= "Leaf(height=${leaf.topHeight})", color = ForeColors[1], alignment = TextAlignCenter).position(Point(650.0, 712.0))
-            secondContainer.text(text= "Leaf(height=${firstBorderingLeaf.topHeight}), refILeaf == Leaf(height=${leaf.topHeight})", color = ForeColors[2], alignment = TextAlignRight).position(Point(350.0, 306.0 ))
-            secondContainer.text(text= "Leaf(height=${secondBorderingLeaf.topHeight}), refILeaf == Leaf(height=${leaf.topHeight})", color = ForeColors[4], alignment = TextAlignLeft).position(Point(650.0, 306.0 ))
-
-            stroke(BackColors[1], StrokeInfo(thickness = 3.0)) {
-
-                for (line in leaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-
-            for (listLeaf in leaf.getList() ) {
-                secondContainer.circle { position(listLeaf.position)
-                    radius = 5.0
-                    color = ForeColors[1]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
-                    }
-                }
-            }
-
-            stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
-
-                for (line in firstBorderingLeaf.getLineList()) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-
-            stroke(BackColors[4], StrokeInfo(thickness = 3.0)) {
-                for (line in secondBorderingLeaf.getLineList() ) {
-                    if (line != null) line(line.first, line.second)
-                }
-            }
-
-            for (listLeaf in firstBorderingLeaf.getList() ) {
-                secondContainer.circle { position(listLeaf.position)
-                    radius = 5.0
-                    color = ForeColors[2]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
-                    }
-                }
-            }
-
-            for (listLeaf in secondBorderingLeaf.getList() ) {
-                secondContainer.circle { position(listLeaf.position)
-                    radius = 5.0
-                    color = ForeColors[4]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(listLeaf.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(listLeaf.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(listLeaf.position.toString())
-                    }
-                }
-            }
-        }
-        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
-
-        secondContainer.removeChildren()
-
-        return RenderPalette.returnClick as ButtonCommand
-    }
-*/
     @ExperimentalUnsignedTypes
     suspend fun renderLeafBordering(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 

@@ -503,11 +503,16 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID) {
                             checkNodeLinks.forEach { checkNodeLink ->
                                 val checkSet = mutableSetOf(refNodeLink.firstNodeUuid, refNodeLink.secondNodeUuid, checkNodeLink.firstNodeUuid, checkNodeLink.secondNodeUuid)
                                     if (checkSet.size == 4) // check four unique points for intersect
+                                        if (nodes.getNode(refNodeLink.firstNodeUuid) != null
+                                            && nodes.getNode(refNodeLink.secondNodeUuid) != null
+                                            && nodes.getNode(checkNodeLink.firstNodeUuid) != null
+                                            && nodes.getNode(checkNodeLink.secondNodeUuid) != null) {
                                         if ( Pair(nodes.getNode(refNodeLink.firstNodeUuid)!!.position, nodes.getNode (refNodeLink.secondNodeUuid)!!.position).intersects(
                                             Pair(nodes.getNode(checkNodeLink.firstNodeUuid)!!.position, nodes.getNode (checkNodeLink.secondNodeUuid)!!.position)
                                         ) ) {
 //                                        println ("removing $checkNodeLink")
-                                        returnNodeLinks.removeNodeLink(checkNodeLink)
+                                            returnNodeLinks.removeNodeLink(checkNodeLink)
+                                        }
                                 }
                             }
                         }
