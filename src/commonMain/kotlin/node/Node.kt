@@ -565,7 +565,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
             val returnNodes = mutableListOf<Node>()
 
-            println ("pivot: $pivot, scale: $scale")
+//            println ("pivot: $pivot, scale: $scale")
 
             this.forEach { node ->
                 val secondPoint = node.position
@@ -574,11 +574,11 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 val scaledDistance = distance * scale
                 val angleBetween = Node(position = pivot).angleBetween(node)
 
-                println ("distance: $distance, scaledDistance: $scaledDistance, angleBetween: $angleBetween")
+//                println ("distance: $distance, scaledDistance: $scaledDistance, angleBetween: $angleBetween")
 
                 val scaledPoint = getPositionByDistanceAndAngle(pivot, scaledDistance.toInt(), angleBetween)
 
-                println ("node $node scaled : (${scaledPoint.x}, ${scaledPoint.y})")
+//                println ("node $node scaled : (${scaledPoint.x}, ${scaledPoint.y})")
 
                 returnNodes.add( Node(node, updPosition = Point(scaledPoint.x, scaledPoint.y) ) )
             }

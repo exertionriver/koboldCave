@@ -21,7 +21,7 @@ object RenderNodeRoom {
     @ExperimentalUnsignedTypes
     suspend fun renderNodeRoom(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 0
+        var funIdx = 2
         val funSize = 4
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {
@@ -278,7 +278,7 @@ object RenderNodeRoom {
 
         val nodeRoomMeshPosition = Point(400, 600)
 
-        val nodeRoomMeshCentroids = NodeMesh(nodes = NodeMesh(copyNodeMesh = centroidMesh).nodes.moveNodes(nodeRoomMeshPosition - centroidMeshPosition).scaleNodes(scale = 1.0))
+        val nodeRoomMeshCentroids = NodeMesh(nodes = NodeMesh(copyNodeMesh = centroidMesh).nodes.moveNodes(nodeRoomMeshPosition - centroidMeshPosition).scaleNodes(scale = 2.5))
 
         val nodeRoomHeight = 3
 
@@ -425,7 +425,7 @@ object RenderNodeRoom {
 
             val roomMesh = INodeMesh.buildCentroidRoomMesh(
                 height = 3,
-                centroids = centroidMesh.nodes.moveNodes(roomMeshPosition).scaleNodes(scale = 1.0)
+                centroids = centroidMesh.nodes.moveNodes(roomMeshPosition).scaleNodes(scale = 2.0)
             )
 
             for (nodeLine in roomMesh.getNodeLineList()) {

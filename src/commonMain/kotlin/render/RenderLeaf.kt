@@ -2,9 +2,14 @@ package render
 
 import com.soywiz.klock.TimeSpan
 import com.soywiz.korge.input.onClick
+import com.soywiz.korge.scene.Scene
+import com.soywiz.korge.scene.sceneContainer
 import com.soywiz.korge.view.*
+import com.soywiz.korge.view.camera.Camera
 import com.soywiz.korge.view.camera.CameraContainer
+import com.soywiz.korge.view.camera.CameraOld
 import com.soywiz.korge.view.camera.cameraContainer
+import com.soywiz.korge.view.camera.cameraContainerOld
 import com.soywiz.korge.view.tween.moveBy
 import com.soywiz.korge.view.tween.moveTo
 import com.soywiz.korge.view.tween.scaleTo
@@ -94,8 +99,8 @@ object RenderLeaf {
                 }
             }
         }
-        /* experimenting with container zoom and move
-        delay(TimeSpan(10000.0))
+        /*experimenting with container zoom and move
+        delay(TimeSpan(5000.0))
 
         secondContainer.moveBy(-100, -100)
 
@@ -105,7 +110,7 @@ object RenderLeaf {
 
         delay(TimeSpan(100.0))
 
-        secondContainer.scaleTo(100, 100)
+        secondContainer.scaleTo(1.1, 1.1)
 
         delay(TimeSpan(100.0))
 */
