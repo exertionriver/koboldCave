@@ -3,21 +3,14 @@ package leaf
 import Probability
 import com.soywiz.korio.util.UUID
 import com.soywiz.korma.geom.*
-import lattice.ILattice.Companion.getChildPosition
-import leaf.Line.Companion.borderPoints
+import leaf.Line.Companion.getPositionByDistanceAndAngle
 import leaf.Line.Companion.intersects
-import leaf.Line.Companion.intersectsBorder
-import leaf.Line.Companion.isInBorder
-import node.INodeMesh
 import node.Node
 import node.Node.Companion.addNode
 import node.NodeLink
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.addNodeLinks
-import node.NodeLink.Companion.getNodeLineList
-import node.NodeLink.Companion.getNodeLinks
 import node.NodeMesh
-import kotlin.math.abs
 
 @ExperimentalUnsignedTypes
 interface ILeaf {
@@ -54,8 +47,6 @@ interface ILeaf {
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
 
-  //  val refINodeMesh : INodeMesh? //used for bordering and other complementary operations
-
     fun getVarianceChildAngle(variance : Angle) : Angle =
         this.angleFromParent + Angle.fromDegrees( Probability(0, variance.degrees.toInt()).getValue() )
 
@@ -65,92 +56,6 @@ interface ILeaf {
     fun getDivergentChildAngle(variance : Angle, divergeFromAngle : Angle = this.topAngle ) : Angle =
         ( ( Angle.fromDegrees(180) + divergeFromAngle).normalized.times(2) + getVarianceChildAngle(variance).times(2) ) / 4
 
-/*    fun getBorderingChildAngle(variance : Angle, convergeToAngle : Angle = this.topAngle
-        , childDistance : Int = this.distanceFromParent, minBorderDistance : Double = NextDistancePx * 0.2, maxBorderDistance : Double = NextDistancePx * 0.6
-        , refINodeMesh: INodeMesh) : Angle {
-
-        println("leaf UUID:${this.uuid}, leaf position: ${this.position}, child distance: $childDistance")
-//        var bestConvergeAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
-//        var bestMinAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
-//        var bestMaxAngle = (Angle.fromDegrees(180) + convergeToAngle).normalized
-
-        val tryAngleScores : MutableMap<Int, Int> = mutableMapOf()
-
-//        println("Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
-
-        val varianceMin = convergeToAngle.degrees.toInt() - variance.degrees.toInt()
-        val varianceMax = convergeToAngle.degrees.toInt() + variance.degrees.toInt()
-
-     //   val variance3Min = convergeToAngle.degrees.toInt() - variance.degrees.toInt() * 3
-     //   val variance3Max = convergeToAngle.degrees.toInt() + variance.degrees.toInt() * 3
-
-        println ("varianceMax : $varianceMax, varianceMin : $varianceMin")
-
-        (360 downTo 0 step 3).forEach { angleOffset ->
-//        (variance3Max downTo variance3Min step 3).forEach { angleOffset ->
-
-//            val tryAngle = getConvergentChildAngle(variance, (Angle.fromDegrees(180) + convergeToAngle + Angle.fromDegrees(angleOffset) ).normalized )
-//            val nextPosition = getChildPosition(this.position, childDistance, tryAngle)
-
-            val nextPosition = getChildPosition(this.position, childDistance, Angle.fromDegrees(angleOffset).normalized)
-
-            //find closest point in ref mesh
-            val closestOrderedNodes = refINodeMesh.nodes.sortedBy { iLeaf -> Point.distance(iLeaf.position, nextPosition) }
-            val closestNode = closestOrderedNodes[0]
-            val closestNodeLines = refINodeMesh.nodeLinks.getNodeLinks(closestNode.uuid).getNodeLineList(refINodeMesh.nodes)
-
-            var outsideMin = true
-            var insideMax = false
-
-            println ("closestNodeLines(${closestNodeLines.size}): $closestNodeLines")
-            println ("angleOffset: $angleOffset")
-
-            for (closestNodeLine in closestNodeLines) {
-                if (closestNodeLine != null) {
-                    if ( nextPosition.isInBorder(closestNodeLine, minBorderDistance.toInt()) ) outsideMin = false
-                    if ( nextPosition.isInBorder(closestNodeLine, maxBorderDistance.toInt()) ) insideMax = true
-                    if ( Pair(this.position, nextPosition).intersectsBorder(closestNodeLine, minBorderDistance.toInt()) ) outsideMin = false
-                }
-            }
-
-            //if not in min border boxes
-            if (outsideMin) {
-
-                var angleScore = 25
-
-                // if in max border boxes
-                if (insideMax) angleScore += 20
-
-                if ( (angleOffset <= varianceMax) || (angleOffset >= varianceMin) ) angleScore += 15
-
-                // if tryAngle is closer to convergeToAngle than current choice, favor that angle
-                if (angleOffset.toDouble() == convergeToAngle.degrees )
-                    angleScore += 15
-                else
-                    angleScore += (15 / abs(angleOffset.toDouble() - convergeToAngle.degrees)).toInt()
-
-//                if ( abs(tryBestMinMaxAngle - convergeToAngle) < abs(bestConvergeAngle - convergeToAngle) ) bestConvergeAngle = tryBestMinMaxAngle
-
-                println ("thisPosition : ${this.position}")
-                println ("nextPosition : $nextPosition")
-                println ("converge to angle: ${convergeToAngle.degrees}")
-                println ("angleScore: $angleScore")
-
-                tryAngleScores[angleOffset] = angleScore
-            }
-        }
-
-//            println("@AngleOffset:$angleOffset - Best Converge Angle:$bestConvergeAngle, BestMinAngle:$bestMinAngle, BestMaxAngle:$bestMaxAngle")
-
-        var bestAngleDegrees = convergeToAngle.degrees.toInt()
-
-        if (tryAngleScores.isNotEmpty()) bestAngleDegrees = tryAngleScores.entries.sortedByDescending { it.value }[0].key
-
-        println ("bestAngle: $bestAngleDegrees")
-
-        return Angle.fromDegrees(bestAngleDegrees)
-    }
-*/
     fun getList() : List<ILeaf> =
         if (childrenEmpty()) listOf(this)
         else listOf(this).plus(children.flatMap { child -> child.getList() } )
@@ -190,39 +95,8 @@ interface ILeaf {
 
         fun getChildPosition(parentPosition: Point, distanceFromParent: Int, childAngle: Angle): Point {
 
-            val childX = when {
-                (childAngle.degrees >= 0) && (childAngle.degrees < 90) -> parentPosition.x + distanceFromParent * cos(
-                    childAngle
-                )
-                (childAngle.degrees >= 90) && (childAngle.degrees < 180) -> parentPosition.x - distanceFromParent * cos(
-                    Angle.fromDegrees(180) - childAngle
-                )
-                (childAngle.degrees >= 180) && (childAngle.degrees < 270) -> parentPosition.x - distanceFromParent * cos(
-                    childAngle - Angle.fromDegrees(180)
-                )
-                (childAngle.degrees >= 270) && (childAngle.degrees < 360) -> parentPosition.x + distanceFromParent * cos(
-                    Angle.fromDegrees(360) - childAngle
-                )
-                else -> parentPosition.x + distanceFromParent * cos(childAngle) //360 degrees
-            }
+            return parentPosition.getPositionByDistanceAndAngle(distanceFromParent, childAngle)
 
-            val childY = when {
-                (childAngle.degrees >= 0) && (childAngle.degrees < 90) -> parentPosition.y - distanceFromParent * sin(
-                    childAngle
-                )
-                (childAngle.degrees >= 90) && (childAngle.degrees < 180) -> parentPosition.y - distanceFromParent * sin(
-                    Angle.fromDegrees(180) - childAngle
-                )
-                (childAngle.degrees >= 180) && (childAngle.degrees < 270) -> parentPosition.y + distanceFromParent * sin(
-                    childAngle - Angle.fromDegrees(180)
-                )
-                (childAngle.degrees >= 270) && (childAngle.degrees <= 360) -> parentPosition.y + distanceFromParent * sin(
-                    Angle.fromDegrees(360) - childAngle
-                )
-                else -> parentPosition.y - distanceFromParent * sin(childAngle) //360 degrees
-            }
-
-            return Point(childX, childY)
         }
 
         fun List<ILeaf>.getList(): List<ILeaf> {
@@ -254,36 +128,6 @@ interface ILeaf {
             this.children.add(child)
 
             child.parent.add(this)
-
-            return this
-        }
-
-        fun ILeaf.graft(child: ILeaf): ILeaf {
-
-            this.children.add(child)
-            child.parent.add(this)
-
-            val xOffset = (this.position.x - child.position.x).toInt()
-            val yOffset = (this.position.y - child.position.y).toInt()
-
-            child.position.x += xOffset
-            child.position.y += yOffset
-
-            child.children.forEach {
-                childSub -> childSub.move(xOffset, yOffset)
-            }
-
-            return this
-        }
-
-        fun ILeaf.move(xOffset: Int, yOffset: Int): ILeaf {
-
-            this.position.x += xOffset
-            this.position.y += yOffset
-
-            if (!this.childrenEmpty()) this.children.forEach {
-                    childSub -> childSub.move(xOffset, yOffset)
-            }
 
             return this
         }
@@ -341,17 +185,6 @@ interface ILeaf {
                 }
             }
             return returnLeaves.toList()
-        }
-
-        fun Pair<Point, Point>.checkLeafIntersect(iLeaf : ILeaf) : Boolean {
-
-            var isLeafIntersect = false
-
-            if (!iLeaf.parentEmpty()) isLeafIntersect = isLeafIntersect || this.intersects(Pair(iLeaf.getParent()!!.position, iLeaf.position))
-
-            if (!iLeaf.childrenEmpty()) iLeaf.getChildrenList()!!.forEach { child -> isLeafIntersect = isLeafIntersect || this.intersects(Pair(iLeaf.position, child.position) ) }
-
-            return isLeafIntersect
         }
 
         fun ILeaf.node(): Node {

@@ -7,9 +7,12 @@ import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.minus
 import com.soywiz.korma.geom.plus
 import leaf.ILeaf
+import leaf.Line.Companion.angleBetween
 import leaf.Line.Companion.getPositionByDistanceAndAngle
 import leaf.Line.Companion.intersectsBorder
+import leaf.Line.Companion.isInBorder
 import node.INodeMesh.Companion.addMesh
+import node.INodeMesh.Companion.getBorderingMesh
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.buildNodeLinkLine
 import node.NodeLink.Companion.consolidateNodeDistance
@@ -17,6 +20,7 @@ import node.NodeLink.Companion.getNodeChildrenUuids
 import node.NodeLink.Companion.getNodeLineList
 import node.NodeLink.Companion.getNodeLinks
 import node.NodeLink.Companion.linkNodeDistance
+import node.NodeLink.Companion.removeNodeLink
 import node.NodeLink.Companion.stackedNodeDistance
 import kotlin.math.asin
 import kotlin.math.atan
@@ -63,17 +67,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
         fun emptyNode() = Node(position = Point(0, 0))
 
         fun Node.angleBetween(secondNode : Node) : Angle {
-            return when {
-                (secondNode.position.x >= this.position.x) && (secondNode.position.y < this.position.y) ->
-                    fromRadians(atan((this.position.y - secondNode.position.y) / (secondNode.position.x - this.position.x)))
-                (secondNode.position.x < this.position.x) && (secondNode.position.y < this.position.y) ->
-                    Angle.fromDegrees(180) - fromRadians(atan((this.position.y - secondNode.position.y) / (this.position.x - secondNode.position.x)))
-                (secondNode.position.x < this.position.x) && (secondNode.position.y >= this.position.y) ->
-                    fromRadians(atan((secondNode.position.y - this.position.y) / (this.position.x - secondNode.position.x))) + Angle.fromDegrees(180)
-                (secondNode.position.x >= this.position.x) && (secondNode.position.y >= this.position.y) ->
-                    Angle.fromDegrees(360) - fromRadians(atan((secondNode.position.y - this.position.y) / (secondNode.position.x - this.position.x)))
-                else -> Angle.fromDegrees(0)
-            }
+            return this.position.angleBetween(secondNode.position)
         }
 
         fun MutableList<Node>.getNode(uuid : UUID) : Node? {
@@ -209,31 +203,12 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                             if (nodeMeshToBorder == null)
                                 returnNodeLinks.addNodeLink(this, refNode.uuid, checkNode.uuid)
                             else {
-                                //find the node in the ref structure closest to the node in the bordering leaf case
-                                val closestOrderedRefNodes = nodeMeshToBorder.nodes.sortedBy { iRef -> Point.distance(iRef.position, checkNode.position) }
-
-                                var checkNodeIdx = 0
-                                val closestRefNodeLinks : MutableList<NodeLink> = mutableListOf()
-                                val closestRefNodeLines : MutableList<Pair<Point, Point>> = mutableListOf()
-
-                                while (Point.distance(checkNode.position, closestOrderedRefNodes[checkNodeIdx].position) <= orthoBorderDistance * 4) {
-                                    val closestRefNode = closestOrderedRefNodes[checkNodeIdx]
-
-                                    //get the nodelinks and nodelink lines associated with the closest ref node
-                                    closestRefNodeLinks.addAll(nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid))
-
-                                    val nodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
-
-                                    if (!nodeLines.isNullOrEmpty())
-                                        closestRefNodeLines.addAll(nodeLines.toMutableList() as MutableList<Pair<Point, Point>>)
-
-                                    checkNodeIdx++
-                                }
+                                val refMeshNodeLines = nodeMeshToBorder.nodeLinks.getNodeLineList(nodeMeshToBorder.nodes).filterNotNull()
 
                                 var noIntersect = true
 
-                                closestRefNodeLines.forEach { closestRefNodeLine ->
-                                    if (Pair(refNode.position, checkNode.position).intersectsBorder(closestRefNodeLine!!, orthoBorderDistance.toInt()))
+                                refMeshNodeLines.forEach { refMeshNodeLine ->
+                                    if (Pair(refNode.position, checkNode.position).intersectsBorder(refMeshNodeLine, orthoBorderDistance.toInt()))
                                         noIntersect = false
                                 }
                                 if (noIntersect)
@@ -399,7 +374,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             return returnPathMeshes
         }
 
-        fun List<Node>.getFarthestNode(refNode : Node) : Node {
+        fun List<Node>.getFarthestNode(refNode : Node = Node(position = this.toMutableList().averagePositionWithinNodes())) : Node {
 
             val nearestNodes = this.nearestNodesOrderedAsc(refNode)
 
@@ -572,11 +547,11 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
                 val distance = Point.distance(pivot, secondPoint)
                 val scaledDistance = distance * scale
-                val angleBetween = Node(position = pivot).angleBetween(node)
+                val angleBetween = pivot.angleBetween(node.position)
 
 //                println ("distance: $distance, scaledDistance: $scaledDistance, angleBetween: $angleBetween")
 
-                val scaledPoint = getPositionByDistanceAndAngle(pivot, scaledDistance.toInt(), angleBetween)
+                val scaledPoint = pivot.getPositionByDistanceAndAngle(scaledDistance.toInt(), angleBetween)
 
 //                println ("node $node scaled : (${scaledPoint.x}, ${scaledPoint.y})")
 

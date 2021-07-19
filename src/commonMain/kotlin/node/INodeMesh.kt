@@ -123,65 +123,39 @@ interface INodeMesh {
             //result nodeMesh
             val borderingMesh = NodeMesh(copyNodeMesh = this as NodeMesh)
 
+            val refMeshNodeLinks = nodeMeshToBorder.nodeLinks
+            val refMeshNodeLines = nodeMeshToBorder.nodeLinks.getNodeLineList(nodeMeshToBorder.nodes).filterNotNull()
+
             this.nodes.forEach { node ->
                 //get nodelinks associated with this node
                 val borderingLeafNodeLinks = this.nodeLinks.getNodeLinks(node.uuid)
 
-                //find nodes in the ref structure within four times border distance in the bordering leaf case
-                val closestOrderedRefNodes = nodeMeshToBorder.nodes.sortedBy { iRef -> Point.distance(iRef.position, node.position) }
-
-                var checkNodeIdx = 0
-                val closestRefNodeLinks : MutableList<NodeLink> = mutableListOf()
-                val closestRefNodeLines : MutableList<Pair<Point, Point>> = mutableListOf()
-
-                while (Point.distance(node.position, closestOrderedRefNodes[checkNodeIdx].position) <= orthoBorderDistance * 4) {
-                    val closestRefNode = closestOrderedRefNodes[checkNodeIdx]
-
-                    //get the nodelinks and nodelink lines associated with the closest ref node
-                    closestRefNodeLinks.addAll(nodeMeshToBorder.nodeLinks.getNodeLinks(closestRefNode.uuid))
-
-                    if (!nodeMeshToBorder.nodes.isNullOrEmpty() && !closestRefNodeLinks.isNullOrEmpty()) {
-
-                        val nodeLines = closestRefNodeLinks.getNodeLineList(nodeMeshToBorder.nodes)
-
-                        if (!nodeLines.isNullOrEmpty())
-                            closestRefNodeLines.addAll(nodeLines.toMutableList() as MutableList<Pair<Point, Point>>)
-
-                    }
-
-                    checkNodeIdx++
-                }
-
                 //check each line related to the closest node
-                closestRefNodeLines.forEach { closestRefNodeLine ->
+                refMeshNodeLines.forEach { refMeshNodeLine ->
                     //check if this node falls within the borders of any line related to closest ref node
 //                    println("node within border? node:$node, refLine:$closestRefNodeLine")
-                    if (node.position.isInBorder(closestRefNodeLine!!, orthoBorderDistance.toInt())) {
+                    if (node.position.isInBorder(refMeshNodeLine, orthoBorderDistance.toInt())) {
                         //if node in border, remove from result nodeMesh
                         borderingMesh.nodes.removeNode(this.nodeLinks, node.uuid)
-    //                    println("node within border! node:$node, refLine:$closestRefNodeLine")
+                        //                    println("node within border! node:$node, refLine:$closestRefNodeLine")
                     }
 
-                    //if this node has links
-                    if ( borderingLeafNodeLinks.isNotEmpty() ) {
+                    //for each of these links,
+                    borderingLeafNodeLinks.forEach { borderingLeafNodeLink ->
 
-                        //for each of these links,
-                        borderingLeafNodeLinks.forEach { borderingLeafNodeLink ->
+                        //get the first and second nodes
+                        val firstNode = this.nodes.getNode(borderingLeafNodeLink.firstNodeUuid)
+                        val secondNode = this.nodes.getNode(borderingLeafNodeLink.secondNodeUuid)
 
-                            //get the first and second nodes
-                            val firstNode = this.nodes.getNode(borderingLeafNodeLink.firstNodeUuid)
-                            val secondNode = this.nodes.getNode(borderingLeafNodeLink.secondNodeUuid)
-
-                            //if these nodes are not null
-                            if ( (firstNode != null) && (secondNode != null) ) {
-                                //check if the nodeLink intersects with borderline
-  //                              println("intersects? nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
-                                if ( Pair(firstNode.position, secondNode.position)
-                                        .intersectsBorder(closestRefNodeLine, orthoBorderDistance.toInt()) ) {
-                                    //if nodeLink intersects border, remove from result nodeMesh
-                                    borderingMesh.nodeLinks.removeNodeLink(borderingLeafNodeLink)
+                        //if these nodes are not null
+                        if ( (firstNode != null) && (secondNode != null) ) {
+                            //check if the nodeLink intersects with borderline
+//                              println("intersects? nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
+                            if ( Pair(firstNode.position, secondNode.position)
+                                    .intersectsBorder(refMeshNodeLine, orthoBorderDistance.toInt()) ) {
+                                //if nodeLink intersects border, remove from result nodeMesh
+                                borderingMesh.nodeLinks.removeNodeLink(borderingLeafNodeLink)
 //                                    println("intersection! nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
-                                }
                             }
                         }
                     }

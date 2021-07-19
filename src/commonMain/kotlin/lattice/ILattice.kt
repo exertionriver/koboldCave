@@ -71,10 +71,6 @@ interface ILattice {
 
     companion object {
 
-/*        val ViewPortXRangePx = 300
-        val ViewPortYRangePx = 200
-        val NextDistancePx = (ViewPortXRangePx / 100) * (ViewPortYRangePx / 100) * 10
-*/
         fun getNextDistancePxProb(): Int = ProbabilitySelect.psAccumulating(
             listOf(
                 NextDistancePx

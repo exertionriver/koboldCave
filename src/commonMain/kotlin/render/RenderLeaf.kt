@@ -39,7 +39,7 @@ object RenderLeaf {
     @ExperimentalUnsignedTypes
     suspend fun renderLeaf(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 0
+        var funIdx = 4
         val funSize = 5
 
         while (funIdx < funSize) {
@@ -379,9 +379,9 @@ object RenderLeaf {
         RenderPalette.returnClick = null
 
         val refNodesCases = listOf(
-            listOf(Node(position = Point(150, 100)), Node(position = Point(200, 150)), Node(position = Point(100, 200)))
-            , listOf(Node(position = Point(100, 400)), Node(position = Point(200, 450)), Node(position = Point(150, 500)))
-            , listOf(Node(position = Point(200, 700)), Node(position = Point(150, 750)), Node(position = Point(100, 800)))
+            listOf(Node(position = Point(150, 200)), Node(position = Point(200, 250)), Node(position = Point(100, 300)))
+            , listOf(Node(position = Point(100, 500)), Node(position = Point(200, 550)), Node(position = Point(150, 600)))
+            , listOf(Node(position = Point(200, 800)), Node(position = Point(150, 850)), Node(position = Point(100, 900)))
             , listOf(Node(position = Point(700, 200)), Node(position = Point(600, 250)), Node(position = Point(650, 300)))
             , listOf(Node(position = Point(600, 500)), Node(position = Point(650, 550)), Node(position = Point(700, 600)))
             , listOf(Node(position = Point(650, 800)), Node(position = Point(600, 850)), Node(position = Point(700, 900)))
@@ -397,9 +397,9 @@ object RenderLeaf {
 
         val topHeight = 5
         val borderingLeafCases = mutableListOf<INodeMesh>(
-            Leaf(topHeight = topHeight, position = Point(300, 150), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
-            , Leaf(topHeight = topHeight, position = Point(300, 450), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
-            , Leaf(topHeight = topHeight, position = Point(300, 750), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            Leaf(topHeight = topHeight, position = Point(300, 250), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Leaf(topHeight = topHeight, position = Point(300, 550), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
+            , Leaf(topHeight = topHeight, position = Point(300, 850), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
             , Leaf(topHeight = topHeight, position = Point(800, 250), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
             , Leaf(topHeight = topHeight, position = Point(800, 550), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()
             , Leaf(topHeight = topHeight, position = Point(800, 850), topAngle = Angle.fromDegrees(180) ).getList().nodeMesh()

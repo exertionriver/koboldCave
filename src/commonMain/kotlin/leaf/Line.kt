@@ -77,20 +77,25 @@ class Line(val first : Point, val second: Point) {
             return intersect
         }
 
+        fun Angle.isQ1() = (this.degrees >= 0) && (this.degrees < 90)
+        fun Angle.isQ2() = (this.degrees >= 90) && (this.degrees < 180)
+        fun Angle.isQ3() = (this.degrees >= 180) && (this.degrees < 270)
+        fun Angle.isQ4() = (this.degrees >= 270) && (this.degrees <= 360)
+
         fun Pair<Point, Point>.isQ1() : Boolean {
-            return ( (this.second.x - this.first.x) > 0  && (this.second.y - this.first.y) >= 0 )
-        }
-
-        fun Pair<Point, Point>.isQ2() : Boolean {
-            return ( (this.second.x - this.first.x) <= 0  && (this.second.y - this.first.y) > 0 )
-        }
-
-        fun Pair<Point, Point>.isQ3() : Boolean {
             return ( (this.second.x - this.first.x) > 0  && (this.second.y - this.first.y) <= 0 )
         }
 
+        fun Pair<Point, Point>.isQ2() : Boolean {
+            return ( (this.second.x - this.first.x) <= 0  && (this.second.y - this.first.y) < 0 )
+        }
+
+        fun Pair<Point, Point>.isQ3() : Boolean {
+            return ( (this.second.x - this.first.x) < 0  && (this.second.y - this.first.y) >= 0 )
+        }
+
         fun Pair<Point, Point>.isQ4() : Boolean {
-            return ( (this.second.x - this.first.x) >= 0  && (this.second.y - this.first.y) < 0 )
+            return ( (this.second.x - this.first.x) >= 0  && (this.second.y - this.first.y) > 0 )
         }
 
         fun Pair<Point, Point>.extend(offset: Int) : Pair<Point, Point> {
@@ -104,20 +109,20 @@ class Line(val first : Point, val second: Point) {
 
             when {
                 this.isQ1() -> {
-                    p3 = Point(x = this.first.x - extendByX, y = this.first.y - extendByY)
-                    p4 = Point(x = this.second.x + extendByX, y = this.second.y + extendByY)
+                    p3 = Point(x = this.first.x - extendByX, y = this.first.y + extendByY)
+                    p4 = Point(x = this.second.x + extendByX, y = this.second.y - extendByY)
                 }
                 this.isQ2() -> {
-                    p3 = Point(x = this.first.x + extendByX, y = this.first.y - extendByY)
-                    p4 = Point(x = this.second.x - extendByX, y = this.second.y + extendByY)
-                }
-                this.isQ3() -> {
                     p3 = Point(x = this.first.x + extendByX, y = this.first.y + extendByY)
                     p4 = Point(x = this.second.x - extendByX, y = this.second.y - extendByY)
                 }
+                this.isQ3() -> {
+                    p3 = Point(x = this.first.x + extendByX, y = this.first.y - extendByY)
+                    p4 = Point(x = this.second.x - extendByX, y = this.second.y + extendByY)
+                }
                 this.isQ4() -> {
-                    p3 = Point(x = this.first.x - extendByX, y = this.first.y + extendByY)
-                    p4 = Point(x = this.second.x + extendByX, y = this.second.y - extendByY)
+                    p3 = Point(x = this.first.x - extendByX, y = this.first.y - extendByY)
+                    p4 = Point(x = this.second.x + extendByX, y = this.second.y + extendByY)
                 }
             }
 
@@ -139,28 +144,28 @@ class Line(val first : Point, val second: Point) {
 
             when {
                 this.isQ1() -> {
-                    p3 = Point(x = extendedLine.first.x - orthoExtendByX, y = extendedLine.first.y + orthoExtendByY)
-                    p4 = Point(x = extendedLine.second.x - orthoExtendByX, y = extendedLine.second.y + orthoExtendByY)
-                    p5 = Point(x = extendedLine.first.x + orthoExtendByX, y = extendedLine.first.y - orthoExtendByY)
-                    p6 = Point(x = extendedLine.second.x + orthoExtendByX, y = extendedLine.second.y - orthoExtendByY)
-                }
-                this.isQ2() -> {
-                    p3 = Point(x = extendedLine.first.x + orthoExtendByX, y = extendedLine.first.y + orthoExtendByY)
-                    p4 = Point(x = extendedLine.second.x + orthoExtendByX, y = extendedLine.second.y + orthoExtendByY)
-                    p5 = Point(x = extendedLine.first.x - orthoExtendByX, y = extendedLine.first.y - orthoExtendByY)
-                    p6 = Point(x = extendedLine.second.x - orthoExtendByX, y = extendedLine.second.y - orthoExtendByY)
-                }
-                this.isQ3() -> {
-                    p3 = Point(x = extendedLine.first.x + orthoExtendByX, y = extendedLine.first.y - orthoExtendByY)
-                    p4 = Point(x = extendedLine.second.x + orthoExtendByX, y = extendedLine.second.y - orthoExtendByY)
-                    p5 = Point(x = extendedLine.first.x - orthoExtendByX, y = extendedLine.first.y + orthoExtendByY)
-                    p6 = Point(x = extendedLine.second.x - orthoExtendByX, y = extendedLine.second.y + orthoExtendByY)
-                }
-                this.isQ4() -> {
                     p3 = Point(x = extendedLine.first.x - orthoExtendByX, y = extendedLine.first.y - orthoExtendByY)
                     p4 = Point(x = extendedLine.second.x - orthoExtendByX, y = extendedLine.second.y - orthoExtendByY)
                     p5 = Point(x = extendedLine.first.x + orthoExtendByX, y = extendedLine.first.y + orthoExtendByY)
                     p6 = Point(x = extendedLine.second.x + orthoExtendByX, y = extendedLine.second.y + orthoExtendByY)
+                }
+                this.isQ2() -> {
+                    p3 = Point(x = extendedLine.first.x + orthoExtendByX, y = extendedLine.first.y - orthoExtendByY)
+                    p4 = Point(x = extendedLine.second.x + orthoExtendByX, y = extendedLine.second.y - orthoExtendByY)
+                    p5 = Point(x = extendedLine.first.x + orthoExtendByX, y = extendedLine.first.y + orthoExtendByY)
+                    p6 = Point(x = extendedLine.second.x - orthoExtendByX, y = extendedLine.second.y + orthoExtendByY)
+                }
+                this.isQ3() -> {
+                    p3 = Point(x = extendedLine.first.x - orthoExtendByX, y = extendedLine.first.y - orthoExtendByY)
+                    p4 = Point(x = extendedLine.second.x - orthoExtendByX, y = extendedLine.second.y - orthoExtendByY)
+                    p5 = Point(x = extendedLine.first.x + orthoExtendByX, y = extendedLine.first.y + orthoExtendByY)
+                    p6 = Point(x = extendedLine.second.x + orthoExtendByX, y = extendedLine.second.y + orthoExtendByY)
+                }
+                this.isQ4() -> {
+                    p3 = Point(x = extendedLine.first.x + orthoExtendByX, y = extendedLine.first.y - orthoExtendByY)
+                    p4 = Point(x = extendedLine.second.x + orthoExtendByX, y = extendedLine.second.y - orthoExtendByY)
+                    p5 = Point(x = extendedLine.first.x - orthoExtendByX, y = extendedLine.first.y + orthoExtendByY)
+                    p6 = Point(x = extendedLine.second.x - orthoExtendByX, y = extendedLine.second.y + orthoExtendByY)
                 }
             }
 
@@ -170,39 +175,52 @@ class Line(val first : Point, val second: Point) {
         fun Pair<Point, Point>.borderLines(offset: Int) : List<Line> {
             val points : List<Point> = Pair(this.first, this.second).borderPoints(offset)
 
-            return listOf(Line(first = points[0], second = points[2]), Line(first = points[1], second = points[3])
-                , Line(first = points[0], second = points[1]), Line(first = points[2], second = points[3]) )
+            return listOf(Line(first = points[0], second = points[1]), Line(first = points[2], second = points[3])
+                , Line(first = points[0], second = points[2]), Line(first = points[1], second = points[3]) )
         }
 
         //        https://stackoverflow.com/questions/2752725/finding-whether-a-point-lies-inside-a-rectangle-or-not
         fun Pair<Point, Point>.vector() : Point = Point(x = this.second.x - this.first.x, y = this.second.y - this.first.y)
 
-        fun Pair<Line, Line>.dot() : Double {
-            val u = Pair(this.first.first, this.first.second).vector()
-            val v = Pair(this.second.first, this.second.second).vector()
-
-            return u.x * v.x + u.y * v.y
+        fun Pair<Point, Point>.dot() : Double {
+            return this.first.x * this.second.x + this.first.y * this.second.y
         }
 
+        fun Pair<Point, Point>.vecEqual() : Boolean {
+            return this.first.x == this.second.x && this.first.y == this.second.y
+        }
         //only first three points in rectPoints are used
         //AB and BC must be perpendicular
         fun Point.isInRect(rectPoints : List<Point>) : Boolean {
-            val ab = Line(rectPoints[0], rectPoints[1])
-            val am = Line(rectPoints[0], this)
-            val bc = Line(rectPoints[1], rectPoints[3])
-            val bm = Line(rectPoints[1], this)
+            val ab = Pair(rectPoints[0], rectPoints[1]).vector()
+            val ad = Pair(rectPoints[0], rectPoints[2]).vector()
+            val am = Pair(rectPoints[0], this).vector()
 
-            return ( ( 0 <= Pair(ab, am).dot() ) &&
-                    ( Pair(ab, am).dot() <= Pair(ab, ab).dot() ) &&
-                    ( 0 <= Pair(bc, bm).dot() ) &&
-                    ( Pair(bc, bm).dot() <= Pair(bc, bc).dot() ) )
+            val insideRect = ( 0 <= Pair(am, ab).dot() ) &&
+                    ( Pair(am, ab).dot() <= Pair(ab, ab).dot() ) &&
+                    ( 0 <= Pair(am, ad).dot() ) &&
+                    ( Pair(am, ad).dot() <= Pair(ad, ad).dot() )
+
+            val onRectPoints = ( Pair(this, rectPoints[0]).vecEqual() ) ||
+                    Pair(this, rectPoints[1]).vecEqual() ||
+                    Pair(this, rectPoints[2]).vecEqual() ||
+                    Pair(this, rectPoints[3]).vecEqual()
+
+            return insideRect || onRectPoints
         }
 
         fun Point.isInBorder(line : Pair<Point, Point>, offset : Int) : Boolean {
             val borderPoints = line.borderPoints(offset)
 
-//            println("check borderPoints: $borderPoints contain $this")
-            return this.isInRect(listOf(borderPoints[0], borderPoints[1], borderPoints[2], borderPoints[3]) )
+            var inBorder = false
+
+            println("check borderPoints: $borderPoints contain $this")
+            if ( this.isInRect(listOf(borderPoints[0], borderPoints[1], borderPoints[2], borderPoints[3]) ) ) {
+                println("in Border!")
+                inBorder = true
+            }
+
+            return inBorder
         }
 
         fun Pair<Point, Point>.intersectsBorder(line : Pair<Point, Point>, offset : Int) : Boolean {
@@ -211,8 +229,11 @@ class Line(val first : Point, val second: Point) {
             var intersection = false
 
             for (borderLine in borderLines) {
-//                println("check borderLine: ${borderLine.first}, ${borderLine.second} intersects with $line")
-                if ( this.intersects(borderLine.asPoints()) ) intersection = true
+                println("check borderLine: ${borderLine.first}, ${borderLine.second} intersects with $line")
+                if ( this.intersects(borderLine.asPoints()) ) {
+                    println("intersects!")
+                    intersection = true
+                }
             }
 
             return intersection
@@ -225,29 +246,36 @@ class Line(val first : Point, val second: Point) {
             return Point(averageX, averageY)
         }
 
-        fun Angle.isQ1() = (this.degrees >= 0) && (this.degrees < 90)
-        fun Angle.isQ2() = (this.degrees >= 90) && (this.degrees < 180)
-        fun Angle.isQ3() = (this.degrees >= 180) && (this.degrees < 270)
-        fun Angle.isQ4() = (this.degrees >= 270) && (this.degrees <= 360)
-
-
-        fun getPositionByDistanceAndAngle(first: Point, distance: Int, angle: Angle): Point {
+        fun Point.getPositionByDistanceAndAngle(distance: Int, angle: Angle): Point {
 
             val secondX = when {
-                angle.isQ1() -> first.x + distance * cos(angle)
-                angle.isQ2() -> first.x - distance * cos(Angle.fromDegrees(180) - angle )
-                angle.isQ3() -> first.x - distance * cos(angle - Angle.fromDegrees(180) )
-                else -> first.x + distance * cos(Angle.fromDegrees(360) - angle )
+                angle.isQ1() -> this.x + distance * cos(angle)
+                angle.isQ2() -> this.x - distance * cos(Angle.fromDegrees(180) - angle )
+                angle.isQ3() -> this.x - distance * cos(angle - Angle.fromDegrees(180) )
+                else -> this.x + distance * cos(Angle.fromDegrees(360) - angle )
             }
 
             val secondY = when {
-                angle.isQ1() -> first.y - distance * sin(angle)
-                angle.isQ2() -> first.y - distance * sin(Angle.fromDegrees(180) - angle )
-                angle.isQ3() -> first.y + distance * sin(angle - Angle.fromDegrees(180) )
-                else -> first.y + distance * sin(Angle.fromDegrees(360) - angle)
+                angle.isQ1() -> this.y - distance * sin(angle)
+                angle.isQ2() -> this.y - distance * sin(Angle.fromDegrees(180) - angle )
+                angle.isQ3() -> this.y + distance * sin(angle - Angle.fromDegrees(180) )
+                else -> this.y + distance * sin(Angle.fromDegrees(360) - angle)
             }
 
             return Point(secondX, secondY)
+        }
+
+        fun Point.angleBetween(secondPoint : Point) : Angle {
+            return when {
+                Pair(this, secondPoint).isQ1() ->
+                    Angle.fromRadians(atan((this.y - secondPoint.y) / (secondPoint.x - this.x)))
+                Pair(this, secondPoint).isQ2() ->
+                    Angle.fromDegrees(180) - Angle.fromRadians(atan((this.y - secondPoint.y) / (this.x - secondPoint.x)))
+                Pair(this, secondPoint).isQ3() ->
+                    Angle.fromRadians(atan((secondPoint.y - this.y) / (this.x - secondPoint.x))) + Angle.fromDegrees(180)
+                else ->
+                    Angle.fromDegrees(360) - Angle.fromRadians(atan((secondPoint.y - this.y) / (secondPoint.x - this.x)))
+            }
         }
     }
 }

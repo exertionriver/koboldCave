@@ -109,6 +109,6 @@ class TestLeaf {
 
         val firstLeaf = Leaf(topHeight = 12, position = startingPoint, angleFromParent = Angle.fromDegrees(0))
 
-        firstLeaf.getList().prune(firstLeaf)
+        firstLeaf.getList().prune()
     }
 }
