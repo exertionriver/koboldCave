@@ -8,6 +8,7 @@ import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.line
+import exploreKeys
 import node.INodeMesh
 import node.INodeMesh.Companion.addMesh
 import node.INodeMesh.Companion.getBorderingMesh
@@ -82,7 +83,7 @@ object RenderNodeRoom {
 
                 val clusters = nodeMesh.getClusters(rooms = rooms, maxIterations = maxIter)
 
-                stroke(RenderPalette.BackColors[nodeMeshIdx % RenderPalette.BackColors.size], StrokeInfo(thickness = 3.0)) {
+                stroke(BackColors[nodeMeshIdx % BackColors.size], StrokeInfo(thickness = 3.0)) {
 
                     for (meshLine in nodeMesh.getNodeLineList()) {
                         if (meshLine != null) line(meshLine.first, meshLine.second)
@@ -132,9 +133,9 @@ object RenderNodeRoom {
                 }
             }
         }
-        while (RenderPalette.returnClick == null) {
-            delay(TimeSpan(100.0))
-        }
+        secondContainer.exploreKeys()
+
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
 
@@ -173,18 +174,6 @@ object RenderNodeRoom {
             , NodeMesh(copyNodeMesh = borderingNodeRoomCases[4] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0].addMesh(borderingNodeRoomCases[1]).addMesh(borderingNodeRoomCases[2]).addMesh(borderingNodeRoomCases[3]))
             , NodeMesh(copyNodeMesh = borderingNodeRoomCases[5] as NodeMesh).getBorderingMesh(borderingNodeRoomCases[0].addMesh(borderingNodeRoomCases[1]).addMesh(borderingNodeRoomCases[2]).addMesh(borderingNodeRoomCases[3]).addMesh(borderingNodeRoomCases[4]))
         )
-
-//        val borderMesh = borderingMesh[0].addMesh(borderingMesh[1]).addMesh(borderingMesh[2]).addMesh(borderingMesh[3]).addMesh(borderingMesh[4]).addMesh(borderingMesh[5])
-//        borderMesh.linkNearNodes()
-//        borderMesh.removeOrphans()
-
-//        borderingMesh.forEach { mesh -> mesh.removeOrphans() }
-
-//        borderingMesh[1].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh))
-//        borderingMesh[2].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh)))
-//        borderingMesh[3].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh))))
-//        borderingMesh[4].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[3] as NodeMesh)))))
-//        borderingMesh[5].linkNearNodesBordering(NodeMesh(copyNodeMesh = borderingNodeRoomCases[0] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[1] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[2] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[3] as NodeMesh).addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomCases[4] as NodeMesh))))))
 
         val textOffsetPosition = Point(0, -50)
 
@@ -228,28 +217,7 @@ object RenderNodeRoom {
                         }
                     }
                 }
-/*Centroids
-                if (clusters.isNotEmpty()) {
-
-                    clusters.keys.forEach { node ->
-
-                        val numberRegex = Regex("\\d+")
-
-                        val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
-
-                        secondContainer.circle {
-                            position(node.position)
-                            radius = 10.0
-                            color = ForeColors[colorIdx % ForeColors.size]
-                            strokeThickness = 3.0
-                            onClick {
-                                commandViews[CommandView.NODE_UUID_TEXT].setText(node.uuid.toString())
-                                commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(node.description)
-                            }
-                        }
-                    }
-                }
-*/            }
+            }
         }
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
@@ -287,11 +255,12 @@ object RenderNodeRoom {
         val nodeRoomMeshTextOffsetPosition = Point (-300, -300)
 
         val secondContainer = renderContainer.container()
-        secondContainer.graphics {
+        val thirdContainer = renderContainer.container()
 
-            secondContainer.text(text = "Centroid NodeMesh(height=2)"
-                , color = ForeColors[0]
-                , alignment = RenderPalette.TextAlignCenter
+        thirdContainer.graphics {
+
+            thirdContainer.text(
+                text = "Centroid NodeMesh(height=2)", color = ForeColors[0], alignment = RenderPalette.TextAlignCenter
             ).position(centroidMeshPosition + centroidTextOffsetPosition)
 
             stroke(BackColors[0], StrokeInfo(thickness = 3.0)) {
@@ -302,7 +271,7 @@ object RenderNodeRoom {
             }
 
             for (meshNode in centroidMesh.nodes) {
-                secondContainer.circle {
+                thirdContainer.circle {
                     position(meshNode.position)
                     radius = 5.0
                     color = ForeColors[0]
@@ -313,6 +282,9 @@ object RenderNodeRoom {
                     }
                 }
             }
+        }
+
+        secondContainer.graphics {
 
             nodeRoomMeshCentroids.nodes.forEachIndexed { idx, meshNode ->
                 secondContainer.circle {
@@ -358,14 +330,15 @@ object RenderNodeRoom {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
+        thirdContainer.removeChildren()
 
         return RenderPalette.returnClick as ButtonCommand
     }
-
 
     @ExperimentalUnsignedTypes
     suspend fun renderNodeRoomsOrphanAdoptingDiff(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
@@ -388,29 +361,6 @@ object RenderNodeRoom {
 
             val centroidMesh = INodeMesh.buildRoomMesh(Point(100, 100), height = 1)
 
-            //           println("centroidMesh:$centroidMesh")
-/*centroidMesh
-            for (nodeLine in centroidMesh.getNodeLineList()) {
-
-                stroke(BackColors[2], StrokeInfo(thickness = 3.0)) {
-                    line(nodeLine!!.first, nodeLine.second )
-                }
-            }
-
-            for (meshNode in centroidMesh.nodes) {
-                secondContainer.circle {
-                    position(meshNode.position)
-                    radius = 5.0
-                    color = ForeColors[0]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(meshNode.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(meshNode.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(meshNode.position.toString())
-                    }
-                }
-            }
-*/
             val roomMeshPosition = Point(300, 300)
 
             secondContainer.text(text = "Generated NodeMesh Rooms"
@@ -529,6 +479,7 @@ object RenderNodeRoom {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 

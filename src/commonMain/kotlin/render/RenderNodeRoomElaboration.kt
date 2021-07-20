@@ -10,6 +10,7 @@ import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.line
+import exploreKeys
 import leaf.ILeaf.Companion.NextDistancePx
 import leaf.Line.Companion.extend
 import node.INodeMesh
@@ -174,7 +175,7 @@ object RenderNodeRoomElaboration {
             //center meshes
             val avgPosition = allBorderingNodeRoomMeshes.nodes.averagePositionWithinNodes()
 
-            println("allNodeMeshes: ${allBorderingNodeRoomMeshes.nodes.size}; avg position: $avgPosition")
+//            println("allNodeMeshes: ${allBorderingNodeRoomMeshes.nodes.size}; avg position: $avgPosition")
 
             secondContainer.moveBy(meshesCenteringPoint.x - avgPosition.x, meshesCenteringPoint.y - avgPosition.y)
 
@@ -242,7 +243,7 @@ object RenderNodeRoomElaboration {
 
             val scaledCentroidMesh = NodeMesh(nodes = centroidMesh.nodes.scaleNodes(pivot=avgPositionNodes, scale = 0.25), nodeLinks = centroidMesh.nodeLinks)
 
-            println("scaledCentroidMesh: $centroidMesh")
+//            println("scaledCentroidMesh: $centroidMesh")
 
             //draw resulting centroid mesh
             thirdContainer.text(text = "Centroid NodeMesh (bottom-up)"
@@ -280,6 +281,7 @@ object RenderNodeRoomElaboration {
                 commandViews[CommandView.NODE_POSITION_TEXT].setText(avgPositionNodes.toString())
             }
 */        }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 

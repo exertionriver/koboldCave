@@ -1,6 +1,8 @@
 package render
 
 import com.soywiz.klock.TimeSpan
+import com.soywiz.korev.Key
+import com.soywiz.korge.input.keys
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.scene.sceneContainer
@@ -10,13 +12,12 @@ import com.soywiz.korge.view.camera.CameraContainer
 import com.soywiz.korge.view.camera.CameraOld
 import com.soywiz.korge.view.camera.cameraContainer
 import com.soywiz.korge.view.camera.cameraContainerOld
-import com.soywiz.korge.view.tween.moveBy
-import com.soywiz.korge.view.tween.moveTo
-import com.soywiz.korge.view.tween.scaleTo
+import com.soywiz.korge.view.tween.*
 import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
+import exploreKeys
 import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.getLineList
@@ -39,7 +40,7 @@ object RenderLeaf {
     @ExperimentalUnsignedTypes
     suspend fun renderLeaf(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 4
+        var funIdx = 0
         val funSize = 5
 
         while (funIdx < funSize) {
@@ -99,21 +100,9 @@ object RenderLeaf {
                 }
             }
         }
-        /*experimenting with container zoom and move
-        delay(TimeSpan(5000.0))
 
-        secondContainer.moveBy(-100, -100)
+        secondContainer.exploreKeys()
 
-        delay(TimeSpan(100.0))
-
-        secondContainer.moveTo(100, 100)
-
-        delay(TimeSpan(100.0))
-
-        secondContainer.scaleTo(1.1, 1.1)
-
-        delay(TimeSpan(100.0))
-*/
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
@@ -206,6 +195,7 @@ object RenderLeaf {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
@@ -271,6 +261,7 @@ object RenderLeaf {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
@@ -361,6 +352,7 @@ object RenderLeaf {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
@@ -485,6 +477,8 @@ object RenderLeaf {
                 }
             }
         }
+        secondContainer.exploreKeys()
+
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()

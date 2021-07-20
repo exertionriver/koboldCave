@@ -7,6 +7,7 @@ import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
+import exploreKeys
 import lattice.ArrayLattice
 import lattice.ILattice.Companion.getLateralLineList
 import lattice.ILattice.Companion.nodeMesh
@@ -84,6 +85,7 @@ object RenderLattice {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
@@ -136,6 +138,7 @@ object RenderLattice {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
@@ -206,13 +209,7 @@ object RenderLattice {
                     for (line in refNodeMeshCases[idx].getNodeLineList() ) {
                         if (line != null) {
                             line(line.first, line.second)
-
-/*                            val minBorderLines = line.borderLines((ILeaf.NextDistancePx * 0.2).toInt())
-
-                            for (minBorderLine in minBorderLines) {
-                                line(minBorderLine.first, minBorderLine.second)
-                            }
-  */                      }
+                        }
                     }
                 }
 
@@ -252,6 +249,8 @@ object RenderLattice {
                 }
             }
         }
+        secondContainer.exploreKeys()
+
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
@@ -321,13 +320,7 @@ object RenderLattice {
                     for (line in refNodeMeshCases[idx].getNodeLineList() ) {
                         if (line != null) {
                             line(line.first, line.second)
-
-/*                            val minBorderLines = line.borderLines((ILeaf.NextDistancePx * 0.2).toInt())
-
-                            for (minBorderLine in minBorderLines) {
-                                line(minBorderLine.first, minBorderLine.second)
-                            }
-  */                      }
+                        }
                     }
                 }
 
@@ -367,6 +360,8 @@ object RenderLattice {
                 }
             }
         }
+        secondContainer.exploreKeys()
+
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()

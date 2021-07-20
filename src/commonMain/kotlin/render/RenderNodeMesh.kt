@@ -9,6 +9,7 @@ import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
+import exploreKeys
 import leaf.ILeaf.Companion.nodeMesh
 import leaf.Leaf
 import node.INodeMesh.Companion.absorbMesh
@@ -242,9 +243,9 @@ object RenderNodeMesh {
                 }
             }
         }
-        while (RenderPalette.returnClick == null) {
-            delay(TimeSpan(100.0))
-        }
+        secondContainer.exploreKeys()
+
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
 
@@ -461,9 +462,9 @@ object RenderNodeMesh {
                 }
             }
         }
-        while (RenderPalette.returnClick == null) {
-            delay(TimeSpan(100.0))
-        }
+        secondContainer.exploreKeys()
+
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
 
@@ -655,10 +656,9 @@ object RenderNodeMesh {
                 delay(TimeSpan(500.0) )
             }
         }
+        secondContainer.exploreKeys()
 
-        while (RenderPalette.returnClick == null) {
-            delay(TimeSpan(100.0))
-        }
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
 
@@ -752,10 +752,9 @@ object RenderNodeMesh {
             secondContainer.text(text = "NodeMesh() network(s) containing at least 25% of total mesh nodes", color = ForeColors[3], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + bottomTextOffset)
 
         }
+        secondContainer.exploreKeys()
 
-        while (RenderPalette.returnClick == null) {
-            delay(TimeSpan(100.0))
-        }
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
 
@@ -783,6 +782,8 @@ object RenderNodeMesh {
         val textOffset80 = Point(500, -150)
 
         val secondContainer = renderContainer.container()
+        val thirdContainer = renderContainer.container()
+
         secondContainer.graphics {
 
             val leafFirst = Leaf(topHeight = leafHeight, position = startingPoint, angleFromParent = Angle.fromDegrees(90) )
@@ -845,7 +846,7 @@ object RenderNodeMesh {
 
             delay(TimeSpan(500.0) )
 
-            secondContainer.text(text = "nodes >= 60% distance from centroid", color = ForeColors[2], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset60)
+            thirdContainer.text(text = "nodes >= 60% distance from centroid", color = ForeColors[2], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset60)
 
             for (node in outerNodes60) {
                 secondContainer.circle {
@@ -863,7 +864,7 @@ object RenderNodeMesh {
 
             delay(TimeSpan(500.0) )
 
-            secondContainer.text(text = "nodes >= 70% distance from centroid", color = ForeColors[3], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset70)
+            thirdContainer.text(text = "nodes >= 70% distance from centroid", color = ForeColors[3], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset70)
 
             for (node in outerNodes70) {
                 secondContainer.circle {
@@ -881,7 +882,7 @@ object RenderNodeMesh {
 
             delay(TimeSpan(500.0) )
 
-            secondContainer.text(text = "nodes >= 80% distance from centroid", color = ForeColors[4], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset80)
+            thirdContainer.text(text = "nodes >= 80% distance from centroid", color = ForeColors[4], textSize = TextSize, alignment = TextAlignRight).position(startingPoint + textOffset80)
 
             for (node in outerNodes80) {
                 secondContainer.circle {
@@ -897,12 +898,12 @@ object RenderNodeMesh {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
-        while (RenderPalette.returnClick == null) {
-            delay(TimeSpan(100.0))
-        }
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
+        thirdContainer.removeChildren()
 
         return RenderPalette.returnClick as ButtonCommand
     }

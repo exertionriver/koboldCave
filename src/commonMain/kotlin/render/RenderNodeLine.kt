@@ -9,6 +9,7 @@ import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.vector.circle
 import com.soywiz.korma.geom.vector.line
+import exploreKeys
 import leaf.ILeaf.Companion.NextDistancePx
 import node.INodeMesh.Companion.addMesh
 import node.INodeMesh.Companion.getBorderingMesh
@@ -109,10 +110,9 @@ object RenderNodeLine {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
-        while (RenderPalette.returnClick == null) {
-            delay(TimeSpan(100.0))
-        }
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
 
@@ -236,10 +236,9 @@ object RenderNodeLine {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
-        while (RenderPalette.returnClick == null) {
-            delay(TimeSpan(100.0))
-        }
+        while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
 
@@ -332,6 +331,8 @@ object RenderNodeLine {
                 }
             }
         }
+        secondContainer.exploreKeys()
+
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()

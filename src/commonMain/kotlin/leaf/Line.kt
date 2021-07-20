@@ -214,9 +214,9 @@ class Line(val first : Point, val second: Point) {
 
             var inBorder = false
 
-            println("check borderPoints: $borderPoints contain $this")
+//            println("check borderPoints: $borderPoints contain $this")
             if ( this.isInRect(listOf(borderPoints[0], borderPoints[1], borderPoints[2], borderPoints[3]) ) ) {
-                println("in Border!")
+//                println("in Border!")
                 inBorder = true
             }
 
@@ -229,9 +229,9 @@ class Line(val first : Point, val second: Point) {
             var intersection = false
 
             for (borderLine in borderLines) {
-                println("check borderLine: ${borderLine.first}, ${borderLine.second} intersects with $line")
+//                println("check borderLine: ${borderLine.first}, ${borderLine.second} intersects with $line")
                 if ( this.intersects(borderLine.asPoints()) ) {
-                    println("intersects!")
+//                    println("intersects!")
                     intersection = true
                 }
             }

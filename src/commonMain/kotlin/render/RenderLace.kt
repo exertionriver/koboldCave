@@ -7,6 +7,7 @@ import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
+import exploreKeys
 import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
 import leaf.ILeaf.Companion.nodeMesh
@@ -85,6 +86,7 @@ object RenderLace {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
@@ -150,6 +152,8 @@ object RenderLace {
                 }
             }
         }
+        secondContainer.exploreKeys()
+
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
@@ -239,6 +243,7 @@ object RenderLace {
                 }
             }
         }
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
@@ -404,6 +409,8 @@ object RenderLace {
                 }
             }
         }
+        secondContainer.exploreKeys()
+
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 
         secondContainer.removeChildren()
