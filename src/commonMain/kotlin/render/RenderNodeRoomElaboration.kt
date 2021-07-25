@@ -5,6 +5,7 @@ import com.soywiz.korge.input.onClick
 import node.NodeMesh
 import com.soywiz.korge.view.*
 import com.soywiz.korge.view.tween.moveBy
+import com.soywiz.korge.view.tween.moveTo
 import com.soywiz.korge.view.tween.scaleTo
 import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
@@ -16,6 +17,7 @@ import leaf.Line.Companion.extend
 import node.INodeMesh
 import node.INodeMesh.Companion.addMesh
 import node.INodeMesh.Companion.getBorderingMesh
+import node.INodeMesh.Companion.nodes
 import node.Node
 import node.Node.Companion.addNode
 import node.Node.Companion.averagePositionWithinNodes
@@ -23,6 +25,7 @@ import node.Node.Companion.getFarthestNode
 import node.Node.Companion.moveNodes
 import node.Node.Companion.nearestNodesOrderedAsc
 import node.Node.Companion.scaleNodes
+import node.NodeLink
 import node.NodeLink.Companion.addNodeLink
 import node.NodeLink.Companion.buildNodeLinkLine
 
@@ -31,7 +34,7 @@ object RenderNodeRoomElaboration {
     @ExperimentalUnsignedTypes
     suspend fun renderNodeRoomElaboration(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 0
+        var funIdx = 1
         val funSize = 2
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {
@@ -197,12 +200,13 @@ object RenderNodeRoomElaboration {
                     }
                 }
 
+                //from this centroid, find the nearest close centroid
                 val nearestCloseCentroid = nodeRoomCentroids.minus(centroid).nearestNodesOrderedAsc(centroid)[0]
 
 //                println ("idx: ${nodeRoomCentroids.indexOf(centroid)}; centroid: $centroid; idx nearest: ${nodeRoomCentroids.indexOf(nearestCloseCentroid)}; nearestCloseCentroid: $nearestCloseCentroid")
 
-                val nearestNodeThisMesh =
-                    borderingNodeRoomMeshCases[idx].nodes.nearestNodesOrderedAsc(nearestCloseCentroid)
+                //from this nodemesh, find the node nearest to the nearest close centroid
+                val nearestNodeThisMesh = borderingNodeRoomMeshCases[idx].nodes.nearestNodesOrderedAsc(nearestCloseCentroid)
 
 //                println ("sizeof nearestNodeThisMesh: ${nearestNodeThisMesh.size}")
 
@@ -210,6 +214,7 @@ object RenderNodeRoomElaboration {
 
 //                  nearestNodeThisMesh.forEach { println ("node: $it; distance: ${it.position.distanceTo(nearestCloseCentroid.position)}") }
 
+                //from the nearest-centroid-nodemesh, find the node nearest to this centroid's node-nearest
                 val nearestNodeCloseMesh =
                     borderingNodeRoomMeshCases[nodeRoomCentroids.indexOf(nearestCloseCentroid)].nodes.nearestNodesOrderedAsc(
                         nearestNodeThisMesh[0]
@@ -303,171 +308,194 @@ object RenderNodeRoomElaboration {
 
         RenderPalette.returnClick = null
 
-        val centroidMeshPosition = Point(800, 300)
+        val centroidMeshPosition = Point(600, 200)
+
+        val meshPosition = Point(512, 512)
+
+        val centroidMeshOffset = meshPosition - centroidMeshPosition
 
         val centroidTextOffsetPosition = Point (0, -100)
 
-        val centroidMeshes = mutableListOf (
-            INodeMesh.buildRoomMesh(centroidMeshPosition, height = 2)
-        )
+        val centroidMeshes = mutableListOf<NodeMesh>()
+        val centroidMeshCentroids = mutableListOf<Node>()
 
-        println("centroidMesh(${centroidMeshes[0].nodes.size}: ${centroidMeshes[0]}")
+        val scaledMeshes = mutableListOf<NodeMesh>()
+        val scaledCentroids = mutableListOf<Node>()
 
         val secondContainer = renderContainer.container()
         val thirdContainer = renderContainer.container()
 
+        //display centroid-of-meshes
+        secondContainer.circle {
+            position(meshPosition)
+            radius = 15.0
+            color = RenderPalette.ForeColors[1]
+            strokeThickness = 3.0
+            onClick {
+                commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText("meshPosition")
+                commandViews[CommandView.NODE_POSITION_TEXT].setText(meshPosition.toString())
+            }
+        }
+
+        //display centroid-of-centroid-mesh and label
         thirdContainer.graphics {
 
             thirdContainer.text(
-                text = "Three Centroid Meshes (top-down)",
+                text = "Centroid Meshes (top-down)",
                 color = RenderPalette.ForeColors[0],
                 alignment = RenderPalette.TextAlignCenter
             ).position(centroidMeshPosition + centroidTextOffsetPosition)
+
+            thirdContainer.circle {
+                position(centroidMeshPosition)
+                radius = 15.0
+                color = RenderPalette.ForeColors[0]
+                strokeThickness = 3.0
+                onClick {
+                    commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText("centroidPosition")
+                    commandViews[CommandView.NODE_POSITION_TEXT].setText(centroidMeshPosition.toString())
+                }
+            }
         }
 
-        // build three nodeMeshes
-        (0..2).forEach { idx ->
+        val allMeshNodes = mutableListOf<Node>()
+        val allMeshNodeLinks = mutableListOf<NodeLink>()
+        val allPreviousBorderingCentroidMeshes = NodeMesh()
 
-            val allPreviousBorderingCentroidMeshes = NodeMesh(copyNodeMesh = centroidMeshes[idx] as NodeMesh)
+        val meshesToBuild = 3
+        val meshesHeight = 2
 
-            //border all previous meshes
-            (idx - 1 downTo 0).forEach { borderMeshIdx ->
-                allPreviousBorderingCentroidMeshes.addMesh(NodeMesh(copyNodeMesh = centroidMeshes[borderMeshIdx] as NodeMesh))
+        // create bordering centroid mesh and then create scaled, previously bordering nodeMesh at some offset position
+        (0 until meshesToBuild).forEach { idx ->
+
+            var linkToMesh = -1
+
+            if (idx == 0) {
+                //generate first centroid nodeMesh
+                centroidMeshes.add( INodeMesh.buildRoomMesh(centerPoint = centroidMeshPosition, height = meshesHeight) as NodeMesh )
+                centroidMeshCentroids.add(Node(position = centroidMeshPosition) )
+
+                allPreviousBorderingCentroidMeshes.addMesh(NodeMesh(copyNodeMesh = centroidMeshes[idx]))
+            }
+            else {
+                //generate subsequent bordering nodeMesh
+                val refCentroidNode = centroidMeshCentroids[idx - 1]
+                val refEdgeNode = centroidMeshes[idx - 1].nodes.getFarthestNode()
+
+                val extendedFarthestPosition = Pair(refCentroidNode.position, refEdgeNode.position).extend((NextDistancePx * 0.2).toInt())
+
+                //add centroidMesh at idx
+                centroidMeshes.add( INodeMesh.buildRoomMesh(centerPoint = extendedFarthestPosition.second, height = 2)
+                    .getBorderingMesh(allPreviousBorderingCentroidMeshes) as NodeMesh )
+
+                centroidMeshCentroids.add( Node(position = centroidMeshes[idx].nodes.averagePositionWithinNodes()) )
+
+                allPreviousBorderingCentroidMeshes.addMesh(NodeMesh(copyNodeMesh = centroidMeshes[idx]))
+
+                //link new mesh to previous mesh
+                //from this (next) centroid, find the nearest close centroid
+                val nearestCloseCentroid = centroidMeshCentroids.minus(centroidMeshCentroids[idx]).nearestNodesOrderedAsc(centroidMeshCentroids[idx])[0]
+
+//                println ("idx: $idx; centroid: ${centroidMeshCentroids[idx]}; closestIdx: ${centroidMeshCentroids.indexOf(nearestCloseCentroid)}; nearestCloseCentroid: $nearestCloseCentroid")
+                println ("thisIdx: $idx; closestIdx: ${centroidMeshCentroids.indexOf(nearestCloseCentroid)}")
+
+                //from this nodemesh, find the node nearest to the nearest close centroid
+                val nearestNodeThisMesh = centroidMeshes[idx].nodes.nearestNodesOrderedAsc(nearestCloseCentroid)
+
+                println ("sizeof nearestNodeThisMesh: ${nearestNodeThisMesh.size}")
+
+//                println("nearestNodeThisMesh: $nearestNodeThisMesh; index: ${centroidMeshCentroids.indexOf(nearestCloseCentroid)}")
+
+//                    nearestNodeThisMesh.forEach { println ("node: $it; distance: ${it.position.distanceTo(nearestCloseCentroid.position)}") }
+
+                //from the nearest-centroid-nodemesh, find the node nearest to this centroid's node-nearest
+                linkToMesh = centroidMeshCentroids.indexOf(nearestCloseCentroid)
+
+                val nearestNodeCloseMesh = centroidMeshes[linkToMesh].nodes.nearestNodesOrderedAsc(nearestNodeThisMesh[0])
+
+                println ("sizeof nearestNodeCloseMesh: ${nearestNodeCloseMesh.size}")
+
+//                    println("nearestNodeCloseMesh: $nearestNodeCloseMesh; index: ${centroidMeshCentroids.indexOf(nearestCloseCentroid)}")
+
+//                nearestNodeCloseMesh.forEach { println ("node: $it; distance: ${it.position.distanceTo(nearestCloseCentroid.position)}") }
+
+                thirdContainer.graphics {
+                    stroke(RenderPalette.BackColors[0], StrokeInfo(thickness = 3.0)) {
+                        line(nearestNodeThisMesh[0].position, nearestNodeCloseMesh[0].position)
+                    }
+                }
+
+                centroidMeshes[idx].nodeLinks.addNodeLink(allPreviousBorderingCentroidMeshes.nodes, nearestNodeThisMesh[0].uuid, nearestNodeCloseMesh[0].uuid)
+                allPreviousBorderingCentroidMeshes.nodeLinks.addNodeLink(allPreviousBorderingCentroidMeshes.nodes, nearestNodeThisMesh[0].uuid, nearestNodeCloseMesh[0].uuid)
             }
 
-            val refCentroidNode = centroidMeshes[idx].nodes.averagePositionWithinNodes()
 
-            val refEdgeNode = centroidMeshes[idx].nodes.getFarthestNode()
+            //build rooms off nodeMesh centroids
+            //create nodeMesh centroids
+            val scaledCentroidMesh = NodeMesh(
+                nodes = centroidMeshes[idx].nodes.moveNodes(centroidMeshOffset)
+                    .scaleNodes(pivot = meshPosition, scale = 2.0),
+                nodeLinks = centroidMeshes[idx].nodeLinks
+            )
 
-            //               println ("refCentroidNode: ${refCentroidNode.position}, refEdgeNode: ${refEdgeNode.position}")
+            val borderingMesh = NodeMesh(nodes = allMeshNodes, nodeLinks = allMeshNodeLinks)
 
-            val extendedFarthestPosition =
-                Pair(refCentroidNode, refEdgeNode.position).extend((NextDistancePx * 0.2).toInt())
+            val nodeRoomMesh = if (idx == 0) INodeMesh.buildCentroidRoomMesh(height = 2, centroids = scaledCentroidMesh.nodes)
+                else INodeMesh.buildCentroidRoomMesh(height = 2, centroids = scaledCentroidMesh.nodes)
+                .getBorderingMesh(NodeMesh(copyNodeMesh = borderingMesh))
 
-            val nextMesh = INodeMesh.buildRoomMesh(centerPoint = extendedFarthestPosition.second, height = 2)
-                .getBorderingMesh(allPreviousBorderingCentroidMeshes) as NodeMesh
+            scaledMeshes.add(nodeRoomMesh as NodeMesh)
+            scaledCentroids.add(Node(position = nodeRoomMesh.nodes.averagePositionWithinNodes()))
+            //add this bordering nodeMesh to all nodeMeshes used
+            allMeshNodes.addAll(nodeRoomMesh.nodes)
+            allMeshNodeLinks.addAll(nodeRoomMesh.nodeLinks)
 
-            centroidMeshes.add(nextMesh)
-
-            println("nextMesh(${nextMesh.nodes.size}: $nextMesh")
 
             // display centroid mesh
-
             thirdContainer.graphics {
 
-                centroidMeshes.forEach { centroidMesh ->
+                stroke(RenderPalette.BackColors[0], StrokeInfo(thickness = 3.0)) {
 
-                    stroke(RenderPalette.BackColors[0], StrokeInfo(thickness = 3.0)) {
+                    for (meshLine in centroidMeshes[idx].getNodeLineList()) {
+                        if (meshLine != null) line(meshLine.first, meshLine.second)
+                    }
+                }
 
-                        for (meshLine in centroidMesh.getNodeLineList()) {
-                            if (meshLine != null) line(meshLine.first, meshLine.second)
+                for (meshNode in centroidMeshes[idx].nodes) {
+                    thirdContainer.circle {
+                        position(meshNode.position)
+                        radius = 5.0
+                        color = RenderPalette.ForeColors[0]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(meshNode.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(meshNode.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(meshNode.position.toString())
                         }
                     }
 
-                    for (meshNode in centroidMesh.nodes) {
-                        thirdContainer.circle {
-                            position(meshNode.position)
-                            radius = 5.0
-                            color = RenderPalette.ForeColors[0]
-                            strokeThickness = 3.0
-                            onClick {
-                                commandViews[CommandView.NODE_UUID_TEXT].setText(meshNode.uuid.toString())
-                                commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(meshNode.description)
-                                commandViews[CommandView.NODE_POSITION_TEXT].setText(meshNode.position.toString())
-                            }
-                        }
-
-                        println("centroidMesh(${centroidMesh.nodes.size}: $centroidMesh")
-                    }
-
-                    delay(TimeSpan(500.0))
+//                    println("centroidMesh(${centroidMeshes[idx].nodes.size}: ${centroidMeshes[idx]}")
                 }
             }
 
+            //create and display scaled, offset, previously-bordering nodeMesh
             secondContainer.graphics {
 
-                thirdContainer.text(
-                    text = "test123",
-                    color = RenderPalette.ForeColors[0],
+                secondContainer.text(
+                    text = "NodeMesh Test Case $idx",
+                    color = RenderPalette.ForeColors[idx + 1],
                     alignment = RenderPalette.TextAlignCenter
-                ).position(centroidMeshPosition + centroidTextOffsetPosition)
+                ).position(scaledCentroidMesh.nodes.averagePositionWithinNodes() + centroidTextOffsetPosition)
 
-                centroidMeshes.forEach { centroidMesh ->
+                //render nodeMesh rooms based upon scaledMesh centroids
+                stroke(RenderPalette.BackColors[idx + 1], StrokeInfo(thickness = 3.0)) {
 
-                    val scaledCentroidMesh = NodeMesh(
-                        nodes = centroidMesh.nodes.scaleNodes(scale = 2.5).moveNodes(Point(-500, 400)),
-                        nodeLinks = centroidMesh.nodeLinks
-                    )
-
-                    stroke(RenderPalette.BackColors[0], StrokeInfo(thickness = 3.0)) {
-
-                        for (meshLine in scaledCentroidMesh.getNodeLineList()) {
-                            if (meshLine != null) line(meshLine.first, meshLine.second)
-                        }
-                    }
-
-                    for (meshNode in scaledCentroidMesh.nodes) {
-                        secondContainer.circle {
-                            position(meshNode.position)
-                            radius = 5.0
-                            color = RenderPalette.ForeColors[0]
-                            strokeThickness = 3.0
-                            onClick {
-                                commandViews[CommandView.NODE_UUID_TEXT].setText(meshNode.uuid.toString())
-                                commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(meshNode.description)
-                                commandViews[CommandView.NODE_POSITION_TEXT].setText(meshNode.position.toString())
-                            }
-                        }
-
-                        println("scaledCentroidMesh(${scaledCentroidMesh.nodes.size}: $centroidMesh")
-                    }
-
-                    delay(TimeSpan(500.0))
-                }
-            }
-        }
-   /*
-            val meshesCenteringPoint = Point(512, 562)
-
-        val nodeRoomCentroids = mutableListOf(
-            Node(position = Point(500, 500))
-        )
-
-        val nodeRoomMeshCases = mutableListOf(
-            INodeMesh.buildRoomMesh(centerPoint = nodeRoomCentroids[0].position, height = 5)
-        )
-
-        val borderingNodeRoomMeshCases = mutableListOf(
-            NodeMesh(copyNodeMesh = nodeRoomMeshCases[0] as NodeMesh)
-        )
-
-        val allBorderingNodeRoomMeshes = NodeMesh(copyNodeMesh = borderingNodeRoomMeshCases[0])
-
-        val textOffsetPosition = Point(0, -50)
-
-
-            (0..5).forEach { idx ->
-                secondContainer.text(text= "NodeMesh Test Case $idx", color = RenderPalette.ForeColors[idx % RenderPalette.BackColors.size], alignment = RenderPalette.TextAlignCenter).position(nodeRoomCentroids[idx].position + textOffsetPosition)
-
-                //               println("meshIdx $idx position ${nodeRoomCentroids[idx].position}")
-
-                //               println("borderingNodeRoomMeshCases size: ${borderingNodeRoomMeshCases[idx].nodes.size}")
-
-                stroke(RenderPalette.BackColors[idx], StrokeInfo(thickness = 3.0)) {
-
-                    for (line in borderingNodeRoomMeshCases[idx].getNodeLineList()) {
-                        if (line != null) line(line.first, line.second)
+                    for (meshLine in nodeRoomMesh.getNodeLineList()) {
+                        if (meshLine != null) line(meshLine.first, meshLine.second)
                     }
                 }
 
-                val rooms = borderingNodeRoomMeshCases[idx].nodes.size / 8
-                val maxIter = borderingNodeRoomMeshCases[idx].nodes.size / 6
-
-                val clusters = borderingNodeRoomMeshCases[idx].getClusters(rooms = rooms, maxIterations = maxIter)
-
-                val renderPoints = if (clusters.isNotEmpty()) clusters.values.flatten() else borderingNodeRoomMeshCases[idx].nodes
-
-                for (meshNode in renderPoints) {
+                for (meshNode in nodeRoomMesh.nodes) {
                     val numberRegex = Regex("\\d+")
 
                     val colorIdx = numberRegex.find(meshNode.description, 0)?.value?.toInt() ?: 0
@@ -485,135 +513,65 @@ object RenderNodeRoomElaboration {
                     }
                 }
 
-                val refCentroidNode = Node(copyNode = nodeRoomCentroids[idx])
-
-                val refEdgeNode = borderingNodeRoomMeshCases[idx].nodes.getFarthestNode(refCentroidNode)
-
-                //               println ("refCentroidNode: ${refCentroidNode.position}, refEdgeNode: ${refEdgeNode.position}")
-
-                val extendedFarthestPosition = Pair(refCentroidNode.position, refEdgeNode.position).extend(NextDistancePx)
-
-                nodeRoomMeshCases.add(INodeMesh.buildRoomMesh(centerPoint = extendedFarthestPosition.second, height = 5))
-
-                val allPreviousBorderingMeshes = NodeMesh(copyNodeMesh = borderingNodeRoomMeshCases[idx])
-
-                //border all previous meshes
-                //for the non-iterative version, see RenderNodeRoom.renderNodeRoomsBordering()
-                (idx - 1 downTo 0).forEach { borderMeshIdx ->
-                    allPreviousBorderingMeshes.addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomMeshCases[borderMeshIdx]))
+                // display scaled nodeMesh centroids last
+                for (meshNode in scaledCentroidMesh.nodes) {
+                    secondContainer.circle {
+                        position(meshNode.position)
+                        radius = 10.0
+                        color = RenderPalette.ForeColors[idx + 1]
+                        strokeThickness = 3.0
+                        onClick {
+                            commandViews[CommandView.NODE_UUID_TEXT].setText(meshNode.uuid.toString())
+                            commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(meshNode.description)
+                            commandViews[CommandView.NODE_POSITION_TEXT].setText(meshNode.position.toString())
+                        }
+                    }
+//                      println("scaledCentroidMesh(${scaledCentroidMesh.nodes.size}: ${centroidMeshes[idx]}")
                 }
-
-                borderingNodeRoomMeshCases.add(NodeMesh(copyNodeMesh = nodeRoomMeshCases[nodeRoomMeshCases.size - 1] as NodeMesh).getBorderingMesh(allPreviousBorderingMeshes) as NodeMesh)
-
-                val borderingNodeCenter = Node(position = borderingNodeRoomMeshCases[borderingNodeRoomMeshCases.size - 1].nodes.averagePositionWithinNodes() )
-
-                //               val connectingLine = Pair(nodeRoomCentroids.nearestNodesOrderedAsc(borderingNodeCenter)[0], Node(copyNode = borderingNodeCenter)).buildNodeLinkLine(noise = 50)
-
-                if (idx < 5) nodeRoomCentroids.add(Node(copyNode = borderingNodeCenter))
-
-                allBorderingNodeRoomMeshes.addMesh(NodeMesh(copyNodeMesh = borderingNodeRoomMeshCases[borderingNodeRoomMeshCases.size - 1]))
-
-//                println("allBorderingNodeRoomMeshNodes size: ${allBorderingNodeRoomMeshNodes.size}")
-
-                delay(TimeSpan(200.0))
             }
 
-            //center meshes
-            val avgPosition = allBorderingNodeRoomMeshes.nodes.averagePositionWithinNodes()
+            if (idx > 0) {
+                //propagate mesh link to scaled nodeMesh
 
-            println("allNodeMeshes: ${allBorderingNodeRoomMeshes.nodes.size}; avg position: $avgPosition")
+                //from this (next) centroid, find the nearest close centroid
+    //            val nearestCloseCentroid = scaledCentroids.minus(scaledCentroids[idx]).nearestNodesOrderedAsc(scaledCentroids[idx])[0]
 
-            secondContainer.moveBy(meshesCenteringPoint.x - avgPosition.x, meshesCenteringPoint.y - avgPosition.y )
+    //                println ("idx: $idx; centroid: ${centroidMeshCentroids[idx]}; closestIdx: ${centroidMeshCentroids.indexOf(nearestCloseCentroid)}; nearestCloseCentroid: $nearestCloseCentroid")
+     //           println ("thisIdx: $idx; closestIdx: ${scaledCentroids.indexOf(nearestCloseCentroid)}")
 
-            nodeRoomCentroids.forEach { centroid ->
-                centroidMesh.nodes.addNode(Node(copyNode = centroid))
-            }
+                //from this nodemesh, find the node nearest to the nearest close centroid
+                val nearestNodeThisMesh = scaledMeshes[idx].nodes.nearestNodesOrderedAsc(scaledCentroids[linkToMesh])
 
-            //build lines between meshes
-            nodeRoomCentroids.forEachIndexed { idx, centroid ->
-                secondContainer.circle {
-                    position(centroid.position)
-                    radius = 10.0
-                    color = RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(centroid.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(centroid.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(centroid.position.toString())
+                println ("sizeof nearestNodeThisMesh: ${nearestNodeThisMesh.size}")
+
+    //                println("nearestNodeThisMesh: $nearestNodeThisMesh; index: ${centroidMeshCentroids.indexOf(nearestCloseCentroid)}")
+
+    //                    nearestNodeThisMesh.forEach { println ("node: $it; distance: ${it.position.distanceTo(nearestCloseCentroid.position)}") }
+
+                //from the nearest-centroid-nodemesh, find the node nearest to this centroid's node-nearest
+                val nearestNodeCloseMesh = scaledMeshes[linkToMesh].nodes.nearestNodesOrderedAsc(nearestNodeThisMesh[0])
+
+                println ("sizeof nearestNodeCloseMesh: ${nearestNodeCloseMesh.size}")
+
+    //                    println("nearestNodeCloseMesh: $nearestNodeCloseMesh; index: ${centroidMeshCentroids.indexOf(nearestCloseCentroid)}")
+
+    //                nearestNodeCloseMesh.forEach { println ("node: $it; distance: ${it.position.distanceTo(nearestCloseCentroid.position)}") }
+
+                secondContainer.graphics {
+                    stroke(RenderPalette.BackColors[idx], StrokeInfo(thickness = 3.0)) {
+                        line(nearestNodeThisMesh[0].position, nearestNodeCloseMesh[0].position)
                     }
                 }
 
-                val nearestCloseCentroid = nodeRoomCentroids.minus(centroid).nearestNodesOrderedAsc(centroid)[0]
-
-//                println ("idx: ${nodeRoomCentroids.indexOf(centroid)}; centroid: $centroid; idx nearest: ${nodeRoomCentroids.indexOf(nearestCloseCentroid)}; nearestCloseCentroid: $nearestCloseCentroid")
-
-                val nearestNodeThisMesh = borderingNodeRoomMeshCases[idx].nodes.nearestNodesOrderedAsc(nearestCloseCentroid)
-
-//                println ("sizeof nearestNodeThisMesh: ${nearestNodeThisMesh.size}")
-
-//                    println("nearestNodeThisMesh: $nearestNodeThisMesh; index: ${nodeRoomCentroids.indexOf(centroid)}")
-
-//                  nearestNodeThisMesh.forEach { println ("node: $it; distance: ${it.position.distanceTo(nearestCloseCentroid.position)}") }
-
-                val nearestNodeCloseMesh = borderingNodeRoomMeshCases[nodeRoomCentroids.indexOf(nearestCloseCentroid)].nodes.nearestNodesOrderedAsc(nearestNodeThisMesh[0])
-
-//                println ("sizeof nearestNodeCloseMesh: ${nearestNodeCloseMesh.size}")
-
-//                    println("nearestNodeCloseMesh: $nearestNodeCloseMesh; index: ${nodeRoomCentroids.indexOf(nearestCloseCentroid)}")
-
-//                nearestNodeCloseMesh.forEach { println ("node: $it; distance: ${it.position.distanceTo(nearestCloseCentroid.position)}") }
-
-                stroke(RenderPalette.BackColors[idx], StrokeInfo(thickness = 3.0)) {
-                    line(nearestNodeThisMesh[0].position, nearestNodeCloseMesh[0].position)
-                }
-
-                centroidMesh.nodeLinks.addNodeLink(nodeRoomCentroids, centroid.uuid, nearestCloseCentroid.uuid)
+                scaledMeshes[idx].nodeLinks.addNodeLink(allPreviousBorderingCentroidMeshes.nodes, nearestNodeThisMesh[0].uuid, nearestNodeCloseMesh[0].uuid)
+                allPreviousBorderingCentroidMeshes.nodeLinks.addNodeLink(allPreviousBorderingCentroidMeshes.nodes, nearestNodeThisMesh[0].uuid, nearestNodeCloseMesh[0].uuid)
             }
 
-            val avgPositionNodes = allBorderingNodeRoomMeshes.nodes.averagePositionWithinNodes()
-            val centroidMeshOffsetPosition = Point(400, -350)
-            val centroidTextOffsetPosition = Point (0, -100)
+            //pause for iteration
+            delay(TimeSpan(300.0))
+        }
 
-            val scaledCentroidMesh = NodeMesh(nodes = centroidMesh.nodes.scaleNodes(pivot=avgPositionNodes, scale = 0.15).moveNodes(centroidMeshOffsetPosition), nodeLinks = centroidMesh.nodeLinks)
-
-            //           println("scaledCentroidMesh: $centroidMesh")
-
-            //draw resulting centroid mesh
-            secondContainer.text(text = "Centroid NodeMesh (bottom-up)"
-                , color = RenderPalette.ForeColors[0]
-                , alignment = RenderPalette.TextAlignCenter
-            ).position(scaledCentroidMesh.nodes.averagePositionWithinNodes() + centroidTextOffsetPosition)
-
-            stroke(RenderPalette.BackColors[0], StrokeInfo(thickness = 3.0)) {
-
-                for (meshLine in scaledCentroidMesh.getNodeLineList()) {
-                    if (meshLine != null) line(meshLine.first, meshLine.second)
-                }
-            }
-
-            for (meshNode in scaledCentroidMesh.nodes) {
-                secondContainer.circle {
-                    position(meshNode.position)
-                    radius = 5.0
-                    color = RenderPalette.ForeColors[0]
-                    strokeThickness = 3.0
-                    onClick {
-                        commandViews[CommandView.NODE_UUID_TEXT].setText(meshNode.uuid.toString())
-                        commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText(meshNode.description)
-                        commandViews[CommandView.NODE_POSITION_TEXT].setText(meshNode.position.toString())
-                    }
-                }
-            }
-            secondContainer.circle {
-                position(avgPositionNodes)
-                radius = 24.0
-                color = RenderPalette.ForeColors[1]
-                strokeThickness = 3.0
-                commandViews[CommandView.NODE_UUID_TEXT].setText("avgPositionNodes")
-                commandViews[CommandView.NODE_DESCRIPTION_TEXT].setText("avgPositionNodes")
-                commandViews[CommandView.NODE_POSITION_TEXT].setText(avgPositionNodes.toString())
-            }
-*/
+        secondContainer.exploreKeys()
 
         while (RenderPalette.returnClick == null) { delay(TimeSpan(100.0)) }
 

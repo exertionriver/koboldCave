@@ -22,7 +22,7 @@ object RenderNodeRoom {
     @ExperimentalUnsignedTypes
     suspend fun renderNodeRoom(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 2
+        var funIdx = 0
         val funSize = 4
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {

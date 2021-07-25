@@ -191,6 +191,8 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
             val returnNodeLinks = nodeLinks
             val checkNodes = this.toList()
 
+            val linkDistance = if (nodeMeshToBorder == null) linkNodeDistance else linkNodeDistance * 2
+
             lateinit var closestNode : Node
 
             checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
@@ -198,7 +200,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
                 sortedCheckNodes.forEach { checkNode ->
 //                checkNodes.sortedBy { it.uuid.toString() }.forEach { checkNode ->
                     if (checkNode.uuid.toString() > refNode.uuid.toString()) {
-                        if (Point.distance(checkNode.position, refNode.position).toInt() <= linkNodeDistance) {
+                        if (Point.distance(checkNode.position, refNode.position).toInt() <= linkDistance) {
 //                            println("linking ${refNode.uuid} and ${checkNode.uuid}")
                             if (nodeMeshToBorder == null)
                                 returnNodeLinks.addNodeLink(this, refNode.uuid, checkNode.uuid)

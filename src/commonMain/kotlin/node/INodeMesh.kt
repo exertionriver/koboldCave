@@ -107,6 +107,26 @@ interface INodeMesh {
 
     companion object {
 
+        fun List<INodeMesh>.nodes() : MutableList<Node> {
+            val returnNodes = mutableListOf<Node>()
+
+            this.forEach {
+                returnNodes.addAll(it.nodes)
+            }
+
+            return returnNodes
+        }
+
+        fun List<INodeMesh>.nodeLinks() : MutableList<NodeLink> {
+            val returnNodeLinks = mutableListOf<NodeLink>()
+
+            this.forEach {
+                returnNodeLinks.addAll(it.nodeLinks)
+            }
+
+            return returnNodeLinks
+        }
+
         fun INodeMesh.addMesh(nodeMeshToAdd : INodeMesh, description : String = this.description) : INodeMesh {
 //            println("adding nodes and links")
             this.nodes.addNodes(nodeMeshToAdd.nodes, description)
