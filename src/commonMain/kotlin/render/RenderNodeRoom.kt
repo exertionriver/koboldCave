@@ -93,7 +93,7 @@ object RenderNodeRoom {
                 val renderPoints = if (clusters.isNotEmpty()) clusters.values.flatten() else nodeMesh.nodes
 
                 for (meshNode in renderPoints ) {
-                    val numberRegex = Regex("\\d+")
+                    val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                     val colorIdx = numberRegex.find(meshNode.description, 0)?.value?.toInt() ?: 0
 
@@ -114,7 +114,7 @@ object RenderNodeRoom {
 
                     clusters.keys.forEach { node ->
 
-                        val numberRegex = Regex("\\d+")
+                        val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                         val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
 
@@ -201,7 +201,7 @@ object RenderNodeRoom {
                 val renderPoints = if (clusters.isNotEmpty()) clusters.values.flatten() else borderingMesh[idx].nodes
 
                 for (meshNode in renderPoints) {
-                    val numberRegex = Regex("\\d+")
+                    val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                     val colorIdx = numberRegex.find(meshNode.description, 0)?.value?.toInt() ?: 0
 
@@ -313,7 +313,7 @@ object RenderNodeRoom {
             }
 
             for (meshNode in nodeRoomMesh.nodes) {
-                val numberRegex = Regex("\\d+")
+                val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                 val colorIdx = numberRegex.find(meshNode.description, 0)?.value?.toInt() ?: 0
 
@@ -390,7 +390,7 @@ object RenderNodeRoom {
 
                 //      println(node.description)
 
-                val numberRegex = Regex("\\d+")
+                val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                 val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
 
@@ -411,7 +411,7 @@ object RenderNodeRoom {
 
                 //      println(node.description)
 
-                val numberRegex = Regex("\\d+")
+                val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                 val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
 
@@ -441,7 +441,7 @@ object RenderNodeRoom {
 
                 //      println(node.description)
 
-                val numberRegex = Regex("\\d+")
+                val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                 val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
 
@@ -462,7 +462,7 @@ object RenderNodeRoom {
 
                 //      println(node.description)
 
-                val numberRegex = Regex("\\d+")
+                val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                 val colorIdx = numberRegex.find(node.description, 0)?.value?.toInt() ?: 0
 

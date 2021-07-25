@@ -68,7 +68,14 @@ interface INodeMesh {
 
     fun adoptRoomOrphans() { nodes = nodes.adoptRoomOrphans(nodeLinks, getRoomNodes()) }
 
-    fun getClusters(rooms : Int = 4, maxIterations : Int = 4) : Map<Node, MutableList<Node>> = nodes.cluster(rooms, maxIterations)
+    fun getClusters(rooms : Int = 4, maxIterations : Int = 4) : Map<Node, MutableList<Node>> {
+        val nodeClusters = nodes.cluster(rooms, maxIterations)
+        roomIdx = nodeClusters.size
+        nodes = nodeClusters.flatMap { it.value }.toMutableList()
+        centroids = nodeClusters.keys.toMutableList()
+
+        return nodeClusters
+    }
 
     fun setClusters(rooms : Int = 4, maxIterations : Int = 4, setCentroids : MutableList<Node> = mutableListOf()) {
         val nodeClusters = nodes.cluster(rooms, maxIterations, roomIdx, setCentroids)

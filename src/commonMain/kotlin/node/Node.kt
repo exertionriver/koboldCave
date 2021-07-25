@@ -342,7 +342,7 @@ class Node(val uuid: UUID = UUID.randomUUID(Random.Default), val position : Poin
 
                 this.forEach { node ->
                     val nearestNodeDescription = node.nearestCentroid(centroids).description
-                    nodeClusters[node.nearestCentroid(centroids)]!!.add(Node (node, updDescription = node.nearestCentroid(centroids).description))
+                    nodeClusters[node.nearestCentroid(centroids)]!!.add(Node (node, updDescription = node.description + "." + node.nearestCentroid(centroids).description))
 //                    println ("iteration: $iteration, nearestNodeDescription: $nearestNodeDescription, node: $node")
                 }
 

@@ -1,6 +1,7 @@
 import com.soywiz.korev.Key
 import com.soywiz.korge.Korge
 import com.soywiz.korge.input.keys
+import com.soywiz.korge.resources.resourceBitmap
 import com.soywiz.korge.view.Container
 import com.soywiz.korge.view.tween.*
 import com.soywiz.korim.color.Colors
@@ -21,7 +22,7 @@ suspend fun main() = Korge(width = 1024, height = 1024, bgcolor = Colors["#2b2b2
 
 	val commandViews = RenderPalette.initDemoScreen(this.containerRoot)
 
-	var demoIdx = 6
+	var demoIdx = 7
 	val demoSize = 8
 
 	while (demoIdx < demoSize) {

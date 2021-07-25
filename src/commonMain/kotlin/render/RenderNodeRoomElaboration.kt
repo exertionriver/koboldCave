@@ -34,7 +34,7 @@ object RenderNodeRoomElaboration {
     @ExperimentalUnsignedTypes
     suspend fun renderNodeRoomElaboration(renderContainer : Container, commandViews: Map<CommandView, View>) : ButtonCommand {
 
-        var funIdx = 1
+        var funIdx = 0
         val funSize = 2
 
         while ( (funIdx >= 0) && (funIdx < funSize) ) {
@@ -114,7 +114,7 @@ object RenderNodeRoomElaboration {
                     if (clusters.isNotEmpty()) clusters.values.flatten() else borderingNodeRoomMeshCases[idx].nodes
 
                 for (meshNode in renderPoints) {
-                    val numberRegex = Regex("\\d+")
+                    val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                     val colorIdx = numberRegex.find(meshNode.description, 0)?.value?.toInt() ?: 0
 
@@ -496,7 +496,7 @@ object RenderNodeRoomElaboration {
                 }
 
                 for (meshNode in nodeRoomMesh.nodes) {
-                    val numberRegex = Regex("\\d+")
+                    val numberRegex = Regex("(\\d+)(?!.*\\d)")
 
                     val colorIdx = numberRegex.find(meshNode.description, 0)?.value?.toInt() ?: 0
 
