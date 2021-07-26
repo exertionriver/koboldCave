@@ -12,6 +12,15 @@ Example usage, after cloning / downloading:
 ```./gradlew :runJvm```
 
 Hope this may help you in your development work. - IanP
+v0.5 - bottom-up, top-down nodeMesh elaboration, simple navigation
+
+![Simple Navigation](https://user-images.githubusercontent.com/13192685/126921656-bce9fd21-9637-403c-8306-9aac2a6acbac.mp4)
+
+![Top-down elaboration](https://user-images.githubusercontent.com/13192685/126921652-4d4a586b-1cb2-41a2-a24b-0ff46151695a.mp4) (bordering node meshes sourced from a centroid mesh)
+
+![Bottom-up elaboration](https://user-images.githubusercontent.com/13192685/126921632-1f843da4-e165-4f32-9c9e-b69ff2a798ff.mp4) (centroid mesh defined by bordering node meshes)
+
+v0.4.1 - cleaning up bordering algorithm
 
 v0.4 - bordering functionality for leaf, lace, lattice, nodeLine, nodeMesh; top-down centroid rooms
 
