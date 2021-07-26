@@ -12,6 +12,7 @@ Example usage, after cloning / downloading:
 ```./gradlew :runJvm```
 
 Hope this may help you in your development work. - IanP
+
 v0.5 - bottom-up, top-down nodeMesh elaboration, simple navigation
 
 ![Simple Navigation](https://user-images.githubusercontent.com/13192685/126921656-bce9fd21-9637-403c-8306-9aac2a6acbac.mp4)
