@@ -1,5 +1,6 @@
 package render
 
+import com.soywiz.klock.Time
 import com.soywiz.klock.TimeSpan
 import com.soywiz.korev.Key
 import com.soywiz.korge.input.keys
@@ -17,6 +18,7 @@ import com.soywiz.korim.vector.StrokeInfo
 import com.soywiz.korio.async.delay
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.line
+import com.soywiz.korma.interpolation.Easing
 import exploreKeys
 import leaf.ILeaf
 import leaf.ILeaf.Companion.NextDistancePx
@@ -74,20 +76,26 @@ object RenderLeaf {
         val leafList = List(8) { Leaf(topHeight = it + 1, position = Point((8 - it) * 100 + 100, (8 - it) * 100 + 100) ) }
 
         val secondContainer = renderContainer.container()
+
+        val centralPoint = Point(512, 512)
+
+        secondContainer.x = centralPoint.x
+        secondContainer.y = centralPoint.y
+
         secondContainer.graphics {
 
             leafList.reversed().forEachIndexed { leafIdx, leaf ->
-                secondContainer.text(text= "Leaf(height=${leaf.topHeight})", color = ForeColors[leafIdx % ForeColors.size], alignment = TextAlignCenter).position(Point(leaf.position.x, leaf.position.y - 30))
+                secondContainer.text(text= "Leaf(height=${leaf.topHeight})", color = ForeColors[leafIdx % ForeColors.size], alignment = TextAlignCenter).position(Point(leaf.position.x - centralPoint.x, leaf.position.y - centralPoint.y - 30))
 
                 stroke(BackColors[leafIdx % BackColors.size], StrokeInfo(thickness = 3.0)) {
 
                     for (line in leaf.getLineList() ) {
-                        if (line != null) line(line.first, line.second)
+                        if (line != null) line(line.first - centralPoint, line.second - centralPoint)
                     }
                 }
 
                 for (listLeaf in leaf.getList() ) {
-                    secondContainer.circle { position(listLeaf.position)
+                    secondContainer.circle { position(listLeaf.position - centralPoint)
                         radius = 5.0
                         color = ForeColors[leafIdx % ForeColors.size]
                         strokeThickness = 3.0

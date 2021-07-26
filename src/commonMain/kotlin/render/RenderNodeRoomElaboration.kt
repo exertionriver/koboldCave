@@ -304,7 +304,7 @@ object RenderNodeRoomElaboration {
         commandViews[CommandView.COMMENT_TEXT]!!.visible = true
         commandViews[CommandView.COMMENT_TEXT].setText("elaboration uses centroid node mesh as a trellis")
         commandViews[CommandView.PREV_BUTTON]!!.visible = true
-        commandViews[CommandView.NEXT_BUTTON]!!.visible = false
+        commandViews[CommandView.NEXT_BUTTON]!!.visible = true
 
         RenderPalette.returnClick = null
 
