@@ -19,6 +19,7 @@ apply<KorgeGradlePlugin>()
 
 korge {
 	id = "com.river.exertion.koboldCave"
+	version = "0.5-korge"
 // To enable all targets at once
 
 	//targetAll()
