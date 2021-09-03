@@ -1,0 +1,265 @@
+package org.river.exertion.screen.nodeRoomMesh
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.math.Vector2
+import ktx.app.KtxScreen
+import ktx.graphics.use
+import org.river.exertion.*
+import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
+import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
+import org.river.exertion.koboldCave.node.Node
+import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLinks
+import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
+import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWalls
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsLos
+import org.river.exertion.screen.RenderPalette.BackColors
+import org.river.exertion.screen.RenderPalette.FadeBackColors
+import org.river.exertion.screen.RenderPalette.ForeColors
+
+class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
+                                     private val font: BitmapFont,
+                                     private val assets: AssetManager,
+                                     private val camera: OrthographicCamera) : KtxScreen {
+
+    val horizOffset = Game.initViewportWidth / 11
+    val vertOffset = Game.initViewportHeight / 11
+    val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
+
+    var nodeRoomMesh = NodeRoomMesh(NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f)))
+
+    lateinit var forwardNextNodeAngle : Pair<Node, Angle>
+    lateinit var backwardNextNodeAngle : Pair<Node, Angle>
+    var leftNextAngle : Angle = 0f
+    var rightNextAngle : Angle = 0f
+
+    var nodeRoomIdx = 0
+    var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
+    var currentNode = currentRoom.getRandomNode()
+    var currentAngle = currentRoom.getRandomNextNodeAngle(currentNode)
+    val visualRadius = NextDistancePx //* 1.5f
+
+    val sdc = ShapeDrawerConfig(batch)
+    val drawer = sdc.getDrawer()
+
+    override fun render(delta: Float) {
+
+        batch.projectionMatrix = camera.combined
+        camera.update()
+
+        batch.use {
+
+            var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
+
+            font.drawLabel(it, Point(currentRoom.centroid.position.x, labelVert.y), "NodeRoom (nodes=${currentRoom.nodes.size} idx=$nodeRoomIdx)"
+                    , ForeColors[nodeRoomIdx % ForeColors.size])
+
+            val renderIdx = 1
+
+            nodeRoomMesh.pastWall.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.5F, FadeBackColors[renderIdx % BackColors.size])
+            }
+
+            nodeRoomMesh.pastWallFade.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.3F, FadeBackColors[renderIdx % BackColors.size])
+            }
+
+            nodeRoomMesh.currentWall.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.5F, BackColors[renderIdx % BackColors.size])
+            }
+
+            nodeRoomMesh.currentWallFade.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.3F, BackColors[renderIdx % BackColors.size])
+            }
+
+            nodeRoomMesh.nodeRooms.forEachIndexed { idx, nodeRoom -> nodeRoom.getExitNodes().forEachIndexed { index, exitNode ->
+                drawer.filledCircle(exitNode.position, 4F, FadeBackColors[idx % ForeColors.size])
+            } }
+
+            val ego : com.badlogic.gdx.utils.Array<Vector2> = com.badlogic.gdx.utils.Array()
+
+            ego.add(currentNode.position, currentNode.position.getPositionByDistanceAndAngle(5f, currentAngle))
+
+            drawer.path(ego, 1f, true)
+
+            InputHandler.handleInput(camera)
+
+            when {
+                Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> {
+                    nodeRoomMesh = NodeRoomMesh(NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f)))
+
+                    nodeRoomIdx = 0
+                    currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
+                    currentNode = currentRoom.getRandomNode()
+                    currentAngle = currentRoom.getRandomNextNodeAngle(currentNode)
+
+//                    nodeRoom.buildWalls(currentNode.position, 30f)
+                    nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+
+                    println("nodeRoomWallsSize : ${currentRoom.currentWall.size}")
+
+                    forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
+//            println("checking backward nodeAngle:")
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+//            println("checking leftward angle:")
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+//            println("checking rightward angle:")
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+
+                    println("position: ${currentNode.position}")
+                    println("angle: $currentAngle")
+                }
+                Gdx.input.isKeyJustPressed(Input.Keys.ENTER) -> {
+                    nodeRoomMesh.buildWalls()
+
+                    println("position: ${currentNode.position}")
+                    println("angle: $currentAngle")
+                }
+                Gdx.input.isKeyJustPressed(Input.Keys.UP) -> {
+                    currentNode = forwardNextNodeAngle.first
+
+                    nodeRoomMesh.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+
+                    println ("inactivedExitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
+                    println ("activatedExitNodes: ${currentRoom.activatedExitNodes}")
+                    println ("child nodes: ${currentNode.getNodeChildren(currentRoom.nodes, currentRoom.nodeLinks)} nodelinks: ${currentRoom.nodeLinks.getNodeLinks(currentNode.uuid)}")
+
+                    currentAngle = forwardNextNodeAngle.second
+//                    nodeRoom.buildWalls(currentNode.position, 30f)
+                    nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+
+                    forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
+//            println("checking backward nodeAngle:")
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+//            println("checking leftward angle:")
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+//            println("checking rightward angle:")
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+
+                    println("position: ${currentNode.position}")
+                    println("angle: $currentAngle")
+                    println("currentWall size:${currentRoom.currentWall.size}")
+                    println("currentWallFade size:${currentRoom.currentWallFade.size}")
+                    println("pastWall size:${currentRoom.pastWall.size}")
+                    println("pastWallFade size:${currentRoom.pastWallFade.size}")
+                }
+                Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> {
+                    currentNode = backwardNextNodeAngle.first
+
+                    nodeRoomMesh.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+
+                    println ("inactivedExitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
+                    println ("activatedExitNodes: ${currentRoom.activatedExitNodes}")
+
+                    currentAngle = (180f + backwardNextNodeAngle.second).normalizeDeg()
+                    //                    nodeRoom.buildWalls(currentNode.position, 30f)
+                    nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+
+                    //                println("checking forward nodeAngle:")
+                    forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
+//            println("checking backward nodeAngle:")
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+//            println("checking leftward angle:")
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+//            println("checking rightward angle:")
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+
+                    println("position: ${currentNode.position}")
+                    println("angle: $currentAngle")
+                }
+                Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> {
+                    currentAngle = leftNextAngle
+                    nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+
+                    //                println("checking forward nodeAngle:")
+                    forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
+//            println("checking backward nodeAngle:")
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+//            println("checking leftward angle:")
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+//            println("checking rightward angle:")
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+
+                    println("position: ${currentNode.position}")
+                    println("angle: $currentAngle")
+                }
+                Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> {
+                    currentAngle = rightNextAngle
+                    nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+
+                    //                println("checking forward nodeAngle:")
+                    forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
+//            println("checking backward nodeAngle:")
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+//            println("checking leftward angle:")
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+//            println("checking rightward angle:")
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+
+                    println("position: ${currentNode.position}")
+                    println("angle: $currentAngle")
+                }
+                Gdx.input.isKeyJustPressed(Input.Keys.X) -> {
+               //     currentRoom.inactiveExitNodesInRange(currentNode).forEach { currentRoom.activateExitNode( it ) }
+
+                    println ("inactivedExitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
+                    println ("activatedExitNodes: ${currentRoom.activatedExitNodes}")
+
+                    println ("nodeRoomMesh.size = ${nodeRoomMesh.nodeRooms.size}")
+                }
+            }
+        }
+    }
+
+    override fun hide() {
+    }
+
+    override fun show() {
+        //                    nodeRoom.buildWalls(currentNode.position, 30f)
+        currentRoom.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+
+        nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+//        nodeRoom.buildWalls()
+        println ("exitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
+
+        //            println("checking forward nodeAngle:")
+        forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
+//            println("checking backward nodeAngle:")
+        backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+//            println("checking leftward angle:")
+        leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+//            println("checking rightward angle:")
+        rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+
+        // start the playback of the background music when the screen is shown
+/*        MusicAssets.values().forEach { assets.load(it) }
+        assets.finishLoading()
+        println("done!")
+        assets[MusicAssets.NavajoNight].apply { isLooping = true }.play()
+*/    }
+
+    override fun pause() {
+    }
+
+    override fun resume() {
+    }
+
+    override fun resize(width: Int, height: Int) {
+        camera.viewportWidth = width.toFloat()
+        camera.viewportHeight = height.toFloat()
+    }
+
+    override fun dispose() {
+        sdc.disposeShapeDrawerConfig()
+    }
+}
