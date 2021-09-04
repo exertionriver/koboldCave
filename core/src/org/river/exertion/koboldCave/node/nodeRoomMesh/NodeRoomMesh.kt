@@ -92,7 +92,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         val newNodeRoomAngle = this.nodeRooms[nodeRoomIdx].centroid.angleBetween(roomExitNode)
         val newNodeRoomPosition = roomExitNode.position.getPositionByDistanceAndAngle(NextDistancePx, newNodeRoomAngle)
 
-        val newNodeRoom = NodeRoom(height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms())
+        val newNodeRoom = NodeRoom(height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms(), exitsAllowed = maxRoomExits - currentRoomExits)
         println("new NodeRoom created! node count: ${newNodeRoom.nodes.size}")
 
         if (newNodeRoom.nodes.size > 0) {
@@ -131,6 +131,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
     fun getInactivatedExitNodes() = exitNodes.filter { !activatedExitNodes.contains(it) }
 
     fun inactiveExitNodesInRange(currentNode : Node) = getInactivatedExitNodes().filter { it == currentNode || it.getNodeChildren(this.nodesMap.keys.toMutableList(), this.nodeLinks).contains(currentNode) }
+
+    fun getCurrentRoomIdx(currentNode : Node) = nodeRooms.indexOfFirst { it.uuid == nodesMap[currentNode] }
 
     companion object {
 

@@ -33,6 +33,8 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
 
     override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid)"
 
+    enum class NextAngle { LEFT, RIGHT, FORWARD, BACKWARD }
+
     companion object {
         val consolidateNodeDistance = ILeaf.NextDistancePx * 3 / 4
         val linkNodeDistance = ILeaf.NextDistancePx
@@ -135,7 +137,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
 
             return randomAngle
         }
-
+/*
         fun MutableList<NodeLink>.getNextNodeAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle) : Pair<Node, Angle> {
 
 //            println ("refNode, refAngle: $refNode, $refAngle")
@@ -168,34 +170,70 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
 
             return returnNodeAngle
         }
+*/
+        fun MutableList<NodeLink>.getNextAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle, nextAngle : NextAngle) : Angle {
+            return this.getNextNodeAngle(nodes, refNode, refAngle, nextAngle).second
+        }
 
-        fun MutableList<NodeLink>.getNextAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle, rangeAngle : Angle) : Angle {
+        fun MutableList<NodeLink>.getNextNodeAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle, nextAngle : NextAngle = NextAngle.FORWARD) : Pair<Node, Angle> {
 
-//            println ("refNode, refAngle, rangeAngle: $refNode, $refAngle, $rangeAngle")
+            var returnNodeAngle : Pair<Node, Angle> = Pair(refNode, 0f)
 
-            val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid)
+            when {
+                (nextAngle == NextAngle.RIGHT) -> {
+                    val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid).sortedBy { it }
 
-            val childrenAnglesOver360 = childrenAngles.map { 360F + it }
+                    if (childrenAngles[0] < refAngle) returnNodeAngle = Pair(refNode, childrenAngles[0])
 
-            val childrenAnglesUnder0 = childrenAngles.map { 360F - it }
+                    childrenAngles.forEach { checkAngle ->
+                        if (checkAngle < refAngle) returnNodeAngle = Pair(refNode, checkAngle)
+                    }
 
-            val combinedAngles = (childrenAngles + childrenAnglesOver360 + childrenAnglesUnder0).sortedBy { it }
-
-            val nextAngle = when {
-                (rangeAngle > 0F) -> {
-                    val nextAngles = combinedAngles.filter { it > refAngle && it <= refAngle + rangeAngle }
-                    if (nextAngles.isNotEmpty()) nextAngles[0] else refAngle + rangeAngle
+                    if (returnNodeAngle.second == 0f) returnNodeAngle = Pair(refNode, childrenAngles[childrenAngles.size - 1])
                 }
-                (rangeAngle < 0F) -> {
-                    val nextAngles = combinedAngles.filter { it < refAngle && it >= refAngle + rangeAngle }
-                    if (nextAngles.isNotEmpty()) nextAngles[0] else refAngle + rangeAngle
+                (nextAngle == NextAngle.LEFT) -> {
+                    val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid).sortedByDescending { it }
+
+                    if (childrenAngles[0] > refAngle) returnNodeAngle = Pair(refNode, childrenAngles[0])
+
+                    childrenAngles.forEach { checkAngle ->
+                        if (checkAngle > refAngle) returnNodeAngle = Pair(refNode, checkAngle)
+                    }
+
+                    if (returnNodeAngle.second == 0f) returnNodeAngle = Pair(refNode, childrenAngles[childrenAngles.size - 1])
                 }
-                else -> refAngle + rangeAngle
+                else -> { //NextAngle.FORWARD or BACKWARD
+                    val childrenNodeAngles = getNodeChildrenNodeAngles(nodes, refNode.uuid)
+
+                    val nextRefAngle = if (nextAngle == NextAngle.BACKWARD) (refAngle + 180f).normalizeDeg() else refAngle
+
+                    var angleIter = 0f
+                    var foundNode = false
+
+                    //probably a better way to do this, with min and max
+                    while (!foundNode && (angleIter < 180)) {
+
+                        val checkAngleLeft = (nextRefAngle - angleIter).normalizeDeg()
+                        val checkAngleRight = (nextRefAngle + angleIter).normalizeDeg()
+
+                        childrenNodeAngles.forEach { childNodeAngle ->
+                            if ( abs(childNodeAngle.second - checkAngleLeft) < 2f) {
+                                returnNodeAngle = childNodeAngle
+                                foundNode = true
+                            }
+                            else if ( abs(childNodeAngle.second - checkAngleRight) < 2f) {
+                                returnNodeAngle = childNodeAngle
+                                foundNode = true
+                            }
+                        }
+                        angleIter++
+                    }
+                }
             }
 
-//            println ("returnNextAngle: ${nextAngle.normalized}")
+            println ("$refNode, $refAngle, $nextAngle, $returnNodeAngle")
 
-            return nextAngle.normalizeDeg()
+            return returnNodeAngle
         }
 
         val linkAngleMinDegree = 15

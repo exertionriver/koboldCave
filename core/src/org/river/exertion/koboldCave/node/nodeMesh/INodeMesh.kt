@@ -61,7 +61,7 @@ interface INodeMesh {
 
     fun getNextNodeAngle(refNode : Node, refAngle : Angle) : Pair<Node, Angle> = nodeLinks.getNextNodeAngle(nodes, refNode, refAngle)
 
-    fun getNextAngle(refNode : Node, refAngle : Angle, rangeAngle : Angle) : Angle = nodeLinks.getNextAngle(nodes, refNode, refAngle, rangeAngle)
+    fun getNextAngle(refNode : Node, refAngle : Angle, nextAngle : NodeLink.NextAngle) : Angle = nodeLinks.getNextAngle(nodes, refNode, refAngle, nextAngle)
 
     fun getLineList() : List<Line> = nodes.getLineList(nodeLinks)
 

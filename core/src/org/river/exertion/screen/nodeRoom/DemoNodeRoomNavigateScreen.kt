@@ -13,6 +13,7 @@ import org.river.exertion.*
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.node.Node
+import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLinks
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
@@ -103,9 +104,9 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
 //            println("checking backward nodeAngle:")
                     backwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, (180f + currentAngle).normalizeDeg())
 //            println("checking leftward angle:")
-                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.LEFT)
 //            println("checking rightward angle:")
-                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.RIGHT)
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -132,9 +133,9 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                     //                println("checking backward nodeAngle:")
                     backwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, (180f + currentAngle).normalizeDeg())
                     //                println("checking leftward angle:")
-                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.LEFT )
                     //                println("checking rightward angle:")
-                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -158,9 +159,9 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                     //                println("checking backward nodeAngle:")
                     backwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, (180f + currentAngle).normalizeDeg())
                     //                println("checking leftward angle:")
-                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.LEFT )
                     //                println("checking rightward angle:")
-                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -174,9 +175,9 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                     //                println("checking backward nodeAngle:")
                     backwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, (180f + currentAngle).normalizeDeg())
                     //                println("checking leftward angle:")
-                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.LEFT )
                     //                println("checking rightward angle:")
-                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -190,9 +191,9 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                     //                println("checking backward nodeAngle:")
                     backwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, (180f + currentAngle).normalizeDeg())
                     //                println("checking leftward angle:")
-                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.LEFT )
                     //                println("checking rightward angle:")
-                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -215,9 +216,9 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
 //            println("checking backward nodeAngle:")
         backwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, (180f + currentAngle).normalizeDeg())
 //            println("checking leftward angle:")
-        leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, 60f )
+        leftNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
-        rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, -60f )
+        rightNextAngle = nodeRoom.getNextAngle(currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
         // start the playback of the background music when the screen is shown
 /*        MusicAssets.values().forEach { assets.load(it) }

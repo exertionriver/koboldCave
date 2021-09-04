@@ -13,6 +13,7 @@ import org.river.exertion.*
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.node.Node
+import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
@@ -61,7 +62,10 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
             var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
 
-            font.drawLabel(it, Point(currentRoom.centroid.position.x, labelVert.y), "NodeRoom (nodes=${currentRoom.nodes.size} idx=$nodeRoomIdx)"
+            font.drawLabel(it, Point(currentRoom.centroid.position.x, labelVert.y)
+                    , "NodeRoom (nodes=${currentRoom.nodes.size} idx=$nodeRoomIdx)\n" +
+                        "roomDescription: ${currentRoom.description}\n" +
+                        "exits: ${nodeRoomMesh.currentRoomExits} / ${nodeRoomMesh.maxRoomExits}"
                     , ForeColors[nodeRoomIdx % ForeColors.size])
 
             val renderIdx = 1
@@ -110,11 +114,11 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
                     forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
 //            println("checking backward nodeAngle:")
-                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
 //            println("checking leftward angle:")
-                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
-                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -127,6 +131,9 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.UP) -> {
                     currentNode = forwardNextNodeAngle.first
+                    currentAngle = forwardNextNodeAngle.second
+
+                    nodeRoomIdx = nodeRoomMesh.getCurrentRoomIdx(currentNode)
 
                     nodeRoomMesh.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
 
@@ -134,17 +141,16 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                     println ("activatedExitNodes: ${currentRoom.activatedExitNodes}")
                     println ("child nodes: ${currentNode.getNodeChildren(currentRoom.nodes, currentRoom.nodeLinks)} nodelinks: ${currentRoom.nodeLinks.getNodeLinks(currentNode.uuid)}")
 
-                    currentAngle = forwardNextNodeAngle.second
 //                    nodeRoom.buildWalls(currentNode.position, 30f)
                     nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
 
                     forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
 //            println("checking backward nodeAngle:")
-                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
 //            println("checking leftward angle:")
-                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
-                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -155,6 +161,7 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> {
                     currentNode = backwardNextNodeAngle.first
+                    nodeRoomIdx = nodeRoomMesh.getCurrentRoomIdx(currentNode)
 
                     nodeRoomMesh.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
 
@@ -168,11 +175,11 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                     //                println("checking forward nodeAngle:")
                     forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
 //            println("checking backward nodeAngle:")
-                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
 //            println("checking leftward angle:")
-                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
-                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -184,11 +191,11 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                     //                println("checking forward nodeAngle:")
                     forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
 //            println("checking backward nodeAngle:")
-                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
 //            println("checking leftward angle:")
-                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
-                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -200,11 +207,11 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                     //                println("checking forward nodeAngle:")
                     forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
 //            println("checking backward nodeAngle:")
-                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
 //            println("checking leftward angle:")
-                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
-                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -235,11 +242,11 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
         //            println("checking forward nodeAngle:")
         forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
 //            println("checking backward nodeAngle:")
-        backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, (180f + currentAngle).normalizeDeg())
+        backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
 //            println("checking leftward angle:")
-        leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, 60f )
+        leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
-        rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, -60f )
+        rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
         // start the playback of the background music when the screen is shown
 /*        MusicAssets.values().forEach { assets.load(it) }

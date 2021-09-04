@@ -26,6 +26,7 @@ import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import java.lang.Math.abs
 import java.lang.Math.pow
 import java.util.*
+import kotlin.math.min
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -40,7 +41,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
     //build constructor
     constructor(centerPoint: Point, height: Int, circleNoise : Int = 50, angleNoise : Int = 50, heightNoise : Int = 50, borderRooms : NodeRoom = NodeRoom(),
-                initCentroid : Node? = null ) : this (
+                exitsAllowed : Int = maxGenerativeExits, initCentroid : Node? = null ) : this (
     ) {
         val workNodeRoom = centerPoint.buildNodeRoom(height, circleNoise, angleNoise, heightNoise, borderRooms, initCentroid)
 
@@ -48,7 +49,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
         this.nodes = mutableListOf<Node>().apply { addAll(workNodeRoom.nodes) }
         this.nodeLinks = mutableListOf<NodeLink>().apply { addAll(workNodeRoom.nodeLinks) }
         this.centroid = workNodeRoom.centroid
-        this.setExitNodes()
+        this.setExitNodes(exitsAllowed)
 
         this.attributes.circleNoise = circleNoise
         this.attributes.angleNoise = angleNoise
@@ -109,6 +110,8 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
     companion object {
 
+        val maxGenerativeExits = 4
+
         fun Point.buildNodeRoom(height : Int, circleNoise : Int = 0, angleNoise : Int = 0, heightNoise : Int = 0, borderRooms : NodeRoom = NodeRoom(), centroid : Node?) : NodeRoom {
 
             var roomMesh = NodeRoom()
@@ -165,11 +168,13 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
         }
 
         //todo: exclude angles that open into existing rooms
-        fun NodeRoom.setExitNodes() {
+        fun NodeRoom.setExitNodes(exitsAllowed : Int) {
 
             val returnNodes = mutableListOf<Node>()
 
-            val numExits = Probability(2, 1).getValue().toInt()
+            val numExitsTarget = Probability(maxGenerativeExits / 2, maxGenerativeExits / 4).getValue().toInt()
+
+            val numExits = min(exitsAllowed, numExitsTarget)
 
             val orderedNodes = this.nodes.nearestNodesOrderedAsc(this.centroid)
 
