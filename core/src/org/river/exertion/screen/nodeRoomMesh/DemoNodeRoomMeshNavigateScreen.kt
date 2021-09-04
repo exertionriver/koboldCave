@@ -27,6 +27,7 @@ import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.bu
 import org.river.exertion.screen.RenderPalette.BackColors
 import org.river.exertion.screen.RenderPalette.FadeBackColors
 import org.river.exertion.screen.RenderPalette.ForeColors
+import space.earlygrey.shapedrawer.JoinType
 
 class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                                      private val font: BitmapFont,
@@ -92,9 +93,18 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
             val ego : com.badlogic.gdx.utils.Array<Vector2> = com.badlogic.gdx.utils.Array()
 
-            ego.add(currentNode.position, currentNode.position.getPositionByDistanceAndAngle(5f, currentAngle))
+            val bottomArrow = currentNode.position.getPositionByDistanceAndAngle(4f, (currentAngle + 180f).normalizeDeg())
+            val topArrow = currentNode.position.getPositionByDistanceAndAngle(6f, currentAngle)
+            val tipArrowLeft = topArrow.getPositionByDistanceAndAngle(3f, (currentAngle + 150f).normalizeDeg())
+            val tipArrowRight = topArrow.getPositionByDistanceAndAngle(3f, (currentAngle - 150f).normalizeDeg())
 
-            drawer.path(ego, 1f, true)
+            ego.add(bottomArrow, topArrow)
+            ego.add(topArrow, tipArrowLeft)
+            ego.add(tipArrowLeft, tipArrowRight)
+            ego.add(tipArrowRight, topArrow)
+
+            //may have to use another (colored) texture for ego-path
+            drawer.path(ego, 1f, JoinType.SMOOTH, true)
 
             InputHandler.handleInput(camera)
 

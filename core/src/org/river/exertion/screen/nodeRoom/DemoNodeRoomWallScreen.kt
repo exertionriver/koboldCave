@@ -21,7 +21,7 @@ class DemoNodeRoomWallScreen(private val batch: Batch,
     val vertOffset = Game.initViewportHeight / 11
     val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
 
-    var nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
+    var nodeRoom = NodeRoom(height = 4, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f), circleNoise = 0, heightNoise = 0)
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
@@ -40,13 +40,6 @@ class DemoNodeRoomWallScreen(private val batch: Batch,
                     "(angleNoise:${nodeRoom.attributes.angleNoise})\n" +
                     "(heightNoise:${nodeRoom.attributes.heightNoise})", ForeColors[nodeRoomIdx % ForeColors.size])
 
-/*
-            nodeRoom.getLineList().forEach { line ->
-                if (line != null) {
-                    drawer.line(line.first, line.second,BackColors[nodeRoomIdx % BackColors.size], 2F )
-                }
-            }
-*/
             nodeRoom.currentWall.values.forEach { wallNode ->
                 drawer.filledCircle(wallNode, 0.5F, BackColors[nodeRoomIdx % BackColors.size])
             }

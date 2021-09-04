@@ -11,6 +11,7 @@ import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.getLineLen
 import org.river.exertion.normalizeDeg
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.min
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -33,7 +34,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
 
     override fun toString() = "${NodeLink::class.simpleName}($firstNodeUuid, $secondNodeUuid)"
 
-    enum class NextAngle { LEFT, RIGHT, FORWARD, BACKWARD }
+    enum class NextAngle { LEFT, RIGHT, FORWARD, BACKWARD, CENTER }
 
     companion object {
         val consolidateNodeDistance = ILeaf.NextDistancePx * 3 / 4
@@ -137,40 +138,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
 
             return randomAngle
         }
-/*
-        fun MutableList<NodeLink>.getNextNodeAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle) : Pair<Node, Angle> {
 
-//            println ("refNode, refAngle: $refNode, $refAngle")
-
-            val childrenNodeAngles = getNodeChildrenNodeAngles(nodes, refNode.uuid)
-
-//            childrenNodeAngles.forEach { println ("childrenNodeAngles ${it.first}, ${it.second}")}
-
-            val combinedAngleNodes : MutableMap<Angle, Node> = mutableMapOf()
-
-            childrenNodeAngles.forEach { combinedAngleNodes[it.second] = it.first }
-
-            childrenNodeAngles.forEach { combinedAngleNodes[it.second + 360F] = it.first }
-
-            childrenNodeAngles.forEach { combinedAngleNodes[it.second - 360F] = it.first }
-
-//            combinedAngleNodes.forEach { println ("combinedAngles ${it.key}, ${it.value}")}
-
-            val combinedAngles = combinedAngleNodes.keys.toList().filter { abs(it - refAngle) < 60F }.sortedBy { abs(it - refAngle) }
-
-            if (combinedAngles.isNullOrEmpty()) return Pair(refNode, refAngle)
-
-            val returnNode = combinedAngleNodes[combinedAngles[0]] ?: return Pair(refNode, refAngle)
-
-            val returnAngle = childrenNodeAngles.firstOrNull { it.first == returnNode }?.second ?: return Pair(refNode, refAngle)
-
-            val returnNodeAngle = Pair(returnNode, returnAngle)
-
-//            println ("returnNodeAngle: $returnNodeAngle")
-
-            return returnNodeAngle
-        }
-*/
         fun MutableList<NodeLink>.getNextAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle, nextAngle : NextAngle) : Angle {
             return this.getNextNodeAngle(nodes, refNode, refAngle, nextAngle).second
         }
@@ -183,10 +151,9 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
                 (nextAngle == NextAngle.RIGHT) -> {
                     val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid).sortedBy { it }
 
-                    if (childrenAngles[0] < refAngle) returnNodeAngle = Pair(refNode, childrenAngles[0])
-
+                    //check to the 'right' of ref angle, outside of 15f range
                     childrenAngles.forEach { checkAngle ->
-                        if (checkAngle < refAngle) returnNodeAngle = Pair(refNode, checkAngle)
+                        if (checkAngle < (refAngle - linkAngleMinDegree).normalizeDeg() ) returnNodeAngle = Pair(refNode, checkAngle)
                     }
 
                     if (returnNodeAngle.second == 0f) returnNodeAngle = Pair(refNode, childrenAngles[childrenAngles.size - 1])
@@ -194,10 +161,8 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
                 (nextAngle == NextAngle.LEFT) -> {
                     val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid).sortedByDescending { it }
 
-                    if (childrenAngles[0] > refAngle) returnNodeAngle = Pair(refNode, childrenAngles[0])
-
                     childrenAngles.forEach { checkAngle ->
-                        if (checkAngle > refAngle) returnNodeAngle = Pair(refNode, checkAngle)
+                        if (checkAngle > (refAngle + linkAngleMinDegree).normalizeDeg() ) returnNodeAngle = Pair(refNode, checkAngle)
                     }
 
                     if (returnNodeAngle.second == 0f) returnNodeAngle = Pair(refNode, childrenAngles[childrenAngles.size - 1])
@@ -227,6 +192,13 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
                             }
                         }
                         angleIter++
+                    }
+
+                    //lookahead for forward angle
+                    if (nextAngle == NextAngle.FORWARD) {
+                        val nextNextAngle = this.getNextNodeAngle(nodes, returnNodeAngle.first, returnNodeAngle.second, NextAngle.CENTER)
+
+                        returnNodeAngle = Pair(returnNodeAngle.first, nextNextAngle.second)
                     }
                 }
             }
