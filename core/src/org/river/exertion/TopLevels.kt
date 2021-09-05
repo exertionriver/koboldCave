@@ -51,6 +51,15 @@ operator fun Angle.minus(secondAngle : Angle) = (this - secondAngle).normalizeDe
 fun Angle.radians(): Float = (this * PI.toFloat() / 180F).normalizeRad()
 fun Angle.degrees(): Float = (this * 180F / PI.toFloat()).normalizeDeg()
 
+fun Angle.leftAngleBetween(angleToTheLeft: Angle) = when {
+    (angleToTheLeft < this) -> (360f - (this - angleToTheLeft)).normalizeDeg()
+    else -> (angleToTheLeft - this)
+}
+
+fun Angle.rightAngleBetween(angleToTheRight: Angle) = when {
+    (angleToTheRight > this) -> (360f - (angleToTheRight - this)).normalizeDeg()
+    else -> (this - angleToTheRight)
+}
 
 fun BitmapFont.drawLabel(batch : Batch, location : Point, labelText : String, color : Color, fontSize : Int = 32) {
 

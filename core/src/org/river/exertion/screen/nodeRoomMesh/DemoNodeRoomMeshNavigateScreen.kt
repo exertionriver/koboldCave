@@ -22,12 +22,15 @@ import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildFloorsLos
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWalls
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsLos
+import org.river.exertion.screen.RenderPalette
 import org.river.exertion.screen.RenderPalette.BackColors
 import org.river.exertion.screen.RenderPalette.FadeBackColors
 import org.river.exertion.screen.RenderPalette.ForeColors
 import space.earlygrey.shapedrawer.JoinType
+import kotlin.math.abs
 
 class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                                      private val font: BitmapFont,
@@ -44,6 +47,11 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
     lateinit var backwardNextNodeAngle : Pair<Node, Angle>
     var leftNextAngle : Angle = 0f
     var rightNextAngle : Angle = 0f
+
+    var forwardNextMoveCost : Float = 0f
+    var backwardNextMoveCost : Float = 0f
+    var leftNextMoveCost : Float = 0f
+    var rightNextMoveCost : Float = 0f
 
     var nodeRoomIdx = 0
     var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
@@ -63,10 +71,13 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
             var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
 
-            font.drawLabel(it, Point(currentRoom.centroid.position.x, labelVert.y)
+            font.drawLabel(it, Point(currentRoom.centroid.position.x, labelVert.y * 2)
                     , "NodeRoom (nodes=${currentRoom.nodes.size} idx=$nodeRoomIdx)\n" +
                         "roomDescription: ${currentRoom.description}\n" +
-                        "exits: ${nodeRoomMesh.currentRoomExits} / ${nodeRoomMesh.maxRoomExits}"
+                        "exits: ${nodeRoomMesh.currentRoomExits} / ${nodeRoomMesh.maxRoomExits}\n" +
+                        "current obstacle:${currentNode.attributes.nodeObstacle}\n" +
+                        "dst:${currentNode.position.dst(forwardNextNodeAngle.first.position) / 3}, ${currentNode.position.dst(backwardNextNodeAngle.first.position) / 3}, $currentAngle, ${currentAngle.leftAngleBetween(leftNextAngle)}, ${currentAngle.rightAngleBetween(rightNextAngle)}\n" +
+                        "move costs:$forwardNextMoveCost, $backwardNextMoveCost, $leftNextMoveCost, $rightNextMoveCost"
                     , ForeColors[nodeRoomIdx % ForeColors.size])
 
             val renderIdx = 1
@@ -77,6 +88,14 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
             nodeRoomMesh.pastWallFade.values.forEach { wallNode ->
                 drawer.filledCircle(wallNode, 0.3F, FadeBackColors[renderIdx % BackColors.size])
+            }
+
+            nodeRoomMesh.currentFloor.values.forEach { floorNode ->
+                drawer.filledCircle(floorNode, 0.5F, RenderPalette.FadeForeColors[4 % BackColors.size])
+            }
+
+            nodeRoomMesh.pastFloor.values.forEach { floorNode ->
+                drawer.filledCircle(floorNode, 0.5F, RenderPalette.FadeBackColors[4 % BackColors.size])
             }
 
             nodeRoomMesh.currentWall.values.forEach { wallNode ->
@@ -130,6 +149,13 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 //            println("checking rightward angle:")
                     rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
+                    nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+
+                    forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                    backwardNextMoveCost = currentNode.position.dst(backwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(backwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                    leftNextMoveCost = currentAngle.leftAngleBetween(leftNextAngle) / 60 + currentAngle.leftAngleBetween(leftNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+                    rightNextMoveCost = currentAngle.rightAngleBetween(rightNextAngle) / 60 + currentAngle.rightAngleBetween(rightNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
                 }
@@ -162,6 +188,13 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 //            println("checking rightward angle:")
                     rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
+                    nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+
+                    forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                    backwardNextMoveCost = currentNode.position.dst(backwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(backwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                    leftNextMoveCost = currentAngle.leftAngleBetween(leftNextAngle) / 60 + currentAngle.leftAngleBetween(leftNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+                    rightNextMoveCost = currentAngle.rightAngleBetween(rightNextAngle) / 60 + currentAngle.rightAngleBetween(rightNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
                     println("currentWall size:${currentRoom.currentWall.size}")
@@ -170,29 +203,40 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                     println("pastWallFade size:${currentRoom.pastWallFade.size}")
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> {
-                    currentNode = backwardNextNodeAngle.first
-                    nodeRoomIdx = nodeRoomMesh.getCurrentRoomIdx(currentNode)
 
-                    nodeRoomMesh.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+                    //if backed into a corner, no 'backward' option
+                    if (currentNode != backwardNextNodeAngle.first) {
+                        currentNode = backwardNextNodeAngle.first
+                        nodeRoomIdx = nodeRoomMesh.getCurrentRoomIdx(currentNode)
 
-                    println ("inactivedExitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
-                    println ("activatedExitNodes: ${currentRoom.activatedExitNodes}")
+                        nodeRoomMesh.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
 
-                    currentAngle = (180f + backwardNextNodeAngle.second).normalizeDeg()
-                    //                    nodeRoom.buildWalls(currentNode.position, 30f)
-                    nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+                        println ("inactivedExitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
+                        println ("activatedExitNodes: ${currentRoom.activatedExitNodes}")
 
-                    //                println("checking forward nodeAngle:")
-                    forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
+                        currentAngle = (180f + backwardNextNodeAngle.second).normalizeDeg()
+                        //                    nodeRoom.buildWalls(currentNode.position, 30f)
+                        nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+
+                        //                println("checking forward nodeAngle:")
+                        forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
 //            println("checking backward nodeAngle:")
-                    backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
+                        backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
 //            println("checking leftward angle:")
-                    leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
+                        leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
-                    rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
+                        rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
-                    println("position: ${currentNode.position}")
-                    println("angle: $currentAngle")
+                        nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+
+                        forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                        backwardNextMoveCost = currentNode.position.dst(backwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(backwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                        leftNextMoveCost = currentAngle.leftAngleBetween(leftNextAngle) / 60 + currentAngle.leftAngleBetween(leftNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+                        rightNextMoveCost = currentAngle.rightAngleBetween(rightNextAngle) / 60 + currentAngle.rightAngleBetween(rightNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+
+                        println("position: ${currentNode.position}")
+                        println("angle: $currentAngle")
+                    }
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> {
                     currentAngle = leftNextAngle
@@ -206,6 +250,13 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                     leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
                     rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
+
+                    nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+
+                    forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                    backwardNextMoveCost = currentNode.position.dst(backwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(backwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                    leftNextMoveCost = currentAngle.leftAngleBetween(leftNextAngle) / 60 + currentAngle.leftAngleBetween(leftNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+                    rightNextMoveCost = currentAngle.rightAngleBetween(rightNextAngle) / 60 + currentAngle.rightAngleBetween(rightNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -222,6 +273,13 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                     leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
                     rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
+
+                    nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+
+                    forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                    backwardNextMoveCost = currentNode.position.dst(backwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(backwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+                    leftNextMoveCost = currentAngle.leftAngleBetween(leftNextAngle) / 60 + currentAngle.leftAngleBetween(leftNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+                    rightNextMoveCost = currentAngle.rightAngleBetween(rightNextAngle) / 60 + currentAngle.rightAngleBetween(rightNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -257,6 +315,13 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
         leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
         rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
+
+        nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+
+        forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+        backwardNextMoveCost = currentNode.position.dst(backwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(backwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+        leftNextMoveCost = currentAngle.leftAngleBetween(leftNextAngle) / 60 + currentAngle.leftAngleBetween(leftNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+        rightNextMoveCost = currentAngle.rightAngleBetween(rightNextAngle) / 60 + currentAngle.rightAngleBetween(rightNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
 
         // start the playback of the background music when the screen is shown
 /*        MusicAssets.values().forEach { assets.load(it) }

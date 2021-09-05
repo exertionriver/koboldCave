@@ -75,7 +75,7 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeMeshOperationsThirdScreen( inject(), inject(), inject(), inject()) )
 
             addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
-       */ //     addScreen(DemoNodeRoomWallScreen( inject(), inject(), inject() ) )
+       *///      addScreen(DemoNodeRoomWallScreen( inject(), inject(), inject() ) )
        //     addScreen(DemoNodeRoomNavigateScreen( inject(), inject(), inject(), inject() ) )
 
             addScreen(DemoNodeRoomMeshNavigateScreen( inject(), inject(), inject(), inject() ) )

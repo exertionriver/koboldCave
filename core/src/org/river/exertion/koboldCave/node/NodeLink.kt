@@ -171,12 +171,13 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
                     val childrenNodeAngles = getNodeChildrenNodeAngles(nodes, refNode.uuid)
 
                     val nextRefAngle = if (nextAngle == NextAngle.BACKWARD) (refAngle + 180f).normalizeDeg() else refAngle
+                    val angleLimit = if (nextAngle == NextAngle.BACKWARD) 90 else 180
 
                     var angleIter = 0f
                     var foundNode = false
 
                     //probably a better way to do this, with min and max
-                    while (!foundNode && (angleIter < 180)) {
+                    while (!foundNode && (angleIter < angleLimit)) {
 
                         val checkAngleLeft = (nextRefAngle - angleIter).normalizeDeg()
                         val checkAngleRight = (nextRefAngle + angleIter).normalizeDeg()
@@ -200,6 +201,9 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
 
                         returnNodeAngle = Pair(returnNodeAngle.first, nextNextAngle.second)
                     }
+
+                    //can happen when backed up against a wall with no exits
+                    if (!foundNode) returnNodeAngle = Pair(refNode, refAngle)
                 }
             }
 

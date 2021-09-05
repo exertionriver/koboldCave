@@ -9,8 +9,11 @@ import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildFloors
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
 import org.river.exertion.screen.RenderPalette.BackColors
+import org.river.exertion.screen.RenderPalette.FadeBackColors
+import org.river.exertion.screen.RenderPalette.FadeForeColors
 import org.river.exertion.screen.RenderPalette.ForeColors
 
 class DemoNodeRoomWallScreen(private val batch: Batch,
@@ -21,7 +24,7 @@ class DemoNodeRoomWallScreen(private val batch: Batch,
     val vertOffset = Game.initViewportHeight / 11
     val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
 
-    var nodeRoom = NodeRoom(height = 4, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f), circleNoise = 0, heightNoise = 0)
+    var nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f), circleNoise = 0, heightNoise = 0)
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
@@ -43,13 +46,16 @@ class DemoNodeRoomWallScreen(private val batch: Batch,
             nodeRoom.currentWall.values.forEach { wallNode ->
                 drawer.filledCircle(wallNode, 0.5F, BackColors[nodeRoomIdx % BackColors.size])
             }
+            nodeRoom.currentFloor.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.5F, FadeForeColors[4 % BackColors.size])
+            }
             nodeRoom.currentWallFade.values.forEach { wallNode ->
                 drawer.filledCircle(wallNode, 0.3F, BackColors[nodeRoomIdx % BackColors.size])
             }
 
             nodeRoom.getExitNodes().forEachIndexed { index, exitNode ->
                 drawer.filledCircle(exitNode.position, 4F, ForeColors[nodeRoomIdx % ForeColors.size])
-                println(exitNode.attributes)
+//                println(exitNode.attributes)
             }
 
             InputHandler.handleInput(camera)
@@ -58,8 +64,9 @@ class DemoNodeRoomWallScreen(private val batch: Batch,
                 Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> {
                     nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
                     nodeRoom.buildWalls()
+                    nodeRoom.buildFloors()
 
-                    println("nodeRoomWallsSize : ${nodeRoom.currentWall.size}")
+//                    println("nodeRoomWallsSize : ${nodeRoom.currentWall.size}")
                 }
             }
         }
@@ -70,6 +77,7 @@ class DemoNodeRoomWallScreen(private val batch: Batch,
 
     override fun show() {
         nodeRoom.buildWalls()
+        nodeRoom.buildFloors()
     }
 
     override fun pause() {

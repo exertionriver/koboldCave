@@ -2,11 +2,13 @@ package org.river.exertion.koboldCave.node.nodeRoomMesh
 
 import org.river.exertion.Angle
 import org.river.exertion.Point
+import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.Line.Companion.borderLines
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.Line.Companion.isInBorder
 import org.river.exertion.koboldCave.Line.Companion.points
 import org.river.exertion.koboldCave.Probability
+import org.river.exertion.koboldCave.ProbabilitySelect
 import org.river.exertion.koboldCave.leaf.ILeaf
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.node.Node
@@ -18,10 +20,12 @@ import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeMesh
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildFloors
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoomLink
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWalls
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsLos
 import org.river.exertion.plus
 import org.river.exertion.trunc
 import java.util.*
@@ -30,9 +34,7 @@ import kotlin.random.Random
 @ExperimentalUnsignedTypes
 class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val description: String = "nodeRoomMesh${Random.nextInt(256)}"
                    , override var nodeRooms : MutableList<NodeRoom> = mutableListOf(), override var nodeRoomLinks : MutableList<NodeRoomLink> = mutableListOf()
-                   , var nodesMap : MutableMap<Node, UUID> = mutableMapOf(), var nodeLinks : MutableList<NodeLink> = mutableListOf()
-                   , var currentWall : MutableMap<Point, Point> = mutableMapOf(), var pastWall : MutableMap<Point, Point> = mutableMapOf()
-                   , var currentWallFade : MutableMap<Point, Point> = mutableMapOf(), var pastWallFade : MutableMap<Point, Point> = mutableMapOf() ) :
+                   , var nodesMap : MutableMap<Node, UUID> = mutableMapOf(), var nodeLinks : MutableList<NodeLink> = mutableListOf() ) :
     INodeRoomMesh {
 
     val maxRoomExits = 18
@@ -40,6 +42,15 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
     val activatedExitNodes = mutableListOf<Node>()
     val exitNodes = mutableListOf<Node>()
+
+    var currentWall : MutableMap<Point, Point> = mutableMapOf()
+    var pastWall : MutableMap<Point, Point> = mutableMapOf()
+    var currentWallFade : MutableMap<Point, Point> = mutableMapOf()
+    var pastWallFade : MutableMap<Point, Point> = mutableMapOf()
+
+    val floorNodes = mutableListOf<Node>()
+    var currentFloor : MutableMap<Point, Point> = mutableMapOf()
+    var pastFloor : MutableMap<Point, Point> = mutableMapOf()
 
     //build constructor
     constructor(nodeRoom : NodeRoom) : this (
@@ -95,7 +106,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         val newNodeRoom = NodeRoom(height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms(), exitsAllowed = maxRoomExits - currentRoomExits)
         println("new NodeRoom created! node count: ${newNodeRoom.nodes.size}")
 
-        if (newNodeRoom.nodes.size > 0) {
+        if (newNodeRoom.nodes.size > 1) {
 
             this.nodeRooms.add(newNodeRoom)
             val newNodeRoomIdx = nodeRooms.size - 1
@@ -158,40 +169,6 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             newCurrentWall.entries.forEach { this.currentWall[it.key] = it.value }
             newCurrentWallFade.entries.forEach { this.currentWallFade[it.key] = it.value }
         }
-
-        //line of sight
-        fun NodeRoomMesh.buildWallsLosOld(currentRoom : NodeRoom, refNode : Node, refAngle : Angle, radius : Float = 0f) {
-
-            val newCurrentWall = mutableMapOf<Point, Point>()
-            val newCurrentWallFade = mutableMapOf<Point, Point>()
-
-            this.currentWall.entries.forEach { this.pastWall[it.key] = it.value }
-            this.currentWallFade.entries.forEach { this.pastWallFade[it.key] = it.value }
-
-            this.currentWall.clear()
-            this.currentWallFade.clear()
-
-            this.nodeRooms.forEach { nodeRoom ->
-
-                if (nodeRoom == currentRoom) {
-
-                    nodeRoom.buildWallsLos(refNode.position, refAngle, radius)
-
-                    nodeRoom.currentWallFade.forEach { wallPoint ->
-                        if ( this.pastWallFade.keys.contains(wallPoint.key) ) newCurrentWallFade[wallPoint.key] = this.pastWallFade[wallPoint.key] as Point
-                            else newCurrentWallFade[wallPoint.key] = wallPoint.value
-                    }
-                    nodeRoom.currentWall.forEach { wallPoint ->
-                        if ( this.pastWall.keys.contains(wallPoint.key) ) newCurrentWall[wallPoint.key] = this.pastWall[wallPoint.key] as Point
-                        else newCurrentWall[wallPoint.key] = wallPoint.value
-                    }
-
-                }
-            }
-            newCurrentWall.entries.forEach { this.currentWall[it.key] = it.value }
-            newCurrentWallFade.entries.forEach { this.currentWallFade[it.key] = it.value }
-        }
-
 
         //line of sight
         fun NodeRoomMesh.buildWallsLos(refPosition : Point, refAngle : Angle, radius : Float = 0f) {
@@ -282,6 +259,123 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
             newCurrentWall.entries.forEach { this.currentWall[it.key] = it.value }
             newCurrentWallFade.entries.forEach { this.currentWallFade[it.key] = it.value }
+        }
+
+        //line of sight
+        fun NodeRoomMesh.buildFloorsLos(refNode : Node, forwardNode : Node, refAngle : Angle, radius : Float = 0f) {
+
+            val nodesToBuild = mutableListOf<Node>()
+
+            currentFloor.entries.forEach { this.pastFloor[it.key] = it.value }
+            currentFloor.entries.clear()
+
+            if (!floorNodes.contains(refNode) ) nodesToBuild.add(refNode)
+            if (!floorNodes.contains(forwardNode) ) nodesToBuild.add(forwardNode)
+
+            nodesToBuild.forEach { node ->
+
+                //center circle first
+                val radius = 8
+
+                //https://stackoverflow.com/questions/40779343/java-loop-through-all-pixels-in-a-2d-circle-with-center-x-y-and-radius
+                val yMin = node.position.y.toInt() - radius
+                val yMax = node.position.y.toInt() + radius
+
+                (yMin..yMax).forEach { yIter ->
+                    var xIter1 = node.position.x.toInt()
+                    var xIter2 = node.position.x.toInt() + 1
+
+                    while ( Math.pow(
+                            (xIter1 - node.position.x).toDouble(),
+                            2.0
+                        ) + Math.pow((yIter - node.position.y).toDouble(), 2.0) <= Math.pow(radius.toDouble(), 2.0)
+                    ) {
+                        val checkPoint = Point(xIter1.toFloat(), yIter.toFloat())
+
+                        val isPoint = ProbabilitySelect(
+                            mapOf(
+                                true to Probability(node.attributes.nodeObstacle.getChallenge(), 0),
+                                false to Probability(100 - node.attributes.nodeObstacle.getChallenge(), 0)
+                            )
+                        ).getSelectedProbability()!!
+
+                        if (isPoint) {
+                            if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
+                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = 0.75f).getValue(), Probability(mean = 1f, range = 0.75f).getValue())
+                        }
+
+                        xIter1--
+                    }
+                    while ( Math.pow(
+                            (xIter2 - node.position.x).toDouble(),
+                            2.0
+                        ) + Math.pow((yIter - node.position.y).toDouble(), 2.0) <= Math.pow(radius.toDouble(), 2.0)
+                    ) {
+                        val checkPoint = Point(xIter2.toFloat(), yIter.toFloat())
+
+                        val isPoint = ProbabilitySelect(
+                            mapOf(
+                                true to Probability(node.attributes.nodeObstacle.getChallenge(), 0),
+                                false to Probability(100 - node.attributes.nodeObstacle.getChallenge(), 0)
+                            )
+                        ).getSelectedProbability()!!
+
+                        if (isPoint) {
+                            if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
+                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = 0.75f).getValue(), Probability(mean = 1f, range = 0.75f).getValue())
+                        }
+
+                        xIter2++
+                    }
+                }
+
+                val childNodes = node.getNodeChildren(nodesMap.keys.toMutableList(), nodeLinks)
+                val borderWidth = 4
+
+                childNodes.forEach { childNode ->
+                    val beginCooridorPos = node.position.getPositionByDistanceAndAngle(borderWidth.toFloat() * 2, node.angleBetween(childNode))
+                    val dstToHalf = node.position.dst(childNode.position) / 2 - borderWidth
+                    val posHalf = node.position.getPositionByDistanceAndAngle(dstToHalf, node.angleBetween(childNode))
+                    val avgChallenge = (node.attributes.nodeObstacle.getChallenge() + childNode.attributes.nodeObstacle.getChallenge() ) / 2
+
+                    Line.pointsInBorder(Line(beginCooridorPos, posHalf), borderWidth).forEach { checkPoint ->
+                        val isPoint = ProbabilitySelect(
+                            mapOf(
+                                true to Probability(avgChallenge, 0),
+                                false to Probability(100 - avgChallenge, 0)
+                            )
+                        ).getSelectedProbability()!!
+
+                        if (isPoint) {
+                            if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
+                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = 0.75f).getValue(), Probability(mean = 1f, range = 0.75f).getValue())
+                        }
+                    }
+                }
+                //add to pastFloor in prep for LOS below
+                floorNodes.add(node)
+            }
+
+            val aMin = 0
+            val aMax = 359
+
+            (aMin..aMax).forEach { aIter ->
+                var rayLengthIter = 1f
+
+                val checkRadius = if ( Math.abs(aIter - refAngle) < 30f || Math.abs(aIter - refAngle) > 330f ) radius else radius * .5f
+
+//                println("aIter: $aIter")
+
+                while (rayLengthIter <= checkRadius) {
+                    val checkPoint = refNode.position.getPositionByDistanceAndAngle(rayLengthIter, aIter.toFloat()).trunc()
+
+                    if (pastFloor.contains( checkPoint ) ) { currentFloor[checkPoint] = pastFloor[checkPoint]!! ; pastFloor.remove(checkPoint) }
+
+                    rayLengthIter++
+                }
+            }
+            println ("currentFloor size: ${currentFloor.size}")
+            println ("pastFloor size: ${pastFloor.size}")
         }
     }
 }

@@ -2,11 +2,10 @@ package org.river.exertion.koboldCave
 
 import com.badlogic.gdx.math.MathUtils.cos
 import com.badlogic.gdx.math.MathUtils.sin
+import org.river.exertion.*
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
-import org.river.exertion.Angle
-import org.river.exertion.Point
-import org.river.exertion.degrees
-import org.river.exertion.radians
+import org.river.exertion.koboldCave.Line.Companion.isInBorder
+import org.river.exertion.koboldCave.Line.Companion.isInRect
 import java.lang.Float.max
 import java.lang.Float.min
 import kotlin.math.*
@@ -260,6 +259,30 @@ class Line(val first : Point, val second: Point) {
             }
 
             return inBorder
+        }
+
+        //returns truncated points, ie. whole number points
+        fun pointsInBorder(line : Line, offset: Int) : MutableList<Point> {
+
+            val pointsSet = mutableSetOf<Point>()
+
+            val borderPoints = line.borderPoints(offset)
+
+            val minX = borderPoints.minOf { it.x }.toInt()
+            val minY = borderPoints.minOf { it.y }.toInt()
+            val maxX = borderPoints.maxOf { it.x }.toInt()
+            val maxY = borderPoints.maxOf { it.y }.toInt()
+
+            (minX..maxX).forEach { xIter ->
+                (minY..maxY).forEach { yIter ->
+                    val checkPoint = Point(xIter.toFloat(), yIter.toFloat())
+
+                    if ( checkPoint.isInRect(listOf(borderPoints[0], borderPoints[1], borderPoints[2], borderPoints[3]) ) ) {
+                        pointsSet.add(checkPoint.trunc())
+                    }
+                }
+            }
+            return pointsSet.toMutableList()
         }
 
         fun Line.intersectsBorder(line : Line, offset : Int) : Boolean {
