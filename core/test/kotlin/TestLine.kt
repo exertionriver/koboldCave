@@ -80,4 +80,26 @@ class TestLine {
 
         startingList.forEachIndexed { idx, it -> println ("angleBetween ${startingList[idx]} and $centerPoint : ${startingList[idx].angleBetween(centerPoint)}")}
     }
+
+    @Test
+    fun testAngleBetweenRads() {
+
+        val centerPoint = Point(Game.initViewportWidth / 2, Game.initViewportHeight / 2)
+        val xOffset = Point(Game.initViewportWidth / 4, 0F)
+        val yOffset = Point(0F, Game.initViewportWidth / 4) // to make it appear circular
+
+        val startingList = listOf(
+            centerPoint - xOffset
+            , centerPoint + Point(-xOffset.x * MathUtils.sin(45F.radians()), -yOffset.y * MathUtils.sin(45F.radians()))
+            , centerPoint - yOffset
+            , centerPoint + Point(xOffset.x * MathUtils.sin(45F.radians()), -yOffset.y * MathUtils.sin(45F.radians()))
+            , centerPoint + xOffset
+            , centerPoint + Point(xOffset.x * MathUtils.sin(45F.radians()), yOffset.y * MathUtils.sin(45F.radians()))
+            , centerPoint + yOffset
+            , centerPoint + Point(-xOffset.x * MathUtils.sin(45F.radians()), yOffset.y * MathUtils.sin(45F.radians()))
+        )
+
+        startingList.forEachIndexed { idx, it -> println ("angleBetween ${startingList[idx]} and $centerPoint : ${startingList[idx].angleBetween(centerPoint).radians()}")}
+    }
+
 }

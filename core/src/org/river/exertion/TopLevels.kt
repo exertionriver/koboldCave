@@ -39,8 +39,8 @@ fun Angle.normalizeDeg() : Angle {
 fun Angle.normalizeRad() : Angle {
     var returnAngle = this
 
-    while ( returnAngle > PI.toFloat() ) returnAngle -= 2 * PI.toFloat()
-    while ( returnAngle < PI.toFloat() ) returnAngle += 2 * PI.toFloat()
+    while ( returnAngle >= 2 * PI.toFloat() ) returnAngle -= 2 * PI.toFloat()
+    while ( returnAngle < 0 ) returnAngle += 2 * PI.toFloat()
 
     return returnAngle
 }

@@ -145,6 +145,13 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
     fun getCurrentRoomIdx(currentNode : Node) = nodeRooms.indexOfFirst { it.uuid == nodesMap[currentNode] }
 
+    fun getSlope(firstNode : Node, secondNode : Node) : Float {
+        val rise = secondNode.attributes.nodeElevation.getHeight() - firstNode.attributes.nodeElevation.getHeight()
+        val run = firstNode.position.dst(secondNode.position)
+
+        return rise / run * 100
+    }
+
     companion object {
 
         //build all walls, fully lit

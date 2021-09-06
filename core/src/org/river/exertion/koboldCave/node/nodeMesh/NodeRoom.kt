@@ -60,7 +60,10 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
         this.nodeLinks = mutableListOf<NodeLink>().apply { addAll(workNodeRoom.nodeLinks) }
         this.centroid = workNodeRoom.centroid
         this.setExitNodes(exitsAllowed)
-        this.nodes.forEach { it.attributes.nodeObstacle = NodeAttributes.getRandomObstacleChallenge() }
+        this.nodes.forEach {
+            it.attributes.nodeObstacle = NodeAttributes.getRandomObstacleChallenge()
+            it.attributes.nodeElevation = NodeAttributes.getRandomElevationHeight()
+        }
 
         this.attributes.circleNoise = circleNoise
         this.attributes.angleNoise = angleNoise

@@ -11,22 +11,7 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
-import org.river.exertion.screen.leaf.DemoLaceAngledScreen
-import org.river.exertion.screen.leaf.DemoLaceBorderingScreen
-import org.river.exertion.screen.leaf.DemoLaceHeightScreen
-import org.river.exertion.screen.lattice.*
-import org.river.exertion.screen.leaf.DemoLeafAngledScreen
-import org.river.exertion.screen.leaf.DemoLeafBorderingScreen
-import org.river.exertion.screen.leaf.DemoLeafHeightScreen
-import org.river.exertion.screen.nodeLine.DemoNodeLineAngledScreen
-import org.river.exertion.screen.nodeLine.DemoNodeLineBorderingScreen
-import org.river.exertion.screen.nodeLine.DemoNodeLineHeightScreen
-import org.river.exertion.screen.nodeMesh.DemoNodeMeshOperationsFirstScreen
-import org.river.exertion.screen.nodeMesh.DemoNodeMeshOperationsSecondScreen
-import org.river.exertion.screen.nodeMesh.DemoNodeMeshOperationsThirdScreen
-import org.river.exertion.screen.nodeRoom.DemoNodeRoomHeightScreen
-import org.river.exertion.screen.nodeRoom.DemoNodeRoomNavigateScreen
-import org.river.exertion.screen.nodeRoom.DemoNodeRoomWallScreen
+import org.river.exertion.screen.nodeRoom.DemoNodeRoomWallFloorScreen
 import org.river.exertion.screen.nodeRoomMesh.DemoNodeRoomMeshNavigateScreen
 
 class Game : KtxGame<KtxScreen>() {
@@ -75,7 +60,7 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeMeshOperationsThirdScreen( inject(), inject(), inject(), inject()) )
 
             addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
-       *///      addScreen(DemoNodeRoomWallScreen( inject(), inject(), inject() ) )
+       *///      addScreen(DemoNodeRoomWallFloorScreen( inject(), inject(), inject() ) )
        //     addScreen(DemoNodeRoomNavigateScreen( inject(), inject(), inject(), inject() ) )
 
             addScreen(DemoNodeRoomMeshNavigateScreen( inject(), inject(), inject(), inject() ) )

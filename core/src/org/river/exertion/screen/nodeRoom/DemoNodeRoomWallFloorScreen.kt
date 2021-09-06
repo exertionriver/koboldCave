@@ -16,9 +16,9 @@ import org.river.exertion.screen.RenderPalette.FadeBackColors
 import org.river.exertion.screen.RenderPalette.FadeForeColors
 import org.river.exertion.screen.RenderPalette.ForeColors
 
-class DemoNodeRoomWallScreen(private val batch: Batch,
-                             private val font: BitmapFont,
-                             private val camera: OrthographicCamera) : KtxScreen {
+class DemoNodeRoomWallFloorScreen(private val batch: Batch,
+                                  private val font: BitmapFont,
+                                  private val camera: OrthographicCamera) : KtxScreen {
 
     val horizOffset = Game.initViewportWidth / 11
     val vertOffset = Game.initViewportHeight / 11
