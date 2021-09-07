@@ -13,6 +13,7 @@ import org.river.exertion.Angle
 import org.river.exertion.Point
 import org.river.exertion.koboldCave.ProbabilitySelect
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLinks
+import org.river.exertion.round
 import java.util.*
 
 @ExperimentalUnsignedTypes
@@ -139,7 +140,7 @@ interface ILattice {
         }
 
         fun ILattice.node(): Node {
-            return Node(this.uuid, this.position, this.description)
+            return Node(this.uuid, this.position.round(), this.description)
         }
 
         fun ILattice.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {

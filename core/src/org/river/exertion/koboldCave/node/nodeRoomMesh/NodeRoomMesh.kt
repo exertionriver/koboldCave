@@ -282,7 +282,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             nodesToBuild.forEach { node ->
 
                 //center circle first
-                val radius = 8
+                val radius = 6
 
                 //https://stackoverflow.com/questions/40779343/java-loop-through-all-pixels-in-a-2d-circle-with-center-x-y-and-radius
                 val yMin = node.position.y.toInt() - radius
@@ -308,7 +308,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
                         if (isPoint) {
                             if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
-                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = 0.75f).getValue(), Probability(mean = 1f, range = 0.75f).getValue())
+                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = 0.75f).getValue(), Probability(mean = 0f, range = 0.75f).getValue())
                         }
 
                         xIter1--
@@ -329,7 +329,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
                         if (isPoint) {
                             if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
-                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = 0.75f).getValue(), Probability(mean = 1f, range = 0.75f).getValue())
+                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = 0.75f).getValue(), Probability(mean = 0f, range = 0.75f).getValue())
                         }
 
                         xIter2++
@@ -338,24 +338,31 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
                 val childNodes = node.getNodeChildren(nodesMap.keys.toMutableList(), nodeLinks)
                 val borderWidth = 4
+                val nodeChallenge = node.attributes.nodeObstacle.getChallenge()
 
                 childNodes.forEach { childNode ->
                     val beginCooridorPos = node.position.getPositionByDistanceAndAngle(borderWidth.toFloat() * 2, node.angleBetween(childNode))
-                    val dstToHalf = node.position.dst(childNode.position) / 2 - borderWidth
-                    val posHalf = node.position.getPositionByDistanceAndAngle(dstToHalf, node.angleBetween(childNode))
-                    val avgChallenge = (node.attributes.nodeObstacle.getChallenge() + childNode.attributes.nodeObstacle.getChallenge() ) / 2
+                    val dstHalfCooridor = beginCooridorPos.dst(childNode.position) / 2 - borderWidth * 2
+                    val halfCooridorPos = beginCooridorPos.getPositionByDistanceAndAngle(dstHalfCooridor, node.angleBetween(childNode))
+                    val childNodeChallenge = childNode.attributes.nodeObstacle.getChallenge()
 
-                    Line.pointsInBorder(Line(beginCooridorPos, posHalf), borderWidth).forEach { checkPoint ->
+                    Line.pointsInBorder(Line(beginCooridorPos, halfCooridorPos), borderWidth).forEach { checkPoint ->
+                        val dstGradientFromBegin = checkPoint.dst(beginCooridorPos) / dstHalfCooridor
+                        val dstGradientFromHalf = checkPoint.dst(halfCooridorPos) / dstHalfCooridor
+                        val avgChallenge = ( nodeChallenge + childNodeChallenge ) / 2
+
+                        val dstChallenge = if (nodeChallenge != childNodeChallenge) nodeChallenge * dstGradientFromHalf + avgChallenge * dstGradientFromBegin else nodeChallenge.toFloat()
+
                         val isPoint = ProbabilitySelect(
                             mapOf(
-                                true to Probability(avgChallenge, 0),
-                                false to Probability(100 - avgChallenge, 0)
+                                true to Probability(dstChallenge, 0),
+                                false to Probability(100 - dstChallenge, 0)
                             )
                         ).getSelectedProbability()!!
 
                         if (isPoint) {
                             if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
-                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = 0.75f).getValue(), Probability(mean = 1f, range = 0.75f).getValue())
+                                pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = 0.75f).getValue(), Probability(mean = 0f, range = 0.75f).getValue())
                         }
                     }
                 }

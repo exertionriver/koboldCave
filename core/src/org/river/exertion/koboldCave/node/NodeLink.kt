@@ -18,6 +18,12 @@ import kotlin.random.Random
 class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
         , var attributes : List<String> = listOf() ) {
 
+    constructor(firstNode : Node, secondNode : Node, attributes : List<String> = listOf()) : this (
+        firstNodeUuid = firstNode.uuid
+        , secondNodeUuid = secondNode.uuid
+        , attributes = attributes
+    )
+
     constructor(copyNodeLink : NodeLink
                 , updFirstNodeUuid: UUID = copyNodeLink.firstNodeUuid
                 , updSecondNodeUuid: UUID = copyNodeLink.secondNodeUuid) : this (

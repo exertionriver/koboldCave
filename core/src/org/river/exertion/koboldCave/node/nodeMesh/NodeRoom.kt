@@ -21,16 +21,13 @@ import org.river.exertion.koboldCave.node.Node.Companion.averagePositionWithinNo
 import org.river.exertion.koboldCave.node.Node.Companion.nearestNodesOrderedAsc
 import org.river.exertion.koboldCave.node.NodeAttributes
 import org.river.exertion.koboldCave.node.NodeLink
-import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.removeOrphanLinks
 import org.river.exertion.koboldCave.node.nodeMesh.INodeMesh.Companion.setBordering
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
-import org.river.exertion.koboldCave.node.nodeRoomMesh.INodeRoomMesh
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import java.lang.Math.abs
 import java.lang.Math.pow
 import java.util.*
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -61,8 +58,8 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
         this.centroid = workNodeRoom.centroid
         this.setExitNodes(exitsAllowed)
         this.nodes.forEach {
-            it.attributes.nodeObstacle = NodeAttributes.getRandomObstacleChallenge()
-            it.attributes.nodeElevation = NodeAttributes.getRandomElevationHeight()
+            it.attributes.nodeObstacle = NodeAttributes.getProbNodeObstacle()
+            it.attributes.nodeElevation = NodeAttributes.getProbNodeElevation()
         }
 
         this.attributes.circleNoise = circleNoise
@@ -248,37 +245,39 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
             this.getLineList().forEach { line ->
 
-                val fadeBorderLines = line.borderLines((ILeaf.NextDistancePx * 0.5).toInt())
+                val fadeBorderLines = line.borderLines( (NextDistancePx * 0.5).roundToInt())
 
-                val fadeMinX = fadeBorderLines.points().minOf { xVar -> xVar.x }.toInt()
-                val fadeMaxX = fadeBorderLines.points().maxOf { xVar -> xVar.x }.toInt()
-                val fadeMinY = fadeBorderLines.points().minOf { yVar -> yVar.y }.toInt()
-                val fadeMaxY = fadeBorderLines.points().maxOf { yVar -> yVar.y }.toInt()
+                val fadeMinX = fadeBorderLines.points().minOf { xVar -> xVar.x }.roundToInt()
+                val fadeMaxX = fadeBorderLines.points().maxOf { xVar -> xVar.x }.roundToInt()
+                val fadeMinY = fadeBorderLines.points().minOf { yVar -> yVar.y }.roundToInt()
+                val fadeMaxY = fadeBorderLines.points().maxOf { yVar -> yVar.y }.roundToInt()
 
                 (fadeMinX..fadeMaxX).forEach { xVar ->
                     (fadeMinY..fadeMaxY).forEach { yVar ->
                         val checkPoint = Point(xVar.toFloat(), yVar.toFloat())
-                        if ( checkPoint.isInBorder(line, (ILeaf.NextDistancePx * 0.5).toInt()) ) fadeBorderRegion.add(checkPoint)
-                        if ( checkPoint.isInBorder(line, (ILeaf.NextDistancePx * 0.3).toInt()) ) maxBorderRegion.add(checkPoint)
-                        if ( checkPoint.isInBorder(line, (ILeaf.NextDistancePx * 0.2).toInt()) ) minBorderRegion.add(checkPoint)
+                        if ( checkPoint.isInBorder(line, (NextDistancePx * 0.5).roundToInt()) ) fadeBorderRegion.add(checkPoint)
+                        if ( checkPoint.isInBorder(line, (NextDistancePx * 0.3).roundToInt()) ) maxBorderRegion.add(checkPoint)
+                        if ( checkPoint.isInBorder(line, (NextDistancePx * 0.2).roundToInt()) ) minBorderRegion.add(checkPoint)
                     }
                 }
             }
 
-            val minX = fadeBorderRegion.minOf { xVar -> xVar.x }.toInt()
-            val maxX = fadeBorderRegion.maxOf { xVar -> xVar.x }.toInt()
-            val minY = fadeBorderRegion.minOf { yVar -> yVar.y }.toInt()
-            val maxY = fadeBorderRegion.maxOf { yVar -> yVar.y }.toInt()
+            val minX = fadeBorderRegion.minOf { xVar -> xVar.x }.roundToInt()
+            val maxX = fadeBorderRegion.maxOf { xVar -> xVar.x }.roundToInt()
+            val minY = fadeBorderRegion.minOf { yVar -> yVar.y }.roundToInt()
+            val maxY = fadeBorderRegion.maxOf { yVar -> yVar.y }.roundToInt()
 
             (minX..maxX).forEach { xVar ->
                 (minY..maxY).forEach { yVar ->
                     val checkPoint = Point(xVar.toFloat(), yVar.toFloat())
 
                     if ( fadeBorderRegion.contains(checkPoint) && !maxBorderRegion.contains(checkPoint) && !minBorderRegion.contains(checkPoint) )
-                        newCurrentWallFade[checkPoint] = checkPoint + Point(Probability(mean = 0.5f, range = 0.3f).getValue(), Probability(mean = 0.5f, range = 0.3f).getValue())
+                        newCurrentWallFade[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = 0.3f).getValue(), Probability(mean = 0f, range = 0.3f).getValue())
+//                       newCurrentWallFade[checkPoint] = checkPoint
 
                     if ( maxBorderRegion.contains(checkPoint) && !minBorderRegion.contains(checkPoint) )
-                        newCurrentWall[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = 0.5f).getValue(), Probability(mean = 1f, range = 0.5f).getValue())
+                        newCurrentWall[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = 0.5f).getValue(), Probability(mean = 0f, range = 0.5f).getValue())
+//                        newCurrentWall[checkPoint] = checkPoint
                 }
             }
 
@@ -353,13 +352,13 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
                         if ( fadeBorderRegion.contains(checkPoint) && !maxBorderRegion.contains(checkPoint) && !minBorderRegion.contains(checkPoint) ) {
                             if (pastWallFade.contains( checkPoint ) ) { currentWallFade[checkPoint] = pastWallFade[checkPoint]!! ; pastWallFade.remove(checkPoint) }
-                            else newCurrentWallFade[checkPoint] = checkPoint + Point(Probability(mean = 0.5f, range = 0.3f).getValue(), Probability(mean = 0.5f, range = 0.3f).getValue())
+                            else newCurrentWallFade[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = 0.3f).getValue(), Probability(mean = 0f, range = 0.3f).getValue())
 
                             fadeCounter--
                         }
                         if ( maxBorderRegion.contains(checkPoint) && !minBorderRegion.contains(checkPoint) )
                             if (pastWall.contains( checkPoint ) ) { currentWall[checkPoint] = pastWall[checkPoint]!! ; pastWall.remove(checkPoint) }
-                            else newCurrentWall[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = 0.5f).getValue(), Probability(mean = 1f, range = 0.5f).getValue())
+                            else newCurrentWall[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = 0.5f).getValue(), Probability(mean = 0f, range = 0.5f).getValue())
                     }
 
                     rayLengthIter++
@@ -381,7 +380,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                 val currentNodePoints = mutableListOf<Point>()
 
                 //center circle first
-                val radius = 8
+                val radius = 6
 
                 //https://stackoverflow.com/questions/40779343/java-loop-through-all-pixels-in-a-2d-circle-with-center-x-y-and-radius
                 val yMin = node.position.y.toInt() - radius
@@ -403,7 +402,8 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
                         if (isPoint) {
                             if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
-                                currentFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = .75f).getValue(), Probability(mean = 1f, range = .75f).getValue())
+                                currentFloor[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = .75f).getValue(), Probability(mean = 0f, range = .75f).getValue())
+//                            currentFloor[checkPoint] = checkPoint
                         }
 
                         xIter1--
@@ -420,7 +420,8 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
                         if (isPoint) {
                             if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
-                                currentFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = .75f).getValue(), Probability(mean = 1f, range = .75f).getValue())
+                                currentFloor[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = .75f).getValue(), Probability(mean = 0f, range = .75f).getValue())
+//                                currentFloor[checkPoint] = checkPoint
                         }
 
                         xIter2++
@@ -429,24 +430,32 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
                 val childNodes = node.getNodeChildren(nodes, nodeLinks)
                 val borderWidth = 4
+                val nodeChallenge = node.attributes.nodeObstacle.getChallenge()
 
                 childNodes.forEach { childNode ->
                     val beginCooridorPos = node.position.getPositionByDistanceAndAngle(borderWidth.toFloat() * 2, node.angleBetween(childNode))
-                    val dstToHalf = node.position.dst(childNode.position) / 2 - borderWidth
-                    val posHalf = node.position.getPositionByDistanceAndAngle(dstToHalf, node.angleBetween(childNode))
-                    val avgChallenge = (node.attributes.nodeObstacle.getChallenge() + childNode.attributes.nodeObstacle.getChallenge() ) / 2
+                    val dstHalfCooridor = beginCooridorPos.dst(childNode.position) / 2 - borderWidth * 2
+                    val halfCooridorPos = beginCooridorPos.getPositionByDistanceAndAngle(dstHalfCooridor, node.angleBetween(childNode))
+                    val childNodeChallenge = childNode.attributes.nodeObstacle.getChallenge()
 
-                    pointsInBorder(Line(beginCooridorPos, posHalf), borderWidth).forEach { checkPoint ->
+                    pointsInBorder(Line(beginCooridorPos, halfCooridorPos), borderWidth).forEach { checkPoint ->
+                        val dstGradientFromBegin = checkPoint.dst(beginCooridorPos) / dstHalfCooridor
+                        val dstGradientFromHalf = checkPoint.dst(halfCooridorPos) / dstHalfCooridor
+                        val avgChallenge = ( nodeChallenge + childNodeChallenge ) / 2
+
+                        val dstChallenge = if (nodeChallenge != childNodeChallenge) nodeChallenge * dstGradientFromHalf + avgChallenge * dstGradientFromBegin else nodeChallenge.toFloat()
+
                         val isPoint = ProbabilitySelect(
                             mapOf(
-                                true to Probability(avgChallenge, 0),
-                                false to Probability(100 - avgChallenge, 0)
+                                true to Probability(dstChallenge, 0),
+                                false to Probability(100 - dstChallenge, 0)
                             )
                         ).getSelectedProbability()!!
 
                         if (isPoint) {
                             if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
-                                currentFloor[checkPoint] = checkPoint + Point(Probability(mean = 1f, range = .75f).getValue(), Probability(mean = 1f, range = .75f).getValue())
+                                currentFloor[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = .75f).getValue(), Probability(mean = 0f, range = .75f).getValue())
+         //                       currentFloor[checkPoint] = checkPoint
                         }
                     }
                 }

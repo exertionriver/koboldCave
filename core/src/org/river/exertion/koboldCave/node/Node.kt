@@ -1,5 +1,6 @@
 package org.river.exertion.koboldCave.node
 
+import org.river.exertion.*
 import org.river.exertion.koboldCave.leaf.ILeaf
 import org.river.exertion.koboldCave.Line.Companion.angleBetween
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
@@ -9,12 +10,8 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeChildrenUuid
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLinks
 import org.river.exertion.koboldCave.node.NodeLink.Companion.linkNodeDistance
 import org.river.exertion.koboldCave.node.NodeLink.Companion.stackedNodeDistance
-import org.river.exertion.Angle
-import org.river.exertion.Point
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.node.nodeMesh.INodeMesh
-import org.river.exertion.middle
-import org.river.exertion.plus
 import java.util.*
 import kotlin.random.Random
 

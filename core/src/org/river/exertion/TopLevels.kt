@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Align
 import space.earlygrey.shapedrawer.ShapeDrawer
 import kotlin.math.PI
 import kotlin.math.atan
+import kotlin.math.roundToInt
 
 typealias Point = Vector2
 
@@ -23,6 +24,7 @@ operator fun Point.times(multiplier : Int) : Point = Point(this.x * multiplier, 
 operator fun Point.div(divisor : Int) : Point = Point(this.x / divisor, this.y / divisor)
 
 fun Point.trunc() : Point = Point(this.x.toInt().toFloat(), this.y.toInt().toFloat())
+fun Point.round() : Point = Point(this.x.roundToInt().toFloat(), this.y.roundToInt().toFloat())
 
 fun middle(firstPoint : Point, secondPoint : Point) : Point = Point((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2)
 

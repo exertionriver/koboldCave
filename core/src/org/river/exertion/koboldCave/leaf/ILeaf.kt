@@ -11,6 +11,7 @@ import org.river.exertion.Angle
 import org.river.exertion.Game
 import org.river.exertion.Point
 import org.river.exertion.koboldCave.ProbabilitySelect
+import org.river.exertion.round
 import java.util.*
 
 @ExperimentalUnsignedTypes
@@ -87,7 +88,7 @@ interface ILeaf {
         }
 
         fun ILeaf.node(): Node {
-            return Node(this.uuid, this.position, this.description)
+            return Node(this.uuid, this.position.round(), this.description)
         }
 
         fun ILeaf.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {

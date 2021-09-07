@@ -47,7 +47,7 @@ class Probability(
         , rangeIncreaseAccel = prevProbability.rangeIncreaseAccel
     ) //e.g. modOffset = timer.initCurSecondsBetween
 
-    fun getVariance() : Float = if (range == 0F) 0F else ( ( Random.nextFloat() * (range * 2 + 1) ) - range )
+    fun getVariance() : Float = if (range == 0F) 0F else ( ( Random.nextFloat() * (range * 2) ) - range )
 
     fun getValue() : Float = mean + getVariance()
 

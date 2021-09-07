@@ -15,10 +15,10 @@ class NodeAttributes {
     var nodeType : NodeType = NodeType.OPEN
 
     enum class NodeObstacle {
-        HEAVY { override fun getChallenge() = 70 }
+        HEAVY { override fun getChallenge() = 80 }
         , MEDIUM { override fun getChallenge() = 50 }
-        , LIGHT { override fun getChallenge() = 30 }
-        , NONE { override fun getChallenge() = 0 } ;
+        , LIGHT { override fun getChallenge() = 20 }
+        , NONE { override fun getChallenge() = 1 } ;
         abstract fun getChallenge() : Int
     }
     var nodeObstacle : NodeObstacle = NodeObstacle.NONE
@@ -40,7 +40,7 @@ class NodeAttributes {
     }
 
     companion object {
-        fun getRandomObstacleChallenge() : NodeObstacle =
+        fun getProbNodeObstacle() : NodeObstacle =
             ProbabilitySelect(
                 mapOf(
                     NodeObstacle.HEAVY to Probability(5, 0),
@@ -50,7 +50,7 @@ class NodeAttributes {
                 )
             ).getSelectedProbability()!!
 
-        fun getRandomElevationHeight() : NodeElevation =
+        fun getProbNodeElevation() : NodeElevation =
             ProbabilitySelect(
                 mapOf(
                     NodeElevation.HIGH_POS to Probability(5, 0),
