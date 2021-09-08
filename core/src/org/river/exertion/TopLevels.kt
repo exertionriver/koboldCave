@@ -70,7 +70,7 @@ fun BitmapFont.drawLabel(batch : Batch, location : Point, labelText : String, co
 }
 
 //https://github.com/earlygrey/shapedrawer/wiki/Using-Shape-Drawer
-class ShapeDrawerConfig(val batch: Batch) {
+class ShapeDrawerConfig(val batch: Batch, val baseColor : Color = Color.WHITE) {
 
     lateinit var pixmap : Pixmap
     lateinit var texture : Texture
@@ -79,7 +79,7 @@ class ShapeDrawerConfig(val batch: Batch) {
 
     init {
         pixmap = Pixmap(1, 1, Pixmap.Format.RGBA8888)
-        pixmap.setColor(Color.WHITE)
+        pixmap.setColor(baseColor)
         pixmap.drawPixel(0, 0)
 
         texture = Texture(pixmap, true)

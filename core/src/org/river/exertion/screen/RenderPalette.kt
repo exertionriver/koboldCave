@@ -10,7 +10,7 @@ object RenderPalette {
     )
 
     val FadeForeColors = listOf(
-        Color.valueOf("#42f04844"), Color.valueOf("#777aff44"), Color.valueOf("#f4ff0b44"), Color.valueOf("#ff449444")
+        Color.valueOf("#42f04844"), Color.valueOf("#777aff88"), Color.valueOf("#f4ff0b44"), Color.valueOf("#ff449444")
         , Color.valueOf("#b685ff44"), Color.valueOf("#53ffec44"), Color.valueOf("#f0815444"), Color.valueOf("#f0d1d944")
     )
 

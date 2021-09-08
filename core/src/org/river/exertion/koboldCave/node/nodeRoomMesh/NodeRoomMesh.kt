@@ -1,34 +1,23 @@
 package org.river.exertion.koboldCave.node.nodeRoomMesh
 
-import org.river.exertion.Angle
-import org.river.exertion.Point
+import org.river.exertion.*
 import org.river.exertion.koboldCave.Line
-import org.river.exertion.koboldCave.Line.Companion.borderLines
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.Line.Companion.isInBorder
-import org.river.exertion.koboldCave.Line.Companion.points
 import org.river.exertion.koboldCave.Probability
 import org.river.exertion.koboldCave.ProbabilitySelect
-import org.river.exertion.koboldCave.leaf.ILeaf
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
 import org.river.exertion.koboldCave.node.Node.Companion.nearestNodesOrderedAsc
-import org.river.exertion.koboldCave.node.Node.Companion.updateNode
 import org.river.exertion.koboldCave.node.NodeAttributes
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
-import org.river.exertion.koboldCave.node.nodeMesh.NodeMesh
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildFloors
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoomLink
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWalls
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsLos
-import org.river.exertion.plus
-import org.river.exertion.trunc
 import java.util.*
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
@@ -51,6 +40,9 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
     val floorNodes = mutableListOf<Node>()
     var currentFloor : MutableMap<Point, Point> = mutableMapOf()
     var pastFloor : MutableMap<Point, Point> = mutableMapOf()
+
+    var currentStairs : MutableMap<Point, Angle> = mutableMapOf()
+    var pastStairs : MutableMap<Point, Angle> = mutableMapOf()
 
     //build constructor
     constructor(nodeRoom : NodeRoom) : this (
@@ -187,6 +179,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             val maxBorderRegion = mutableListOf<Point>()
             val fadeBorderRegion = mutableListOf<Point>()
 
+//            println("buildWallsLos nodes in room: ${nodesMap.keys}")
+
             getAllRooms().getLineList().forEach { line ->
 
                 val yMin = refPosition.y.toInt() - radius.toInt()
@@ -276,8 +270,13 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             currentFloor.entries.forEach { this.pastFloor[it.key] = it.value }
             currentFloor.entries.clear()
 
+            currentStairs.entries.forEach { this.pastStairs[it.key] = it.value }
+            currentStairs.entries.clear()
+
             if (!floorNodes.contains(refNode) ) nodesToBuild.add(refNode)
             if (!floorNodes.contains(forwardNode) ) nodesToBuild.add(forwardNode)
+
+//            println("buildFloorsLos nodes in room: ${nodesMap.keys}")
 
             nodesToBuild.forEach { node ->
 
@@ -341,14 +340,16 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                 val nodeChallenge = node.attributes.nodeObstacle.getChallenge()
 
                 childNodes.forEach { childNode ->
-                    val beginCooridorPos = node.position.getPositionByDistanceAndAngle(borderWidth.toFloat() * 2, node.angleBetween(childNode))
-                    val dstHalfCooridor = beginCooridorPos.dst(childNode.position) / 2 - borderWidth * 2
-                    val halfCooridorPos = beginCooridorPos.getPositionByDistanceAndAngle(dstHalfCooridor, node.angleBetween(childNode))
+                    val beginCorridorPos = node.position.getPositionByDistanceAndAngle(borderWidth.toFloat() * 2, node.angleBetween(childNode))
+                    val dstHalfCorridor = beginCorridorPos.dst(childNode.position) / 2 - borderWidth * 2
+                    val halfCorridorPos = beginCorridorPos.getPositionByDistanceAndAngle(dstHalfCorridor, node.angleBetween(childNode))
+
+                    //build obstacles
                     val childNodeChallenge = childNode.attributes.nodeObstacle.getChallenge()
 
-                    Line.pointsInBorder(Line(beginCooridorPos, halfCooridorPos), borderWidth).forEach { checkPoint ->
-                        val dstGradientFromBegin = checkPoint.dst(beginCooridorPos) / dstHalfCooridor
-                        val dstGradientFromHalf = checkPoint.dst(halfCooridorPos) / dstHalfCooridor
+                    Line.pointsInBorder(Line(beginCorridorPos, halfCorridorPos), borderWidth).forEach { checkPoint ->
+                        val dstGradientFromBegin = checkPoint.dst(beginCorridorPos) / dstHalfCorridor
+                        val dstGradientFromHalf = checkPoint.dst(halfCorridorPos) / dstHalfCorridor
                         val avgChallenge = ( nodeChallenge + childNodeChallenge ) / 2
 
                         val dstChallenge = if (nodeChallenge != childNodeChallenge) nodeChallenge * dstGradientFromHalf + avgChallenge * dstGradientFromBegin else nodeChallenge.toFloat()
@@ -363,6 +364,39 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                         if (isPoint) {
                             if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
                                 pastFloor[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = 0.75f).getValue(), Probability(mean = 0f, range = 0.75f).getValue())
+                        }
+                    }
+
+                    //build elevations
+                    val nodeHeight = node.attributes.nodeElevation.getHeight()
+                    val childNodeHeight = childNode.attributes.nodeElevation.getHeight()
+                    val dstHalfCorridorBorder = (dstHalfCorridor + borderWidth).roundToInt()
+
+                    if (nodeHeight != childNodeHeight) {
+                        val halfHeightDiff = Math.abs(nodeHeight - childNodeHeight) / 2 // difference for half corridor
+                        val stairStep = ((dstHalfCorridorBorder / halfHeightDiff) / 2).roundToInt() //stair step at half height unit
+                        val halfStep = stairStep / 2
+
+                        val loopStep = if (stairStep > 0) stairStep else 1
+
+//                        println("node: $node, childNode: $childNode, dstHalfCorridorBorder: $dstHalfCorridorBorder, halfHeightDiff: $halfHeightDiff, stairStep: $stairStep, halfStep: $halfStep")
+
+                        (halfStep..dstHalfCorridorBorder step loopStep).forEach { dstOffset ->
+                            val angle = if (nodeHeight > childNodeHeight) node.angleBetween(childNode) else (node.angleBetween(childNode) + 180f).normalizeDeg()
+
+                            val varDstOffset = Probability(dstOffset.toFloat(), 1f).getValue()
+//                            val varDstOffsetOffset = Probability(varDstOffset, 2f).getValue()
+
+                            val varDstPos = beginCorridorPos.getPositionByDistanceAndAngle(varDstOffset, node.angleBetween(childNode)).trunc()
+//                            val varDstPosOffset = beginCorridorPos.getPositionByDistanceAndAngle(varDstOffsetOffset, node.angleBetween(childNode))
+
+//                            if (!currentStairs.keys.contains(varDstPos) ) {
+//                                currentStairs[varDstPos] = Probability(angle + 30f, 15f).getValue()
+                                pastStairs[varDstPos] = Probability(angle, 30f).getValue()
+//                            }
+//                            if (!currentStairs.keys.contains(varDstPosOffset) ) {
+//                                currentStairs[varDstPosOffset] = Probability(angle - 30f, 15f).getValue()
+ ///                           }
                         }
                     }
                 }
@@ -384,6 +418,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                     val checkPoint = refNode.position.getPositionByDistanceAndAngle(rayLengthIter, aIter.toFloat()).trunc()
 
                     if (pastFloor.contains( checkPoint ) ) { currentFloor[checkPoint] = pastFloor[checkPoint]!! ; pastFloor.remove(checkPoint) }
+                    if (pastStairs.contains( checkPoint ) ) { currentStairs[checkPoint] = pastStairs[checkPoint]!! ; pastStairs.remove(checkPoint) }
 
                     rayLengthIter++
                 }

@@ -15,6 +15,7 @@ import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildFloors
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
 import org.river.exertion.screen.RenderPalette.BackColors
+import org.river.exertion.screen.RenderPalette.FadeBackColors
 import org.river.exertion.screen.RenderPalette.FadeForeColors
 import org.river.exertion.screen.RenderPalette.ForeColors
 
@@ -26,6 +27,8 @@ class DemoNodeRoomSlopeScreen(private val batch: Batch,
     val xOffset = Point(Game.initViewportWidth / 4, 0F)
     val yOffset = Point(0F, Game.initViewportWidth / 4) // to make it appear circular
     val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
+
+    var shown = false
 
     val labelVertOffset = Point(0F, Game.initViewportHeight / 32)
 
@@ -56,18 +59,15 @@ class DemoNodeRoomSlopeScreen(private val batch: Batch,
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
 
+    val arcSdc = ShapeDrawerConfig(batch, FadeForeColors[1])
+    val arcDrawer = arcSdc.getDrawer()
+
     override fun render(delta: Float) {
 
         batch.projectionMatrix = camera.combined
         camera.update()
 
         batch.use {
-
-            val nodeRoomIdx = 1
-            
-    //        drawer.arc(198f, 206f, 12f, 20f.radians(), 120f.radians() )
-    //        drawer.arc(203f, 203f, 12f, 80f.radians(), 120f.radians() )
-    //        drawer.arc(200f, 200f, 12f, 40f.radians(), 120f.radians() )
 
             nodeRoomList.forEachIndexed { nodeRoomIdx, nodeRoom ->
                 val yLabelOffset = if (nodeRoomIdx < 5) nodeRoom.nodes[0].position.y - labelVert.y / 2 else nodeRoom.nodes[0].position.y + labelVert.y * 2
@@ -76,11 +76,14 @@ class DemoNodeRoomSlopeScreen(private val batch: Batch,
                     "obstacle:${nodeRoom.nodes[0].attributes.nodeObstacle} to ${nodeRoom.nodes[1].attributes.nodeObstacle}"
                     , ForeColors[nodeRoomIdx % ForeColors.size])
 
-                nodeRoom.currentWall.values.forEach { wallNode ->
-                    drawer.filledCircle(wallNode, 0.5F, BackColors[nodeRoomIdx % BackColors.size])
-                }
                 nodeRoom.currentFloor.values.forEach { wallNode ->
                     drawer.filledCircle(wallNode, 0.5F, FadeForeColors[4 % BackColors.size])
+                }
+                nodeRoom.currentStairs.entries.forEach { stairNode ->
+                    arcDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
+                }
+                nodeRoom.currentWall.values.forEach { wallNode ->
+                    drawer.filledCircle(wallNode, 0.5F, BackColors[nodeRoomIdx % BackColors.size])
                 }
                 nodeRoom.currentWallFade.values.forEach { wallNode ->
                     drawer.filledCircle(wallNode, 0.3F, BackColors[nodeRoomIdx % BackColors.size])
@@ -97,9 +100,13 @@ class DemoNodeRoomSlopeScreen(private val batch: Batch,
     }
 
     override fun show() {
-        nodeRoomList.forEach { it.buildWalls() }
-        nodeRoomList.forEach { it.buildFloors() }
-        nodeRoomList.forEach { println("${it.description} ${it.nodes}") }
+        if (!shown) { //not sure why this is needed -- show() appears to get called twice when screen loaded
+            println (nodeRoomList.size)
+            nodeRoomList.forEach { it.buildWalls() }
+            nodeRoomList.forEach { it.buildFloors() }
+//        nodeRoomList.forEach { println("${it.description} ${it.nodes}") }
+            shown = true
+        }
     }
 
     override fun pause() {
@@ -115,5 +122,6 @@ class DemoNodeRoomSlopeScreen(private val batch: Batch,
 
     override fun dispose() {
         sdc.disposeShapeDrawerConfig()
+        arcSdc.disposeShapeDrawerConfig()
     }
 }

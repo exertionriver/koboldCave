@@ -45,6 +45,8 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
     val floorNodes = mutableListOf<Node>()
     var currentFloor : MutableMap<Point, Point> = mutableMapOf()
     var pastFloor : MutableMap<Point, Point> = mutableMapOf()
+    var currentStairs : MutableMap<Point, Angle> = mutableMapOf()
+    var pastStairs : MutableMap<Point, Angle> = mutableMapOf()
 
     //build constructor
     constructor(centerPoint: Point, height: Int, circleNoise : Int = 50, angleNoise : Int = 50, heightNoise : Int = 50, borderRooms : NodeRoom = NodeRoom(),
@@ -243,6 +245,8 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
             val maxBorderRegion = mutableListOf<Point>()
             val fadeBorderRegion = mutableListOf<Point>()
 
+//            println("buildWalls nodes in room: $nodes")
+
             this.getLineList().forEach { line ->
 
                 val fadeBorderLines = line.borderLines( (NextDistancePx * 0.5).roundToInt())
@@ -375,6 +379,8 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
             currentFloor.entries.forEach { this.pastFloor[it.key] = it.value }
             currentFloor.entries.clear()
 
+//            println("buildFloors nodes in room: $nodes")
+
             nodes.forEach { node ->
 
                 val currentNodePoints = mutableListOf<Point>()
@@ -433,14 +439,17 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                 val nodeChallenge = node.attributes.nodeObstacle.getChallenge()
 
                 childNodes.forEach { childNode ->
-                    val beginCooridorPos = node.position.getPositionByDistanceAndAngle(borderWidth.toFloat() * 2, node.angleBetween(childNode))
-                    val dstHalfCooridor = beginCooridorPos.dst(childNode.position) / 2 - borderWidth * 2
-                    val halfCooridorPos = beginCooridorPos.getPositionByDistanceAndAngle(dstHalfCooridor, node.angleBetween(childNode))
+
+                    val beginCorridorPos = node.position.getPositionByDistanceAndAngle(borderWidth.toFloat() * 2, node.angleBetween(childNode))
+                    val dstHalfCorridor = beginCorridorPos.dst(childNode.position) / 2 - borderWidth * 2
+                    val halfCorridorPos = beginCorridorPos.getPositionByDistanceAndAngle(dstHalfCorridor, node.angleBetween(childNode))
+
+                    //build obstacles
                     val childNodeChallenge = childNode.attributes.nodeObstacle.getChallenge()
 
-                    pointsInBorder(Line(beginCooridorPos, halfCooridorPos), borderWidth).forEach { checkPoint ->
-                        val dstGradientFromBegin = checkPoint.dst(beginCooridorPos) / dstHalfCooridor
-                        val dstGradientFromHalf = checkPoint.dst(halfCooridorPos) / dstHalfCooridor
+                    pointsInBorder(Line(beginCorridorPos, halfCorridorPos), borderWidth).forEach { checkPoint ->
+                        val dstGradientFromBegin = checkPoint.dst(beginCorridorPos) / dstHalfCorridor
+                        val dstGradientFromHalf = checkPoint.dst(halfCorridorPos) / dstHalfCorridor
                         val avgChallenge = ( nodeChallenge + childNodeChallenge ) / 2
 
                         val dstChallenge = if (nodeChallenge != childNodeChallenge) nodeChallenge * dstGradientFromHalf + avgChallenge * dstGradientFromBegin else nodeChallenge.toFloat()
@@ -455,7 +464,39 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                         if (isPoint) {
                             if (!currentWall.keys.contains(checkPoint) && !currentWallFade.keys.contains(checkPoint))
                                 currentFloor[checkPoint] = checkPoint + Point(Probability(mean = 0f, range = .75f).getValue(), Probability(mean = 0f, range = .75f).getValue())
-         //                       currentFloor[checkPoint] = checkPoint
+                        }
+                    }
+
+                    //build elevations
+                    val nodeHeight = node.attributes.nodeElevation.getHeight()
+                    val childNodeHeight = childNode.attributes.nodeElevation.getHeight()
+                    val dstHalfCorridorBorder = (dstHalfCorridor + borderWidth).roundToInt()
+
+                    if (nodeHeight != childNodeHeight) {
+                        val halfHeightDiff = abs(nodeHeight - childNodeHeight) / 2 // difference for half corridor
+                        val stairStep = ((dstHalfCorridorBorder / halfHeightDiff) ).roundToInt() //stair step at half height unit
+                        val halfStep = stairStep / 2
+
+                        val loopStep = if (stairStep > 0) stairStep else 1
+
+//                        println("node: $node, childNode: $childNode, dstHalfCorridorBorder: $dstHalfCorridorBorder, halfHeightDiff: $halfHeightDiff, stairStep: $stairStep, halfStep: $halfStep")
+
+                        (halfStep..dstHalfCorridorBorder step loopStep).forEach { dstOffset ->
+                            val angle = if (nodeHeight > childNodeHeight) node.angleBetween(childNode) else (node.angleBetween(childNode) + 180f).normalizeDeg()
+
+                            val varDstOffset = Probability(dstOffset.toFloat(), 3f).getValue()
+//                            val varDstOffsetOffset = Probability(varDstOffset, 2f).getValue()
+
+                            val varDstPos = beginCorridorPos.getPositionByDistanceAndAngle(varDstOffset, node.angleBetween(childNode))
+//                            val varDstPosOffset = beginCorridorPos.getPositionByDistanceAndAngle(varDstOffsetOffset, node.angleBetween(childNode))
+
+                            if (!currentStairs.keys.contains(varDstPos) ) {
+//                                currentStairs[varDstPos] = Probability(angle + 30f, 15f).getValue()
+                                currentStairs[varDstPos] = Probability(angle, 30f).getValue()
+                            }
+//                            if (!currentStairs.keys.contains(varDstPosOffset) ) {
+//                                currentStairs[varDstPosOffset] = Probability(angle - 30f, 15f).getValue()
+//                            }
                         }
                     }
                 }

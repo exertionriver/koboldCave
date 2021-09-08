@@ -10,6 +10,9 @@ import com.badlogic.gdx.math.Vector2
 import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
+import org.river.exertion.assets.MusicAssets
+import org.river.exertion.assets.get
+import org.river.exertion.assets.load
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.node.Node
@@ -28,6 +31,7 @@ import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.bu
 import org.river.exertion.screen.RenderPalette
 import org.river.exertion.screen.RenderPalette.BackColors
 import org.river.exertion.screen.RenderPalette.FadeBackColors
+import org.river.exertion.screen.RenderPalette.FadeForeColors
 import org.river.exertion.screen.RenderPalette.ForeColors
 import space.earlygrey.shapedrawer.JoinType
 import kotlin.math.abs
@@ -53,6 +57,8 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
     var leftNextMoveCost : Float = 0f
     var rightNextMoveCost : Float = 0f
 
+    var shown = false
+
     var nodeRoomIdx = 0
     var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
     var currentNode = currentRoom.getRandomNode()
@@ -61,6 +67,12 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
+
+    val arcSdc = ShapeDrawerConfig(batch, FadeForeColors[1])
+    val arcDrawer = arcSdc.getDrawer()
+
+    val arcFadeSdc = ShapeDrawerConfig(batch, FadeBackColors[1])
+    val arcFadeDrawer = arcFadeSdc.getDrawer()
 
     override fun render(delta: Float) {
 
@@ -84,12 +96,12 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
             val renderIdx = 1
 
-            nodeRoomMesh.pastWall.values.forEach { wallNode ->
-                drawer.filledCircle(wallNode, 0.5F, FadeBackColors[renderIdx % BackColors.size])
+            nodeRoomMesh.pastStairs.entries.forEach { stairNode ->
+                arcFadeDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
             }
 
-            nodeRoomMesh.pastWallFade.values.forEach { wallNode ->
-                drawer.filledCircle(wallNode, 0.3F, FadeBackColors[renderIdx % BackColors.size])
+            nodeRoomMesh.currentStairs.entries.forEach { stairNode ->
+                arcDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
             }
 
             nodeRoomMesh.currentFloor.values.forEach { floorNode ->
@@ -98,6 +110,14 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
             nodeRoomMesh.pastFloor.values.forEach { floorNode ->
                 drawer.filledCircle(floorNode, 0.5F, RenderPalette.FadeBackColors[4 % BackColors.size])
+            }
+
+            nodeRoomMesh.pastWall.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.5F, FadeBackColors[renderIdx % BackColors.size])
+            }
+
+            nodeRoomMesh.pastWallFade.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.3F, FadeBackColors[renderIdx % BackColors.size])
             }
 
             nodeRoomMesh.currentWall.values.forEach { wallNode ->
@@ -302,35 +322,39 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
     }
 
     override fun show() {
-        //                    nodeRoom.buildWalls(currentNode.position, 30f)
-        currentRoom.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+        if (!shown) { //not sure why this is needed -- show() appears to get called twice when screen loaded
 
-        nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
-//        nodeRoom.buildWalls()
-        println ("exitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
+            //                    nodeRoom.buildWalls(currentNode.position, 30f)
+            currentRoom.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
 
-        //            println("checking forward nodeAngle:")
-        forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
-//            println("checking backward nodeAngle:")
-        backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
-//            println("checking leftward angle:")
-        leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
-//            println("checking rightward angle:")
-        rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
+            nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+    //        nodeRoom.buildWalls()
+            println ("exitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
 
-        nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+            //            println("checking forward nodeAngle:")
+            forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
+    //            println("checking backward nodeAngle:")
+            backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
+    //            println("checking leftward angle:")
+            leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
+    //            println("checking rightward angle:")
+            rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
-        forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
-        backwardNextMoveCost = currentNode.position.dst(backwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(backwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
-        leftNextMoveCost = currentAngle.leftAngleBetween(leftNextAngle) / 60 + currentAngle.leftAngleBetween(leftNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
-        rightNextMoveCost = currentAngle.rightAngleBetween(rightNextAngle) / 60 + currentAngle.rightAngleBetween(rightNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+            nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+
+            //todo: move cost into nodeRoom, add elevation cost
+            forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+            backwardNextMoveCost = currentNode.position.dst(backwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(backwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200
+            leftNextMoveCost = currentAngle.leftAngleBetween(leftNextAngle) / 60 + currentAngle.leftAngleBetween(leftNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+            rightNextMoveCost = currentAngle.rightAngleBetween(rightNextAngle) / 60 + currentAngle.rightAngleBetween(rightNextAngle) / 120 * currentNode.attributes.nodeObstacle.getChallenge() / 100
+        }
 
         // start the playback of the background music when the screen is shown
-/*        MusicAssets.values().forEach { assets.load(it) }
+        MusicAssets.values().forEach { assets.load(it) }
         assets.finishLoading()
         println("done!")
         assets[MusicAssets.NavajoNight].apply { isLooping = true }.play()
-*/    }
+    }
 
     override fun pause() {
     }
@@ -345,5 +369,7 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
     override fun dispose() {
         sdc.disposeShapeDrawerConfig()
+        arcSdc.disposeShapeDrawerConfig()
+        arcFadeSdc.disposeShapeDrawerConfig()
     }
 }
