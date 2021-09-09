@@ -68,6 +68,13 @@ class DemoNodeRoomWallFloorScreen(private val batch: Batch,
 
 //                    println("nodeRoomWallsSize : ${nodeRoom.currentWall.size}")
                 }
+                Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> {
+                    nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
+                    nodeRoom.buildWalls()
+                    nodeRoom.buildFloors()
+
+//                    println("nodeRoomWallsSize : ${nodeRoom.currentWall.size}")
+                }
             }
         }
     }

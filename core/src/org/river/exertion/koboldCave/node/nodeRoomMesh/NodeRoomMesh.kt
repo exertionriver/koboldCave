@@ -54,7 +54,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         nodeRoom.getExitNodes().forEach { exitNodes.add ( it ) }
         currentRoomExits += nodeRoom.getExitNodes().size
 
-        println("new NodeRoomMesh: ${this.nodeRooms.size}, ${this.nodeRoomLinks.size}")
+//        println("new NodeRoomMesh: ${this.nodeRooms.size}, ${this.nodeRoomLinks.size}")
     }
 
     //copy constructor
@@ -96,7 +96,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         val newNodeRoomPosition = roomExitNode.position.getPositionByDistanceAndAngle(NextDistancePx, newNodeRoomAngle)
 
         val newNodeRoom = NodeRoom(height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms(), exitsAllowed = maxRoomExits - currentRoomExits)
-        println("new NodeRoom created! node count: ${newNodeRoom.nodes.size}")
+//        println("new NodeRoom created! node count: ${newNodeRoom.nodes.size}")
 
         if (newNodeRoom.nodes.size > 1) {
 
@@ -108,7 +108,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             newNodeRoom.getExitNodes().forEach { exitNodes.add ( it ) }
             currentRoomExits += newNodeRoom.getExitNodes().size
 
-            println("new NodeRoomMesh: ${this.nodeRooms.size}, ${this.nodeRoomLinks.size}")
+ //           println("new NodeRoomMesh: ${this.nodeRooms.size}, ${this.nodeRoomLinks.size}")
 
             //next, bridge between the two NodeRooms with NodeLink
             val nearestNewRoomNode = newNodeRoom.nodes.nearestNodesOrderedAsc(roomExitNode)[0]
@@ -119,7 +119,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             this.nodeRooms[nodeRoomIdx].nodeLinks.addNodeLink(this.nodesMap.keys.toMutableList(), roomExitNode.uuid, nearestNewRoomNode.uuid )
             this.nodeRooms[newNodeRoomIdx].nodeLinks.addNodeLink(this.nodesMap.keys.toMutableList(), roomExitNode.uuid, nearestNewRoomNode.uuid )
 
-            println("new NodeRoom linked!")
+ //           println("new NodeRoom linked!")
 
             nearestNewRoomNode.attributes.nodeType = NodeAttributes.NodeType.EXIT
             this.nodesMap[nearestNewRoomNode] = newNodeRoom.uuid
@@ -423,8 +423,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                     rayLengthIter++
                 }
             }
-            println ("currentFloor size: ${currentFloor.size}")
-            println ("pastFloor size: ${pastFloor.size}")
+     //       println ("currentFloor size: ${currentFloor.size}")
+     //       println ("pastFloor size: ${pastFloor.size}")
         }
     }
 }

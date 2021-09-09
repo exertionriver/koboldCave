@@ -159,19 +159,29 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
 
                     //check to the 'right' of ref angle, outside of 15f range
                     childrenAngles.forEach { checkAngle ->
+//                        println("right checkAngle: $checkAngle; refAngle min linkAngleMin:${(refAngle - linkAngleMinDegree).normalizeDeg()}")
                         if (checkAngle < (refAngle - linkAngleMinDegree).normalizeDeg() ) returnNodeAngle = Pair(refNode, checkAngle)
                     }
 
-                    if (returnNodeAngle.second == 0f) returnNodeAngle = Pair(refNode, childrenAngles[childrenAngles.size - 1])
+                    if (returnNodeAngle.second == 0f) {
+//                        println("right last angle:${childrenAngles[childrenAngles.size - 1]}")
+
+                        returnNodeAngle = Pair(refNode, childrenAngles[childrenAngles.size - 1])
+                    }
                 }
                 (nextAngle == NextAngle.LEFT) -> {
                     val childrenAngles = getNodeChildrenAngles(nodes, refNode.uuid).sortedByDescending { it }
 
                     childrenAngles.forEach { checkAngle ->
+//                        println("left checkAngle: $checkAngle; refAngle min linkAngleMin:${(refAngle - linkAngleMinDegree).normalizeDeg()}")
                         if (checkAngle > (refAngle + linkAngleMinDegree).normalizeDeg() ) returnNodeAngle = Pair(refNode, checkAngle)
                     }
 
-                    if (returnNodeAngle.second == 0f) returnNodeAngle = Pair(refNode, childrenAngles[childrenAngles.size - 1])
+                    if (returnNodeAngle.second == 0f) {
+//                        println("left last angle:${childrenAngles[childrenAngles.size - 1]}")
+
+                        returnNodeAngle = Pair(refNode, childrenAngles[childrenAngles.size - 1])
+                    }
                 }
                 else -> { //NextAngle.FORWARD or BACKWARD
                     val childrenNodeAngles = getNodeChildrenNodeAngles(nodes, refNode.uuid)
@@ -213,7 +223,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
                 }
             }
 
-            println ("$refNode, $refAngle, $nextAngle, $returnNodeAngle")
+//            println ("$refNode, $refAngle, $nextAngle, $returnNodeAngle")
 
             return returnNodeAngle
         }
@@ -221,7 +231,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
         val linkAngleMinDegree = 15
 
     //consolidates nodeLinks if degree difference of minor links is < linkAngleMinDegrees
-     fun MutableList<NodeLink>.consolidateNodeLinksNode(nodes : MutableList<Node>, nodeUuid : UUID) : MutableList<NodeLink> {
+    fun MutableList<NodeLink>.consolidateNodeLinksNode(nodes : MutableList<Node>, nodeUuid : UUID) : MutableList<NodeLink> {
 
         val childNodeAngles = this.getNodeChildrenNodeAngles(nodes, nodeUuid)
 
@@ -250,13 +260,13 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
         //if no nodelinks are in the same slice
         if (!sliceFound) return mutableListOf()
 
-//        println("consolidating nodeLinks for ${nodes.getNode(nodeUuid)}:")
-//        this.forEach { println(it) }
+    //        println("consolidating nodeLinks for ${nodes.getNode(nodeUuid)}:")
+    //        this.forEach { println(it) }
 
-//        println ("slice count: ${angleDescSortedList[0].count()}")
-//        childNodeSliceMap.entries.sortedByDescending { it.value.count() }.forEach { println("angle: ${it.key}, count: ${it.value.count()}") }
+    //        println ("slice count: ${angleDescSortedList[0].count()}")
+    //        childNodeSliceMap.entries.sortedByDescending { it.value.count() }.forEach { println("angle: ${it.key}, count: ${it.value.count()}") }
 
-//        println("**found slice")
+    //        println("**found slice")
         val removeNodeLinks = mutableListOf<NodeLink>()
 
         val refNode = nodes.getNode(nodeUuid)!!
@@ -268,7 +278,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
             angleDescSortedList[0].forEach { checkNode ->
                 val lineLength = mutableListOf(refNode, checkNode).getLineLength()
 
- //               println("checking $refNode against $checkNode: $lineLength")
+    //               println("checking $refNode against $checkNode: $lineLength")
 
                 if (lineLength > maxLength) {
                     maxLength = lineLength
@@ -283,85 +293,10 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
             angleDescSortedList = childNodeSliceMap.values.sortedByDescending { it.count() }
             sliceFound = angleDescSortedList[0].count() > 1
 
-//            println ("slice count: ${angleDescSortedList[0].count()}")
-//            childNodeSliceMap.entries.sortedByDescending { it.value.count() }.forEach { println("angle: ${it.key}, count: ${it.value.count()}") }
-        }
-/*
-        var bestAngle = 0
-        var bestAngleDiff = childNodeAngles.size * linkAngleMinDegree.toFloat()
-
-        println("pre-consolidation childNodeAngles:")
-        childNodeAngles.forEach { println(it) }
-
-        (0 until linkAngleMinDegree).forEach { angleIdx ->
-            var thisAngleDiff = 0F
-
-            childNodeAngles.forEach {
-                //    println ("angle modded: ${(it.second.degrees % angleMinDegrees).toInt()} ")
-                thisAngleDiff += abs(angleIdx - (it.second % linkAngleMinDegree) )
+    //            println ("slice count: ${angleDescSortedList[0].count()}")
+    //            childNodeSliceMap.entries.sortedByDescending { it.value.count() }.forEach { println("angle: ${it.key}, count: ${it.value.count()}") }
             }
 
-//            println ("thisAngleDiff @ $angleIdx: $thisAngleDiff")
-
-            if (thisAngleDiff <= bestAngleDiff) {
-                bestAngleDiff = thisAngleDiff
-                bestAngle = angleIdx
-            }
-
-//            println ("bestAngleDiff @ $bestAngle: $bestAngleDiff")
-        }
-
-        val checkNodeAngles = mutableMapOf<Angle, Node>()
-
-        childNodeAngles.forEach { checkNodeAngles[it.second] = it.first }
-
-        childNodeAngles.forEach { checkNodeAngles[it.second + 360F] = it.first }
-
-        childNodeAngles.forEach { checkNodeAngles[it.second - 360F] = it.first }
-
-        val keepNodeAngles = mutableMapOf<Node, Angle>()
-
-        checkNodeAngles.keys.sortedBy {
-            if (it >= 0F)
-                abs (( it % linkAngleMinDegree) - bestAngle).toInt()
-            else abs ( linkAngleMinDegree - (it % -linkAngleMinDegree) - bestAngle ).toInt()
-        }.forEach { checkNodeAngle ->
-
-            var keepNodeAngle = false
-
-            if (!keepNodeAngles.containsKey(checkNodeAngles[checkNodeAngle])) {
-
-                val checkMod = if (checkNodeAngle >= 0F)
-                    abs((checkNodeAngle % linkAngleMinDegree) - bestAngle).toInt()
-                else abs(linkAngleMinDegree - (checkNodeAngle % -linkAngleMinDegree) - bestAngle).toInt()
-
-//                println("node:${checkNodeAngles[checkNodeAngle]} angle:${checkNodeAngle.degrees} mod:${checkMod}")
-
-                if (keepNodeAngles.isNotEmpty()) {
-                    if (checkNodeAngle.toInt() in 0..360) keepNodeAngle = true
-
-                    keepNodeAngles.forEach { keepNode ->
-                        if ( abs(checkNodeAngle - keepNode.value) < linkAngleMinDegree) {
-//                            println("angle diff : ${abs(checkNodeAngle.degrees - keepNode.value.degrees)}")
-                            keepNodeAngle = false
-                        }
-                    }
-                } else if (checkNodeAngle.toInt() in 0..360) keepNodeAngle = true
-
-                if (keepNodeAngle) {
-//                    println("adding ${checkNodeAngles[checkNodeAngle]} = $checkNodeAngle")
-                    keepNodeAngles[checkNodeAngles[checkNodeAngle]!!] = checkNodeAngle
-                }
-            }
-        }
-//        keepNodeAngles.forEach { println ("keepNodesAngles: ${it.key} : ${it.value}")}
-
-         val removeNodeAngles = mutableMapOf<Node, Angle>()
-
-         childNodeAngles.forEach { if (!keepNodeAngles.containsKey(it.first)) removeNodeAngles[it.first] = it.second }
-
-//         removeNodeAngles.forEach { println ("removeNodesAngles: ${it.key} : ${it.value}")}
-*/
          return removeNodeLinks
        }
 
@@ -377,51 +312,9 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
                 }
             }
 
-            return returnNodeLinks
-        }
-/*
-        fun MutableList<NodeLink>.pruneNodeLinks(nodes : MutableList<Node>) : MutableList<NodeLink> {
+        return returnNodeLinks
+    }
 
-            val returnNodeLinks = this
-            val checkNodes = nodes.toList()
-
-            checkNodes.sortedBy { it.uuid.toString() }.forEach { refNode ->
-                val nearestNodes = nodes.nearestNodesOrderedAsc(refNode)
-
-                val refNodeLinks = this.getNodeLinks(refNode.uuid)
-
-//                refNodeLinks.forEach { println("refNodeLink: $it") }
-
-                nearestNodes.forEach { checkNode ->
-                    if (checkNode.uuid.toString() > refNode.uuid.toString()) {
-
-                        val checkNodeLinks = this.getNodeLinks(checkNode.uuid)
-
-//                        checkNodeLinks.forEach { println("checkNodeLink: $it") }
-
-                        refNodeLinks.forEach { refNodeLink ->
-                            checkNodeLinks.forEach { checkNodeLink ->
-                                val checkSet = mutableSetOf(refNodeLink.firstNodeUuid, refNodeLink.secondNodeUuid, checkNodeLink.firstNodeUuid, checkNodeLink.secondNodeUuid)
-                                    if (checkSet.size == 4) // check four unique points for intersect
-                                        if (nodes.getNode(refNodeLink.firstNodeUuid) != null
-                                            && nodes.getNode(refNodeLink.secondNodeUuid) != null
-                                            && nodes.getNode(checkNodeLink.firstNodeUuid) != null
-                                            && nodes.getNode(checkNodeLink.secondNodeUuid) != null) {
-                                        if ( Pair(nodes.getNode(refNodeLink.firstNodeUuid)!!.position, nodes.getNode (refNodeLink.secondNodeUuid)!!.position).intersects(
-                                            Pair(nodes.getNode(checkNodeLink.firstNodeUuid)!!.position, nodes.getNode (checkNodeLink.secondNodeUuid)!!.position)
-                                        ) ) {
-//                                        println ("removing $checkNodeLink")
-                                            returnNodeLinks.removeNodeLink(checkNodeLink)
-                                        }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return returnNodeLinks
-        }
-*/
         fun MutableList<NodeLink>.nodifyIntersects(nodes : MutableList<Node>) : MutableList<Node> {
 
             val returnNodes = mutableListOf<Node>().apply { addAll(nodes) }

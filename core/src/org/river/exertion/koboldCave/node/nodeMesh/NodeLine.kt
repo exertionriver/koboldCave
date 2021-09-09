@@ -84,7 +84,7 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
 
         //noise goes from 0 to 100
         //does node / node need to be "?" ?
-        fun Pair<Node, Node>.buildNodeLine(noise : Int = 0, nodeLineDescription : String = this.first.description) : NodeLine {
+        fun Pair<Node, Node>.buildNodeLine(noise : Int = 0, nodeLineDescription : String = this.first.description, linkDistance : Float = NodeLink.consolidateNodeDistance + 1) : NodeLine {
 
             if (this.first.position == this.second.position) return NodeLine(description = nodeLineDescription, nodes = mutableListOf(this.first))
 
@@ -94,7 +94,6 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
             val startNode = this.first
             val endNode = this.second
             val lineLength = mutableListOf(this.first, this.second).getLineLength()
-            val linkDistance = NodeLink.consolidateNodeDistance + 1
 
             val cappedNoise = if (noise < 0) 0 else if (noise > 100) 100 else noise
 
