@@ -9,6 +9,8 @@ Example usage, after cloning / downloading:
 
 Hope this may help you in your development work. - IanP
 
+v0.7 - first pass at environmental obstacles, elevation, and pov-rotation naviation
+
 v0.6 - switching over to libktx, implementing walls, line of sight nav lighting, and bottom-up elaboration
 
 https://user-images.githubusercontent.com/13192685/131937581-f6b37a77-5ad8-447f-9719-096a210316e7.mp4
