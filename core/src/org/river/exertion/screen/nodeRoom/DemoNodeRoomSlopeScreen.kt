@@ -80,7 +80,7 @@ class DemoNodeRoomSlopeScreen(private val batch: Batch,
                     drawer.filledCircle(wallNode, 0.5F, FadeForeColors[4 % BackColors.size])
                 }
                 nodeRoom.currentStairs.entries.forEach { stairNode ->
-                    arcDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
+                    arcDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians(), 2f )
                 }
                 nodeRoom.currentWall.values.forEach { wallNode ->
                     drawer.filledCircle(wallNode, 0.5F, BackColors[nodeRoomIdx % BackColors.size])
@@ -100,13 +100,10 @@ class DemoNodeRoomSlopeScreen(private val batch: Batch,
     }
 
     override fun show() {
-        if (!shown) { //not sure why this is needed -- show() appears to get called twice when screen loaded
-            println (nodeRoomList.size)
-            nodeRoomList.forEach { it.buildWalls() }
-            nodeRoomList.forEach { it.buildFloors() }
+        println (nodeRoomList.size)
+        nodeRoomList.forEach { it.buildWalls() }
+        nodeRoomList.forEach { it.buildFloors() }
 //        nodeRoomList.forEach { println("${it.description} ${it.nodes}") }
-            shown = true
-        }
     }
 
     override fun pause() {

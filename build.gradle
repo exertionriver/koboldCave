@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.5.10'
+    ext.kotlinVersion = '1.5.30'
 
     repositories {
         google()
@@ -26,6 +26,7 @@ allprojects {
         ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
         ktxVersion = '1.10.0-b2'
+        kotlinxVersion = '1.5.2'
         shapedrawerVersion = '2.5.0' //https://github.com/earlygrey/shapedrawer
     }
 
@@ -33,6 +34,7 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        maven { url 'https://kotlin.bintray.com/kotlinx/' }
     }
 }
 
@@ -100,6 +102,7 @@ project(":core") {
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
         testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
         testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxVersion"
     }
 
 }

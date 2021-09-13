@@ -11,9 +11,7 @@ import com.badlogic.gdx.math.Vector3
 import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
-import org.river.exertion.assets.MusicAssets
-import org.river.exertion.assets.get
-import org.river.exertion.assets.load
+import org.river.exertion.assets.*
 import org.river.exertion.koboldCave.Line.Companion.angleBetween
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
@@ -27,21 +25,14 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLinks
 import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
 import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.buildNodeLine
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildFloorsLos
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWalls
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsLos
-import org.river.exertion.screen.RenderPalette
-import org.river.exertion.screen.RenderPalette.BackColors
+import org.river.exertion.screen.Render
 import org.river.exertion.screen.RenderPalette.FadeBackColors
 import org.river.exertion.screen.RenderPalette.FadeForeColors
-import org.river.exertion.screen.RenderPalette.ForeColors
+import org.river.exertion.screen.render
 import space.earlygrey.shapedrawer.JoinType
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
 class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
                                            private val font: BitmapFont,
@@ -65,12 +56,14 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
     var currentAngle = currentRoom.getRandomNextNodeAngle(currentNode)
     val visualRadius = NextDistancePx * 1.5f
 
+    val nav = Navigation(batch, camera, currentNode, currentAngle)
+
     var rotation = 30f
     val cameraAngle = 90f
 
     val pathNoise = 0
-    val degreesPerAngle = 12f
-    val distancePerStep = 12f
+    val degreesPerAngle = 5f
+    val distancePerStep = 5f
 
     var modForwardPathNoise = pathNoise
     var modBackwardPathNoise = pathNoise
@@ -82,7 +75,6 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
     var backwardNextMoveCost : Float = 0f
     var leftNextMoveCost : Float = 0f
     var rightNextMoveCost : Float = 0f
-
 
     var leftTurnEasing = 0f //degrees
     var rightTurnEasing = 0f //degrees
@@ -103,9 +95,10 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
     val arcFadeSdc = ShapeDrawerConfig(batch, FadeBackColors[1])
     val arcFadeDrawer = arcFadeSdc.getDrawer()
 
-    val ego : com.badlogic.gdx.utils.Array<Vector2> = com.badlogic.gdx.utils.Array()
-
+    var dirty = true
     override fun render(delta: Float) {
+
+        println ("delta:$delta, rps:${1f/delta}")
 
         batch.projectionMatrix = camera.combined
         camera.update()
@@ -126,6 +119,11 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
                     , ForeColors[nodeRoomIdx % ForeColors.size])
 */
             val renderIdx = 1
+
+            nodeRoomMesh.render(batch)
+
+  //          nav.navigate()
+
 
             if (leftTurnEasing > 0) {
 //                println("leftTurnEasing:$leftTurnEasing, currentAngle:$currentAngle")
@@ -173,7 +171,7 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
                     leftTurnEasing = currentAngle.leftAngleBetween(currentStepAngle)
                 }
 
-                camera.position.set(currentPos.x, currentPos.y, 0f)
+                camera.position.lerp(Vector3(currentPos.x, currentPos.y, 0f), 0.5f)
                 forwardStepEasing--
 //                println("forwardStepEasing:$forwardStepEasing, stepPath.nodes.size: ${stepPath.nodes.size}, currentIdx: $currentIdx, currentAngle:$currentAngle")
             }
@@ -186,7 +184,7 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
                 if (backwardStepEasing == 1) {
                     currentPos = finalNode.position
 
-                    currentStepAngle = finalNode.angleBetween(currentNode)
+                    currentStepAngle = finalAngle
 
                     currentNode = finalNode
                 } else {
@@ -205,43 +203,12 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
                     leftTurnEasing = currentAngle.leftAngleBetween(currentStepAngle)
                 }
 
-                camera.position.set(currentPos.x, currentPos.y, 0f)
+                camera.position.lerp(Vector3(currentPos.x, currentPos.y, 0f), 0.5f)
                 backwardStepEasing--
 //                println("backwardStepEasing:$backwardStepEasing, stepPath.nodes.size: ${stepPath.nodes.size}, currentIdx: $currentIdx, currentAngle:$currentAngle")
 
             }
 
-            nodeRoomMesh.pastStairs.entries.forEach { stairNode ->
-                arcFadeDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
-            }
-
-            nodeRoomMesh.currentStairs.entries.forEach { stairNode ->
-                arcDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
-            }
-
-            nodeRoomMesh.currentFloor.values.forEach { floorNode ->
-                drawer.filledCircle(floorNode, 0.5F, RenderPalette.FadeForeColors[4 % BackColors.size])
-            }
-
-            nodeRoomMesh.pastFloor.values.forEach { floorNode ->
-                drawer.filledCircle(floorNode, 0.5F, RenderPalette.FadeBackColors[4 % BackColors.size])
-            }
-
-            nodeRoomMesh.pastWall.values.forEach { wallNode ->
-                drawer.filledCircle(wallNode, 0.5F, FadeBackColors[renderIdx % BackColors.size])
-            }
-
-            nodeRoomMesh.pastWallFade.values.forEach { wallNode ->
-                drawer.filledCircle(wallNode, 0.3F, FadeBackColors[renderIdx % BackColors.size])
-            }
-
-            nodeRoomMesh.currentWall.values.forEach { wallNode ->
-                drawer.filledCircle(wallNode, 0.5F, BackColors[renderIdx % BackColors.size])
-            }
-
-            nodeRoomMesh.currentWallFade.values.forEach { wallNode ->
-                drawer.filledCircle(wallNode, 0.3F, BackColors[renderIdx % BackColors.size])
-            }
 
 //            nodeRoomMesh.nodeRooms.forEachIndexed { idx, nodeRoom -> nodeRoom.getExitNodes().forEachIndexed { index, exitNode ->
 //                drawer.filledCircle(exitNode.position, 4F, FadeBackColors[idx % ForeColors.size])
@@ -250,51 +217,48 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
             InputHandler.handleInput(camera)
 
             when {
-                (leftTurnEasing + rightTurnEasing + forwardStepEasing + backwardStepEasing > 0f) -> { /*do nothing*/ }
+                (nav.leftTurnEasing + nav.rightTurnEasing + nav.forwardStepEasing + nav.backwardStepEasing > 0f) -> { /*do nothing*/ }
 
                 Gdx.input.isKeyJustPressed(Input.Keys.UP) -> {
-
-                    val frontAngle = forwardNextNodeAngle.second
 
                     stepPath = Pair(currentNode, forwardNextNodeAngle.first).buildNodeLine(noise = modForwardPathNoise, linkDistance = modForwardDistancePerStep)
                     forwardStepEasing = stepPath.nodes.size
                     finalNode = forwardNextNodeAngle.first
                     finalAngle = forwardNextNodeAngle.second
+                    dirty = true
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> {
 
                     if (currentNode != backwardNextNodeAngle.first) {
-//                        currentNode = backwardNextNodeAngle.first
-//                        camera.position.set(currentNode.position.x, currentNode.position.y, 0f)
-
-                        val backAngle = (180f + backwardNextNodeAngle.second).normalizeDeg()
-//                        val angleToRotate = currentAngle.leftAngleBetween(backAngle)
-//                        camera.rotate(Vector3.Z, angleToRotate)
-
-//                        currentAngle = backAngle
-//                        println("currentAngle:$currentAngle, angleToRotate:$angleToRotate, cameraAngle:$cameraAngle")
 
                         stepPath = Pair(currentNode, backwardNextNodeAngle.first).buildNodeLine(noise = modBackwardPathNoise, linkDistance = modBackwardDistancePerStep)
                         backwardStepEasing = stepPath.nodes.size
                         finalNode = backwardNextNodeAngle.first
+                        finalAngle = finalNode.angleBetween(currentNode)
+                        dirty = true
+
                     }
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> {
                     leftTurnEasing = currentAngle.leftAngleBetween(leftNextAngle)
+                    dirty = true
 
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> {
                     rightTurnEasing = currentAngle.rightAngleBetween(rightNextAngle)
-
+                    dirty = true
                 }
             }
+
+     //       nav.handleInput()
 
             nodeRoomIdx = nodeRoomMesh.getCurrentRoomIdx(currentNode)
 
             nodeRoomMesh.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
 
+/*
 //                    nodeRoom.buildWalls(currentNode.position, 30f)
-
+*/
             forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
 //            println("checking backward nodeAngle:")
             backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
@@ -302,15 +266,13 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
             leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
             rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
-
-            nodeRoomMesh.buildWallsLos(currentPos, currentAngle, visualRadius)
-            nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+/*
 
             //todo: move cost into nodeRoom, add elevation cost
 //            println("current challenge:${currentNode.attributes.nodeObstacle.getChallenge()}, forward challenge:${forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()}, backward challenge:${backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()}" )
             modForwardPathNoise = ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 4
             modBackwardPathNoise = ( currentNode.attributes.nodeObstacle.getChallenge() + backwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 4
-
+*/
 //            modDegreesPerAngle = degreesPerAngle - currentNode.attributes.nodeObstacle.getChallenge() / 20
 
 //            println("current elevation:${currentNode.attributes.nodeElevation.getHeight()}, forward elevation:${forwardNextNodeAngle.first.attributes.nodeElevation.getHeight()}, backward elevation:${backwardNextNodeAngle.first.attributes.nodeElevation.getHeight()}" )
@@ -318,21 +280,14 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
 //            modForwardDistancePerStep = distancePerStep - abs(max( currentNode.attributes.nodeElevation.getHeight(), forwardNextNodeAngle.first.attributes.nodeElevation.getHeight() ) - min( currentNode.attributes.nodeElevation.getHeight(), forwardNextNodeAngle.first.attributes.nodeElevation.getHeight() ) / 4).toInt()
 
 //            println("modForwardPathNoise:$modForwardPathNoise, modBackwardPathNoise:$modBackwardPathNoise, modDegreesPerAngle:$modDegreesPerAngle, modForwardDistancePerStep:$modForwardDistancePerStep, modBackwardDistancePerStep:$modBackwardDistancePerStep")
+    if (dirty) {
+        nodeRoomMesh.buildWallsLos(currentPos, currentAngle, visualRadius)
+        nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
 
-            ego.clear()
+        dirty = false
+    }
 
-            val bottomArrow = currentPos.getPositionByDistanceAndAngle(4f, (currentAngle + 180f).normalizeDeg())
-            val topArrow = currentPos.getPositionByDistanceAndAngle(6f, currentAngle)
-            val tipArrowLeft = topArrow.getPositionByDistanceAndAngle(3f, (currentAngle + 150f).normalizeDeg())
-            val tipArrowRight = topArrow.getPositionByDistanceAndAngle(3f, (currentAngle - 150f).normalizeDeg())
-
-            ego.add(bottomArrow, topArrow)
-            ego.add(topArrow, tipArrowLeft)
-            ego.add(tipArrowLeft, tipArrowRight)
-            ego.add(tipArrowRight, topArrow)
-
-            //may have to use another (colored) texture for ego-path
-            drawer.path(ego, 1f, JoinType.SMOOTH, true)
+            PlayerCharacter.render(batch, currentPos, currentAngle)
         }
     }
 
@@ -340,18 +295,15 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
     }
 
     override fun show() {
-        camera.position.set(currentNode.position.x, currentNode.position.y, 0f)
-        camera.zoom = .2f
 
-        val angleToRotate = cameraAngle.leftAngleBetween(currentAngle)
-        camera.rotate(Vector3.Z, angleToRotate)
+        Render.initRender(camera, currentNode, currentAngle)
         //                    nodeRoom.buildWalls(currentNode.position, 30f)
    //     currentRoom.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
 
         // start the playback of the background music when the screen is shown
         MusicAssets.values().forEach { assets.load(it) }
         assets.finishLoading()
-        println("done!")
+//        println("done!")
         assets[MusicAssets.NavajoNight].apply { isLooping = true }.play()
     }
 
