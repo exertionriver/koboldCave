@@ -4,14 +4,15 @@ import kotlin.random.Random
 
 @ExperimentalUnsignedTypes
 class Probability(
-    val mean: Double, val range: Int
-    , val meanIncreaseSpeed: Double = 0.0, val meanIncreaseAccel: Double = 0.0
-    , val rangeIncreaseSpeed: Int = 0, val rangeIncreaseAccel: Int = 0
+    val mean: Float, val range: Float
+    , val meanIncreaseSpeed: Float = 0F, val meanIncreaseAccel: Float = 0F
+    , val rangeIncreaseSpeed: Float = 0F, val rangeIncreaseAccel: Float = 0F
     ) {
 
-    constructor(mean : Int, range : Int = 0) : this (
-        mean = mean.toDouble(), range = range
-    )
+    //to do: exclude mean and range, e.g. for angles
+    constructor(mean : Int, range : Int) : this (mean = mean.toFloat(), range = range.toFloat() )
+    constructor(mean : Int, range : Float) : this (mean = mean.toFloat(), range = range )
+    constructor(mean : Float, range : Int) : this (mean = mean, range = range.toFloat() )
 
     fun plus(plusProbability : Probability?) : Probability {
         if (plusProbability == null) return this
@@ -46,9 +47,11 @@ class Probability(
         , rangeIncreaseAccel = prevProbability.rangeIncreaseAccel
     ) //e.g. modOffset = timer.initCurSecondsBetween
 
-    fun getVariance() = if (range == 0) 0 else ( Random.nextInt((range * 2 + 1)) - range )
+    fun getVariance() : Float = if (range == 0F) 0F else ( ( Random.nextFloat() * (range * 2) ) - range )
 
-    fun getValue() = mean + getVariance()
+    fun getValue() : Float = mean + getVariance()
+
+    fun getValueInt() : Int = getValue().toInt()
 
     override fun toString() = "${Probability::class.simpleName} ($mean, $range) : ${getVariance()}, ${getValue()}"
 
@@ -58,7 +61,7 @@ class Probability(
         val Even = Probability(50, 50)
         val None = Probability(0, 0)
 
-        private fun getMod(countElapsed : Int, original : Double, mod : Double) : Double {
+        private fun getMod(countElapsed : Int, original : Float, mod : Float) : Float {
             var returnMod = original
 
             for (idx in 0..countElapsed) returnMod += mod
@@ -66,8 +69,6 @@ class Probability(
             return returnMod
         }
 
-        private fun getMod(countElapsed : Int, original : Int, mod : Int) : Int =
-            getMod(countElapsed, original.toDouble(), mod.toDouble()).toInt()
     }
 
 }

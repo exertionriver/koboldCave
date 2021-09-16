@@ -1,6 +1,8 @@
+package koboldCave
+
 import org.junit.jupiter.api.Test
-import org.river.exertion.koboldCave.Probability
-import org.river.exertion.koboldCave.ProbabilitySelect
+import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 
 @ExperimentalUnsignedTypes
 class TestProb {

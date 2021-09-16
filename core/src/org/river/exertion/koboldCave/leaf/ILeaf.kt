@@ -1,6 +1,6 @@
 package org.river.exertion.koboldCave.leaf
 
-import org.river.exertion.koboldCave.Probability
+import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.addNode
@@ -10,7 +10,7 @@ import org.river.exertion.koboldCave.node.nodeMesh.NodeMesh
 import org.river.exertion.Angle
 import org.river.exertion.Game
 import org.river.exertion.Point
-import org.river.exertion.koboldCave.ProbabilitySelect
+import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.round
 import java.util.*
 

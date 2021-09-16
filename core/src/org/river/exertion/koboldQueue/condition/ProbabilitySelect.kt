@@ -6,7 +6,7 @@ import kotlin.random.Random
 @ExperimentalUnsignedTypes
 class ProbabilitySelect<T>(val probabilities : Map<T, Probability>) {
 
-    private val totalPossibility = probabilities.values.sumOf { it.getValue() }
+    private val totalPossibility = probabilities.values.sumOf { it.getValue().toDouble() }.toFloat()
 
     val selectedProbability = Random.nextInt(totalPossibility.toInt())
 
@@ -14,21 +14,21 @@ class ProbabilitySelect<T>(val probabilities : Map<T, Probability>) {
 
         var accumulator = 0.0
 
-        for(probabilty in probabilities) {
-            accumulator += probabilty.value.getValue()
-            if (accumulator >= selectedProbability) return probabilty.key
+        for(probability in probabilities) {
+            accumulator += probability.value.getValue()
+            if (accumulator >= selectedProbability) return probability.key
         }
 
         return null
     }
 
-    override fun toString() = "conditions.ProbabilitySelect(${totalPossibility}, ${selectedProbability}) : ${getSelectedProbability()}"
+    override fun toString() = "org.river.exertion.koboldQueue.condition.ProbabilitySelect(${totalPossibility}, ${selectedProbability}) : ${getSelectedProbability()}"
 
     companion object {
         fun <T> psAccumulating(entries : List<T>) : ProbabilitySelect<T> {
 
             val pSelects = entries.map {
-                it to Probability(2.0.pow(entries.size - 1 - entries.indexOf(it)), 0)
+                it to Probability(2F.pow(entries.size - 1 - entries.indexOf(it)), 0F)
             }.toMap()
 
             return ProbabilitySelect(pSelects)

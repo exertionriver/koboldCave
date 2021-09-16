@@ -1,6 +1,6 @@
 package org.river.exertion.koboldCave.lattice
 
-import org.river.exertion.koboldCave.Probability
+import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldCave.Line.Companion.getArrayedPositionByAngle
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
@@ -11,7 +11,7 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeMesh
 import org.river.exertion.Angle
 import org.river.exertion.Point
-import org.river.exertion.koboldCave.ProbabilitySelect
+import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLinks
 import org.river.exertion.round
 import java.util.*

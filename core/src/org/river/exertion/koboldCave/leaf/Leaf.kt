@@ -1,7 +1,7 @@
 package org.river.exertion.koboldCave.leaf
 
-import org.river.exertion.koboldCave.Probability
-import org.river.exertion.koboldCave.ProbabilitySelect
+import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.Angle
 import org.river.exertion.Point
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.getChildPosition
@@ -48,7 +48,7 @@ class Leaf(override val topHeight : Int = 3
             ).getSelectedProbability()!!.toInt()
             (height > 0) -> ProbabilitySelect(
                 mapOf(
-//                    "0" to org.river.exertion.koboldCave.Probability(5, 0),
+//                    "0" to org.river.exertion.koboldQueue.condition.Probability(5, 0),
                     "1" to Probability(25, 0),
                     "2" to Probability(50, 0),
                     "3" to Probability(25, 0)

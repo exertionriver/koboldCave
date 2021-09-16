@@ -4,8 +4,6 @@ import kotlinx.coroutines.*
 import org.river.exertion.koboldQueue.time.Timer
 import org.river.exertion.koboldQueue.action.roles.IInstantiable
 import org.river.exertion.koboldQueue.action.roles.IObservable
-import org.river.exertion.koboldQueue.condition.Probability
-import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldQueue.condition.SimpleCondition.Always
 import kotlinx.coroutines.flow.collect
 import org.river.exertion.ActionConditionsMap
@@ -14,6 +12,8 @@ import org.river.exertion.koboldQueue.action.ActionPlex
 import org.river.exertion.koboldQueue.action.ActionPriority
 import org.river.exertion.koboldQueue.action.IAction
 import org.river.exertion.koboldQueue.action.actions.*
+import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldQueue.time.Moment
 import java.util.*
 import kotlin.time.ExperimentalTime
@@ -24,9 +24,9 @@ import kotlin.time.ExperimentalTime
 class Kobold(private val id : UUID = UUID.randomUUID(), private val kInstanceName : String) : IInstance, IObservable {
 
     override fun getDescription(): String = ProbabilitySelect(mapOf(
-        "ugly Kobold!" to Probability(40)
-        ,"toothy Kobold!" to Probability(30)
-        ,"scaly Kobold!" to Probability(30)
+        "ugly Kobold!" to Probability(40, 0)
+        ,"toothy Kobold!" to Probability(30, 0)
+        ,"scaly Kobold!" to Probability(30, 0)
     )).getSelectedProbability()!!
 
     var momentCounter = 0

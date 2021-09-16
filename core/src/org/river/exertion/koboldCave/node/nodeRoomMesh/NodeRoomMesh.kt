@@ -4,8 +4,8 @@ import org.river.exertion.*
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.Line.Companion.isInBorder
-import org.river.exertion.koboldCave.Probability
-import org.river.exertion.koboldCave.ProbabilitySelect
+import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.angleBetween

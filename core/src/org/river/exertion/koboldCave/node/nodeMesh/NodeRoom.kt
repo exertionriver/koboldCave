@@ -1,7 +1,7 @@
 package org.river.exertion.koboldCave.node.nodeMesh
 
-import org.river.exertion.koboldCave.Probability
-import org.river.exertion.koboldCave.ProbabilitySelect
+import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.*
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.leaf.ILeaf

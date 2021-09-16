@@ -1,6 +1,6 @@
 package org.river.exertion.koboldCave.node.nodeMesh
 
-import org.river.exertion.koboldCave.Probability
+import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.Point
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.Line.Companion.isQ1
