@@ -29,7 +29,6 @@ import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.nodifyIntersects
 import java.util.*
 
-@ExperimentalUnsignedTypes
 interface INodeMesh {
 
     val uuid : UUID

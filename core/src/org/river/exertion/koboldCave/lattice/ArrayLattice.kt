@@ -9,7 +9,6 @@ import org.river.exertion.Point
 import java.util.*
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class ArrayLattice(override val topHeight : Int = 3
                    , override val height : Int = topHeight
                    , override val description: String = "${ArrayLattice::class.simpleName}${Random.nextInt(256)}"
@@ -47,7 +46,6 @@ class ArrayLattice(override val topHeight : Int = 3
         }
     }
 
-    @ExperimentalUnsignedTypes
     override fun toString() = "${ArrayLattice::class.simpleName}($uuid) : topHeight:${topHeight}, curHeight:${height}, $position, dist:$distanceFromParent, $angleFromParent, ${this.parent}, ${this.children.size}"
 
 }

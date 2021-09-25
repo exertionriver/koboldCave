@@ -185,7 +185,7 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
                 drawer.filledCircle(wallNode, 0.3F, BackColors[1])
             }
 
-            nodeRoom.getExitNodes().forEachIndexed { index, exitNode ->
+            nodeRoom.getExitNodes().forEach { exitNode ->
                 drawer.filledCircle(exitNode.position, 4F, ForeColors[1])
             }
 

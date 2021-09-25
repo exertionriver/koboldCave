@@ -10,7 +10,6 @@ import org.river.exertion.koboldCave.leaf.ILeaf.Companion.getParentPosition
 import java.util.*
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class Lace(override val topHeight : Int = 3
            , override val height : Int = topHeight
            , override val description: String = "${Lace::class.simpleName}${Random.nextInt(256)}"
@@ -46,7 +45,6 @@ class Lace(override val topHeight : Int = 3
             ).getSelectedProbability()!!.toInt()
     }
 
-    @ExperimentalUnsignedTypes
     override fun toString() = "${Lace::class.simpleName}($uuid) : topHeight:${topHeight}, curHeight:${height}, $position, dist:$distanceFromParent, $angleFromParent, parent:${this.parent}, children:${this.children.size}"
 
 }

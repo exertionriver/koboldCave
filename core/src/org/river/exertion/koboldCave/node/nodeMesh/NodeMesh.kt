@@ -6,7 +6,6 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.removeOrphanLinks
 import java.util.*
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class NodeMesh(override val uuid: UUID = UUID.randomUUID(), override val description: String = "nodeMesh${Random.nextInt(256)}"
                , override var nodes : MutableList<Node> = mutableListOf(), override var nodeLinks : MutableList<NodeLink> = mutableListOf() ) :
     INodeMesh {

@@ -14,7 +14,6 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
         , var attributes : List<String> = listOf() ) {
 

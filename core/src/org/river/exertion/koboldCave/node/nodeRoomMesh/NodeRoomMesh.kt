@@ -20,7 +20,6 @@ import java.util.*
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val description: String = "nodeRoomMesh${Random.nextInt(256)}"
                    , override var nodeRooms : MutableList<NodeRoom> = mutableListOf(), override var nodeRoomLinks : MutableList<NodeRoomLink> = mutableListOf()
                    , var nodesMap : MutableMap<Node, UUID> = mutableMapOf(), var nodeLinks : MutableList<NodeLink> = mutableListOf() ) :
@@ -281,11 +280,11 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             nodesToBuild.forEach { node ->
 
                 //center circle first
-                val radius = 6
+                val circleRadius = 6
 
                 //https://stackoverflow.com/questions/40779343/java-loop-through-all-pixels-in-a-2d-circle-with-center-x-y-and-radius
-                val yMin = node.position.y.toInt() - radius
-                val yMax = node.position.y.toInt() + radius
+                val yMin = node.position.y.toInt() - circleRadius
+                val yMax = node.position.y.toInt() + circleRadius
 
                 (yMin..yMax).forEach { yIter ->
                     var xIter1 = node.position.x.toInt()
@@ -294,7 +293,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                     while ( Math.pow(
                             (xIter1 - node.position.x).toDouble(),
                             2.0
-                        ) + Math.pow((yIter - node.position.y).toDouble(), 2.0) <= Math.pow(radius.toDouble(), 2.0)
+                        ) + Math.pow((yIter - node.position.y).toDouble(), 2.0) <= Math.pow(circleRadius.toDouble(), 2.0)
                     ) {
                         val checkPoint = Point(xIter1.toFloat(), yIter.toFloat())
 
@@ -315,7 +314,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                     while ( Math.pow(
                             (xIter2 - node.position.x).toDouble(),
                             2.0
-                        ) + Math.pow((yIter - node.position.y).toDouble(), 2.0) <= Math.pow(radius.toDouble(), 2.0)
+                        ) + Math.pow((yIter - node.position.y).toDouble(), 2.0) <= Math.pow(circleRadius.toDouble(), 2.0)
                     ) {
                         val checkPoint = Point(xIter2.toFloat(), yIter.toFloat())
 

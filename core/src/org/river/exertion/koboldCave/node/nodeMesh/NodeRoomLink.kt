@@ -4,7 +4,6 @@ import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.getNode
 import java.util.*
 
-@ExperimentalUnsignedTypes
 class NodeRoomLink(val firstNodeRoomUuid : UUID, val secondNodeRoomUuid : UUID
                    , var attributes : List<String> = listOf() ) {
 

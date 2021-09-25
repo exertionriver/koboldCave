@@ -10,7 +10,6 @@ import org.river.exertion.koboldCave.leaf.ILeaf.Companion.getParentPosition
 import java.util.*
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class Leaf(override val topHeight : Int = 3
             , override val height : Int = topHeight
             , override val description: String = "${Leaf::class.simpleName}${Random.nextInt(256)}"

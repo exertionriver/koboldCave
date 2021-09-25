@@ -30,7 +30,6 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var description: String = "nodeRoom${Random.nextInt(256)}"
                , override var nodes : MutableList<Node> = mutableListOf(), override var nodeLinks : MutableList<NodeLink> = mutableListOf()
                , var centroid : Node = Node(NodeAttributes.NodeType.CENTROID), var attributes : NodeRoomAttributes = NodeRoomAttributes() ) :

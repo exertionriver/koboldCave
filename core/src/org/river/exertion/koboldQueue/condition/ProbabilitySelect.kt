@@ -3,7 +3,6 @@ package org.river.exertion.koboldQueue.condition
 import kotlin.math.pow
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class ProbabilitySelect<T>(val probabilities : Map<T, Probability>) {
 
     private val totalPossibility = probabilities.values.sumOf { it.getValue().toDouble() }.toFloat()

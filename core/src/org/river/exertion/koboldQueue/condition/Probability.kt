@@ -2,7 +2,6 @@ package org.river.exertion.koboldQueue.condition
 
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class Probability(
     val mean: Float, val range: Float
     , val meanIncreaseSpeed: Float = 0F, val meanIncreaseAccel: Float = 0F

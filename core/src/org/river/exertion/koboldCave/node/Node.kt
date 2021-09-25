@@ -15,7 +15,6 @@ import org.river.exertion.koboldCave.node.nodeMesh.INodeMesh
 import java.util.*
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val description : String = "Node${Random.nextInt(2048)}"
            , var attributes : NodeAttributes = NodeAttributes() ) {
 

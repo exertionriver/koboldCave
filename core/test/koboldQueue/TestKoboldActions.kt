@@ -1,20 +1,16 @@
 package koboldQueue
 
-import KGdxTestRunner
 import com.badlogic.ashley.core.PooledEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope.coroutineContext
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import ktx.ashley.entity
 import ktx.ashley.get
 import ktx.ashley.with
 import org.junit.jupiter.api.Test
-import org.junit.runner.RunWith
-import org.river.exertion.ecs.component.ActionLookComponent
-import org.river.exertion.ecs.component.KoboldComponent
-import org.river.exertion.ecs.system.ActionLookSystem
+import org.river.exertion.ecs.component.action.ActionLookComponent
+import org.river.exertion.ecs.component.entity.EntityKoboldComponent
+import org.river.exertion.ecs.system.action.ActionLookSystem
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
@@ -26,22 +22,22 @@ class TestKoboldActions {
     val engine = PooledEngine()
 
     val kobold = engine.entity {
-        with<KoboldComponent>()
-    }.apply { this[KoboldComponent.mapper]?.instantiate("gragga") }
+        with<EntityKoboldComponent>()
+    }.apply { this[EntityKoboldComponent.mapper]?.instantiate("gragga") }
 
     val koboldSecond = engine.entity {
-        with<KoboldComponent>()
-    }.apply { this[KoboldComponent.mapper]?.instantiate("krakka") }
+        with<EntityKoboldComponent>()
+    }.apply { this[EntityKoboldComponent.mapper]?.instantiate("krakka") }
 
     val koboldThird = engine.entity {
-        with<KoboldComponent>()
-    }.apply { this[KoboldComponent.mapper]?.instantiate("razza")  }
+        with<EntityKoboldComponent>()
+    }.apply { this[EntityKoboldComponent.mapper]?.instantiate("razza")  }
 
     @Test
     fun testActionEnumeration() {
 
-        kobold[KoboldComponent.mapper]?.baseActions!!.forEach{ println("base action: $it") }
-        kobold[KoboldComponent.mapper]?.extendedActions!!.forEach{ println("extended action: $it") }
+        kobold[EntityKoboldComponent.mapper]?.baseActions!!.forEach{ println("base action: $it") }
+        kobold[EntityKoboldComponent.mapper]?.extendedActions!!.forEach{ println("extended action: $it") }
 
         kobold.components.forEach { println("$it") }
     }

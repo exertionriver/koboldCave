@@ -1,15 +1,10 @@
 package render
 
-import org.river.exertion.ecs.template.IInstance
 import kotlin.time.ExperimentalTime
 
 //typealias Slots = MutableMap<Int, View>
 
 //typealias Queues = MutableMap<Int, Slots>
-
-@ExperimentalTime
-@ExperimentalUnsignedTypes
-typealias RenderInstancePositionMap = MutableMap<Int, IInstance>
 
 @ExperimentalTime
 @ExperimentalUnsignedTypes

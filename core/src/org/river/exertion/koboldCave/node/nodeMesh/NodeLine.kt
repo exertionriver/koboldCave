@@ -20,7 +20,6 @@ import kotlin.math.hypot
 import kotlin.math.sin
 import kotlin.random.Random
 
-@ExperimentalUnsignedTypes
 class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val description: String = "nodeLine${Random.nextInt(256)}"
                , override var nodes : MutableList<Node> = mutableListOf(), override var nodeLinks : MutableList<NodeLink> = mutableListOf()) :
     INodeMesh {

@@ -16,7 +16,6 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLinks
 import org.river.exertion.round
 import java.util.*
 
-@ExperimentalUnsignedTypes
 interface ILattice {
 
     val uuid : UUID

@@ -128,7 +128,7 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                 drawer.filledCircle(wallNode, 0.3F, BackColors[renderIdx % BackColors.size])
             }
 
-            nodeRoomMesh.nodeRooms.forEachIndexed { idx, nodeRoom -> nodeRoom.getExitNodes().forEachIndexed { index, exitNode ->
+            nodeRoomMesh.nodeRooms.forEachIndexed { idx, nodeRoom -> nodeRoom.getExitNodes().forEach { exitNode ->
                 drawer.filledCircle(exitNode.position, 4F, FadeBackColors[idx % ForeColors.size])
             } }
 

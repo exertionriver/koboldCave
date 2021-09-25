@@ -105,7 +105,7 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
 
         batch.use {
 
-            var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
+//            var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
 
 /*            font.drawLabel(it, Point(currentRoom.centroid.position.x, labelVert.y * 2)
                     , "NodeRoom (nodes=${currentRoom.nodes.size} idx=$nodeRoomIdx)\n" +
@@ -118,7 +118,7 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
                         "slope: ${nodeRoomMesh.getSlope(currentNode, forwardNextNodeAngle.first)}, ${nodeRoomMesh.getSlope(currentNode, backwardNextNodeAngle.first)}"
                     , ForeColors[nodeRoomIdx % ForeColors.size])
 */
-            val renderIdx = 1
+//            val renderIdx = 1
 
             nodeRoomMesh.render(batch)
 

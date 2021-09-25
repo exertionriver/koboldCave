@@ -14,7 +14,6 @@ import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.round
 import java.util.*
 
-@ExperimentalUnsignedTypes
 interface ILeaf {
 
     val uuid : UUID
