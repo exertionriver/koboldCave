@@ -5,28 +5,26 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalSystem
 import com.badlogic.ashley.systems.IteratingSystem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import ktx.ashley.allOf
-import ktx.ashley.contains
-import ktx.ashley.get
-import org.river.exertion.ecs.component.action.ActionIdleComponent
-import org.river.exertion.ecs.component.action.ActionInstantiateComponent
-import org.river.exertion.ecs.component.action.ActionLookComponent
-import org.river.exertion.ecs.component.action.ActionReflectComponent
+import ktx.ashley.*
+import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.entity.EntityKoboldComponent
+import org.river.exertion.ecs.component.environment.EnvironmentCaveComponent
+import org.river.exertion.ecs.system.action.core.ActionPlexSystem
+import java.util.*
 import kotlin.time.ExperimentalTime
+import kotlin.with
 
-@ExperimentalCoroutinesApi
-@ExperimentalTime
-@ExperimentalUnsignedTypes
 class ActionInstantiateSystem : IteratingSystem(allOf(ActionInstantiateComponent::class).get()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        engine.entities.filter { it.contains(EntityKoboldComponent.mapper) }.forEach { koboldEntity ->
-            if (entity != koboldEntity) {
-                koboldEntity[EntityKoboldComponent.mapper]?.let {
-                    println ("entity ${it.name} randomly screeches..!")
-                }
-            }
+        if ( ActionPlexSystem.readyToExecute(entity, ActionInstantiateComponent.mapper) && entity.contains(EnvironmentCaveComponent.mapper) ) {
+            val entityName = "krazza" + Random()
+
+            engine.entity {
+                with<EntityKoboldComponent>()
+            }.apply { this[EntityKoboldComponent.mapper]?.instantiate(entityName, this) }
+
+            println ("entity $entityName instantiated..!")
         }
     }
 }

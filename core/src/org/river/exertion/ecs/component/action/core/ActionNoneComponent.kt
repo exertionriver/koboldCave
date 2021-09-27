@@ -15,4 +15,8 @@ object ActionNoneComponent : IActionComponent {
     override val momentsToPrepare = 2
     override val momentsToExecute = 3
     override val momentsToRecover = 2
+
+    //in moments
+    override var stateCountdown = 0
+
 }

@@ -5,22 +5,16 @@ import ktx.ashley.mapperFor
 import org.river.exertion.ecs.component.action.core.ActionNoneComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.koboldQueue.time.Moment
 
-class ActionPlexComponent : IActionComponent, Component {
+class ActionPlexComponent(val actionPlexMaxSize : Int = 5, val moment : Moment = Moment(1000)) : Component {
 
-    override val label = "Destantiate"
-    override val description = { "Destantiate" }
-    override var type = ActionNoneComponent.type
-    override var priority = ActionNoneComponent.priority
-    override var state = ActionState.ActionStateNone
+    //in milliseconds
+    var countdown = moment.milliseconds
 
-    override var plexSlotsFilled = ActionNoneComponent.plexSlotsFilled
-    override var plexSlotsRequired = ActionNoneComponent.plexSlotsRequired
-    override var maxParallel = ActionNoneComponent.maxParallel
+    var slotsInUse = 0
 
-    override val momentsToPrepare = ActionNoneComponent.momentsToPrepare
-    override val momentsToExecute = ActionNoneComponent.momentsToExecute
-    override val momentsToRecover = ActionNoneComponent.momentsToRecover
+    fun slotsAvailable() = actionPlexMaxSize - slotsInUse
 
     companion object {
         val mapper = mapperFor<ActionPlexComponent>()

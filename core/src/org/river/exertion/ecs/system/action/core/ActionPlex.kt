@@ -5,14 +5,6 @@ import java.util.*
 
 class ActionPlex(val instanceID : UUID, val moment : Moment, val maxPlexSize : Int) {
 /*
-    val actionEntries : MutableMap<UUID, ActionInstance> = mutableMapOf() //slots to StateActions, max of maxPlexSize
-    val conditionEntries : MutableMap<UUID, StateCondition> = mutableMapOf() //conditions for respective actions
-
-    fun getEntriesDisplaySortedMap() = actionEntries.toList().sortedWith (compareBy<Pair<UUID, ActionInstance>> { it.second.actionPriority }.thenByDescending { it.second.actionState }
-        .thenByDescending { it.second.timer.getMillisecondsElapsed() }).toMap()
-
-    fun getEntriesPerformSortedMap() = actionEntries.toList().sortedWith (compareBy<Pair<UUID, ActionInstance>> { it.second.actionPriority }.thenByDescending { it.second.timer.getMillisecondsElapsed() })
-
     fun slotsInUse() : Int {
 
         val inProcessActions = actionEntries.filterValues { plexAction -> ActionState.InProcess.contains(plexAction.actionState) }

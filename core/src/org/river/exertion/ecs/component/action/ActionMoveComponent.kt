@@ -5,15 +5,16 @@ import ktx.ashley.mapperFor
 import org.river.exertion.Point
 import org.river.exertion.ecs.component.action.core.ActionNoneComponent
 import org.river.exertion.ecs.component.action.core.ActionState
+import org.river.exertion.ecs.component.action.core.ActionType
 import org.river.exertion.ecs.component.action.core.IActionComponent
 
-class ActionMoveComponent : IActionComponent, Component {
+class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component {
 
     override val label = "Move"
     override val description = { "Move" }
-    override var type = ActionNoneComponent.type
+    override var type = if (base) ActionType.Continual else ActionNoneComponent.type
     override var priority = ActionNoneComponent.priority
-    override var state = ActionState.ActionStateNone
+    override var state = if (base) ActionState.ActionQueue else ActionState.ActionStateNone
 
     override var plexSlotsFilled = ActionNoneComponent.plexSlotsFilled
     override var plexSlotsRequired = ActionNoneComponent.plexSlotsRequired
@@ -24,6 +25,9 @@ class ActionMoveComponent : IActionComponent, Component {
     override val momentsToRecover = ActionNoneComponent.momentsToRecover
 
     val currentPosition = Point(0f,0f)
+
+    //in moments
+    override var stateCountdown : Int = if (base) momentsToPrepare else 0
 
     companion object {
         val mapper = mapperFor<ActionMoveComponent>()

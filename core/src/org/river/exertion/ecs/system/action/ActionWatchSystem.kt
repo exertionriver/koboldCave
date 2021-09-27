@@ -13,20 +13,15 @@ import org.river.exertion.ecs.component.action.ActionLookComponent
 import org.river.exertion.ecs.component.action.ActionReflectComponent
 import org.river.exertion.ecs.component.action.ActionWatchComponent
 import org.river.exertion.ecs.component.entity.EntityKoboldComponent
+import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import kotlin.time.ExperimentalTime
 
-@ExperimentalCoroutinesApi
-@ExperimentalTime
-@ExperimentalUnsignedTypes
 class ActionWatchSystem : IteratingSystem(allOf(ActionWatchComponent::class).get()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        engine.entities.filter { it.contains(EntityKoboldComponent.mapper) }.forEach { koboldEntity ->
-            if (entity != koboldEntity) {
-                koboldEntity[EntityKoboldComponent.mapper]?.let {
-                    println ("entity ${it.name} watches..")
-                }
+        if ( ActionPlexSystem.readyToExecute(entity, ActionWatchComponent.mapper) && entity.contains(EntityKoboldComponent.mapper) )
+            entity[EntityKoboldComponent.mapper]?.let {
+                println ("entity ${it.name} watches..")
             }
-        }
     }
 }

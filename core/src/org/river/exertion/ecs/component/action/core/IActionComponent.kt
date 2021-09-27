@@ -17,4 +17,6 @@ interface IActionComponent {
     val momentsToPrepare : Int
     val momentsToExecute : Int
     val momentsToRecover : Int
+
+    var stateCountdown : Int
 }

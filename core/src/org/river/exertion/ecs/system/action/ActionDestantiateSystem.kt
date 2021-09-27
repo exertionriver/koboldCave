@@ -18,12 +18,6 @@ import kotlin.time.ExperimentalTime
 class ActionDestantiateSystem : IteratingSystem(allOf(ActionDestantiateComponent::class).get()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        engine.entities.filter { it.contains(EntityKoboldComponent.mapper) }.forEach { koboldEntity ->
-            if (entity != koboldEntity) {
-                koboldEntity[EntityKoboldComponent.mapper]?.let {
-                    println ("entity ${it.name} randomly screeches..!")
-                }
-            }
-        }
+
     }
 }
