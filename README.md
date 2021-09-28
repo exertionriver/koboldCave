@@ -17,8 +17,6 @@ v0.7 - first pass at environmental obstacles, elevation, and pov-rotation naviat
 
 v0.6 - switching over to libktx, implementing walls, line of sight nav lighting, and bottom-up elaboration
 
-https://user-images.githubusercontent.com/13192685/131937581-f6b37a77-5ad8-447f-9719-096a210316e7.mp4
-
 v0.5 - bottom-up, top-down nodeMesh elaboration, simple navigation
 
 v0.4.1 - cleaning up bordering algorithm
