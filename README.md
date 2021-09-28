@@ -9,6 +9,10 @@ Example usage, after cloning / downloading:
 
 Hope this may help you in your development work. - IanP
 
+v0.8 - merging cave and queue
+
+https://user-images.githubusercontent.com/13192685/135016689-c85cf920-475d-484f-ad0b-42b836db06f8.mp4
+
 v0.7 - first pass at environmental obstacles, elevation, and pov-rotation naviation
 
 v0.6 - switching over to libktx, implementing walls, line of sight nav lighting, and bottom-up elaboration
