@@ -19,12 +19,13 @@ class ActionInstantiateComponent(base : Boolean = false)  : IActionComponent, Co
     override var plexSlotsRequired = ActionNoneComponent.plexSlotsRequired
     override var maxParallel = ActionNoneComponent.maxParallel
 
-    override val momentsToPrepare = ActionNoneComponent.momentsToPrepare
-    override val momentsToExecute = ActionNoneComponent.momentsToExecute
-    override val momentsToRecover = ActionNoneComponent.momentsToRecover
+    override val momentsToPrepare = 5
+    override val momentsToExecute = 5
+    override val momentsToRecover = 5
 
     //in moments
-    override var stateCountdown : Int = if (base) momentsToPrepare else 0
+    override var stateCountdown = 0
+    override var executed = false
 
     companion object {
         val mapper = mapperFor<ActionInstantiateComponent>()

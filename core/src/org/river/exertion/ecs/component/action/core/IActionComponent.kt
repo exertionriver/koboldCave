@@ -19,4 +19,5 @@ interface IActionComponent {
     val momentsToRecover : Int
 
     var stateCountdown : Int
+    var executed : Boolean
 }

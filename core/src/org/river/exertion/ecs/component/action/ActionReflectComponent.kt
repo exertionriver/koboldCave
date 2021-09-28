@@ -24,7 +24,8 @@ class ActionReflectComponent(base : Boolean = false)  : IActionComponent, Compon
     override val momentsToRecover = ActionNoneComponent.momentsToRecover
 
     //in moments
-    override var stateCountdown : Int = if (base) momentsToPrepare else 0
+    override var stateCountdown = 0
+    override var executed = false
 
     companion object {
         val mapper = mapperFor<ActionReflectComponent>()

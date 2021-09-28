@@ -1,8 +1,11 @@
 package org.river.exertion
 
+import com.badlogic.ashley.core.Entity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import org.river.exertion.ecs.component.entity.core.IEntityComponent
+import org.river.exertion.ecs.component.environment.core.IEnvironmentComponent
 import org.river.exertion.koboldQueue.condition.Condition
 import kotlin.time.ExperimentalTime
 
@@ -34,3 +37,11 @@ typealias ConditionEvaluator = (conditionParams : ParamList?) -> Boolean?
 
 typealias ConditionList = List<Condition>
 typealias ConditionParamMap = Map<Condition, ParamList?>
+
+fun Entity.isEntity() = this.components.any { it is IEntityComponent }
+fun Entity.getEntityComponent() = this.components.first { it is IEntityComponent } as IEntityComponent
+
+fun Entity.isEnvironment() = this.components.any { it is IEnvironmentComponent }
+fun Entity.getEnvironmentComponent() = this.components.first { it is IEnvironmentComponent } as IEnvironmentComponent
+
+

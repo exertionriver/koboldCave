@@ -24,7 +24,8 @@ class ActionLookComponent(base : Boolean = false) : IActionComponent, Component 
     override val momentsToRecover = ActionNoneComponent.momentsToRecover
 
     //in moments
-    override var stateCountdown : Int = 0
+    override var stateCountdown = 0
+    override var executed = false
 
     companion object {
         val mapper = mapperFor<ActionLookComponent>()

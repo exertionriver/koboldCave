@@ -24,7 +24,8 @@ class ActionDestantiateComponent(base : Boolean = false) : IActionComponent, Com
     override val momentsToRecover = ActionNoneComponent.momentsToRecover
 
     //in moments
-    override var stateCountdown : Int = if (base) momentsToPrepare else 0
+    override var stateCountdown = 0
+    override var executed = false
 
     companion object {
         val mapper = mapperFor<ActionDestantiateComponent>()

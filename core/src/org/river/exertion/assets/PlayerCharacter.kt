@@ -1,13 +1,10 @@
 package org.river.exertion.assets
 
-import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.math.Vector3
 import org.river.exertion.*
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
-import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
-import org.river.exertion.screen.RenderPalette
+import org.river.exertion.koboldCave.screen.RenderPalette
 import space.earlygrey.shapedrawer.JoinType
 
 object PlayerCharacter {

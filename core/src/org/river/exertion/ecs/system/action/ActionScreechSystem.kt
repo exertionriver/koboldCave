@@ -10,15 +10,19 @@ import ktx.ashley.contains
 import ktx.ashley.get
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.entity.EntityKoboldComponent
+import org.river.exertion.ecs.component.entity.core.IEntityComponent
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
+import org.river.exertion.getEntityComponent
+import org.river.exertion.isEntity
 import kotlin.time.ExperimentalTime
 
 class ActionScreechSystem : IteratingSystem(allOf(ActionScreechComponent::class).get()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        if ( ActionPlexSystem.readyToExecute(entity, ActionScreechComponent.mapper) && entity.contains(EntityKoboldComponent.mapper) )
-            entity[EntityKoboldComponent.mapper]?.let {
-                println ("entity ${it.name} randomly screeches..")
-            }
+        if ( ActionPlexSystem.readyToExecute(entity, ActionScreechComponent.mapper) && entity.isEntity() ) {
+            println ("entity ${entity.getEntityComponent().name} randomly screeches..!")
+
+            entity[ActionScreechComponent.mapper]!!.executed = true
+        }
     }
 }

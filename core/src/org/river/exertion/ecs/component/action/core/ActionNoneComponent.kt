@@ -18,5 +18,5 @@ object ActionNoneComponent : IActionComponent {
 
     //in moments
     override var stateCountdown = 0
-
+    override var executed = false
 }

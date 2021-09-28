@@ -12,12 +12,15 @@ import org.river.exertion.ecs.component.action.ActionDestantiateComponent
 import org.river.exertion.ecs.component.action.ActionIdleComponent
 import org.river.exertion.ecs.component.action.ActionLookComponent
 import org.river.exertion.ecs.component.action.ActionReflectComponent
-import org.river.exertion.ecs.component.action.core.ActionPlexComponent
-import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.action.core.ActionType
-import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.action.core.*
 import org.river.exertion.ecs.component.entity.EntityKoboldComponent
+import org.river.exertion.ecs.component.entity.core.IEntityComponent
+import org.river.exertion.ecs.component.environment.core.IEnvironmentComponent
 import org.river.exertion.ecs.system.action.*
+import org.river.exertion.getEntityComponent
+import org.river.exertion.getEnvironmentComponent
+import org.river.exertion.isEntity
+import org.river.exertion.isEnvironment
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import kotlin.time.ExperimentalTime
@@ -45,6 +48,8 @@ class ActionPlexSystem(private val pooledEngine: PooledEngine, val initInterval 
 
         engine.entities.filter { it.contains(ActionPlexComponent.mapper) }.forEach { entity ->
 
+//            println(entity[ActionPlexComponent.mapper]!!.countdown)
+
             if (entity[ActionPlexComponent.mapper]!!.countdown <= 0) {
                 entity[ActionPlexComponent.mapper]!!.countdown = entity[ActionPlexComponent.mapper]!!.moment.milliseconds
                 cycleStates(entity)
@@ -56,11 +61,15 @@ class ActionPlexSystem(private val pooledEngine: PooledEngine, val initInterval 
     }
 
     private fun cycleStates(entity : Entity) {
-        println ("cycling states for ${entity[EntityKoboldComponent.mapper]!!.name}; ${entity[ActionPlexComponent.mapper]!!.slotsAvailable()} slots available")
 
+ /*       if ( entity.isEntity() )
+            println ("cycling states for ${entity.getEntityComponent().name}; ${entity[ActionPlexComponent.mapper]!!.slotsAvailable()} slots available")
+        if ( entity.isEnvironment() )
+            println ("cycling states for ${entity.getEnvironmentComponent().name}; ${entity[ActionPlexComponent.mapper]!!.slotsAvailable()} slots available")
+*/
         entity.components.filter {it is IActionComponent}.sortedBy { (it as IActionComponent).priority }.forEach { (it as IActionComponent)
 
-            println ("${it.label} - ${it.state}: countdown: ${it.stateCountdown}; slotsFilled: ${it.plexSlotsFilled}")
+//            println ("${it.label} - ${it.state}: countdown: ${it.stateCountdown}; slotsFilled: ${it.plexSlotsFilled}")
 
             if (it.stateCountdown <= 0) {
                 when ( it.state ) {
@@ -72,26 +81,28 @@ class ActionPlexSystem(private val pooledEngine: PooledEngine, val initInterval 
 
                             it.state = ActionState.ActionPrepare
                             it.stateCountdown = it.momentsToPrepare
-                            println ("setting to prepare!")
+ //                           println ("setting to prepare!")
                         } else it.stateCountdown = 1
                     }
                     ActionState.ActionPrepare -> {
                         it.state = ActionState.ActionExecute
                         it.stateCountdown = it.momentsToExecute
-                        println("setting to execute!")
+                        it.executed = false
+//                        println("setting to execute!")
                     }
                     ActionState.ActionExecute -> {
                         it.state = ActionState.ActionRecover
                         it.stateCountdown = it.momentsToRecover
-                        println("setting to recover!")
+                        it.executed = false
+//                       println("setting to recover!")
                     }
                     ActionState.ActionRecover -> {
                         if (it.type == ActionType.OneTimeExec) {
                             it.state = ActionState.ActionStateNone
-                            println("completed action!")
+//                            println("completed action!")
                         } else {
                             it.state = ActionState.ActionQueue
-                            println("requeued action!")
+//                            println("requeued action!")
                         }
 
                         entity[ActionPlexComponent.mapper]!!.slotsInUse -= it.plexSlotsRequired
@@ -112,26 +123,41 @@ class ActionPlexSystem(private val pooledEngine: PooledEngine, val initInterval 
 
     private fun queueAction(entity : Entity) {
 
-        val selectedActionComponent = ProbabilitySelect(entity[EntityKoboldComponent.mapper]!!.extendedActions).getSelectedProbability()!!
+        val selectedActionComponent = when {
+            (entity.isEntity()) -> if (entity.getEntityComponent().extendedActions.isEmpty()) ActionNoneComponent
+                else ProbabilitySelect(entity.getEntityComponent().extendedActions).getSelectedProbability()!!
+            (entity.isEnvironment()) -> if (entity.getEnvironmentComponent().extendedActions.isEmpty()) ActionNoneComponent
+                else ProbabilitySelect(entity.getEnvironmentComponent().extendedActions).getSelectedProbability()!!
+            else -> ActionNoneComponent
+        }
 
-        println("selected Action state: ${selectedActionComponent.state}")
+        val name = when {
+            (entity.isEntity()) -> entity.getEntityComponent().name
+            (entity.isEnvironment()) -> entity.getEnvironmentComponent().name
+            else -> ""
+        }
 
-        if ( selectedActionComponent.state == ActionState.ActionStateNone ) {
-            selectedActionComponent.state = ActionState.ActionQueue
-            println ("queueing ${selectedActionComponent.label} for ${entity[EntityKoboldComponent.mapper]!!.name}")
-        } else {
-            println ("${selectedActionComponent.label} already in process, no action queued!")
+        if (selectedActionComponent != ActionNoneComponent) {
+//            println("selected Action state: ${selectedActionComponent.state}")
+
+            if ( selectedActionComponent.state == ActionState.ActionStateNone ) {
+                selectedActionComponent.state = ActionState.ActionQueue
+//                println ("queueing ${selectedActionComponent.label} for $name")
+            } else {
+//                println ("${selectedActionComponent.label} already in process, no action queued!")
+            }
         }
     }
 
     companion object {
         fun <T: Component> readyToExecute(entity: Entity, mapper: ComponentMapper<T>) =
             entity.contains(ActionPlexComponent.mapper) &&
-                    entity[ActionPlexComponent.mapper]!!.countdown == entity[ActionPlexComponent.mapper]!!.moment.milliseconds  &&
+                    entity[ActionPlexComponent.mapper]!!.countdown == 0L &&
                     entity.contains(mapper) &&
                     (entity[mapper]!! is IActionComponent) &&
                     (entity[mapper]!! as IActionComponent).state == ActionState.ActionExecute &&
-                    (entity[mapper]!! as IActionComponent).stateCountdown == 0
+                    (entity[mapper]!! as IActionComponent).stateCountdown == 0 &&
+                    !(entity[mapper]!! as IActionComponent).executed
 
     }
 }

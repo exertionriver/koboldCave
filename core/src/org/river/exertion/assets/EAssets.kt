@@ -19,7 +19,8 @@ operator fun AssetManager.get(asset: SoundAssets) = getAsset<Sound>(asset.path)
 */
 // music
 enum class MusicAssets(val path: String) {
-    NavajoNight("music/navajo_clip.mp3")
+    NavajoNight("music/navajo_clip.wav"),
+    DarkMystery("music/mystery_clip.wav")
 }
 
 fun AssetManager.load(asset: MusicAssets) = load<Music>(asset.path)

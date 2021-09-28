@@ -24,12 +24,13 @@ class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component
     override val momentsToExecute = ActionNoneComponent.momentsToExecute
     override val momentsToRecover = ActionNoneComponent.momentsToRecover
 
-    val currentPosition = Point(0f,0f)
-
     //in moments
-    override var stateCountdown : Int = if (base) momentsToPrepare else 0
+    override var stateCountdown = 0
+    override var executed = false
 
     companion object {
         val mapper = mapperFor<ActionMoveComponent>()
+
+
     }
 }
