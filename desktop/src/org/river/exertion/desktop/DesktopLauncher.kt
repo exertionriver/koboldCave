@@ -14,7 +14,7 @@ object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
         val config = Lwjgl3ApplicationConfiguration().apply {
-            setTitle("koboldCave v0.7")
+            setTitle("koboldCave v0.8")
             setWindowedMode(windowWidth, windowHeight)
             setBackBufferConfig(8, 8, 8, 8, 16, 0, 16)
         }
