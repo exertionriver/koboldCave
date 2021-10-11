@@ -1,5 +1,5 @@
 # koboldCave
-Demonstration of probabilistically-generated oakLeaf and nodeMesh using Korge Multiplatform Kotlin Game Engine
+Demonstration of probabilistically-generated caves using libGDX framework.
 
 Built using IntelliJ Community Edition 2021.1.1 / libGDX 1.23.3 / libktx 1.10.0-b2 / on Ubuntu 20.04
 
