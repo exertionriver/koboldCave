@@ -11,7 +11,8 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
-import org.river.exertion.koboldCave.screen.nodeRoom.DemoNodeRoomWallFloorScreen
+import org.river.exertion.koboldCave.screen.lattice.DemoRoundedLatticeHeightScreen
+import org.river.exertion.koboldCave.screen.nodeRoom.*
 import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshNavigateScreen
 import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshRotateNavigateScreen
 import org.river.exertion.koboldQueue.screen.cave.DemoNodeRoomCaveScreen
@@ -36,7 +37,8 @@ class Game : KtxGame<KtxScreen>() {
             bindSingleton(camera)
             bindSingleton(stage)
             bindSingleton(assets)
-                /*
+/*
+    Geometries
             addScreen(DemoLeafHeightScreen( inject(), inject(), inject() ) )
             addScreen(DemoLeafAngledScreen( inject(), inject(), inject() ) )
             addScreen(DemoLeafBorderingScreen( inject(), inject(), inject() ) )
@@ -62,16 +64,21 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeMeshOperationsThirdScreen( inject(), inject(), inject(), inject()) )
 
             addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
-       *///      addScreen(DemoNodeRoomWallFloorScreen( inject(), inject(), inject() ) )
- //           addScreen(DemoNodeRoomSlopeScreen( inject(), inject(), inject() ) )
-//            addScreen(DemoNodeRoomNavigateScreen( inject(), inject(), inject(), inject() ) )
-//            addScreen(DemoNodeRoomRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
+*/
+/*nodeRooms
+             addScreen(DemoNodeRoomWallFloorScreen( inject(), inject(), inject() ) )
+             addScreen(DemoNodeRoomSlopeScreen( inject(), inject(), inject() ) )
+*/
+/*navigation
+            addScreen(DemoNodeRoomNavigateScreen( inject(), inject(), inject(), inject() ) )
+            addScreen(DemoNodeRoomRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 
-            addScreen(DemoNodeRoomMeshRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
-//            addScreen(DemoNodeRoomMeshNavigateScreen( inject(), inject(), inject(), inject() ) )
+            addScreen(DemoNodeRoomMeshNavigateScreen( inject(), inject(), inject(), inject() ) )
+*/            addScreen(DemoNodeRoomMeshRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 
-//            addScreen(DemoNodeRoomCaveScreen( inject(), inject(), inject(), inject() ) )
-
+/*kobold ECS
+ //           addScreen(DemoNodeRoomCaveScreen( inject(), inject(), inject(), inject() ) )
+*/
         }
 
         setScreen<DemoNodeRoomMeshRotateNavigateScreen>()

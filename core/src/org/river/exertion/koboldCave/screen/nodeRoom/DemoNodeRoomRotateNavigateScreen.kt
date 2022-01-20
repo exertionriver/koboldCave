@@ -12,6 +12,7 @@ import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.assets.MusicAssets
+import org.river.exertion.assets.PlayerCharacter
 import org.river.exertion.assets.get
 import org.river.exertion.assets.load
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
@@ -26,6 +27,8 @@ import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.buildNodeL
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildFloorsLos
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsLos
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeBackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
@@ -71,8 +74,9 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
 
-    val ego : com.badlogic.gdx.utils.Array<Vector2> = com.badlogic.gdx.utils.Array()
+//    val ego : com.badlogic.gdx.utils.Array<Vector2> = com.badlogic.gdx.utils.Array()
 
+    var dirty = true
     override fun render(delta: Float) {
 
         batch.projectionMatrix = camera.combined
@@ -194,6 +198,7 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
  //                   println("rotation:$rotation")
 
                     camera.rotate(Vector3.Z, rotation)
+                    dirty = true
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> {
                     nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
@@ -219,12 +224,16 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 
 //                    println("position: ${currentNode.position}")
 //                    println("angle: $currentAngle")
+                    dirty = true
+
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.ENTER) -> {
                     nodeRoom.buildWalls()
 
 //                    println("position: ${currentNode.position}")
 //                    println("angle: $currentAngle")
+                    dirty = true
+
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.UP) -> {
  //                   currentNode = forwardNextNodeAngle.first
@@ -254,6 +263,8 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 //                    leftNextAngle = nodeRoom.nodeLinks.getNextAngle(nodeRoom.nodes.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
 //            println("checking rightward angle:")
 //                    rightNextAngle = nodeRoom.nodeLinks.getNextAngle(nodeRoom.nodes.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
+                    dirty = true
+
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> {
 
@@ -289,6 +300,7 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 
 //                        println("position: ${currentNode.position}")
 //                        println("angle: $currentAngle")
+                        dirty = true
                     }
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> {
@@ -304,6 +316,8 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 
 //                    println("position: ${currentNode.position}")
 //                    println("angle: $currentAngle")
+                    dirty = true
+
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> {
 //                    camera.position.set(currentNode.position.x, currentNode.position.y, 0f)
@@ -326,6 +340,7 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 
 //                    println("position: ${currentNode.position}")
 //                    println("angle: $currentAngle")
+                    dirty = true
                 }
             }
 
@@ -337,11 +352,18 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 //            println("checking rightward angle:")
             rightNextAngle = nodeRoom.nodeLinks.getNextAngle(nodeRoom.nodes.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
-            nodeRoom.buildWallsLos(currentPos, currentAngle, visualRadius)
+//            nodeRoom.buildWallsLos(currentPos, currentAngle, visualRadius)
 
+            if (dirty) {
+                nodeRoom.buildWallsLos(currentPos, currentAngle, visualRadius)
+
+                dirty = false
+            }
+
+            PlayerCharacter.render(batch, currentPos, currentAngle)
 
 //            val egoAngle = 90f
-            ego.clear()
+/*            ego.clear()
 
             val bottomArrow = currentPos.getPositionByDistanceAndAngle(4f, (currentAngle + 180f).normalizeDeg())
             val topArrow = currentPos.getPositionByDistanceAndAngle(6f, currentAngle)
@@ -355,7 +377,7 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 
             //may have to use another (colored) texture for ego-path
             drawer.path(ego, 1f, JoinType.SMOOTH, true)
-
+*/
 
         }
     }

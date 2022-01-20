@@ -274,12 +274,12 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
 //            modForwardDistancePerStep = distancePerStep - abs(max( currentNode.attributes.nodeElevation.getHeight(), forwardNextNodeAngle.first.attributes.nodeElevation.getHeight() ) - min( currentNode.attributes.nodeElevation.getHeight(), forwardNextNodeAngle.first.attributes.nodeElevation.getHeight() ) / 4).toInt()
 
 //            println("modForwardPathNoise:$modForwardPathNoise, modBackwardPathNoise:$modBackwardPathNoise, modDegreesPerAngle:$modDegreesPerAngle, modForwardDistancePerStep:$modForwardDistancePerStep, modBackwardDistancePerStep:$modBackwardDistancePerStep")
-    if (dirty) {
-        nodeRoomMesh.buildWallsLos(currentPos, currentAngle, visualRadius)
-        nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+            if (dirty) {
+                nodeRoomMesh.buildWallsLos(currentPos, currentAngle, visualRadius)
+                nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
 
-        dirty = false
-    }
+                dirty = false
+            }
 
             PlayerCharacter.render(batch, currentPos, currentAngle)
         }
