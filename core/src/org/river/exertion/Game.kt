@@ -12,6 +12,7 @@ import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
 import org.river.exertion.koboldCave.screen.nodeRoom.DemoNodeRoomWallFloorScreen
+import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshNavigateScreen
 import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshRotateNavigateScreen
 import org.river.exertion.koboldQueue.screen.cave.DemoNodeRoomCaveScreen
 
@@ -66,14 +67,14 @@ class Game : KtxGame<KtxScreen>() {
 //            addScreen(DemoNodeRoomNavigateScreen( inject(), inject(), inject(), inject() ) )
 //            addScreen(DemoNodeRoomRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 
-//            addScreen(DemoNodeRoomMeshRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
+            addScreen(DemoNodeRoomMeshRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 //            addScreen(DemoNodeRoomMeshNavigateScreen( inject(), inject(), inject(), inject() ) )
 
-            addScreen(DemoNodeRoomCaveScreen( inject(), inject(), inject(), inject() ) )
+//            addScreen(DemoNodeRoomCaveScreen( inject(), inject(), inject(), inject() ) )
 
         }
 
-        setScreen<DemoNodeRoomCaveScreen>()
+        setScreen<DemoNodeRoomMeshRotateNavigateScreen>()
 //        super.create()
     }
 
