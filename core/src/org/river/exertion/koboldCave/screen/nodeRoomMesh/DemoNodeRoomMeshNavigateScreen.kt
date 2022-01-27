@@ -23,9 +23,8 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLinks
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildFloorsLos
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWalls
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsLos
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.koboldCave.screen.RenderPalette
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeBackColors
@@ -328,8 +327,8 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
             }
 
             if (dirty) {
-                nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
-                nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
+                nodeRoomMesh.buildWallsAndPath()
+                nodeRoomMesh.renderWallsAndPathLos(currentNode.position, currentAngle, visualRadius)
 
                 dirty = false
             }
@@ -347,7 +346,8 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
             //                    nodeRoom.buildWalls(currentNode.position, 30f)
             currentRoom.inactiveExitNodesInRange(currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
 
-            nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)
+            nodeRoomMesh.buildWallsAndPath()
+            nodeRoomMesh.renderWallsAndPathLos(currentNode.position, currentAngle, visualRadius)
     //        nodeRoom.buildWalls()
             println ("exitNodes: ${currentRoom.inactiveExitNodesInRange(currentNode)}")
 
@@ -359,8 +359,6 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
             leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
     //            println("checking rightward angle:")
             rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
-
-            nodeRoomMesh.buildFloorsLos(currentNode, forwardNextNodeAngle.first, currentAngle, visualRadius)
 
             //todo: move cost into nodeRoom, add elevation cost
             forwardNextMoveCost = currentNode.position.dst(forwardNextNodeAngle.first.position) / 3 + currentNode.position.dst(forwardNextNodeAngle.first.position) * ( currentNode.attributes.nodeObstacle.getChallenge() + forwardNextNodeAngle.first.attributes.nodeObstacle.getChallenge()) / 200

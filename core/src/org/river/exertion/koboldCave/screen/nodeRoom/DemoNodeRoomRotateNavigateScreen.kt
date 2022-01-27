@@ -27,8 +27,6 @@ import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.buildNodeL
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildFloorsLos
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsLos
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeBackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors

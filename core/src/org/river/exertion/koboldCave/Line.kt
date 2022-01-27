@@ -4,10 +4,6 @@ import com.badlogic.gdx.math.MathUtils.cos
 import com.badlogic.gdx.math.MathUtils.sin
 import org.river.exertion.*
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
-import org.river.exertion.koboldCave.Line.Companion.isInBorder
-import org.river.exertion.koboldCave.Line.Companion.isInRect
-import java.lang.Float.max
-import java.lang.Float.min
 import kotlin.math.*
 
 class Line(val first : Point, val second: Point) {
@@ -262,11 +258,11 @@ class Line(val first : Point, val second: Point) {
         }
 
         //returns truncated points, ie. whole number points
-        fun pointsInBorder(line : Line, offset: Int) : MutableList<Point> {
+        fun Line.pointsInBorder(offset: Int) : MutableList<Point> {
 
             val pointsSet = mutableSetOf<Point>()
 
-            val borderPoints = line.borderPoints(offset)
+            val borderPoints = if (offset < 1) this.borderPoints(1) else this.borderPoints(offset)
 
             val minX = borderPoints.minOf { it.x }.toInt()
             val minY = borderPoints.minOf { it.y }.toInt()

@@ -446,7 +446,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                     //build obstacles
                     val childNodeChallenge = childNode.attributes.nodeObstacle.getChallenge()
 
-                    pointsInBorder(Line(beginCorridorPos, halfCorridorPos), borderWidth).forEach { checkPoint ->
+                    Line(beginCorridorPos, halfCorridorPos).pointsInBorder(borderWidth).forEach { checkPoint ->
                         val dstGradientFromBegin = checkPoint.dst(beginCorridorPos) / dstHalfCorridor
                         val dstGradientFromHalf = checkPoint.dst(halfCorridorPos) / dstHalfCorridor
                         val avgChallenge = ( nodeChallenge + childNodeChallenge ) / 2

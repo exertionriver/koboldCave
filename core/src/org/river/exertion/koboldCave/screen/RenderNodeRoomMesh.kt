@@ -3,12 +3,10 @@ package org.river.exertion.koboldCave.screen
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector3
-import org.river.exertion.Angle
-import org.river.exertion.ShapeDrawerConfig
+import org.river.exertion.*
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
-import org.river.exertion.leftAngleBetween
-import org.river.exertion.radians
+import org.river.exertion.koboldQueue.condition.Probability
 
 object Render {
 
@@ -40,7 +38,7 @@ fun NodeRoomMesh.render(batch : Batch) {
 
         val arcPastSdc = ShapeDrawerConfig(batch, pastColor)
         val arcPastDrawer = arcPastSdc.getDrawer()
-
+/*
         this.pastStairs.entries.forEach { stairNode ->
             arcPastDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
         }
@@ -48,29 +46,31 @@ fun NodeRoomMesh.render(batch : Batch) {
         this.currentStairs.entries.forEach { stairNode ->
             arcDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
         }
-
-        this.currentFloor.values.forEach { floorNode ->
-            drawer.filledCircle(floorNode, 0.5F, currentFloorColor)
+*/
+        this.pastPath.entries.forEach { pathPoint ->
+            val radius = this.obstaclePath[pathPoint.key] ?: 0.25f
+            drawer.filledCircle(pathPoint.value, radius, pastFloorColor)
         }
 
-        this.pastFloor.values.forEach { floorNode ->
-            drawer.filledCircle(floorNode, 0.5F, pastFloorColor)
+        this.currentPath.entries.forEach { pathPoint ->
+            val radius = this.obstaclePath[pathPoint.key] ?: 0.25f
+            drawer.filledCircle(pathPoint.value, radius, currentFloorColor)
         }
 
         this.pastWall.values.forEach { wallNode ->
             drawer.filledCircle(wallNode, 0.5F, pastColor)
         }
 
+        this.currentWall.values.forEach { wallPoint ->
+            drawer.filledCircle(wallPoint, 0.5F, currentWallColor)
+        }
+
         this.pastWallFade.values.forEach { wallNode ->
             drawer.filledCircle(wallNode, 0.3F, pastColor)
         }
 
-        this.currentWall.values.forEach { wallNode ->
-            drawer.filledCircle(wallNode, 0.5F, currentWallColor)
-        }
-
-        this.currentWallFade.values.forEach { wallNode ->
-            drawer.filledCircle(wallNode, 0.3F, currentWallColor)
+        this.currentWallFade.values.forEach { wallFadePoint ->
+            drawer.filledCircle(wallFadePoint, 0.3F, currentWallColor)
         }
 
         arcSdc.disposeShapeDrawerConfig()
