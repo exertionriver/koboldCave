@@ -12,8 +12,9 @@ import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.NodeAttributes
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildFloors
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeForeColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
@@ -100,8 +101,8 @@ class DemoNodeRoomSlopeScreen(private val batch: Batch,
 
     override fun show() {
         println (nodeRoomList.size)
-        nodeRoomList.forEach { it.buildWalls() }
-        nodeRoomList.forEach { it.buildFloors() }
+        nodeRoomList.forEach { NodeRoomMesh(it).buildWallsAndPath() }
+        nodeRoomList.forEach { NodeRoomMesh(it).renderWallsAndPath() }
 //        nodeRoomList.forEach { println("${it.description} ${it.nodes}") }
     }
 

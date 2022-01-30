@@ -23,8 +23,6 @@ import org.river.exertion.koboldCave.node.NodeAttributes
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.removeOrphanLinks
 import org.river.exertion.koboldCave.node.nodeMesh.INodeMesh.Companion.setBordering
-import java.lang.Math.abs
-import java.lang.Math.pow
 import java.util.*
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -233,7 +231,14 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
             }
 
         }
-
+/*
+        fun NodeRoom.buildAndRenderSimplePath() = NodeRoomMesh(this).buildAndRenderSimplePath()
+        fun NodeRoom.buildWallsAndPath() = NodeRoomMesh(this).buildWallsAndPath()
+        fun NodeRoom.renderWalls() = NodeRoomMesh(this).renderWalls()
+        fun NodeRoom.renderWallsAndPathLos(refPosition : Point, refAngle : Angle, radius : Float = NextDistancePx * .5f) =
+                NodeRoomMesh(this).renderWallsAndPathLos(refPosition, refAngle, radius)
+*/
+        /*
         //build all walls, fully lit
         fun NodeRoom.buildWalls() {
 
@@ -501,6 +506,6 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                 }
                 floorNodes.add(node)
             }
-        }
+        }*/
     }
 }

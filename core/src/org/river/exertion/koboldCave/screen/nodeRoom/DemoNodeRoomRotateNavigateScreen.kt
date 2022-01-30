@@ -25,8 +25,9 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
 import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
 import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.buildNodeLine
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeBackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
@@ -42,13 +43,14 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
     val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
 
     var nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
+    var nodeRoomMesh = NodeRoomMesh(nodeRoom)
 
     lateinit var forwardNextNodeAngle : Pair<Node, Angle>
     lateinit var backwardNextNodeAngle : Pair<Node, Angle>
     var leftNextAngle : Angle = 0f
     var rightNextAngle : Angle = 0f
     var currentNode = nodeRoom.getRandomNode()
-    var currentAngle = nodeRoom.getRandomNextNodeAngle(currentNode)
+    var currentAngle = nodeRoom.getRandomNextNodeLinkAngle(currentNode).second
     val visualRadius = NextDistancePx * 1.5f
 
     var rotation = 30f
@@ -203,7 +205,7 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
                     currentNode = nodeRoom.getRandomNode()
                     camera.position.set(currentNode.position.x, currentNode.position.y, 0f)
 
-                    val newAngle = nodeRoom.getRandomNextNodeAngle(currentNode)
+                    val newAngle = nodeRoom.getRandomNextNodeLinkAngle(currentNode).second
                     val angleToRotate = currentAngle.leftAngleBetween(newAngle)
                     camera.rotate(Vector3.Z, angleToRotate)
 
@@ -226,7 +228,7 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.ENTER) -> {
-                    nodeRoom.buildWalls()
+                    nodeRoomMesh.buildWallsAndPath()
 
 //                    println("position: ${currentNode.position}")
 //                    println("angle: $currentAngle")
@@ -353,7 +355,8 @@ class DemoNodeRoomRotateNavigateScreen(private val batch: Batch,
 //            nodeRoom.buildWallsLos(currentPos, currentAngle, visualRadius)
 
             if (dirty) {
-                nodeRoom.buildWallsLos(currentPos, currentAngle, visualRadius)
+                nodeRoomMesh.buildWallsAndPath()
+                nodeRoomMesh.renderWallsAndPathLos(currentPos, currentAngle, visualRadius)
 
                 dirty = false
             }

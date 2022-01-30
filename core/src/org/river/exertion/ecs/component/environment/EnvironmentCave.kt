@@ -11,15 +11,13 @@ import org.river.exertion.ecs.component.action.ActionDestantiateComponent
 import org.river.exertion.ecs.component.action.ActionInstantiateComponent
 import org.river.exertion.ecs.component.action.core.ActionPlexComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.EntityKoboldComponent
-import org.river.exertion.ecs.component.environment.core.EnvironmentNoneComponent
-import org.river.exertion.ecs.component.environment.core.IEnvironmentComponent
+import org.river.exertion.ecs.component.environment.core.EnvironmentNone
+import org.river.exertion.ecs.component.environment.core.IEnvironment
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.time.Moment
 import java.util.*
 
-class EnvironmentCaveComponent : IEnvironmentComponent, Component {
+class EnvironmentCave : IEnvironment, Component {
 
     override var name = "Cave"
     override var description = "Cave"
@@ -46,17 +44,19 @@ class EnvironmentCaveComponent : IEnvironmentComponent, Component {
     override var baseActions = mutableListOf<IActionComponent>(
         ActionInstantiateComponent(base = true), ActionDestantiateComponent()
     )
-    override var extendedActions = EnvironmentNoneComponent.extendedActions
+    override var extendedActions = EnvironmentNone.extendedActions
 
-    override var nodeRoom = EnvironmentNoneComponent.nodeRoom
+    override var nodeRoom = EnvironmentNone.nodeRoom
 
     companion object {
-        val mapper = mapperFor<EnvironmentCaveComponent>()
+        val mapper = mapperFor<EnvironmentCave>()
 
-        fun instantiate(engine: PooledEngine, initName : String = "cave" + Random()) : Entity {
+        fun instantiate(engine: PooledEngine, initName : String = "cave" + Random(), nodeRoom: NodeRoom? = null) : Entity {
             val newCave = engine.entity {
-                with<EnvironmentCaveComponent>()
-            }.apply { this[mapper]?.initialize(initName, this) }
+                with<EnvironmentCave>()
+            }.apply { this[mapper]?.initialize(initName, this)
+                if (nodeRoom != null) this[mapper]!!.nodeRoom = nodeRoom
+            }
 
             println ("$initName instantiated!")
 

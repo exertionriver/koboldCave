@@ -1,12 +1,12 @@
 package org.river.exertion.koboldCave.screen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector3
 import org.river.exertion.*
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
-import org.river.exertion.koboldQueue.condition.Probability
 
 object Render {
 
@@ -48,13 +48,22 @@ fun NodeRoomMesh.render(batch : Batch) {
         }
 */
         this.pastPath.entries.forEach { pathPoint ->
-            val radius = this.obstaclePath[pathPoint.key] ?: 0.25f
+            val baseRadius = 0.3f
+            val obsRadius = this.obstaclePath[pathPoint.key] ?: 0f
+            val radius = baseRadius + obsRadius
+//            val eleRadius = (this.elevationPath[pathPoint.key] ?: 0.5f) - 0.25f
             drawer.filledCircle(pathPoint.value, radius, pastFloorColor)
         }
 
         this.currentPath.entries.forEach { pathPoint ->
-            val radius = this.obstaclePath[pathPoint.key] ?: 0.25f
-            drawer.filledCircle(pathPoint.value, radius, currentFloorColor)
+            val baseRadius = 0.3f
+            val obsRadius = this.obstaclePath[pathPoint.key] ?: 0f
+            val radius = baseRadius + obsRadius
+
+            val color = this.colorPath[pathPoint.key] ?: pastFloorColor
+
+//            println(this.elevationPath[pathPoint.key].toString() + ", " + color)
+            drawer.filledCircle(pathPoint.value, radius, color)
         }
 
         this.pastWall.values.forEach { wallNode ->

@@ -1,11 +1,11 @@
 package org.river.exertion.koboldCave.node.nodeRoomMesh
 
+import com.badlogic.gdx.graphics.Color
 import org.river.exertion.*
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.Line.Companion.pointsInBorder
 import org.river.exertion.koboldQueue.condition.Probability
-import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
@@ -18,8 +18,8 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.getLineList
 import org.river.exertion.koboldCave.node.NodeLink.Companion.removeNodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoomLink
+import org.river.exertion.koboldCave.screen.RenderPalette
 import java.util.*
-import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val description: String = "nodeRoomMesh${Random.nextInt(256)}"
@@ -36,6 +36,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
     var builtPath : MutableMap<Point, Point> = mutableMapOf()
     var currentPath : MutableMap<Point, Point> = mutableMapOf()
     var pastPath : MutableMap<Point, Point> = mutableMapOf()
+    var colorPath : MutableMap<Point, Color> = mutableMapOf()
     var obstaclePath : MutableMap<Point, Float> = mutableMapOf()
     var elevationPath : MutableMap<Point, Float> = mutableMapOf()
 
@@ -49,23 +50,20 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
     val renderedNodeLinks = mutableSetOf<NodeLink>()
 
-    val renderedNodes = mutableSetOf<Node>()
-    var currentFloor : MutableMap<Point, Point> = mutableMapOf()
-    var pastFloor : MutableMap<Point, Point> = mutableMapOf()
-    var currentStairs : MutableMap<Point, Angle> = mutableMapOf()
-    var pastStairs : MutableMap<Point, Angle> = mutableMapOf()
-
     //build constructor
     constructor(nodeRoom : NodeRoom) : this (
     ) {
         this.nodeRooms.add(nodeRoom)
+//        println("from NodeRoom: ${nodeRoom.nodes.size}, ${nodeRoom.nodeLinks.size}")
+//        nodeRoom.nodes.forEach {println ("from node UUID: ${it.uuid}")}
 
-        nodeRoom.nodes.forEach { nodesMap[it] = nodeRoom.uuid }
-        nodeRoom.nodeLinks.forEach { nodeLinks.add ( it ) }
+        nodeRoom.nodes.forEach { this.nodesMap[it] = nodeRoom.uuid }
+        nodeRoom.nodeLinks.forEach { this.nodeLinks.add ( NodeLink(it.firstNodeUuid, it.secondNodeUuid) ) }
         nodeRoom.getExitNodes().forEach { exitNodes.add ( it ) }
         currentRoomExits += nodeRoom.getExitNodes().size
 
-//        println("new NodeRoomMesh: ${this.nodeRooms.size}, ${this.nodeRoomLinks.size}")
+//        println("new NodeRoomMesh: ${this.nodeRooms.size}, ${this.nodesMap.size}, ${this.nodeLinks.size}")
+//        this.nodesMap.keys.forEach {println ("new node UUID: ${it.uuid}")}
     }
 
     //copy constructor
@@ -162,6 +160,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         return rise / run * 100
     }
 
+    val playerEyeLevel = 5f / (NodeAttributes.NodeElevation.HIGH_POS.getHeight() - NodeAttributes.NodeElevation.HIGH_NEG.getHeight())
+
     companion object {
         //build walking path, fully lit
         fun NodeRoomMesh.buildAndRenderSimplePath() {
@@ -179,8 +179,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             val invNormDstFromFirst = 1 - (dstFromFirst / totalDst)
             val invNormDstFromSecond = 1 - (dstFromSecond / totalDst)
 
-            return this.first.attributes.nodeObstacle.getChallenge() * invNormDstFromFirst +
-                    this.second.attributes.nodeObstacle.getChallenge() * invNormDstFromSecond
+            return (this.first.attributes.nodeObstacle.getChallenge() * invNormDstFromFirst +
+                    this.second.attributes.nodeObstacle.getChallenge() * invNormDstFromSecond) / 100f
         }
 
         fun Pair<Node, Node>.getPointElevation(refPoint : Point) : Float {
@@ -189,9 +189,12 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             val dstFromSecond = refPoint.dst(this.second.position)
             val invNormDstFromFirst = 1 - (dstFromFirst / totalDst)
             val invNormDstFromSecond = 1 - (dstFromSecond / totalDst)
+            val normHeightFirst = (this.first.attributes.nodeElevation.getHeight() + NodeAttributes.NodeElevation.HIGH_POS.getHeight()) /
+                    (NodeAttributes.NodeElevation.HIGH_POS.getHeight() - NodeAttributes.NodeElevation.HIGH_NEG.getHeight())
+            val normHeightSecond = (this.second.attributes.nodeElevation.getHeight() + NodeAttributes.NodeElevation.HIGH_POS.getHeight()) /
+                    (NodeAttributes.NodeElevation.HIGH_POS.getHeight() - NodeAttributes.NodeElevation.HIGH_NEG.getHeight())
 
-            return this.first.attributes.nodeElevation.getHeight() * invNormDstFromFirst +
-                    this.second.attributes.nodeElevation.getHeight() * invNormDstFromSecond
+            return normHeightFirst * invNormDstFromFirst + normHeightSecond * invNormDstFromSecond
         }
 
         //build walls for nodeLinks that have not been rendered in nodeMesh
@@ -207,13 +210,19 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
                 line.pointsInBorder((NextDistancePx * 0.2).toInt()).forEach { pathPoint ->
 
-                    val pointChallengeRange = Pair(firstNode, secondNode).getPointChallenge(pathPoint) / 100f
-                    val elevation = Pair(firstNode, secondNode).getPointElevation(pathPoint)
+                    val challenge = (Pair(firstNode, secondNode).getPointChallenge(pathPoint) - 0.5f) / 10f
+                    this.obstaclePath[pathPoint] = if (this.obstaclePath[pathPoint] == null) challenge else (this.obstaclePath[pathPoint]!! + challenge) / 2
 
-                    this.builtPath[pathPoint] = pathPoint +
-                            Point(Probability(mean = 0f, range = pointChallengeRange).getValue(), Probability(mean = 0f, range = pointChallengeRange).getValue())
-                    this.obstaclePath[pathPoint] = Probability(mean = 0.25f, range = pathPoint.dst(this.builtPath[pathPoint])).getValue()
-                    this.elevationPath[pathPoint] = elevation
+                    val elevation = Pair(firstNode, secondNode).getPointElevation(pathPoint)
+                    this.elevationPath[pathPoint] = if (this.elevationPath[pathPoint] == null) elevation else (this.elevationPath[pathPoint]!! + elevation) / 2
+
+                    val color = RenderPalette.FadeBackColors[4].cpy().lerp(RenderPalette.BackColors[4], elevation)
+                    this.colorPath[pathPoint] = color
+//                    println("challenge:$challenge")
+
+                    val basePoint = pathPoint + Point(Probability(mean = 0.1f, range = challenge * 20f).getValue(), Probability(mean = 0.1f, range = challenge * 20f).getValue())
+                    this.builtPath[pathPoint] = if (this.builtPath[pathPoint] == null) basePoint else
+                        Point((this.builtPath[pathPoint]!!.x + basePoint.x) / 2, (this.builtPath[pathPoint]!!.y + basePoint.y) / 2 )
                 }
 
                 line.pointsInBorder((NextDistancePx * 0.3).toInt()).forEach { wallPoint -> this.builtWall[wallPoint] = wallPoint +
@@ -238,7 +247,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         }
 
         //render all built walls
-        fun NodeRoomMesh.renderWalls() {
+        fun NodeRoomMesh.renderWallsAndPath() {
 
             if (this.builtPath.size > this.currentPath.size) this.builtPath.forEach { this.currentPath[it.key] = it.value }
             if (this.builtWall.size > this.currentWall.size) this.builtWall.forEach { this.currentWall[it.key] = it.value }
@@ -246,7 +255,9 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         }
 
         //line of sight
-        fun NodeRoomMesh.renderWallsAndPathLos(refPosition : Point, refAngle : Angle, radius : Float = NextDistancePx * .5f) {
+        fun NodeRoomMesh.renderWallsAndPathLos(refPosition : Point, refAngle : Angle, radius : Float = NextDistancePx * .5f) : MutableMap<Int, Point> {
+
+            val returnLosMap = mutableMapOf<Int, Point>()
 
             val aMin = 0
             val aMax = 359
@@ -264,19 +275,28 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             (aMin..aMax step 1).forEach { aIter ->
                 //allow at most three pixels of fade per ray
                 var fadeCounter = 1
-                var rayLengthIter = 1f
+                var rayLengthIter = 1
 
                 val checkRadius = if ( Math.abs(aIter - refAngle) < 30f || Math.abs(aIter - refAngle) > 330f ) radius else radius *.5f
 
 //                println("aIter: $aIter, checkRadius: $checkRadius")
+                var refElevation = elevationPath[refPosition.trunc()] ?: 0f
+                var curElevation = elevationPath[refPosition.trunc()] ?: 0f
+                var checkPoint = refPosition
 
                 while ( rayLengthIter <= checkRadius && fadeCounter > 0 ) {
-                    val checkPoint = refPosition.getPositionByDistanceAndAngle(rayLengthIter, aIter.toFloat()).trunc()
+
+                    checkPoint = refPosition.getPositionByDistanceAndAngle(rayLengthIter.toFloat(), aIter.toFloat()).trunc()
+//                          println("checkPoint: $checkPoint")
+                    curElevation = elevationPath[checkPoint] ?: 0f
 
                     if (!processedPoints.contains(checkPoint)) {
                         processedPoints.add(checkPoint)
 
-//                        println("checkPoint: $checkPoint")
+                        if (curElevation - refElevation > playerEyeLevel) {
+                            fadeCounter--
+                        }
+
                         if (builtPath.contains( checkPoint ) ) {
                             currentPath[checkPoint] = builtPath[checkPoint]!!
                             pastPath.remove(checkPoint)
@@ -297,8 +317,12 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
                     rayLengthIter++
                 }
+
+                returnLosMap[aIter] = checkPoint
+//                println("playerEyeLevel: ${playerEyeLevel}, diff:${curElevation - refElevation}")
 //                println("final rayLengthIter: $rayLengthIter")
             }
+            return returnLosMap
         }
     }
 }

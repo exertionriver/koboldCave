@@ -22,7 +22,6 @@ import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.buildNodeL
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWalls
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.koboldCave.screen.Render
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeBackColors
@@ -49,7 +48,7 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
     var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
     var currentNode = currentRoom.getRandomNode()
     var prevNode = currentNode
-    var currentAngle = currentRoom.getRandomNextNodeAngle(currentNode)
+    var currentAngle = currentRoom.getRandomNextNodeLinkAngle(currentNode).second
     val visualRadius = NextDistancePx * 1.5f
 
     val nav = Navigation(batch, camera, currentNode, currentAngle)
@@ -58,8 +57,8 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
     val cameraAngle = 90f
 
     val pathNoise = 0
-    val degreesPerAngle = 5f
-    val distancePerStep = 3f
+    val degreesPerAngle = 3f
+    val distancePerStep = 1f
 
     var modForwardPathNoise = pathNoise
     var modBackwardPathNoise = pathNoise
@@ -98,27 +97,11 @@ class DemoNodeRoomMeshRotateNavigateScreen(private val batch: Batch,
 
         batch.projectionMatrix = camera.combined
         camera.update()
+        println("1/delta : ${1/delta}")
 
         batch.use {
 
-//            var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
-
-/*            font.drawLabel(it, Point(currentRoom.centroid.position.x, labelVert.y * 2)
-                    , "NodeRoom (nodes=${currentRoom.nodes.size} idx=$nodeRoomIdx)\n" +
-                        "roomDescription: ${currentRoom.description}\n" +
-                        "exits: ${nodeRoomMesh.currentRoomExits} / ${nodeRoomMesh.maxRoomExits}\n" +
-                        "current obstacle:${currentNode.attributes.nodeObstacle}\n" +
-                        "dst:${currentNode.position.dst(forwardNextNodeAngle.first.position) / 3}, ${currentNode.position.dst(backwardNextNodeAngle.first.position) / 3}, $currentAngle, ${currentAngle.leftAngleBetween(leftNextAngle)}, ${currentAngle.rightAngleBetween(rightNextAngle)}\n" +
-                        "move costs:$forwardNextMoveCost, $backwardNextMoveCost, $leftNextMoveCost, $rightNextMoveCost\n" +
-                        "elevation:${currentNode.attributes.nodeElevation}, ${forwardNextNodeAngle.first.attributes.nodeElevation}, ${backwardNextNodeAngle.first.attributes.nodeElevation}\n" +
-                        "slope: ${nodeRoomMesh.getSlope(currentNode, forwardNextNodeAngle.first)}, ${nodeRoomMesh.getSlope(currentNode, backwardNextNodeAngle.first)}"
-                    , ForeColors[nodeRoomIdx % ForeColors.size])
-*/
-//            val renderIdx = 1
-
             nodeRoomMesh.render(batch)
-
-  //          nav.navigate()
 
 
             if (leftTurnEasing > 0) {

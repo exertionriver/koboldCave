@@ -2,28 +2,15 @@ package org.river.exertion.ecs.system.action.core
 
 import com.badlogic.ashley.core.*
 import com.badlogic.ashley.systems.IntervalSystem
-import com.badlogic.ashley.systems.IteratingSystem
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.selects.select
-import ktx.ashley.allOf
 import ktx.ashley.contains
 import ktx.ashley.get
-import org.river.exertion.ecs.component.action.ActionDestantiateComponent
-import org.river.exertion.ecs.component.action.ActionIdleComponent
-import org.river.exertion.ecs.component.action.ActionLookComponent
-import org.river.exertion.ecs.component.action.ActionReflectComponent
 import org.river.exertion.ecs.component.action.core.*
-import org.river.exertion.ecs.component.entity.EntityKoboldComponent
-import org.river.exertion.ecs.component.entity.core.IEntityComponent
-import org.river.exertion.ecs.component.environment.core.IEnvironmentComponent
 import org.river.exertion.ecs.system.action.*
 import org.river.exertion.getEntityComponent
 import org.river.exertion.getEnvironmentComponent
 import org.river.exertion.isEntity
 import org.river.exertion.isEnvironment
-import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
-import kotlin.time.ExperimentalTime
 
 class ActionPlexSystem(private val pooledEngine: PooledEngine, val initInterval : Float = 0.1f) : IntervalSystem(initInterval) {
 
@@ -33,7 +20,9 @@ class ActionPlexSystem(private val pooledEngine: PooledEngine, val initInterval 
         pooledEngine.addSystem(ActionIdleSystem())
         pooledEngine.addSystem(ActionInstantiateSystem())
         pooledEngine.addSystem(ActionLookSystem())
+        pooledEngine.addSystem(ActionSimpleMoveSystem())
         pooledEngine.addSystem(ActionMoveSystem())
+        pooledEngine.addSystem(ActionFulfillMoveSystem())
         pooledEngine.addSystem(ActionReflectSystem())
         pooledEngine.addSystem(ActionScreechSystem())
         pooledEngine.addSystem(ActionWatchSystem())

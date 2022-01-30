@@ -4,15 +4,9 @@ import com.badlogic.ashley.core.PooledEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import ktx.ashley.entity
-import ktx.ashley.get
 import ktx.ashley.getSystem
-import ktx.ashley.with
 import org.junit.jupiter.api.Test
-import org.river.exertion.ecs.component.action.ActionLookComponent
-import org.river.exertion.ecs.component.entity.EntityKoboldComponent
-import org.river.exertion.ecs.component.environment.EnvironmentCaveComponent
-import org.river.exertion.ecs.system.action.ActionLookSystem
+import org.river.exertion.ecs.component.environment.EnvironmentCave
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.getEnvironmentComponent
 import kotlin.time.ExperimentalTime
@@ -25,7 +19,7 @@ class TestCaveActions {
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
 
-    val cave = EnvironmentCaveComponent.instantiate(engine, "spookyCave")
+    val cave = EnvironmentCave.instantiate(engine, "spookyCave")
 
     @Test
     fun testActionEnumeration() {

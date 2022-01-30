@@ -17,7 +17,6 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getLineList
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLinks
-import org.river.exertion.koboldCave.node.NodeLink.Companion.getRandomNextNodeAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.removeNodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.removeOrphanLinks
 import org.river.exertion.Angle
@@ -26,6 +25,7 @@ import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.averagePositionWithinNodes
 import org.river.exertion.koboldCave.node.Node.Companion.randomPosition
 import org.river.exertion.koboldCave.node.NodeLink
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getRandomNextNodeLinkAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.nodifyIntersects
 import java.util.*
 
@@ -54,7 +54,7 @@ interface INodeMesh {
 
     fun getRandomNode() = nodes.getRandomNode()
 
-    fun getRandomNextNodeAngle(node : Node) = nodeLinks.getRandomNextNodeAngle(nodes, node)
+    fun getRandomNextNodeLinkAngle(node : Node) = nodeLinks.getRandomNextNodeLinkAngle(nodes, node)
 
     fun getFarthestNode(refNode : Node) = nodes.getFarthestNode(refNode)
 

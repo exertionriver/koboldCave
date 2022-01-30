@@ -4,14 +4,10 @@ import com.badlogic.ashley.core.PooledEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import ktx.ashley.entity
-import ktx.ashley.get
 import ktx.ashley.getSystem
-import ktx.ashley.with
 import org.junit.jupiter.api.Test
 import org.river.exertion.ecs.component.action.ActionLookComponent
-import org.river.exertion.ecs.component.entity.EntityKoboldComponent
-import org.river.exertion.ecs.component.environment.EnvironmentCaveComponent
+import org.river.exertion.ecs.component.entity.EntityKobold
 import org.river.exertion.ecs.system.action.ActionLookSystem
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.getEntityComponent
@@ -25,11 +21,11 @@ class TestKoboldActions {
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
 
-    val kobold = EntityKoboldComponent.instantiate(engine, "gragga")
+    val kobold = EntityKobold.instantiate(engine, "gragga")
 
-    val koboldSecond = EntityKoboldComponent.instantiate(engine, "krakka")
+    val koboldSecond = EntityKobold.instantiate(engine, "krakka")
 
-    val koboldThird = EntityKoboldComponent.instantiate(engine, "razza")
+    val koboldThird = EntityKobold.instantiate(engine, "razza")
 
     @Test
     fun testActionEnumeration() {

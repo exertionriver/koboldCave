@@ -3,12 +3,8 @@ package org.river.exertion.ecs.system.action
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.allOf
-import ktx.ashley.contains
 import ktx.ashley.get
-import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.ActionReflectComponent
-import org.river.exertion.ecs.component.entity.EntityKoboldComponent
-import org.river.exertion.ecs.component.entity.core.IEntityComponent
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.getEntityComponent
 import org.river.exertion.isEntity

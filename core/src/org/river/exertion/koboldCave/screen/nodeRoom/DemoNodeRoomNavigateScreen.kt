@@ -16,8 +16,6 @@ import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLinks
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWallsLos
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeBackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
@@ -38,7 +36,7 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
     var leftNextAngle : Angle = 0f
     var rightNextAngle : Angle = 0f
     var currentNode = nodeRoom.getRandomNode()
-    var currentAngle = nodeRoom.getRandomNextNodeAngle(currentNode)
+    var currentAngle = nodeRoom.getRandomNextNodeLinkAngle(currentNode).second
     val visualRadius = NextDistancePx * 1.5f
 
     val sdc = ShapeDrawerConfig(batch)
@@ -95,7 +93,6 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                     nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
                     currentNode = nodeRoom.getRandomNode()
 //                    nodeRoom.buildWalls(currentNode.position, 30f)
-                    nodeRoom.buildWallsLos(currentNode.position, currentAngle, visualRadius)
 
                     println("nodeRoomWallsSize : ${nodeRoom.currentWall.size}")
 
@@ -111,7 +108,6 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                     println("angle: $currentAngle")
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.ENTER) -> {
-                    nodeRoom.buildWalls()
 
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
@@ -125,7 +121,6 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
 
                     currentAngle = forwardNextNodeAngle.second
 //                    nodeRoom.buildWalls(currentNode.position, 30f)
-                    nodeRoom.buildWallsLos(currentNode.position, currentAngle, visualRadius)
 
                     //                println("checking forward nodeAngle:")
                     forwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, currentAngle)
@@ -151,7 +146,6 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
 
                     currentAngle = (180f + backwardNextNodeAngle.second).normalizeDeg()
                     //                    nodeRoom.buildWalls(currentNode.position, 30f)
-                    nodeRoom.buildWallsLos(currentNode.position, currentAngle, visualRadius)
 
                     //                println("checking forward nodeAngle:")
                     forwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, currentAngle)
@@ -167,7 +161,6 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> {
                     currentAngle = leftNextAngle
-                    nodeRoom.buildWallsLos(currentNode.position, currentAngle, visualRadius)
 
                     //                println("checking forward nodeAngle:")
                     forwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, currentAngle)
@@ -183,7 +176,6 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                 }
                 Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> {
                     currentAngle = rightNextAngle
-                    nodeRoom.buildWallsLos(currentNode.position, currentAngle, visualRadius)
 
                     //                println("checking forward nodeAngle:")
                     forwardNextNodeAngle = nodeRoom.getNextNodeAngle(currentNode, currentAngle)
@@ -197,6 +189,8 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
                     println("position: ${currentNode.position}")
                     println("angle: $currentAngle")
                 }
+
+                //todo: refactor to use ECS movement and current rendering
             }
         }
     }
@@ -206,7 +200,6 @@ class DemoNodeRoomNavigateScreen(private val batch: Batch,
 
     override fun show() {
         //                    nodeRoom.buildWalls(currentNode.position, 30f)
-        nodeRoom.buildWallsLos(currentNode.position, currentAngle, visualRadius)
 //        nodeRoom.buildWalls()
         println ("exitNodes: ${nodeRoom.inactiveExitNodesInRange(currentNode)}")
 

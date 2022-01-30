@@ -1,8 +1,6 @@
 package org.river.exertion.koboldQueue.screen.cave
 
 import com.badlogic.ashley.core.PooledEngine
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -13,12 +11,14 @@ import ktx.ashley.get
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.assets.*
-import org.river.exertion.ecs.component.entity.EntityKoboldComponent
-import org.river.exertion.ecs.component.environment.EnvironmentCaveComponent
+import org.river.exertion.ecs.component.action.ActionMoveComponent
+import org.river.exertion.ecs.component.entity.EntityKobold
+import org.river.exertion.ecs.component.environment.EnvironmentCave
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildFloors
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeForeColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
@@ -38,10 +38,10 @@ class DemoNodeRoomCaveScreen(private val batch: Batch,
     val drawer = sdc.getDrawer()
 
     var currentNode = nodeRoom.getRandomNode()
-    var currentAngle = nodeRoom.getRandomNextNodeAngle(currentNode)
+    var currentAngle = nodeRoom.getRandomNextNodeLinkAngle(currentNode).second
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
-    val cave = EnvironmentCaveComponent.instantiate(engine, "spookyCave")
+    val cave = EnvironmentCave.instantiate(engine, "spookyCave")
 
     override fun render(delta: Float) {
 
@@ -72,8 +72,8 @@ class DemoNodeRoomCaveScreen(private val batch: Batch,
 //                println(exitNode.attributes)
             }
 
-            engine.entities.filter { checkEntity -> checkEntity.isEntity() && checkEntity.contains(EntityKoboldComponent.mapper)}.forEach { renderKobold ->
-                Kobold.render(batch, renderKobold.getEntityComponent().currentNode.position, renderKobold.getEntityComponent().currentAngle)
+            engine.entities.filter { checkEntity -> checkEntity.isEntity() && checkEntity.contains(EntityKobold.mapper)}.forEach { renderKobold ->
+                Kobold.render(batch, renderKobold[ActionMoveComponent.mapper]!!.currentNode.position, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
             }
 
             InputHandler.handleInput(camera)
@@ -88,9 +88,9 @@ class DemoNodeRoomCaveScreen(private val batch: Batch,
     }
 
     override fun show() {
-        nodeRoom.buildWalls()
-        nodeRoom.buildFloors()
-        cave[EnvironmentCaveComponent.mapper]!!.nodeRoom = nodeRoom
+        NodeRoomMesh(nodeRoom).buildWallsAndPath()
+        NodeRoomMesh(nodeRoom).renderWallsAndPath()
+        cave[EnvironmentCave.mapper]!!.nodeRoom = nodeRoom
 
         // start the playback of the background music when the screen is shown
         MusicAssets.values().forEach { assets.load(it) }

@@ -7,16 +7,16 @@ import ktx.ashley.*
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionPlexComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.core.EntityNoneComponent
-import org.river.exertion.ecs.component.entity.core.IEntityComponent
-import org.river.exertion.koboldCave.node.Node
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.ecs.component.entity.core.EntityNone
+import org.river.exertion.ecs.component.entity.core.IEntity
+import org.river.exertion.getEntityComponent
+import org.river.exertion.getEnvironmentComponent
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldQueue.time.Moment
 import java.util.*
 
-class EntityKoboldComponent : IEntityComponent, Component {
+class EntityKobold : IEntity, Component {
 
     override lateinit var name : String
     override var description = getDesc()
@@ -41,8 +41,8 @@ class EntityKoboldComponent : IEntityComponent, Component {
         ,"scaly Kobold!" to Probability(30f, 0)
     )).getSelectedProbability()!!
 
-    override var actionPlexMaxSize = EntityNoneComponent.actionPlexMaxSize
-    override var moment = Moment(800)
+    override var actionPlexMaxSize = EntityNone.actionPlexMaxSize
+    override var moment = Moment(1000)
 
     override var actionPlex = ActionPlexComponent(actionPlexMaxSize, moment)
 
@@ -58,20 +58,23 @@ class EntityKoboldComponent : IEntityComponent, Component {
         ActionReflectComponent() to Probability(5f, 0)
     )
 
-    override var currentNodeRoom = EntityNoneComponent.currentNodeRoom
-    override var currentNode = EntityNoneComponent.currentNode
-    override var currentPosition = EntityNoneComponent.currentPosition
-    override var currentAngle = EntityNoneComponent.currentAngle
-
     companion object {
-        val mapper = mapperFor<EntityKoboldComponent>()
+        val mapper = mapperFor<EntityKobold>()
 
-        fun instantiate(engine: PooledEngine, initName : String = "krazza" + Random().nextInt()) : Entity {
+        fun instantiate(engine: PooledEngine, initName : String = "krazza" + Random().nextInt(), cave : Entity) : Entity {
             val newKobold = engine.entity {
-                with<EntityKoboldComponent>()
+                with<EntityKobold>()
             }.apply { this[mapper]?.initialize(initName, this) }
 
-            println ("$initName instantiated!")
+            newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom = cave.getEnvironmentComponent().nodeRoom
+            newKobold[ActionMoveComponent.mapper]!!.currentNode = cave.getEnvironmentComponent().nodeRoom.getRandomNode()
+            newKobold[ActionMoveComponent.mapper]!!.currentPosition = newKobold[ActionMoveComponent.mapper]!!.currentNode.position
+
+            val randomNodeLinkAngle = cave.getEnvironmentComponent().nodeRoom.getRandomNextNodeLinkAngle(newKobold[ActionMoveComponent.mapper]!!.currentNode)
+            newKobold[ActionMoveComponent.mapper]!!.currentNodeLink = randomNodeLinkAngle.first
+            newKobold[ActionMoveComponent.mapper]!!.currentAngle = randomNodeLinkAngle.second
+
+            println ("entity ${newKobold.getEntityComponent().name} instantiated at ${newKobold[ActionMoveComponent.mapper]!!.currentNode}, pointing ${newKobold[ActionMoveComponent.mapper]!!.currentAngle}..!")
 
             return newKobold
         }

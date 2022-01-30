@@ -9,8 +9,9 @@ import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildFloors
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom.Companion.buildWalls
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.FadeForeColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
@@ -24,6 +25,7 @@ class DemoNodeRoomWallFloorScreen(private val batch: Batch,
     val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
 
     var nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f), circleNoise = 0, heightNoise = 0)
+    var nodeRoomMesh = NodeRoomMesh(nodeRoom)
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
@@ -62,15 +64,8 @@ class DemoNodeRoomWallFloorScreen(private val batch: Batch,
             when {
                 Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> {
                     nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
-                    nodeRoom.buildWalls()
-                    nodeRoom.buildFloors()
-
-//                    println("nodeRoomWallsSize : ${nodeRoom.currentWall.size}")
-                }
-                Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> {
-                    nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
-                    nodeRoom.buildWalls()
-                    nodeRoom.buildFloors()
+                    nodeRoomMesh.buildWallsAndPath()
+                    nodeRoomMesh.renderWallsAndPath()
 
 //                    println("nodeRoomWallsSize : ${nodeRoom.currentWall.size}")
                 }
@@ -82,8 +77,8 @@ class DemoNodeRoomWallFloorScreen(private val batch: Batch,
     }
 
     override fun show() {
-        nodeRoom.buildWalls()
-        nodeRoom.buildFloors()
+        nodeRoomMesh.buildWallsAndPath()
+        nodeRoomMesh.renderWallsAndPath()
     }
 
     override fun pause() {

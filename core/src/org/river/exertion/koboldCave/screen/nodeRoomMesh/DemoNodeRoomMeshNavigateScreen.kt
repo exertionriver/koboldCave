@@ -58,7 +58,7 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
     var nodeRoomIdx = 0
     var currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
     var currentNode = currentRoom.getRandomNode()
-    var currentAngle = currentRoom.getRandomNextNodeAngle(currentNode)
+    var currentAngle = currentRoom.getRandomNextNodeLinkAngle(currentNode).second
     val visualRadius = NextDistancePx //* 1.5f
 
     val sdc = ShapeDrawerConfig(batch)
@@ -93,21 +93,6 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
 
             val renderIdx = 1
 
-            nodeRoomMesh.pastStairs.entries.forEach { stairNode ->
-                arcFadeDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
-            }
-
-            nodeRoomMesh.currentStairs.entries.forEach { stairNode ->
-                arcDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
-            }
-
-            nodeRoomMesh.currentFloor.values.forEach { floorNode ->
-                drawer.filledCircle(floorNode, 0.5F, RenderPalette.FadeForeColors[4 % BackColors.size])
-            }
-
-            nodeRoomMesh.pastFloor.values.forEach { floorNode ->
-                drawer.filledCircle(floorNode, 0.5F, RenderPalette.FadeBackColors[4 % BackColors.size])
-            }
 
             nodeRoomMesh.pastWall.values.forEach { wallNode ->
                 drawer.filledCircle(wallNode, 0.5F, FadeBackColors[renderIdx % BackColors.size])
@@ -153,7 +138,7 @@ class DemoNodeRoomMeshNavigateScreen(private val batch: Batch,
                     nodeRoomIdx = 0
                     currentRoom = nodeRoomMesh.nodeRooms[nodeRoomIdx]
                     currentNode = currentRoom.getRandomNode()
-                    currentAngle = currentRoom.getRandomNextNodeAngle(currentNode)
+                    currentAngle = currentRoom.getRandomNextNodeLinkAngle(currentNode).second
 
 //                    nodeRoom.buildWalls(currentNode.position, 30f)
 //                    nodeRoomMesh.buildWallsLos(currentNode.position, currentAngle, visualRadius)

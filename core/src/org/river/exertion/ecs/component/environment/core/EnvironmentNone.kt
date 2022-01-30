@@ -1,20 +1,15 @@
-package org.river.exertion.ecs.component.entity.core
+package org.river.exertion.ecs.component.environment.core
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
-import ktx.ashley.EngineEntity
-import org.river.exertion.Angle
-import org.river.exertion.Point
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionPlexComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.time.Moment
 
-object EntityNoneComponent : IEntityComponent {
-
+object EnvironmentNone : IEnvironment {
     override var name = "None"
     override var description = "None"
 
@@ -30,23 +25,15 @@ object EntityNoneComponent : IEntityComponent {
         entity.add(actionPlex)
     }
 
-    override var actionPlexMaxSize = 5
-    override var moment = Moment(100)
+    override var actionPlexMaxSize = 1
+    override var moment = Moment(5000)
 
     override var actionPlex = ActionPlexComponent(actionPlexMaxSize, moment)
 
     override var baseActions = mutableListOf<IActionComponent>(
-        ActionLookComponent(), ActionReflectComponent()
+        ActionInstantiateComponent(base = true), ActionDestantiateComponent()
     )
-    override var extendedActions = mutableMapOf<IActionComponent, Probability>(
-        ActionIdleComponent() to Probability(50f, 0),
-        ActionLookComponent() to Probability(25f, 0),
-        ActionWatchComponent() to Probability(15f, 0),
-        ActionReflectComponent() to Probability(10f, 0)
-    )
+    override var extendedActions = mutableMapOf<IActionComponent, Probability>()
 
-    override var currentNodeRoom = NodeRoom()
-    override var currentNode = Node()
-    override var currentPosition = Point(0f, 0f)
-    override var currentAngle: Angle = 0f
+    override var nodeRoom = NodeRoom()
 }
