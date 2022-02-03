@@ -25,4 +25,5 @@ interface IEntity {
     var extendedActions : MutableMap<IActionComponent, Probability>
 
     var moment : Moment
+    var momentCountdown : Float
 }

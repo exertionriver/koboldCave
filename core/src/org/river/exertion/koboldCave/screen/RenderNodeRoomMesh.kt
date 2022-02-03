@@ -12,7 +12,7 @@ object Render {
 
     val cameraAngle = 90f
 
-    fun initRender(camera: OrthographicCamera, currentNode : Node, currentAngle : Angle) {
+    fun initRender(camera: OrthographicCamera, currentNode: Node, currentAngle: Angle) {
         camera.position.set(currentNode.position.x, currentNode.position.y, 0f)
         camera.zoom = .2f
 
@@ -21,8 +21,7 @@ object Render {
     }
 }
 
-
-fun NodeRoomMesh.render(batch : Batch) {
+    fun NodeRoomMesh.render(batch : Batch) {
 
         val currentWallColor = RenderPalette.BackColors[1]
         val currentFloorColor = RenderPalette.FadeForeColors[4]
@@ -38,15 +37,13 @@ fun NodeRoomMesh.render(batch : Batch) {
 
         val arcPastSdc = ShapeDrawerConfig(batch, pastColor)
         val arcPastDrawer = arcPastSdc.getDrawer()
-/*
-        this.pastStairs.entries.forEach { stairNode ->
-            arcPastDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
+
+        this.nodeRooms.forEach {
+            it.getExitNodes().forEachIndexed { index, exitNode ->
+                drawer.filledCircle(exitNode.position, 4F, RenderPalette.ForeColors[1])
+            }
         }
 
-        this.currentStairs.entries.forEach { stairNode ->
-            arcDrawer.arc(stairNode.key.x, stairNode.key.y, 6F, (stairNode.value - 60f).radians(), 120f.radians() )
-        }
-*/
         this.pastPath.entries.forEach { pathPoint ->
             val baseRadius = 0.3f
             val obsRadius = this.obstaclePath[pathPoint.key] ?: 0f

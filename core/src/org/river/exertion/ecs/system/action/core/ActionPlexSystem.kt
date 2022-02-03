@@ -141,7 +141,7 @@ class ActionPlexSystem(private val pooledEngine: PooledEngine, val initInterval 
     companion object {
         fun <T: Component> readyToExecute(entity: Entity, mapper: ComponentMapper<T>) =
             entity.contains(ActionPlexComponent.mapper) &&
-                    entity[ActionPlexComponent.mapper]!!.countdown == 0L &&
+                    entity[ActionPlexComponent.mapper]!!.countdown == 0f &&
                     entity.contains(mapper) &&
                     (entity[mapper]!! is IActionComponent) &&
                     (entity[mapper]!! as IActionComponent).state == ActionState.ActionExecute &&

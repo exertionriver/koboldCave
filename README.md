@@ -1,7 +1,7 @@
 # koboldCave
 Demonstration of probabilistically-generated caves using libGDX framework.
 
-Built using IntelliJ Community Edition 2021.1.1 / libGDX 1.23.3 / libktx 1.10.0-b2 / on Ubuntu 20.04
+Built using IntelliJ Community Edition 2021.3.2 / libGDX 1.10.0 / libktx 1.10.0-rc1 / on Ubuntu 20.04
 
 Example usage, after cloning / downloading:
 
@@ -9,9 +9,9 @@ Example usage, after cloning / downloading:
 
 Hope this may help you in your development work. - IanP
 
-v0.8 - merging cave and queue
+v0.9 - line of sight rendering, ECS movement, rendering performance improvement
 
-https://user-images.githubusercontent.com/13192685/135016689-c85cf920-475d-484f-ad0b-42b836db06f8.mp4
+v0.8 - merging cave and queue
 
 v0.7 - first pass at environmental obstacles, elevation, and pov-rotation naviation
 

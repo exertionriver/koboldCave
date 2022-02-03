@@ -11,6 +11,7 @@ import org.river.exertion.ecs.component.entity.core.EntityNone
 import org.river.exertion.ecs.component.entity.core.IEntity
 import org.river.exertion.getEntityComponent
 import org.river.exertion.getEnvironmentComponent
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getRandomNextNodeLinkAngle
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldQueue.time.Moment
@@ -42,7 +43,8 @@ class EntityKobold : IEntity, Component {
     )).getSelectedProbability()!!
 
     override var actionPlexMaxSize = EntityNone.actionPlexMaxSize
-    override var moment = Moment(1000)
+    override var moment = Moment(600f)
+    override var momentCountdown = moment.milliseconds
 
     override var actionPlex = ActionPlexComponent(actionPlexMaxSize, moment)
 
@@ -66,13 +68,15 @@ class EntityKobold : IEntity, Component {
                 with<EntityKobold>()
             }.apply { this[mapper]?.initialize(initName, this) }
 
-            newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom = cave.getEnvironmentComponent().nodeRoom
-            newKobold[ActionMoveComponent.mapper]!!.currentNode = cave.getEnvironmentComponent().nodeRoom.getRandomNode()
+            newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh = cave.getEnvironmentComponent().nodeRoomMesh
+            newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom = newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms[0]
+            newKobold[ActionMoveComponent.mapper]!!.currentNode = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNode()
             newKobold[ActionMoveComponent.mapper]!!.currentPosition = newKobold[ActionMoveComponent.mapper]!!.currentNode.position
 
-            val randomNodeLinkAngle = cave.getEnvironmentComponent().nodeRoom.getRandomNextNodeLinkAngle(newKobold[ActionMoveComponent.mapper]!!.currentNode)
+            val randomNodeLinkAngle = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNextNodeLinkAngle(newKobold[ActionMoveComponent.mapper]!!.currentNode)
             newKobold[ActionMoveComponent.mapper]!!.currentNodeLink = randomNodeLinkAngle.first
             newKobold[ActionMoveComponent.mapper]!!.currentAngle = randomNodeLinkAngle.second
+            newKobold[ActionMoveComponent.mapper]!!.moment = newKobold[mapper]!!.moment
 
             println ("entity ${newKobold.getEntityComponent().name} instantiated at ${newKobold[ActionMoveComponent.mapper]!!.currentNode}, pointing ${newKobold[ActionMoveComponent.mapper]!!.currentAngle}..!")
 

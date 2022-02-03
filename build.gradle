@@ -15,7 +15,7 @@ buildscript {
 allprojects {
     apply plugin: "idea"
 
-    version = '0.8'
+    version = '0.9'
 
     ext {
         appName = "koboldCave"
@@ -25,7 +25,7 @@ allprojects {
         box2DLightsVersion = '1.5'
         ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
-        ktxVersion = '1.10.0-b4'
+        ktxVersion = '1.10.0-rc1'
         kotlinxVersion = '1.5.2'
         shapedrawerVersion = '2.5.0' //https://github.com/earlygrey/shapedrawer
     }

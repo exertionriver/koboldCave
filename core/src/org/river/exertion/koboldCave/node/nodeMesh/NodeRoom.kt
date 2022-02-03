@@ -171,6 +171,11 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
             roomMesh.processMesh()
 
+            //remove links that are too long as a hack to prevent for long cross-link room creation
+            val removeLinks = mutableListOf<NodeLink>()
+            roomMesh.nodeLinks.forEach { if (it.getDistance(roomMesh.nodes)!! > NextDistancePx * 1.5) removeLinks.add(it) }
+            roomMesh.nodeLinks.removeAll(removeLinks)
+
             //reset centroid after adding and processing
             roomMesh.centroid = Node(position = roomMesh.nodes.averagePositionWithinNodes() )
 

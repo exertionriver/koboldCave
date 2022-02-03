@@ -30,7 +30,7 @@ class ActionSimpleMoveSystem : IteratingSystem(allOf(ActionSimpleMoveComponent::
             entity[ActionSimpleMoveComponent.mapper]!!.currentPosition = forwardNextNodeAngle.first.position
             entity[ActionSimpleMoveComponent.mapper]!!.currentAngle = forwardNextNodeAngle.second
 
-            println ("entity ${entity.getEntityComponent().name} moves to ${entity[ActionSimpleMoveComponent.mapper]!!.currentNode.position}.")
+//            println ("entity ${entity.getEntityComponent().name} moves to ${entity[ActionSimpleMoveComponent.mapper]!!.currentNode.position}.")
 
             entity[ActionSimpleMoveComponent.mapper]!!.executed = true
         }

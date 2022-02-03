@@ -14,6 +14,7 @@ import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.ecs.component.environment.core.EnvironmentNone
 import org.river.exertion.ecs.component.environment.core.IEnvironment
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldQueue.time.Moment
 import java.util.*
 
@@ -37,7 +38,7 @@ class EnvironmentCave : IEnvironment, Component {
     }
 
     override var actionPlexMaxSize = 1
-    override var moment = Moment(1000)
+    override var moment = Moment(1000f)
 
     override var actionPlex = ActionPlexComponent(actionPlexMaxSize, moment)
 
@@ -46,16 +47,16 @@ class EnvironmentCave : IEnvironment, Component {
     )
     override var extendedActions = EnvironmentNone.extendedActions
 
-    override var nodeRoom = EnvironmentNone.nodeRoom
+    override var nodeRoomMesh = EnvironmentNone.nodeRoomMesh
 
     companion object {
         val mapper = mapperFor<EnvironmentCave>()
 
-        fun instantiate(engine: PooledEngine, initName : String = "cave" + Random(), nodeRoom: NodeRoom? = null) : Entity {
+        fun instantiate(engine: PooledEngine, initName : String = "cave" + Random(), nodeRoomMesh: NodeRoomMesh) : Entity {
             val newCave = engine.entity {
                 with<EnvironmentCave>()
             }.apply { this[mapper]?.initialize(initName, this)
-                if (nodeRoom != null) this[mapper]!!.nodeRoom = nodeRoom
+                this[mapper]!!.nodeRoomMesh = nodeRoomMesh
             }
 
             println ("$initName instantiated!")

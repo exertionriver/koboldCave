@@ -8,6 +8,7 @@ import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.*
 import org.river.exertion.ecs.component.action.*
+import org.river.exertion.ecs.component.entity.core.IEntity
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
@@ -16,17 +17,16 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
 import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
 
-class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponent::class).get(), 1/30f) {
+class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponent::class).get(), 1/120f) {
 
-    val degreesPerAngle = 3f
+    val degreesPerAngle = 1.5f
     var modDegreesPerAngle = degreesPerAngle
 
-    override fun updateInterval() {
-        super.updateInterval()
-    }
-
     override fun processEntity(entity: Entity) {
-        if ( entity.isEntity() ) {
+        entity[ActionMoveComponent.mapper]!!.momentCountdown += interval
+
+        if ( entity.isEntity() && entity[ActionMoveComponent.mapper]!!.momentCountdown > entity[ActionMoveComponent.mapper]!!.moment.milliseconds * interval / 1000) {
+            entity[ActionMoveComponent.mapper]!!.momentCountdown = 0f
 
             val currentPosition = entity[ActionMoveComponent.mapper]!!.currentPosition
             val currentAngle = entity[ActionMoveComponent.mapper]!!.currentAngle

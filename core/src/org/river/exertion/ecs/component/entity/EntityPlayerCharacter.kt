@@ -40,7 +40,8 @@ class EntityPlayerCharacter : IEntity, Component {
     fun getDesc(): String = "PlayerCharacter"
 
     override var actionPlexMaxSize = EntityNone.actionPlexMaxSize
-    override var moment = Moment(1000)
+    override var moment = Moment(1000f)
+    override var momentCountdown = moment.milliseconds
 
     override var actionPlex = ActionPlexComponent(actionPlexMaxSize, moment)
 
@@ -64,13 +65,17 @@ class EntityPlayerCharacter : IEntity, Component {
                 with<EntityPlayerCharacter>()
             }.apply { this[mapper]?.initialize(initName, this) }
 
-            newPC[ActionMoveComponent.mapper]!!.currentNodeRoom = cave.getEnvironmentComponent().nodeRoom
-            newPC[ActionMoveComponent.mapper]!!.currentNode = cave.getEnvironmentComponent().nodeRoom.getRandomNode()
+            newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh = cave.getEnvironmentComponent().nodeRoomMesh
+            newPC[ActionMoveComponent.mapper]!!.currentNodeRoom = newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms[0]
+            newPC[ActionMoveComponent.mapper]!!.currentNode = newPC[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNode()
             newPC[ActionMoveComponent.mapper]!!.currentPosition = newPC[ActionMoveComponent.mapper]!!.currentNode.position
 
-            val randomNodeLinkAngle = cave.getEnvironmentComponent().nodeRoom.getRandomNextNodeLinkAngle(newPC[ActionMoveComponent.mapper]!!.currentNode)
+            val randomNodeLinkAngle = newPC[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNextNodeLinkAngle(newPC[ActionMoveComponent.mapper]!!.currentNode)
             newPC[ActionMoveComponent.mapper]!!.currentNodeLink = randomNodeLinkAngle.first
             newPC[ActionMoveComponent.mapper]!!.currentAngle = randomNodeLinkAngle.second
+            newPC[ActionMoveComponent.mapper]!!.moment = newPC[mapper]!!.moment
+            newPC[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.NONE
+
             newPC[ActionMoveComponent.mapper]!!.camera = camera
 
             println ("entity ${newPC.getEntityComponent().name} instantiated at ${newPC[ActionMoveComponent.mapper]!!.currentNode}, pointing ${newPC[ActionMoveComponent.mapper]!!.currentAngle}..!")

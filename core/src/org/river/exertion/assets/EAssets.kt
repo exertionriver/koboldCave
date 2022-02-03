@@ -3,6 +3,10 @@ package org.river.exertion.assets
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import ktx.assets.getAsset
 import ktx.assets.load
 import ktx.log.logger
@@ -25,12 +29,11 @@ enum class MusicAssets(val path: String) {
 
 fun AssetManager.load(asset: MusicAssets) = load<Music>(asset.path)
 operator fun AssetManager.get(asset: MusicAssets) = getAsset<Music>(asset.path)
-/*
+
 // texture atlas
-enum class TextureAtlasAssets(val path: String) {
-    Game("images/game.atlas")
+enum class TextureAssets(val path: String) {
+    Suenos("images/taos_suenos.jpg")
 }
 
-fun AssetManager.load(asset: TextureAtlasAssets) = load<TextureAtlas>(asset.path)
-operator fun AssetManager.get(asset: TextureAtlasAssets) = getAsset<TextureAtlas>(asset.path)
-*/
+fun AssetManager.load(asset: TextureAssets) = load<Texture>(asset.path)
+operator fun AssetManager.get(asset: TextureAssets) = getAsset<Texture>(asset.path)

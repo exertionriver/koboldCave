@@ -11,11 +11,9 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
-import org.river.exertion.koboldCave.screen.lattice.DemoRoundedLatticeHeightScreen
 import org.river.exertion.koboldCave.screen.nodeRoom.*
-import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshNavigateScreen
-import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshRotateNavigateScreen
-import org.river.exertion.koboldQueue.screen.cave.DemoNodeRoomCaveScreen
+import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshECSNavigateScreen
+import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshECSRotateNavigateScreen
 
 class Game : KtxGame<KtxScreen>() {
     private val context = Context()
@@ -24,6 +22,7 @@ class Game : KtxGame<KtxScreen>() {
         val bitmapFont = BitmapFont(Gdx.files.internal("fonts/OSR.fnt"), TextureRegion(Texture(Gdx.files.internal("fonts/OSR.png"), true)))
         bitmapFont.region.texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
         bitmapFont.data.setScale(.4F, .4F) //32 size
+
         val camera = OrthographicCamera().apply { setToOrtho(false, initViewportWidth, initViewportHeight) }
         val viewport = FitViewport(initViewportWidth, initViewportHeight, camera)
         val batch = PolygonSpriteBatch()
@@ -37,6 +36,7 @@ class Game : KtxGame<KtxScreen>() {
             bindSingleton(camera)
             bindSingleton(stage)
             bindSingleton(assets)
+
 /*
     Geometries
             addScreen(DemoLeafHeightScreen( inject(), inject(), inject() ) )
@@ -64,26 +64,16 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeMeshOperationsThirdScreen( inject(), inject(), inject(), inject()) )
 
             addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
-*/
-/*nodeRooms
-             addScreen(DemoNodeRoomWallFloorScreen( inject(), inject(), inject() ) )
-             addScreen(DemoNodeRoomSlopeScreen( inject(), inject(), inject() ) )
-
+   */ /*navigation
             addScreen(DemoNodeRoomECSNavigateScreen( inject(), inject(), inject(), inject() ) )
-*/            addScreen(DemoNodeRoomECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
-    /*navigation
-            addScreen(DemoNodeRoomNavigateScreen( inject(), inject(), inject(), inject() ) )
-            addScreen(DemoNodeRoomRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
+            addScreen(DemoNodeRoomECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 
-            addScreen(DemoNodeRoomMeshNavigateScreen( inject(), inject(), inject(), inject() ) )
-            addScreen(DemoNodeRoomMeshRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
-*/
-/*kobold ECS*/
-//            addScreen(DemoNodeRoomCaveScreen( inject(), inject(), inject(), inject() ) )
+            addScreen(DemoNodeRoomMeshECSNavigateScreen( inject(), inject(), inject(), inject() ) )
+*/            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 /**/
         }
 
-        setScreen<DemoNodeRoomECSRotateNavigateScreen>()
+        setScreen<DemoNodeRoomMeshECSRotateNavigateScreen>()
 //        super.create()
     }
 

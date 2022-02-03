@@ -7,7 +7,7 @@ import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.koboldQueue.time.Moment
 
-class ActionPlexComponent(val actionPlexMaxSize : Int = 5, val moment : Moment = Moment(1000)) : Component {
+class ActionPlexComponent(val actionPlexMaxSize : Int = 5, val moment : Moment = Moment(1000f)) : Component {
 
     //in milliseconds
     var countdown = moment.milliseconds

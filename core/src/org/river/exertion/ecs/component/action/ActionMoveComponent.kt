@@ -13,6 +13,8 @@ import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.koboldQueue.time.Moment
 
 class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component {
 
@@ -36,6 +38,7 @@ class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component
     override var stateCountdown = 0
     override var executed = false
 
+    var nodeRoomMesh = NodeRoomMesh()
     var currentNodeRoom = NodeRoom()
     var currentNode = Node()
     var currentNodeLink = NodeLink(Node(), Node())
@@ -56,6 +59,9 @@ class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component
     var finalNode = Node()
     var finalAngle : Angle = 0.0f
     var direction = Direction.FORWARD
+
+    var moment = Moment(0f)
+    var momentCountdown = 0f
 
     var camera : OrthographicCamera? = null
 

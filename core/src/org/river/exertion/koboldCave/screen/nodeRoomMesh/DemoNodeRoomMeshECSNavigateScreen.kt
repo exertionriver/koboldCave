@@ -1,4 +1,4 @@
-package org.river.exertion.koboldCave.screen.nodeRoom
+package org.river.exertion.koboldCave.screen.nodeRoomMesh
 
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
@@ -7,7 +7,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.badlogic.gdx.math.Vector2
 import ktx.app.KtxScreen
 import ktx.ashley.contains
 import ktx.ashley.get
@@ -19,27 +19,37 @@ import org.river.exertion.ecs.component.entity.EntityKobold
 import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
 import org.river.exertion.ecs.component.environment.EnvironmentCave
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
-import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
-import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.buildNodeLine
+import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
+import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
+import org.river.exertion.koboldCave.node.Node
+import org.river.exertion.koboldCave.node.NodeLink
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLinks
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.koboldCave.screen.Render
 import org.river.exertion.koboldCave.screen.RenderPalette
+import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
+import org.river.exertion.koboldCave.screen.RenderPalette.FadeBackColors
+import org.river.exertion.koboldCave.screen.RenderPalette.FadeForeColors
+import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
 import org.river.exertion.koboldCave.screen.render
+import space.earlygrey.shapedrawer.JoinType
 
-class DemoNodeRoomECSNavigateScreen(private val batch: Batch,
-                                    private val font: BitmapFont,
-                                    private val assets: AssetManager,
-                                    private val camera: OrthographicCamera) : KtxScreen {
+class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
+                                        private val font: BitmapFont,
+                                        private val assets: AssetManager,
+                                        private val camera: OrthographicCamera) : KtxScreen {
 
     val horizOffset = Game.initViewportWidth / 11
     val vertOffset = Game.initViewportHeight / 11
     val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
 
-    var nodeRoom = NodeRoom(height = 4, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
-    var nodeRoomMesh = NodeRoomMesh(nodeRoom)
+    var nodeRoomMesh = NodeRoomMesh(NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f)))
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
     val cave = EnvironmentCave.instantiate(engine, "spookyCave", nodeRoomMesh)
@@ -49,9 +59,22 @@ class DemoNodeRoomECSNavigateScreen(private val batch: Batch,
     val drawer = sdc.getDrawer()
 
     val controlAreaCamera = OrthographicCamera()
-//    val controlAreaViewport = ExtendViewport(Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat(), controlAreaCamera)
 
     override fun render(delta: Float) {
+
+//        println ("delta:$delta, rps:${1f/delta}")
+//        Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight())
+
+        val prevExitNodes = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activatedExitNodes.size
+        val nodeRoomIdx = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.getCurrentRoomIdx(playerCharacter[ActionMoveComponent.mapper]!!.currentNode)
+        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.inactiveExitNodesInRange(playerCharacter[ActionMoveComponent.mapper]!!.currentNode).forEach {
+            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+        val currExitNodes = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activatedExitNodes.size
+
+        if (prevExitNodes != currExitNodes) {
+            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
+            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
+        }
 
         InputHandler.handleInput(camera)
 
@@ -62,18 +85,16 @@ class DemoNodeRoomECSNavigateScreen(private val batch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.RIGHT }
         }
 
-        camera.update()
         batch.projectionMatrix = camera.combined
+        camera.update()
 
         batch.use {
-
             cave[EnvironmentCave.mapper]!!.nodeRoomMesh.render(batch)
-
-            PlayerCharacter.render(batch, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
 
             engine.entities.filter { checkEntity -> checkEntity.isEntity() && checkEntity.contains(EntityKobold.mapper) }.forEach { renderKobold ->
                 Kobold.render(batch, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
             }
+            PlayerCharacter.render(batch, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
         }
 
         controlAreaCamera.update()
@@ -85,13 +106,15 @@ class DemoNodeRoomECSNavigateScreen(private val batch: Batch,
         }
 
         engine.update(delta)
-
     }
 
     override fun hide() {
     }
 
     override fun show() {
+        val nodeRoomIdx = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.getCurrentRoomIdx(playerCharacter[ActionMoveComponent.mapper]!!.currentNode)
+        playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.inactiveExitNodesInRange(playerCharacter[ActionMoveComponent.mapper]!!.currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+
         Render.initRender(camera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
         controlAreaCamera.setToOrtho(false, Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat())
 
@@ -101,7 +124,7 @@ class DemoNodeRoomECSNavigateScreen(private val batch: Batch,
         // start the playback of the background music when the screen is shown
         MusicAssets.values().forEach { assets.load(it) }
         assets.finishLoading()
-//        println("done!")
+        //println("done!")
         assets[MusicAssets.NavajoNight].apply { isLooping = true }.play()
     }
 

@@ -31,7 +31,10 @@ object EntityNone : IEntity {
     }
 
     override var actionPlexMaxSize = 5
-    override var moment = Moment(100)
+    override var moment = Moment(100f)
+    override var momentCountdown: Float
+        get() = TODO("Not yet implemented")
+        set(value) {}
 
     override var actionPlex = ActionPlexComponent(actionPlexMaxSize, moment)
 
