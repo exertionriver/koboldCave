@@ -2,7 +2,6 @@ package org.river.exertion.koboldCave.lattice
 
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldCave.Line.Companion.getArrayedPositionByAngle
-import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.addNode
@@ -10,6 +9,7 @@ import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeMesh
 import org.river.exertion.Angle
+import org.river.exertion.NextDistancePx
 import org.river.exertion.Point
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLinks
@@ -40,11 +40,11 @@ interface ILattice {
 
     fun parentEmpty() = (parent == null)
 
-    val children : MutableList<ILattice>
+    val children : Set<ILattice>
 
     fun childrenEmpty() = children.isEmpty()
 
-    fun getChildrenList() : List<ILattice>? = if ( childrenEmpty() ) null else children.toList()
+    fun getChildrenSet() : Set<ILattice>? = if ( childrenEmpty() ) null else children.toSet()
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
 
@@ -54,17 +54,17 @@ interface ILattice {
     fun getConvergentChildAngle(variance : Angle, convergeToAngle : Angle = this.angleFromParent ) : Angle =
         ( convergeToAngle.times(2) + getVarianceChildAngle(variance).times(2) ) / 4
 
-    fun getList() : List<ILattice> =
-        if (childrenEmpty()) listOf(this)
-        else listOf(this).plus(children.flatMap { child -> child.getList() } ).distinct()
+    fun getSet() : Set<ILattice> =
+        if (childrenEmpty()) setOf(this)
+        else setOf(this).plus(children.flatMap { child -> child.getSet() } ).toSet()
 
-    fun getPrimaryLineList() : List<Pair<Point, Point>?> =
-        if (childrenEmpty()) listOf(null)
+    fun getPrimaryLineSet() : Set<Pair<Point, Point>?> =
+        if (childrenEmpty()) setOf(null)
         else children.map {
             childLattice -> Point(this.position.x, this.position.y) to Point(childLattice.position.x, childLattice.position.y)
         }.plus(children.flatMap {
-            childLattice -> childLattice.getPrimaryLineList()
-        } ).filterNotNull().distinct()
+            childLattice -> childLattice.getPrimaryLineSet()
+        } ).filterNotNull().toSet()
 
     companion object {
 
@@ -88,40 +88,10 @@ interface ILattice {
             return parentPosition.getArrayedPositionByAngle(topAngle, childAngle)
         }
 
-        fun List<ILattice>.getLateralLineList(): List<Pair<Point, Point>?> {
-            val returnLineList = mutableListOf<Pair<Point, Point>?>()
+        fun Set<ILattice>.getLateralLineSet(): Set<Pair<Point, Point>?> {
+            val returnLineSet = mutableSetOf<Pair<Point, Point>?>()
 
-            val topLatticeHeight = this[0].topHeight
-
-            (0..topLatticeHeight).forEach { curHeight ->
-                val sortedILattices = this.filter {
-                        iLattice -> iLattice.height == curHeight
-                }.sortedBy {
-                        filteredILattice -> filteredILattice.cumlAngleFromTop
-                }
-
-                sortedILattices.forEachIndexed { iLatticeIdx, sortedILattice ->
-                    if (iLatticeIdx > 0) returnLineList.add(Pair(sortedILattice.position, sortedILattices[iLatticeIdx - 1].position))
-                }
-            }
-
-            return returnLineList.filterNotNull()
-        }
-
-        fun ILattice.getLineList(): List<Pair<Point, Point>?> {
-            val returnLineList = mutableListOf<Pair<Point, Point>?>()
-
-            returnLineList.addAll(this.getPrimaryLineList())
-
-            returnLineList.addAll(this.getList().getLateralLineList())
-
-            return returnLineList
-        }
-
-        fun List<ILattice>.getLateralNodeLinkList(): MutableList<NodeLink> {
-            val returnLineList = mutableListOf<NodeLink>()
-
-            val topLatticeHeight = this[0].topHeight
+            val topLatticeHeight = this.toList()[0].topHeight
 
             (0..topLatticeHeight).forEach { curHeight ->
                 val sortedILattices = this.filter {
@@ -131,41 +101,71 @@ interface ILattice {
                 }
 
                 sortedILattices.forEachIndexed { iLatticeIdx, sortedILattice ->
-                    if (iLatticeIdx > 0) returnLineList.add(NodeLink(sortedILattice.uuid, sortedILattices[iLatticeIdx - 1].uuid))
+                    if (iLatticeIdx > 0) returnLineSet.add(Pair(sortedILattice.position, sortedILattices[iLatticeIdx - 1].position))
                 }
             }
 
-            return returnLineList
+            return returnLineSet.filterNotNull().toSet()
+        }
+
+        fun ILattice.getLineSet(): Set<Pair<Point, Point>?> {
+            val returnLineSet = mutableSetOf<Pair<Point, Point>?>()
+
+            returnLineSet.addAll(this.getPrimaryLineSet())
+
+            returnLineSet.addAll(this.getSet().getLateralLineSet())
+
+            return returnLineSet
+        }
+
+        fun Set<ILattice>.getLateralNodeLinkSet(): MutableSet<NodeLink> {
+            val returnLineSet = mutableSetOf<NodeLink>()
+
+            val topLatticeHeight = this.sortedBy { it.uuid }[0].topHeight
+
+            (0..topLatticeHeight).forEach { curHeight ->
+                val sortedILattices = this.filter {
+                        iLattice -> iLattice.height == curHeight
+                }.sortedBy {
+                        filteredILattice -> filteredILattice.cumlAngleFromTop
+                }
+
+                sortedILattices.forEachIndexed { iLatticeIdx, sortedILattice ->
+                    if (iLatticeIdx > 0) returnLineSet.add(NodeLink(sortedILattice.uuid, sortedILattices[iLatticeIdx - 1].uuid))
+                }
+            }
+
+            return returnLineSet
         }
 
         fun ILattice.node(): Node {
             return Node(this.uuid, this.position.round(), this.description)
         }
 
-        fun ILattice.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {
-            val returnNodeLinks = mutableListOf<NodeLink>()
+        fun ILattice.nodeLinks(nodes: MutableSet<Node>): MutableSet<NodeLink> {
+            val returnNodeLinks = mutableSetOf<NodeLink>()
 
-            this.getList().forEach {
+            this.getSet().forEach {
 
                 if (!it.parentEmpty()) returnNodeLinks.addNodeLink(nodes, it.uuid, it.parent!!.uuid)
 
-                if (!it.childrenEmpty()) it.getChildrenList()!!
+                if (!it.childrenEmpty()) it.getChildrenSet()!!
                     .forEach { childLeaf -> returnNodeLinks.addNodeLink(nodes, it.uuid, childLeaf.uuid) }
             }
 
-            val lateralNodeLinks = this.getList().getLateralNodeLinkList()
+            val lateralNodeLinks = this.getSet().getLateralNodeLinkSet()
 
             if (lateralNodeLinks.isNotEmpty()) returnNodeLinks.addNodeLinks(nodes, lateralNodeLinks)
 
             return returnNodeLinks
         }
 
-        fun ILattice.nodes(): MutableList<Node> {
-            val returnNodes = mutableListOf<Node>()
+        fun ILattice.nodes(): MutableSet<Node> {
+            val returnNodes = mutableSetOf<Node>()
 
 //            println("list: ${this.getList()}")
 
-            this.getList().forEach {
+            this.getSet().forEach {
                 returnNodes.addNode( it.node() )
             }
 

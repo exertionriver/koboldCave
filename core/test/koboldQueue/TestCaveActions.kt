@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import org.river.exertion.ecs.component.environment.EnvironmentCave
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.getEnvironmentComponent
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
@@ -19,7 +20,7 @@ class TestCaveActions {
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
 
-    val cave = EnvironmentCave.instantiate(engine, "spookyCave")
+    val cave = EnvironmentCave.instantiate(engine, "spookyCave", NodeRoomMesh())
 
     @Test
     fun testActionEnumeration() {

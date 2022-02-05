@@ -6,7 +6,6 @@ import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.Line.Companion.pointsInBorder
 import org.river.exertion.koboldQueue.condition.Probability
-import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
 import org.river.exertion.koboldCave.node.Node.Companion.getNode
@@ -14,7 +13,7 @@ import org.river.exertion.koboldCave.node.Node.Companion.nearestNodesOrderedAsc
 import org.river.exertion.koboldCave.node.NodeAttributes
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
-import org.river.exertion.koboldCave.node.NodeLink.Companion.getLineList
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getLineSet
 import org.river.exertion.koboldCave.node.NodeLink.Companion.removeNodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoomLink
@@ -23,15 +22,15 @@ import java.util.*
 import kotlin.random.Random
 
 class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val description: String = "nodeRoomMesh${Random.nextInt(256)}"
-                   , override var nodeRooms : MutableList<NodeRoom> = mutableListOf(), override var nodeRoomLinks : MutableList<NodeRoomLink> = mutableListOf()
-                   , var nodesMap : MutableMap<Node, UUID> = mutableMapOf(), var nodeLinks : MutableList<NodeLink> = mutableListOf() ) :
+                   , override var nodeRooms : MutableSet<NodeRoom> = mutableSetOf(), override var nodeRoomLinks : MutableSet<NodeRoomLink> = mutableSetOf()
+                   , var nodesMap : MutableMap<Node, UUID> = mutableMapOf(), var nodeLinks : MutableSet<NodeLink> = mutableSetOf() ) :
     INodeRoomMesh {
 
     val maxRoomExits = 18
     var currentRoomExits = 0
 
-    val activatedExitNodes = mutableListOf<Node>()
-    val exitNodes = mutableListOf<Node>()
+    val activatedExitNodes = mutableSetOf<Node>()
+    val exitNodes = mutableSetOf<Node>()
 
     var builtPath : MutableMap<Point, Point> = mutableMapOf()
     var currentPath : MutableMap<Point, Point> = mutableMapOf()
@@ -73,15 +72,15 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         uuid = updUuid
         , description = updDescription
     ) {
-        nodeRooms = mutableListOf<NodeRoom>().apply { addAll(copyNodeRoomMesh.nodeRooms) }
-        nodeRoomLinks = mutableListOf<NodeRoomLink>().apply { addAll(copyNodeRoomMesh.nodeRoomLinks) }
+        nodeRooms = mutableSetOf<NodeRoom>().apply { addAll(copyNodeRoomMesh.nodeRooms) }
+        nodeRoomLinks = mutableSetOf<NodeRoomLink>().apply { addAll(copyNodeRoomMesh.nodeRoomLinks) }
     }
 
     operator fun plus(secondRoomMesh : NodeRoomMesh) : NodeRoomMesh {
         val workNodeRoomMesh = this
 
-        val workNodeRooms = mutableListOf<NodeRoom>().apply { addAll(workNodeRoomMesh.nodeRooms); addAll(secondRoomMesh.nodeRooms) }
-        val workNodeRoomLinks = mutableListOf<NodeRoomLink>().apply { addAll(workNodeRoomMesh.nodeRoomLinks); addAll(secondRoomMesh.nodeRoomLinks) }
+        val workNodeRooms = mutableSetOf<NodeRoom>().apply { addAll(workNodeRoomMesh.nodeRooms); addAll(secondRoomMesh.nodeRooms) }
+        val workNodeRoomLinks = mutableSetOf<NodeRoomLink>().apply { addAll(workNodeRoomMesh.nodeRoomLinks); addAll(secondRoomMesh.nodeRoomLinks) }
 
         return NodeRoomMesh(description ="${workNodeRoomMesh.description} + ${secondRoomMesh.description}", nodeRooms = workNodeRooms, nodeRoomLinks = workNodeRoomLinks)//.apply { consolidateStackedNodes() }
     }
@@ -89,8 +88,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
     operator fun minus(secondRoomMesh : NodeRoomMesh) : NodeRoomMesh {
         val workNodeRoomMesh = this
 
-        val workNodeRooms = mutableListOf<NodeRoom>().apply { addAll(workNodeRoomMesh.nodeRooms); removeAll(secondRoomMesh.nodeRooms) }
-        val workNodeRoomLinks = mutableListOf<NodeRoomLink>().apply { addAll(workNodeRoomMesh.nodeRoomLinks) } //; this.removeOrphanLinks(workNodes) }
+        val workNodeRooms = mutableSetOf<NodeRoom>().apply { addAll(workNodeRoomMesh.nodeRooms); removeAll(secondRoomMesh.nodeRooms) }
+        val workNodeRoomLinks = mutableSetOf<NodeRoomLink>().apply { addAll(workNodeRoomMesh.nodeRoomLinks) } //; this.removeOrphanLinks(workNodes) }
 
         return NodeRoomMesh(description ="${workNodeRoomMesh.description} + ${secondRoomMesh.description}", nodeRooms = workNodeRooms, nodeRoomLinks = workNodeRoomLinks)
 
@@ -101,11 +100,12 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
     }
 
     //called by the room being exited, with the exit node
-    fun activateExitNode(nodeRoomIdx : Int, roomExitNode : Node) {
+    fun activateExitNode(currentNode : Node, roomExitNode : Node) {
 
         this.activatedExitNodes.add(roomExitNode)
+        val currentNodeRoom = getNodeRoom(currentNode)
 
-        val newNodeRoomAngle = this.nodeRooms[nodeRoomIdx].centroid.angleBetween(roomExitNode)
+        val newNodeRoomAngle = currentNodeRoom.centroid.angleBetween(roomExitNode)
         val newNodeRoomPosition = roomExitNode.position.getPositionByDistanceAndAngle(NextDistancePx, newNodeRoomAngle)
 
         val newNodeRoom = NodeRoom(height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms(), exitsAllowed = maxRoomExits - currentRoomExits)
@@ -114,7 +114,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         if (newNodeRoom.nodes.size > 1) {
 
             this.nodeRooms.add(newNodeRoom)
-            val newNodeRoomIdx = nodeRooms.size - 1
+//            val newNodeRoomIdx = nodeRooms.size - 1
 
             newNodeRoom.nodes.forEach { nodesMap[it] = newNodeRoom.uuid }
             newNodeRoom.nodeLinks.forEach { nodeLinks.add ( it ) }
@@ -126,10 +126,10 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             //next, bridge between the two NodeRooms with NodeLink
             val nearestNewRoomNode = newNodeRoom.nodes.nearestNodesOrderedAsc(roomExitNode)[0]
 
-            this.nodeLinks.addNodeLink(this.nodesMap.keys.toMutableList(), roomExitNode.uuid, nearestNewRoomNode.uuid)
+            this.nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid)
             this.nodeRoomLinks.add(NodeRoomLink(this.uuid, newNodeRoom.uuid))
-            this.nodeRooms[nodeRoomIdx].nodeLinks.addNodeLink(this.nodesMap.keys.toMutableList(), roomExitNode.uuid, nearestNewRoomNode.uuid )
-            this.nodeRooms[newNodeRoomIdx].nodeLinks.addNodeLink(this.nodesMap.keys.toMutableList(), roomExitNode.uuid, nearestNewRoomNode.uuid )
+            this.nodeRooms.filter { it.uuid == currentNodeRoom.uuid }.first().nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid )
+            this.nodeRooms.filter { it.uuid == newNodeRoom.uuid }.first().nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid )
 
  //           println("new NodeRoom linked!")
 
@@ -138,8 +138,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
             this.activatedExitNodes.add(nearestNewRoomNode)
 
             //re-build adjacent node walls
-            renderedNodeLinks.toMutableList().removeNodeLink(this.nodeRooms[nodeRoomIdx].uuid, roomExitNode.uuid)
-            renderedNodeLinks.toMutableList().removeNodeLink(roomExitNode.uuid, nearestNewRoomNode.uuid)
+            renderedNodeLinks.removeNodeLink(currentNode.uuid, roomExitNode.uuid)
+            renderedNodeLinks.removeNodeLink(roomExitNode.uuid, nearestNewRoomNode.uuid)
 
 //            println ("activating node ${roomExitNode.uuid} from ${this.nodeRooms[nodeRoomIdx].uuid}" )
 //            println ("removing rendered link between ${this.nodeRooms[nodeRoomIdx].uuid} and ${roomExitNode.uuid}")
@@ -153,9 +153,9 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
     fun getInactivatedExitNodes() = exitNodes.filter { !activatedExitNodes.contains(it) }
 
-    fun inactiveExitNodesInRange(currentNode : Node) = getInactivatedExitNodes().filter { it == currentNode || it.getNodeChildren(this.nodesMap.keys.toMutableList(), this.nodeLinks).contains(currentNode) }
+    fun inactiveExitNodesInRange(currentNode : Node) = getInactivatedExitNodes().filter { it == currentNode || it.getNodeChildren(this.nodesMap.keys, this.nodeLinks).contains(currentNode) }
 
-    fun getCurrentRoomIdx(currentNode : Node) = nodeRooms.indexOfFirst { it.uuid == nodesMap[currentNode] }
+//    fun getCurrentRoomIdx(currentNode : Node) = nodeRooms.indexOfFirst { it.uuid == nodesMap[currentNode] }
 
     fun getSlope(firstNode : Node, secondNode : Node) : Float {
         val rise = secondNode.attributes.nodeElevation.getHeight() - firstNode.attributes.nodeElevation.getHeight()
@@ -170,7 +170,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         //build walking path, fully lit
         fun NodeRoomMesh.buildAndRenderSimplePath() {
 
-            this.nodeLinks.getLineList(this.nodesMap.keys.toMutableList()).forEach { line ->
+            this.nodeLinks.getLineSet(this.nodesMap.keys).forEach { line ->
 
                 line.pointsInBorder(1).forEach { pathPoint -> this.currentWall[pathPoint] = pathPoint }
             }
@@ -206,8 +206,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
             this.nodeLinks.filter{ !renderedNodeLinks.contains(it) }.forEach { link ->
 
-                val firstNode = this.nodesMap.keys.toMutableList().getNode(link.firstNodeUuid)!!
-                val secondNode = this.nodesMap.keys.toMutableList().getNode(link.secondNodeUuid)!!
+                val firstNode = this.nodesMap.keys.getNode(link.firstNodeUuid)!!
+                val secondNode = this.nodesMap.keys.getNode(link.secondNodeUuid)!!
 
 //                println ("processing render link between ${firstNode.uuid} and ${secondNode.uuid}")
                 val line = Line(firstNode.position, secondNode.position)

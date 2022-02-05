@@ -3,20 +3,19 @@ package org.river.exertion.koboldCave
 import com.badlogic.gdx.math.MathUtils.cos
 import com.badlogic.gdx.math.MathUtils.sin
 import org.river.exertion.*
-import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import kotlin.math.*
 
 class Line(val first : Point, val second: Point) {
 
 //    fun intersects(line: Line) = this.intersects(line)
 
-    fun asPoints() = Pair(first, second)
+//    fun asPoints() = Pair(first, second)
 
-    fun points() = listOf(first, second)
+//    fun points() = listOf(first, second)
 
     companion object {
 
-        fun List<Line>.points() : Set<Point> = this.map { it.first }.toMutableSet().plus(this.map { it.second }.toMutableSet()).toSet()
+//        fun List<Line>.points() : Set<Point> = this.map { it.first }.toMutableSet().plus(this.map { it.second }.toMutableSet()).toSet()
 
         // Given three colinear points p, q, r, the function checks if
         // point q lies on line segment 'pr'
@@ -40,45 +39,6 @@ class Line(val first : Point, val second: Point) {
             return if (calcOrientation > 0) 1 else 2 // clock or counterclock wise
         }
 
-        //https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
-
-        // The main function that returns true if line segment 'p1q1'
-        // and 'p2q2' intersect.
-        fun doIntersect(p1: Point, q1: Point, p2: Point, q2: Point): Boolean {
-            // Find the four orientations needed for general and
-            // special cases
-            val o1 = orientation(p1, q1, p2)
-            val o2 = orientation(p1, q1, q2)
-            val o3 = orientation(p2, q2, p1)
-            val o4 = orientation(p2, q2, q1)
-
-            // General case
-            if (o1 != o2 && o3 != o4) return true
-
-            // Special Cases
-            // p1, q1 and p2 are colinear and p2 lies on segment p1q1
-            if (o1 == 0 && onSegment(p1, p2, q1)) return true
-
-            // p1, q1 and q2 are colinear and q2 lies on segment p1q1
-            if (o2 == 0 && onSegment(p1, q2, q1)) return true
-
-            // p2, q2 and p1 are colinear and p1 lies on segment p2q2
-            if (o3 == 0 && onSegment(p2, p1, q2)) return true
-
-            // p2, q2 and q1 are colinear and q1 lies on segment p2q2
-
-            return o4 == 0 && onSegment(p2, q1, q2)
-            // Doesn't fall in any of the above cases
-        }
-/*
-        fun Pair<Point, Point>.intersects(line: Pair<Point, Point>): Boolean {
-            val intersect = doIntersect(this.first, this.second, line.first, line.second)
-
-            //      println ("intersect(${this.first}, ${this.second} to ${line.first}, ${line.second}) == $intersect")
-
-            return intersect
-        }
-*/
 //       https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
         fun Line.getIntersection(line: Line): Point? {
 
@@ -258,7 +218,7 @@ class Line(val first : Point, val second: Point) {
         }
 
         //returns truncated points, ie. whole number points
-        fun Line.pointsInBorder(offset: Int) : MutableList<Point> {
+        fun Line.pointsInBorder(offset: Int) : Set<Point> {
 
             val pointsSet = mutableSetOf<Point>()
 
@@ -278,7 +238,7 @@ class Line(val first : Point, val second: Point) {
                     }
                 }
             }
-            return pointsSet.toMutableList()
+            return pointsSet.toSet()
         }
 
         fun Line.intersectsBorder(line : Line, offset : Int) : Boolean {
@@ -297,7 +257,7 @@ class Line(val first : Point, val second: Point) {
             return intersection
         }
 
-        fun MutableList<Point>.averagePositionWithinPoints() : Point {
+        fun MutableSet<Point>.averagePositionWithinPoints() : Point {
             val averageX = this.map {point -> point.x }.average().toFloat()
             val averageY = this.map {point -> point.y }.average().toFloat()
 

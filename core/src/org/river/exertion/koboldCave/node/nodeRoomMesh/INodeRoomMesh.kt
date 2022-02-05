@@ -10,7 +10,7 @@ interface INodeRoomMesh {
 
     val description : String
 
-    var nodeRooms : MutableList<NodeRoom>
+    var nodeRooms : MutableSet<NodeRoom>
 
-    var nodeRoomLinks : MutableList<NodeRoomLink>
+    var nodeRoomLinks : MutableSet<NodeRoomLink>
 }

@@ -1,5 +1,6 @@
 package org.river.exertion.koboldCave.leaf
 
+import org.river.exertion.*
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.koboldCave.node.Node
@@ -7,11 +8,7 @@ import org.river.exertion.koboldCave.node.Node.Companion.addNode
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeMesh
-import org.river.exertion.Angle
-import org.river.exertion.Game
-import org.river.exertion.Point
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
-import org.river.exertion.round
 import java.util.*
 
 interface ILeaf {
@@ -38,11 +35,11 @@ interface ILeaf {
 
     fun parentEmpty() = (parent == null)
 
-    val children : MutableList<ILeaf>
+    val children : MutableSet<ILeaf>
 
     fun childrenEmpty() = children.isEmpty()
 
-    fun getChildrenList() : List<ILeaf>? = if ( childrenEmpty() ) null else children.toList()
+    fun getChildrenSet() : Set<ILeaf>? = if ( childrenEmpty() ) null else children.toSet()
 
     fun getChildrenSize(height: Int, topHeight : Int = height) : Int
 
@@ -52,21 +49,19 @@ interface ILeaf {
     fun getConvergentChildAngle(variance : Angle, convergeToAngle : Angle = this.angleFromParent ) : Angle =
         ( convergeToAngle.times(2) + getVarianceChildAngle(variance).times(2) ) / 4
 
-    fun getList() : List<ILeaf> =
-        if (childrenEmpty()) listOf(this)
-        else listOf(this).plus(children.flatMap { child -> child.getList() } ).distinct()
+    fun getSet() : Set<ILeaf> =
+        if (childrenEmpty()) setOf(this)
+        else setOf(this).plus(children.flatMap { child -> child.getSet() } )
 
-    fun getLineList() : List<Pair<Point, Point>?> =
-        if (childrenEmpty()) listOf(null)
+    fun getLineSet() : Set<Pair<Point, Point>?> =
+        if (childrenEmpty()) setOf(null)
         else children.map {
             childLeaf -> Point(this.position.x, this.position.y) to Point(childLeaf.position.x, childLeaf.position.y)
         }.plus(children.flatMap {
-            childLeaf -> childLeaf.getLineList()
-        } ).filterNotNull().distinct()
+            childLeaf -> childLeaf.getLineSet()
+        } ).filterNotNull().toSet()
 
     companion object {
-
-        val NextDistancePx = Game.initViewportWidth / Game.initViewportHeight * 16F
 
         fun getNextDistancePxProb(): Float = ProbabilitySelect.psAccumulating(
             listOf(
@@ -90,26 +85,26 @@ interface ILeaf {
             return Node(this.uuid, this.position.round(), this.description)
         }
 
-        fun ILeaf.nodeLinks(nodes: MutableList<Node>): MutableList<NodeLink> {
-            val returnNodeLinks = mutableListOf<NodeLink>()
+        fun ILeaf.nodeLinks(nodes: MutableSet<Node>): MutableSet<NodeLink> {
+            val returnNodeLinks = mutableSetOf<NodeLink>()
 
-            this.getList().forEach {
+            this.getSet().forEach {
 
                 if (!it.parentEmpty()) returnNodeLinks.addNodeLink(nodes, it.uuid, it.parent!!.uuid)
 
-                if (!it.childrenEmpty()) it.getChildrenList()!!
+                if (!it.childrenEmpty()) it.getChildrenSet()!!
                     .forEach { childLeaf -> returnNodeLinks.addNodeLink(nodes, it.uuid, childLeaf.uuid) }
             }
 
             return returnNodeLinks
         }
 
-        fun ILeaf.nodes(): MutableList<Node> {
-            val returnNodes = mutableListOf<Node>()
+        fun ILeaf.nodes(): MutableSet<Node> {
+            val returnNodes = mutableSetOf<Node>()
 
 //            println("list: ${this.getList()}")
 
-            this.getList().forEach {
+            this.getSet().forEach {
                 returnNodes.addNode( it.node() )
             }
 

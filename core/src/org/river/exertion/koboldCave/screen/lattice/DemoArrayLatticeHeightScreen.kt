@@ -7,7 +7,7 @@ import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.koboldCave.lattice.ArrayLattice
-import org.river.exertion.koboldCave.lattice.ILattice.Companion.getLineList
+import org.river.exertion.koboldCave.lattice.ILattice.Companion.getLineSet
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
 
@@ -36,14 +36,14 @@ class DemoArrayLatticeHeightScreen(private val batch: Batch,
             arrayLatticeList.reversed().forEachIndexed { latticeIdx, lattice ->
                 font.drawLabel(it, lattice.position + labelVertOffset, "ArrayLattice(height=${lattice.topHeight})", ForeColors[latticeIdx % ForeColors.size])
 
-                lattice.getLineList().forEach { line ->
+                lattice.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,BackColors[latticeIdx % BackColors.size], 2F )
                     }
                 }
 
-                lattice.getList().forEachIndexed { index, listLeaf ->
-                    drawer.filledCircle(listLeaf.position, 2F, ForeColors[latticeIdx % ForeColors.size])
+                lattice.getSet().forEachIndexed { index, listLattice ->
+                    drawer.filledCircle(listLattice.position, 2F, ForeColors[latticeIdx % ForeColors.size])
                 }
             }
 

@@ -24,9 +24,9 @@ class RoundedLattice(override val topHeight : Int = 3
 
     override val uuid : UUID = UUID.randomUUID()
 
-    override val children: MutableList<ILattice> = if (height == 0) mutableListOf()
+    override val children: MutableSet<ILattice> = if (height == 0) mutableSetOf()
         else MutableList(size = getChildrenSize(height, topHeight)) {
-            RoundedLattice(topHeight = topHeight
+                RoundedLattice(topHeight = topHeight
                 , description = description
                 , height = height - 1
                 , parent = this
@@ -37,7 +37,7 @@ class RoundedLattice(override val topHeight : Int = 3
                 , distanceFromParent = getNextDistancePxProb()
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
             )
-    }
+        }.toMutableSet()
 
     override fun getChildrenSize(height : Int, topHeight : Int): Int {
         return when {

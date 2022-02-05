@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
-import org.river.exertion.koboldCave.lattice.ILattice.Companion.getLineList
+import org.river.exertion.koboldCave.lattice.ILattice.Companion.getLineSet
 import org.river.exertion.koboldCave.lattice.RoundedLattice
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
@@ -46,13 +46,13 @@ class DemoRoundedLatticeHeightScreen(private val batch: Batch,
             roundedLatticeList.reversed().forEachIndexed { latticeIdx, lattice ->
                 font.drawLabel(it, lattice.position + labelVertOffset, "RoundedLattice(height=${lattice.topHeight})", ForeColors[latticeIdx % ForeColors.size])
 
-                lattice.getLineList().forEach { line ->
+                lattice.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,BackColors[latticeIdx % BackColors.size], 2F )
                     }
                 }
 
-                lattice.getList().forEachIndexed { index, listLeaf ->
+                lattice.getSet().forEachIndexed { index, listLeaf ->
                     drawer.filledCircle(listLeaf.position, 2F, ForeColors[latticeIdx % ForeColors.size])
                 }
             }

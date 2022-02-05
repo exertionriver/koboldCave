@@ -7,7 +7,7 @@ import java.util.*
 import kotlin.random.Random
 
 class NodeMesh(override val uuid: UUID = UUID.randomUUID(), override val description: String = "nodeMesh${Random.nextInt(256)}"
-               , override var nodes : MutableList<Node> = mutableListOf(), override var nodeLinks : MutableList<NodeLink> = mutableListOf() ) :
+               , override var nodes : MutableSet<Node> = mutableSetOf(), override var nodeLinks : MutableSet<NodeLink> = mutableSetOf() ) :
     INodeMesh {
 
     //copy constructor
@@ -17,8 +17,8 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(), override val descrip
         uuid = updUuid
         , description = updDescription
     ) {
-        nodes = mutableListOf<Node>().apply { addAll(copyNodeMesh.nodes) }
-        nodeLinks = mutableListOf<NodeLink>().apply { addAll(copyNodeMesh.nodeLinks) }
+        nodes = mutableSetOf<Node>().apply { addAll(copyNodeMesh.nodes) }
+        nodeLinks = mutableSetOf<NodeLink>().apply { addAll(copyNodeMesh.nodeLinks) }
     }
 /*
     //link constructor
@@ -32,8 +32,8 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(), override val descrip
     operator fun plus(secondMesh : NodeMesh) : NodeMesh {
         val workNodeMesh = this
 
-        val workNodes = mutableListOf<Node>().apply { addAll(workNodeMesh.nodes); addAll(secondMesh.nodes) }
-        var workNodeLinks = mutableListOf<NodeLink>().apply { addAll(workNodeMesh.nodeLinks); addAll(secondMesh.nodeLinks) }
+        val workNodes = mutableSetOf<Node>().apply { addAll(workNodeMesh.nodes); addAll(secondMesh.nodes) }
+        var workNodeLinks = mutableSetOf<NodeLink>().apply { addAll(workNodeMesh.nodeLinks); addAll(secondMesh.nodeLinks) }
 
         return NodeMesh(description ="${workNodeMesh.description} + ${secondMesh.description}", nodes = workNodes, nodeLinks = workNodeLinks).apply { consolidateStackedNodes() }
     }
@@ -41,8 +41,8 @@ class NodeMesh(override val uuid: UUID = UUID.randomUUID(), override val descrip
     operator fun minus(secondMesh : NodeMesh) : NodeMesh {
         val workNodeMesh = this
 
-        val workNodes = mutableListOf<Node>().apply { addAll(workNodeMesh.nodes); removeAll(secondMesh.nodes) }
-        val workNodeLinks = mutableListOf<NodeLink>().apply { addAll(workNodeMesh.nodeLinks); this.removeOrphanLinks(workNodes) }
+        val workNodes = mutableSetOf<Node>().apply { addAll(workNodeMesh.nodes); removeAll(secondMesh.nodes) }
+        val workNodeLinks = mutableSetOf<NodeLink>().apply { addAll(workNodeMesh.nodeLinks); this.removeOrphanLinks(workNodes) }
 
         return NodeMesh(description ="${workNodeMesh.description} + ${secondMesh.description}", nodes = workNodes, nodeLinks = workNodeLinks)
 

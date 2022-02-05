@@ -8,7 +8,6 @@ import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.koboldCave.lattice.ILattice.Companion.nodeMesh
 import org.river.exertion.koboldCave.lattice.RoundedLattice
-import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.nodeMesh
 import org.river.exertion.koboldCave.leaf.Lace
 import org.river.exertion.koboldCave.Line.Companion.borderLines
@@ -44,12 +43,12 @@ class DemoRoundedLatticeBorderingScreen(private val batch: Batch,
 
     val topHeight = 6
     val borderingCases = mutableListOf(
-        RoundedLattice(topHeight = topHeight, position = refLacesCases[0].nodes[0].position - leafHorizOffset, topAngle = 315F ).nodeMesh()
-        , RoundedLattice(topHeight = topHeight, position = refLacesCases[1].nodes[0].position - leafHorizOffset, topAngle = 315F ).nodeMesh()
-        , RoundedLattice(topHeight = topHeight, position = refLacesCases[2].nodes[0].position - leafHorizOffset, topAngle = 315F ).nodeMesh()
-        , RoundedLattice(topHeight = topHeight, position = refLacesCases[3].nodes[0].position - leafHorizOffset, topAngle = 315F ).nodeMesh()
-        , RoundedLattice(topHeight = topHeight, position = refLacesCases[4].nodes[0].position - leafHorizOffset, topAngle = 315F ).nodeMesh()
-        , RoundedLattice(topHeight = topHeight, position = refLacesCases[5].nodes[0].position - leafHorizOffset, topAngle = 315F ).nodeMesh()
+        RoundedLattice(topHeight = topHeight, position = refLacesCases[0].nodes.first().position - leafHorizOffset, topAngle = 315F ).nodeMesh()
+        , RoundedLattice(topHeight = topHeight, position = refLacesCases[1].nodes.first().position - leafHorizOffset, topAngle = 315F ).nodeMesh()
+        , RoundedLattice(topHeight = topHeight, position = refLacesCases[2].nodes.first().position - leafHorizOffset, topAngle = 315F ).nodeMesh()
+        , RoundedLattice(topHeight = topHeight, position = refLacesCases[3].nodes.first().position - leafHorizOffset, topAngle = 315F ).nodeMesh()
+        , RoundedLattice(topHeight = topHeight, position = refLacesCases[4].nodes.first().position - leafHorizOffset, topAngle = 315F ).nodeMesh()
+        , RoundedLattice(topHeight = topHeight, position = refLacesCases[5].nodes.first().position - leafHorizOffset, topAngle = 315F ).nodeMesh()
     )
 
     val originalMesh = borderingCases.map { latticeCase -> NodeMesh(copyNodeMesh = latticeCase) }
@@ -68,12 +67,12 @@ class DemoRoundedLatticeBorderingScreen(private val batch: Batch,
         batch.use { batch ->
 
             (0..5).forEach { idx ->
-                font.drawLabel(batch, refLacesCases[idx].nodes[0].position + labelVertOffset * 2
+                font.drawLabel(batch, refLacesCases[idx].nodes.first().position + labelVertOffset * 2
                     , "Test Case $idx", RenderPalette.BackColors[idx % RenderPalette.BackColors.size])
-                font.drawLabel(batch, originalMesh[idx].nodes[0].position + labelVertOffset * 2
+                font.drawLabel(batch, originalMesh[idx].nodes.first().position + labelVertOffset * 2
                     , "RoundedLattice (height=$topHeight)", RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
 
-                originalMesh[idx].getLineList().forEach { line ->
+                originalMesh[idx].getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.BackColors[idx % RenderPalette.BackColors.size], 2F )
@@ -84,7 +83,7 @@ class DemoRoundedLatticeBorderingScreen(private val batch: Batch,
                     drawer.filledCircle(listLeaf.position, 2F, RenderPalette.BackColors[idx % RenderPalette.BackColors.size])
                 }
 
-                for (line in refLacesCases[idx].getLineList() ) {
+                for (line in refLacesCases[idx].getLineSet() ) {
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.BackColors[idx % RenderPalette.BackColors.size], 2F )
@@ -102,7 +101,7 @@ class DemoRoundedLatticeBorderingScreen(private val batch: Batch,
                     drawer.filledCircle(listPoint.position, 2F, RenderPalette.BackColors[idx % RenderPalette.BackColors.size])
                 }
 
-                for (line in borderingMesh[idx].getLineList()) {
+                for (line in borderingMesh[idx].getLineSet()) {
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size], 2F )

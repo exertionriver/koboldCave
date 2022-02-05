@@ -58,14 +58,14 @@ class DemoLeafAngledScreen(private val batch: Batch,
                             , "Leaf(height=${leaf.topHeight})\nangled ${leaf.topAngle} degrees", RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
                 }
 
-                leaf.getLineList().forEach { line ->
+                leaf.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.BackColors[idx % RenderPalette.BackColors.size], 2F )
                     }
                 }
 
-                leaf.getList().forEachIndexed { index, listLeaf ->
+                leaf.getSet().forEachIndexed { index, listLeaf ->
                     drawer.filledCircle(listLeaf.position, 2F, RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
                 }
             }

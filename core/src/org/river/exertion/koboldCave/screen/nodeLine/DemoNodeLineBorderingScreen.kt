@@ -61,7 +61,7 @@ class DemoNodeLineBorderingScreen(private val batch: Batch,
             (0..5).forEachIndexed { nodeLineIdx, nodeLine ->
                 font.drawLabel(it, refNodesCases[nodeLineIdx][0].position - labelVertOffset, "NodeLine Test Case $nodeLineIdx", ForeColors[nodeLineIdx % ForeColors.size])
 
-                nodeLineCases[nodeLineIdx].getLineList().forEach { line ->
+                nodeLineCases[nodeLineIdx].getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,BackColors[nodeLineIdx % BackColors.size], 2F )
                     }
@@ -71,7 +71,7 @@ class DemoNodeLineBorderingScreen(private val batch: Batch,
                     drawer.filledCircle(listLeaf.position, 2F, BackColors[nodeLineIdx % BackColors.size])
                 }
 
-                borderingNodeLineCases[nodeLineIdx].getLineList().forEach { line ->
+                borderingNodeLineCases[nodeLineIdx].getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,ForeColors[nodeLineIdx % ForeColors.size], 2F )
                     }

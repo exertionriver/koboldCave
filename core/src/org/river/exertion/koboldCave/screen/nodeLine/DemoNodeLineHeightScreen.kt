@@ -42,7 +42,7 @@ class DemoNodeLineHeightScreen(private val batch: Batch,
                 }
 
 
-                nodeLine.getLineList().forEach { line ->
+                nodeLine.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,BackColors[nodeLineIdx % BackColors.size], 2F )
                     }

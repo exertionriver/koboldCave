@@ -13,8 +13,8 @@ class TestNodeRoom {
         val leaf = Leaf(topHeight = 3)
         println("leaf(" +leaf.children.count() + "): " + leaf)
 
-        println("leafList(" + leaf.getList().size + "): ")
-        for (listLeaf in leaf.getList())
+        println("leafList(" + leaf.getSet().size + "): ")
+        for (listLeaf in leaf.getSet())
             println(listLeaf)
 
         val nodeMesh = leaf.nodeMesh()

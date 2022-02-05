@@ -39,7 +39,7 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
 
     constructor() : this(position = Point(0F,0F))
 
-    fun nearestCentroid(centroids : List<Node>) : Node {
+    fun nearestCentroid(centroids : MutableSet<Node>) : Node {
         return if ( centroids.isNotEmpty() ) centroids.nearestNodesOrderedAsc(this)[0] else this
     }
 
@@ -53,7 +53,7 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
 
     override fun toString() = "${Node::class.simpleName}(${description}_$uuid) : $position"
 
-    fun getNodeChildren(nodes : MutableList<Node>, nodeLinks : MutableList<NodeLink>) = nodeLinks.getNodeChildrenUuids(this.uuid, this.uuid).mapNotNull { nodes.getNode(it) }
+    fun getNodeChildren(nodes : MutableSet<Node>, nodeLinks : MutableSet<NodeLink>) = nodeLinks.getNodeChildrenUuids(this.uuid, this.uuid).mapNotNull { nodes.getNode(it) }.toMutableSet()
 
     companion object {
 
@@ -62,31 +62,31 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             return this.position.angleBetween(secondNode.position)
         }
 
-        fun MutableList<Node>.getNode(uuid : UUID) : Node? {
+        fun MutableSet<Node>.getNode(uuid : UUID) : Node? {
             return this.firstOrNull { node -> node.uuid == uuid }
         }
 
-        fun MutableList<Node>.addNode(nodeToAdd : Node) : Boolean {
+        fun MutableSet<Node>.addNode(nodeToAdd : Node) : Boolean {
             return this.add( nodeToAdd )
         }
 
-        fun MutableList<Node>.addNodes(nodesToAdd : MutableList<Node>, nodeDescription : String) : Unit = nodesToAdd.forEach { nodeToAdd -> this.add(
+        fun MutableSet<Node>.addNodes(nodesToAdd : MutableSet<Node>, nodeDescription : String) : Unit = nodesToAdd.forEach { nodeToAdd -> this.add(
             Node(nodeToAdd, updDescription = nodeDescription)
         ) }
 
-        fun MutableList<Node>.removeNode(nodeLinks : MutableList<NodeLink>, uuid : UUID) : Boolean {
+        fun MutableSet<Node>.removeNode(nodeLinks : MutableSet<NodeLink>, uuid : UUID) : Boolean {
             nodeLinks.getNodeLinks(uuid).let { nodeLinks.removeAll(it) }
             return this.remove( getNode(uuid) )
         }
 
         //used to update position, attributes, etc; UUID remains the same
-        fun MutableList<Node>.updateNode(node : Node) {
+        fun MutableSet<Node>.updateNode(node : Node) {
             this.associateBy { entry -> entry.uuid }.toMutableMap()[node.uuid] = node
         }
 
-        fun MutableList<Node>.getLineList(nodeLinks : List<NodeLink>) : List<Line> {
+        fun MutableSet<Node>.getLineSet(nodeLinks : MutableSet<NodeLink>) : MutableSet<Line> {
 
-            val returnNodeLineList : MutableList<Line> = mutableListOf()
+            val returnNodeLineSet : MutableSet<Line> = mutableSetOf()
 
 //            this.forEach { println("node : $it") }
 
@@ -96,13 +96,13 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
                 val secondNode = this.getNode(nodeLink.secondNodeUuid)
 
                 if ( (firstNode != null) && (secondNode != null) )
-                    returnNodeLineList.add(Line(firstNode.position, secondNode.position) ) }
+                    returnNodeLineSet.add(Line(firstNode.position, secondNode.position) ) }
 
-            return returnNodeLineList
+            return returnNodeLineSet
         }
 
         //replaces firstUuid node, removes secondUuid node; does not handle updates to NodeLinks
-        fun MutableList<Node>.consolidateNode(nodeLinks : MutableList<NodeLink>, firstUuid : UUID, secondUuid : UUID) : MutableList<NodeLink> {
+        fun MutableSet<Node>.consolidateNode(nodeLinks : MutableSet<NodeLink>, firstUuid : UUID, secondUuid : UUID) : MutableSet<NodeLink> {
 //            println("pre-consolidation nodes: $this")
 
             val firstNode = this.getNode(firstUuid)
@@ -140,7 +140,7 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             return nodeLinks
         }
 
-        fun MutableList<Node>.consolidateNearNodes(nodeLinks : MutableList<NodeLink>) : MutableList<NodeLink> {
+        fun MutableSet<Node>.consolidateNearNodes(nodeLinks : MutableSet<NodeLink>) : MutableSet<NodeLink> {
 //        println("checking for near nodes to consolidate...")
             var returnNodeLinks = nodeLinks
             val checkNodes = this
@@ -160,7 +160,7 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             return returnNodeLinks
         }
 
-        fun MutableList<Node>.consolidateStackedNodes(nodeLinks : MutableList<NodeLink>) : MutableList<NodeLink> {
+        fun MutableSet<Node>.consolidateStackedNodes(nodeLinks : MutableSet<NodeLink>) : MutableSet<NodeLink> {
 //        println("checking for stacked nodes to consolidate...")
             var returnNodeLinks = nodeLinks
 //            val checkNodes = this.toList()
@@ -181,7 +181,7 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
         }
 
         //TODO: retain previous links
-        fun MutableList<Node>.linkNearNodes(nodeLinks : MutableList<NodeLink> = mutableListOf(), nodeMeshToBorder : INodeMesh? = null, orthoBorderDistance : Double = ILeaf.NextDistancePx * 0.2, linkOrphans : Boolean = true) : MutableList<NodeLink> {
+        fun MutableSet<Node>.linkNearNodes(nodeLinks : MutableSet<NodeLink> = mutableSetOf(), nodeMeshToBorder : INodeMesh? = null, orthoBorderDistance : Double = NextDistancePx * 0.2, linkOrphans : Boolean = true) : MutableSet<NodeLink> {
 //            println("checking for nodes to link...")
             val returnNodeLinks = nodeLinks
 //            val checkNodes = this.toList()
@@ -202,17 +202,17 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
                     }
             }
 
-            return returnNodeLinks.toList().distinct().toMutableList()
+            return returnNodeLinks
         }
 
-        fun MutableList<Node>.averagePositionWithinNodes() : Point {
+        fun MutableSet<Node>.averagePositionWithinNodes() : Point {
             val averageX = this.map {node -> node.position.x.toInt()}.average()
             val averageY = this.map {node -> node.position.y.toInt()}.average()
 
             return Point(averageX.toFloat(), averageY.toFloat())
         }
 
-        fun MutableList<Node>.randomPosition() : Point {
+        fun MutableSet<Node>.randomPosition() : Point {
 
             val minXY = Point(10000F, 10000F)
             val maxXY = Point(0F, 0F)
@@ -234,7 +234,7 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             return Point(randomXInRange.toFloat(), randomYInRange.toFloat())
         }
 
-        fun List<Node>.nearestNodesOrderedAsc(refNode : Node) : MutableList<Node> {
+        fun MutableSet<Node>.nearestNodesOrderedAsc(refNode : Node) : MutableList<Node> {
 
             val nodeDistMap = mutableMapOf<Node, Double>()
 
@@ -249,16 +249,16 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             return nodeDistMap.toList().sortedBy { (_, dist) -> dist}.toMap().keys.toMutableList()
         }
 
-        fun List<Node>.getFarthestNode(refNode : Node = Node(position = this.toMutableList().averagePositionWithinNodes())) : Node {
+        fun MutableSet<Node>.getFarthestNode(refNode : Node = Node(position = this.averagePositionWithinNodes())) : Node {
 
             val nearestNodes = this.nearestNodesOrderedAsc(refNode)
 
             return if (nearestNodes.size > 1) nearestNodes[nearestNodes.size - 1] else refNode
         }
 
-        fun List<Node>.getRandomNode() : Node = if (this.isNotEmpty()) this[Random.nextInt(this.size)] else Node()
+        fun MutableSet<Node>.getRandomNode() : Node = if (this.isNotEmpty()) this.toList()[Random.nextInt(this.size)] else Node()
 
-        fun MutableList<Node>.removeOrphans(nodeLinks : MutableList<NodeLink>, minPercent : Double) : MutableList<Node> {
+        fun MutableSet<Node>.removeOrphans(nodeLinks : MutableSet<NodeLink>, minPercent : Double) : MutableSet<Node> {
 
 //            println("checking for orphaned Nodes to remove...")
 
@@ -267,7 +267,7 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             val processedNodes = mutableSetOf<Node>()
             val checkNodes = mutableSetOf<Node>()
             val previousCheckNodes = mutableSetOf<Node>()
-            val returnNodes = mutableListOf<Node>()
+            val returnNodes = mutableSetOf<Node>()
 
             while (processedNodes.size < this.size) {
 
@@ -312,11 +312,11 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             return returnNodes
         }
 
-        fun MutableList<Node>.adoptRoomOrphans(nodeLinks : MutableList<NodeLink>, roomNodes : Map<String, MutableList<Node>>) : MutableList<Node> {
+        fun MutableSet<Node>.adoptRoomOrphans(nodeLinks : MutableSet<NodeLink>, roomNodes : Map<String, MutableSet<Node>>) : MutableSet<Node> {
 
             println("checking for orphaned room Nodes to adopt...")
 
-            val returnNodes = mutableListOf<Node>()
+            val returnNodes = mutableSetOf<Node>()
 
             roomNodes.keys.forEach { roomNodeDescription ->
 
@@ -402,18 +402,18 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             return returnNodes
         }
 
-        fun MutableList<Node>.moveNodes(offset : Point) : MutableList<Node> {
+        fun MutableSet<Node>.moveNodes(offset : Point) : MutableSet<Node> {
 
-            val returnNodes = mutableListOf<Node>()
+            val returnNodes = mutableSetOf<Node>()
 
             this.forEach { returnNodes.add(Node(it, updPosition = it.position + offset))}
 
             return returnNodes
         }
 
-        fun MutableList<Node>.scaleNodes(pivot : Point = this.averagePositionWithinNodes(), scale : Float) : MutableList<Node> {
+        fun MutableSet<Node>.scaleNodes(pivot : Point = this.averagePositionWithinNodes(), scale : Float) : MutableSet<Node> {
 
-            val returnNodes = mutableListOf<Node>()
+            val returnNodes = mutableSetOf<Node>()
 
 //            println ("pivot: $pivot, scale: $scale")
 

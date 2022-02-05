@@ -24,7 +24,7 @@ class ArrayLattice(override val topHeight : Int = 3
 
     override val uuid : UUID = UUID.randomUUID()
 
-    override val children: MutableList<ILattice> = if (height == 0) mutableListOf()
+    override val children: MutableSet<ILattice> = if (height == 0) mutableSetOf()
         else MutableList(size = getChildrenSize(height, topHeight)) {
             ArrayLattice(topHeight = topHeight
                 , description = description
@@ -37,7 +37,7 @@ class ArrayLattice(override val topHeight : Int = 3
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
                 , distanceFromParent = getNextDistancePxProb()
             )
-    }
+        }.toMutableSet()
 
     override fun getChildrenSize(height : Int, topHeight : Int): Int {
         return when {

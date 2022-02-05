@@ -1,7 +1,7 @@
 package org.river.exertion.koboldCave.node
 
-import org.river.exertion.koboldCave.leaf.ILeaf
 import org.river.exertion.Angle
+import org.river.exertion.NextDistancePx
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.Line.Companion.getIntersection
 import org.river.exertion.koboldCave.node.Node.Companion.addNode
@@ -11,7 +11,6 @@ import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.getLineLen
 import org.river.exertion.normalizeDeg
 import java.util.*
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.random.Random
 
 class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
@@ -30,7 +29,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
         , secondNodeUuid = updSecondNodeUuid
     )
 
-    fun getDistance(nodes : MutableList<Node>) : Double? {
+    fun getDistance(nodes : MutableSet<Node>) : Double? {
         val firstNode = nodes.getNode(firstNodeUuid)
         val secondNode = nodes.getNode(secondNodeUuid)
 
@@ -42,13 +41,13 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
     enum class NextAngle { LEFT, RIGHT, FORWARD, BACKWARD, CENTER }
 
     companion object {
-        val consolidateNodeDistance = ILeaf.NextDistancePx * 3 / 4
-        val linkNodeDistance = ILeaf.NextDistancePx
+        val consolidateNodeDistance = NextDistancePx * 3 / 4
+        val linkNodeDistance = NextDistancePx
         val stackedNodeDistance = 0.1 // px
 
         fun NodeLink.getNodeChildUuid(uuid: UUID) : UUID? = if (this.firstNodeUuid == uuid) secondNodeUuid else if (this.secondNodeUuid == uuid) firstNodeUuid else null
 
-        fun NodeLink.getNodeChildAngle(nodes : MutableList<Node>, uuid: UUID) : Angle? {
+        fun NodeLink.getNodeChildAngle(nodes : MutableSet<Node>, uuid: UUID) : Angle? {
             val firstNode = nodes.getNode(this.firstNodeUuid)
             val secondNode = nodes.getNode(this.secondNodeUuid)
 
@@ -62,36 +61,36 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
             return returnAngle.normalizeDeg()
         }
 
-        fun MutableList<NodeLink>.removeNode(nodes : MutableList<Node>, uuid : UUID) {
+        fun MutableSet<NodeLink>.removeNode(nodes : MutableSet<Node>, uuid : UUID) {
             this.getNodeLinks(uuid).let { this.removeAll(it) }
             nodes.remove( nodes.getNode(uuid) )
         }
 
-        fun MutableList<NodeLink>.getLineList(nodes : MutableList<Node>) : List<Line> {
+        fun MutableSet<NodeLink>.getLineSet(nodes : MutableSet<Node>) : MutableSet<Line> {
 
-            val returnNodeLineList : MutableList<Line> = mutableListOf()
+            val returnNodeLineSet : MutableSet<Line> = mutableSetOf()
 
             this.forEach { nodeLink ->
                 val firstNodePosition = nodes.getNode(nodeLink.firstNodeUuid)!!.position
                 val secondNodePosition = nodes.getNode(nodeLink.secondNodeUuid)!!.position
 
 //                println("firstNodePosition: $firstNodePosition; secondNodePosition: $secondNodePosition")
-                returnNodeLineList.add(Line(firstNodePosition, secondNodePosition) )
+                returnNodeLineSet.add(Line(firstNodePosition, secondNodePosition) )
             }
 
-            return returnNodeLineList
+            return returnNodeLineSet
         }
 
         //link order matters with getNodeLink, least is first
-        fun MutableList<NodeLink>.getNodeLink(firstUuid: UUID, secondUuid: UUID) : NodeLink? =
+        fun MutableSet<NodeLink>.getNodeLink(firstUuid: UUID, secondUuid: UUID) : NodeLink? =
             this.firstOrNull { nodeLink -> nodeLink.firstNodeUuid.toString() == firstUuid.toString() && nodeLink.secondNodeUuid.toString() == secondUuid.toString() }
              ?: this.firstOrNull { nodeLink -> nodeLink.firstNodeUuid.toString() == secondUuid.toString() && nodeLink.secondNodeUuid.toString() == firstUuid.toString() }
 
-        fun MutableList<NodeLink>.getRandomNodeLink() : NodeLink = this[Random.nextInt(this.size)]
+        fun MutableSet<NodeLink>.getRandomNodeLink() : NodeLink = this.toList()[Random.nextInt(this.size)]
 
-        fun MutableList<NodeLink>.areNodesLinked(firstUuid: UUID, secondUuid: UUID) : Boolean = getNodeLink(firstUuid, secondUuid) != null
+        fun MutableSet<NodeLink>.areNodesLinked(firstUuid: UUID, secondUuid: UUID) : Boolean = getNodeLink(firstUuid, secondUuid) != null
 
-        fun MutableList<NodeLink>.addNodeLink(nodes: MutableList<Node>, firstUuid : UUID, secondUuid: UUID) : Boolean {
+        fun MutableSet<NodeLink>.addNodeLink(nodes: MutableSet<Node>, firstUuid : UUID, secondUuid: UUID) : Boolean {
             if ( !areNodesLinked(firstUuid, secondUuid) && nodes.getNode(firstUuid) != null && nodes.getNode(secondUuid) != null )
                 return if (firstUuid.toString() < secondUuid.toString())
                     this.add( NodeLink( firstUuid, secondUuid) )
@@ -100,30 +99,30 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
             return false
         }
 
-        fun MutableList<NodeLink>.addNodeLinks(nodes: MutableList<Node>, nodeLinksToAdd : MutableList<NodeLink>) : Unit = nodeLinksToAdd.forEach { nodeLinkToAdd -> this.addNodeLink( nodes, nodeLinkToAdd.firstNodeUuid, nodeLinkToAdd.secondNodeUuid ) }
+        fun MutableSet<NodeLink>.addNodeLinks(nodes: MutableSet<Node>, nodeLinksToAdd : MutableSet<NodeLink>) : Unit = nodeLinksToAdd.forEach { nodeLinkToAdd -> this.addNodeLink( nodes, nodeLinkToAdd.firstNodeUuid, nodeLinkToAdd.secondNodeUuid ) }
 
-        fun MutableList<NodeLink>.removeNodeLink(firstUuid : UUID, secondUuid: UUID) { this.remove(this.getNodeLink(firstUuid, secondUuid)) }
+        fun MutableSet<NodeLink>.removeNodeLink(firstUuid : UUID, secondUuid: UUID) { this.remove(this.getNodeLink(firstUuid, secondUuid)) }
 
-        fun MutableList<NodeLink>.removeNodeLink(nodeLink : NodeLink) { this.removeNodeLink(nodeLink.firstNodeUuid, nodeLink.secondNodeUuid) }
+        fun MutableSet<NodeLink>.removeNodeLink(nodeLink : NodeLink) { this.removeNodeLink(nodeLink.firstNodeUuid, nodeLink.secondNodeUuid) }
 
-        fun MutableList<NodeLink>.removeNodeLinks(nodeLinksToRemove : MutableList<NodeLink>) : Unit = nodeLinksToRemove.forEach { nodeLinkToRemove -> this.remove( nodeLinkToRemove ) }
+        fun MutableSet<NodeLink>.removeNodeLinks(nodeLinksToRemove : MutableSet<NodeLink>) : Unit = nodeLinksToRemove.forEach { nodeLinkToRemove -> this.remove( nodeLinkToRemove ) }
 
-        fun MutableList<NodeLink>.getNodeLinks(uuid: UUID): MutableList<NodeLink> = this.filter { nodeLink -> nodeLink.firstNodeUuid == uuid || nodeLink.secondNodeUuid == uuid }.toMutableList()
+        fun MutableSet<NodeLink>.getNodeLinks(uuid: UUID): MutableSet<NodeLink> = this.filter { nodeLink -> nodeLink.firstNodeUuid == uuid || nodeLink.secondNodeUuid == uuid }.toMutableSet()
 
-        fun MutableList<NodeLink>.getNodeLinks(uuids: List<UUID>) : MutableList<NodeLink> = this.filter { nodeLink -> uuids.contains(nodeLink.firstNodeUuid) || uuids.contains(nodeLink.secondNodeUuid) }.toMutableList()
+        fun MutableSet<NodeLink>.getNodeLinks(uuids: List<UUID>) : MutableSet<NodeLink> = this.filter { nodeLink -> uuids.contains(nodeLink.firstNodeUuid) || uuids.contains(nodeLink.secondNodeUuid) }.toMutableSet()
 
-        fun MutableList<NodeLink>.getNodeChildrenUuids(uuid: UUID, parentToExcludeUuid : UUID = uuid) : MutableList<UUID> = this.getNodeLinks(uuid).filter { nodeLink -> nodeLink.getNodeChildUuid(uuid)!! != parentToExcludeUuid }.map{ filteredLink -> filteredLink.getNodeChildUuid(uuid) }.filterNotNull().distinct().toMutableList()
+        fun MutableSet<NodeLink>.getNodeChildrenUuids(uuid: UUID, parentToExcludeUuid : UUID = uuid) : MutableSet<UUID> = this.getNodeLinks(uuid).filter { nodeLink -> nodeLink.getNodeChildUuid(uuid)!! != parentToExcludeUuid }.map{ filteredLink -> filteredLink.getNodeChildUuid(uuid) }.filterNotNull().toMutableSet()
 
-        fun MutableList<NodeLink>.getNodeChildrenNodeAngles(nodes: MutableList<Node>, uuid: UUID) : MutableList<Pair<Node, Angle>> {
+        fun MutableSet<NodeLink>.getNodeChildrenNodeAngles(nodes: MutableSet<Node>, uuid: UUID) : MutableSet<Pair<Node, Angle>> {
 
-            val returnList : MutableList<Pair<Node, Angle>> = mutableListOf()
+            val returnList : MutableSet<Pair<Node, Angle>> = mutableSetOf()
 
             this.getNodeLinks(uuid).forEach { childLink -> returnList.add(Pair(nodes.getNode(childLink.getNodeChildUuid(uuid)!!) ?: Node(), childLink.getNodeChildAngle(nodes, uuid) ?: 0F ) ) }
 
             return returnList
         }
 
-        fun MutableList<NodeLink>.getNodeChildrenLinkAngles(nodes: MutableList<Node>, uuid: UUID) : MutableMap<NodeLink, Angle> {
+        fun MutableSet<NodeLink>.getNodeChildrenLinkAngles(nodes: MutableSet<Node>, uuid: UUID) : MutableMap<NodeLink, Angle> {
 
             val returnMap = mutableMapOf<NodeLink, Angle>()
 
@@ -135,9 +134,9 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
             return returnMap
         }
 
-        fun MutableList<NodeLink>.removeOrphanLinks(nodes: MutableList<Node>) : MutableList<NodeLink> {
+        fun MutableSet<NodeLink>.removeOrphanLinks(nodes: MutableSet<Node>) : MutableSet<NodeLink> {
 
-            val returnLinks = mutableListOf<NodeLink>()
+            val returnLinks = mutableSetOf<NodeLink>()
 
             val nodeUuids = nodes.map { it.uuid }
 
@@ -146,7 +145,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
             return returnLinks
         }
 
-        fun MutableList<NodeLink>.getRandomNextNodeLinkAngle(nodes : MutableList<Node>, refNode : Node) : Pair<NodeLink, Angle> {
+        fun MutableSet<NodeLink>.getRandomNextNodeLinkAngle(nodes : MutableSet<Node>, refNode : Node) : Pair<NodeLink, Angle> {
 
             val childrenNodeLinkAngles = getNodeChildrenLinkAngles(nodes, refNode.uuid)
 
@@ -159,11 +158,11 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
             return Pair(randomLinkAngleKey, childrenNodeLinkAngles[randomLinkAngleKey]!!)
         }
 
-        fun MutableList<NodeLink>.getNextAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle, nextAngle : NextAngle) : Angle {
+        fun MutableSet<NodeLink>.getNextAngle(nodes : MutableSet<Node>, refNode : Node, refAngle : Angle, nextAngle : NextAngle) : Angle {
             return this.getNextNodeAngle(nodes, refNode, refAngle, nextAngle).second
         }
 
-        fun MutableList<NodeLink>.getNextNodeAngle(nodes : MutableList<Node>, refNode : Node, refAngle : Angle, nextAngle : NextAngle = NextAngle.FORWARD) : Pair<Node, Angle> {
+        fun MutableSet<NodeLink>.getNextNodeAngle(nodes : MutableSet<Node>, refNode : Node, refAngle : Angle, nextAngle : NextAngle = NextAngle.FORWARD) : Pair<Node, Angle> {
 
             var returnNodeAngle : Pair<Node, Angle> = Pair(refNode, 0f)
 
@@ -245,7 +244,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
         val linkAngleMinDegree = 15
 
     //consolidates nodeLinks if degree difference of minor links is < linkAngleMinDegrees
-    fun MutableList<NodeLink>.consolidateNodeLinksNode(nodes : MutableList<Node>, nodeUuid : UUID) : MutableList<NodeLink> {
+    fun MutableSet<NodeLink>.consolidateNodeLinksNode(nodes : MutableSet<Node>, nodeUuid : UUID) : MutableSet<NodeLink> {
 
         val childNodeAngles = this.getNodeChildrenNodeAngles(nodes, nodeUuid)
 
@@ -272,7 +271,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
         var sliceFound = angleDescSortedList[0].count() > 1
 
         //if no nodelinks are in the same slice
-        if (!sliceFound) return mutableListOf()
+        if (!sliceFound) return mutableSetOf()
 
     //        println("consolidating nodeLinks for ${nodes.getNode(nodeUuid)}:")
     //        this.forEach { println(it) }
@@ -281,7 +280,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
     //        childNodeSliceMap.entries.sortedByDescending { it.value.count() }.forEach { println("angle: ${it.key}, count: ${it.value.count()}") }
 
     //        println("**found slice")
-        val removeNodeLinks = mutableListOf<NodeLink>()
+        val removeNodeLinks = mutableSetOf<NodeLink>()
 
         val refNode = nodes.getNode(nodeUuid)!!
 
@@ -290,7 +289,7 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
             var nodeToRemoveLink = angleDescSortedList[0][0]
 
             angleDescSortedList[0].forEach { checkNode ->
-                val lineLength = mutableListOf(refNode, checkNode).getLineLength()
+                val lineLength = mutableSetOf(refNode, checkNode).getLineLength()
 
     //               println("checking $refNode against $checkNode: $lineLength")
 
@@ -314,13 +313,13 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
          return removeNodeLinks
        }
 
-        fun MutableList<NodeLink>.consolidateNodeLinks(nodes : MutableList<Node>) : MutableList<NodeLink> {
+        fun MutableSet<NodeLink>.consolidateNodeLinks(nodes : MutableSet<Node>) : MutableSet<NodeLink> {
 //        println("checking for nodelinks to consolidate...")
            val returnNodeLinks = this
-            val checkNodeLinks = this.toList()
+            val checkNodeLinks = this
 
             nodes.sortedBy { it.uuid.toString() }.forEach { node ->
-                this.filter{ it.firstNodeUuid == node.uuid || it.secondNodeUuid == node.uuid }.toMutableList().consolidateNodeLinksNode(nodes, node.uuid).forEach { returnNodeLink ->
+                this.filter{ it.firstNodeUuid == node.uuid || it.secondNodeUuid == node.uuid }.toMutableSet().consolidateNodeLinksNode(nodes, node.uuid).forEach { returnNodeLink ->
 //                    println ("removing link(${node.uuid}, ${returnNode.uuid})")
                     returnNodeLinks.removeNodeLink(returnNodeLink)
                 }
@@ -329,11 +328,11 @@ class NodeLink(val firstNodeUuid : UUID, val secondNodeUuid : UUID
         return returnNodeLinks
     }
 
-        fun MutableList<NodeLink>.nodifyIntersects(nodes : MutableList<Node>) : MutableList<Node> {
+        fun MutableSet<NodeLink>.nodifyIntersects(nodes : MutableSet<Node>) : MutableSet<Node> {
 
-            val returnNodes = mutableListOf<Node>().apply { addAll(nodes) }
-            val addNodeLinks = mutableListOf<NodeLink>()
-            val removeNodeLinks = mutableListOf<NodeLink>()
+            val returnNodes = mutableSetOf<Node>().apply { addAll(nodes) }
+            val addNodeLinks = mutableSetOf<NodeLink>()
+            val removeNodeLinks = mutableSetOf<NodeLink>()
 
             val returnNodePositions = mutableSetOf<Pair<Int, Int>>().apply positions@ { returnNodes.forEach { this@positions.add(Pair(it.position.x.toInt(), it.position.y.toInt())) } }
             val removeNodeLinkUuids = mutableSetOf<String>()

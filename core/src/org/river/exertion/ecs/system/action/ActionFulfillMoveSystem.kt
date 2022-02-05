@@ -70,8 +70,8 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                     entity[ActionMoveComponent.mapper]!!.currentNode = entity[ActionMoveComponent.mapper]!!.finalNode
 
                 } else {
-                    val currentStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes[currentIdx]
-                    val nextStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes[currentIdx + 1]
+                    val currentStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes.first { it.uuid == entity[ActionMoveComponent.mapper]!!.stepPath.nodeOrder[currentIdx] }
+                    val nextStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes.first { it.uuid == entity[ActionMoveComponent.mapper]!!.stepPath.nodeOrder[currentIdx + 1] }
                     entity[ActionMoveComponent.mapper]!!.currentPosition = currentStep.position
 
                     currentStepAngle = currentStep.angleBetween(nextStep)
@@ -102,8 +102,8 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
 
                     entity[ActionMoveComponent.mapper]!!.currentNode = entity[ActionMoveComponent.mapper]!!.finalNode
                 } else {
-                    val currentStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes[currentIdx]
-                    val nextStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes[currentIdx + 1]
+                    val currentStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes.first { it.uuid == entity[ActionMoveComponent.mapper]!!.stepPath.nodeOrder[currentIdx] }
+                    val nextStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes.first { it.uuid == entity[ActionMoveComponent.mapper]!!.stepPath.nodeOrder[currentIdx + 1] }
                     entity[ActionMoveComponent.mapper]!!.currentPosition = currentStep.position
 
                     currentStepAngle = nextStep.angleBetween(currentStep)

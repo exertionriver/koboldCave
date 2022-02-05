@@ -8,9 +8,11 @@ import ktx.ashley.getSystem
 import org.junit.jupiter.api.Test
 import org.river.exertion.ecs.component.action.ActionLookComponent
 import org.river.exertion.ecs.component.entity.EntityKobold
+import org.river.exertion.ecs.component.environment.EnvironmentCave
 import org.river.exertion.ecs.system.action.ActionLookSystem
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.getEntityComponent
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
@@ -21,11 +23,11 @@ class TestKoboldActions {
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
 
-    val kobold = EntityKobold.instantiate(engine, "gragga")
+    val cave = EnvironmentCave.instantiate(engine, "spookyCave", NodeRoomMesh())
 
-    val koboldSecond = EntityKobold.instantiate(engine, "krakka")
-
-    val koboldThird = EntityKobold.instantiate(engine, "razza")
+    val kobold = EntityKobold.instantiate(engine, "gragga", cave)
+    val koboldSecond = EntityKobold.instantiate(engine, "krakka", cave)
+    val koboldThird = EntityKobold.instantiate(engine, "razza", cave)
 
     @Test
     fun testActionEnumeration() {

@@ -21,7 +21,7 @@ class ActionSimpleMoveSystem : IteratingSystem(allOf(ActionSimpleMoveComponent::
             val currentNode = entity[ActionSimpleMoveComponent.mapper]!!.currentNode
             val currentAngle = entity[ActionSimpleMoveComponent.mapper]!!.currentAngle
 
-            val forwardNextNodeAngle = currentNodeRoom.nodeLinks.getNextNodeAngle(currentNodeRoom.nodes.toMutableList(), currentNode, currentAngle)
+            val forwardNextNodeAngle = currentNodeRoom.nodeLinks.getNextNodeAngle(currentNodeRoom.nodes, currentNode, currentAngle)
  //           val backwardNextNodeAngle = currentNodeRoom.nodeLinks.getNextNodeAngle(currentNodeRoom.nodes.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
  //           val leftNextAngle = currentNodeRoom.nodeLinks.getNextAngle(currentNodeRoom.nodes.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
  //           val rightNextAngle = currentNodeRoom.nodeLinks.getNextAngle(currentNodeRoom.nodes.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )

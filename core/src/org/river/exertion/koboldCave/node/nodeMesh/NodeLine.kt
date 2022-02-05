@@ -21,7 +21,8 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val description: String = "nodeLine${Random.nextInt(256)}"
-               , override var nodes : MutableList<Node> = mutableListOf(), override var nodeLinks : MutableList<NodeLink> = mutableListOf()) :
+               , override var nodes : MutableSet<Node> = mutableSetOf(), override var nodeLinks : MutableSet<NodeLink> = mutableSetOf()
+                , var nodeOrder : MutableList<UUID> = mutableListOf()) :
     INodeMesh {
 
     var lineNoise : Int = 0
@@ -44,8 +45,8 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
         uuid = updUuid
         , description = updDescription
     ) {
-        nodes = mutableListOf<Node>().apply { addAll(copyNodeLine.nodes) }
-        nodeLinks = mutableListOf<NodeLink>().apply { addAll(copyNodeLine.nodeLinks) }
+        nodes = mutableSetOf<Node>().apply { addAll(copyNodeLine.nodes) }
+        nodeLinks = mutableSetOf<NodeLink>().apply { addAll(copyNodeLine.nodeLinks) }
     }
 
     fun getLineLength() = nodes.getLineLength()
@@ -53,8 +54,8 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
     operator fun plus(secondLine : NodeLine) : NodeLine {
         val workNodeLine = this
 
-        val workNodes = mutableListOf<Node>().apply { addAll(workNodeLine.nodes); addAll(secondLine.nodes) }
-        val workNodeLinks = mutableListOf<NodeLink>().apply { addAll(workNodeLine.nodeLinks); addAll(secondLine.nodeLinks) }
+        val workNodes = mutableSetOf<Node>().apply { addAll(workNodeLine.nodes); addAll(secondLine.nodes) }
+        val workNodeLinks = mutableSetOf<NodeLink>().apply { addAll(workNodeLine.nodeLinks); addAll(secondLine.nodeLinks) }
 
         return NodeLine(description ="${workNodeLine.description} + ${secondLine.description}", nodes = workNodes, nodeLinks = workNodeLinks)
     }
@@ -62,8 +63,8 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
     operator fun minus(secondLine : NodeLine) : NodeLine {
         val workNodeLine = this
 
-        val workNodes = mutableListOf<Node>().apply { addAll(workNodeLine.nodes); removeAll(secondLine.nodes) }
-        val workNodeLinks = mutableListOf<NodeLink>().apply { addAll(workNodeLine.nodeLinks); this.removeOrphanLinks(workNodes) }
+        val workNodes = mutableSetOf<Node>().apply { addAll(workNodeLine.nodes); removeAll(secondLine.nodes) }
+        val workNodeLinks = mutableSetOf<NodeLink>().apply { addAll(workNodeLine.nodeLinks); this.removeOrphanLinks(workNodes) }
 
         return NodeLine(description ="${workNodeLine.description} + ${secondLine.description}", nodes = workNodes, nodeLinks = workNodeLinks).apply { consolidateStackedNodes() }
     }
@@ -72,7 +73,7 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
 
     companion object {
 
-        fun MutableList<Node>.getLineLength() : Float {
+        fun MutableSet<Node>.getLineLength() : Float {
             val xMin = this.minOf { it.position.x }
             val xMax = this.maxOf { it.position.x }
             val yMin = this.minOf { it.position.y }
@@ -85,20 +86,23 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
         //does node / node need to be "?" ?
         fun Pair<Node, Node>.buildNodeLine(noise : Int = 0, nodeLineDescription : String = this.first.description, linkDistance : Float = NodeLink.consolidateNodeDistance + 1) : NodeLine {
 
-            if (this.first.position == this.second.position) return NodeLine(description = nodeLineDescription, nodes = mutableListOf(this.first))
+            if (this.first.position == this.second.position) return NodeLine(description = nodeLineDescription, nodes = mutableSetOf(this.first))
 
-            val nodeLineList = mutableListOf<Node>()
-            val nodeLineLinkList = mutableListOf<NodeLink>()
+            val nodeLineSet = mutableSetOf<Node>()
+            val nodeLineLinkSet = mutableSetOf<NodeLink>()
+            val nodeLineOrder = mutableListOf<UUID>()
 
             val startNode = this.first
             val endNode = this.second
-            val lineLength = mutableListOf(this.first, this.second).getLineLength()
+            val lineLength = mutableSetOf(this.first, this.second).getLineLength()
 
             val cappedNoise = if (noise < 0) 0 else if (noise > 100) 100 else noise
 
 //            println ("nodeLine start: $startNode step $linkDistance")
 
-            nodeLineList.addNode( Node(copyNode = startNode, updDescription = nodeLineDescription) )
+            nodeLineSet.addNode( Node(copyNode = startNode, updDescription = nodeLineDescription) )
+            nodeLineOrder.add(startNode.uuid)
+
             var previousNode = startNode
             var currentNode = startNode
 
@@ -126,12 +130,14 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
                     currentNode = Node(position = currentNoisePosition)
 //                    println("1) node at ${currentNode}, angle ${angle.degrees}")
 
-                    var currentLineLength = mutableListOf(this.first, currentNode).getLineLength()
+                    var currentLineLength = mutableSetOf(this.first, currentNode).getLineLength()
 //                    println("currentLineLength = $currentLineLength")
 
                     while ( currentLineLength < lineLength ) {
-                        nodeLineList.addNode( Node(copyNode = currentNode, updDescription = nodeLineDescription) )
-                        nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, currentNode.uuid)
+                        nodeLineSet.addNode( Node(copyNode = currentNode, updDescription = nodeLineDescription) )
+                        nodeLineOrder.add(currentNode.uuid)
+
+                        nodeLineLinkSet.addNodeLink(nodeLineSet, previousNode.uuid, currentNode.uuid)
                         previousNode = currentNode
 
                         //current position in middle of line
@@ -148,7 +154,7 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
                         currentNode = Node(position = currentNoisePosition)
 //                       println("1) node at ${currentNode}, angle ${angle.degrees}")
 
-                        currentLineLength = mutableListOf(this.first, currentNode).getLineLength()
+                        currentLineLength = mutableSetOf(this.first, currentNode).getLineLength()
 //                        println("currentLineLength = $currentLineLength")
                     }
                 }
@@ -168,12 +174,14 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
                     currentNode = Node( position = currentNoisePosition )
                     //                   println("2) node at ${currentNode}, angle ${angle.degrees}")
 
-                    var currentLineLength = mutableListOf(this.first, currentNode).getLineLength()
+                    var currentLineLength = mutableSetOf(this.first, currentNode).getLineLength()
  //                   println("currentLineLength = $currentLineLength")
 
                     while ( currentLineLength < lineLength ) {
-                        nodeLineList.addNode( Node(copyNode = currentNode, updDescription = nodeLineDescription))
-                        nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, currentNode.uuid)
+                        nodeLineSet.addNode( Node(copyNode = currentNode, updDescription = nodeLineDescription))
+                        nodeLineOrder.add(currentNode.uuid)
+
+                        nodeLineLinkSet.addNodeLink(nodeLineSet, previousNode.uuid, currentNode.uuid)
                         previousNode = currentNode
 
                         //current position in middle of line
@@ -190,7 +198,7 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
                         currentNode = Node( position = currentNoisePosition )
                         //                       println("2) node at ${currentNode}, angle ${angle.degrees}")
 
-                        currentLineLength = mutableListOf(this.first, currentNode).getLineLength()
+                        currentLineLength = mutableSetOf(this.first, currentNode).getLineLength()
  //                       println("currentLineLength = $currentLineLength")
                     }
                 }
@@ -211,12 +219,14 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
                     currentNode = Node( position = currentNoisePosition )
                     //                  println("3) node at ${currentNode}, angle ${angle.degrees}")
 
-                    var currentLineLength = mutableListOf(this.first, currentNode).getLineLength()
+                    var currentLineLength = mutableSetOf(this.first, currentNode).getLineLength()
  //                   println("currentLineLength = $currentLineLength")
 
                     while ( currentLineLength < lineLength ) {
-                        nodeLineList.addNode( Node(copyNode = currentNode, updDescription = nodeLineDescription) )
-                        nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, currentNode.uuid)
+                        nodeLineSet.addNode( Node(copyNode = currentNode, updDescription = nodeLineDescription) )
+                        nodeLineOrder.add(currentNode.uuid)
+
+                        nodeLineLinkSet.addNodeLink(nodeLineSet, previousNode.uuid, currentNode.uuid)
                         previousNode = currentNode
 
                         //current position in middle of line
@@ -233,7 +243,7 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
                         currentNode = Node(position = currentNoisePosition )
                         //                    println("3) node at ${currentNode}, angle ${angle.degrees}")
 
-                        currentLineLength = mutableListOf(this.first, currentNode).getLineLength()
+                        currentLineLength = mutableSetOf(this.first, currentNode).getLineLength()
  //                       println("currentLineLength = $currentLineLength")
                     }
                 }
@@ -254,12 +264,14 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
                     currentNode = Node(position = currentNoisePosition)
                     //                  println("4) node at ${currentNode}, angle ${angle.degrees}")
 
-                    var currentLineLength = mutableListOf(this.first, currentNode).getLineLength()
+                    var currentLineLength = mutableSetOf(this.first, currentNode).getLineLength()
  //                   println("currentLineLength = $currentLineLength")
 
                     while ( currentLineLength < lineLength ) {
-                        nodeLineList.addNode( Node(copyNode = currentNode, updDescription = nodeLineDescription) )
-                        nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, currentNode.uuid)
+                        nodeLineSet.addNode( Node(copyNode = currentNode, updDescription = nodeLineDescription) )
+                        nodeLineOrder.add(currentNode.uuid)
+
+                        nodeLineLinkSet.addNodeLink(nodeLineSet, previousNode.uuid, currentNode.uuid)
                         previousNode = currentNode
 
                         //current position in middle of line
@@ -276,19 +288,21 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
                         currentNode = Node(position = currentNoisePosition)
                         //                   println("4) node at ${currentNode}, angle ${angle.degrees}")
 
-                        currentLineLength = mutableListOf(this.first, currentNode).getLineLength()
+                        currentLineLength = mutableSetOf(this.first, currentNode).getLineLength()
   //                      println("currentLineLength = $currentLineLength")
                     }
                 }
             }
 
-            nodeLineList.addNode( Node(copyNode = endNode, updDescription = nodeLineDescription) )
-            nodeLineLinkList.addNodeLink(nodeLineList, previousNode.uuid, endNode.uuid)
+            nodeLineSet.addNode( Node(copyNode = endNode, updDescription = nodeLineDescription) )
+            nodeLineOrder.add(endNode.uuid)
+
+            nodeLineLinkSet.addNodeLink(nodeLineSet, previousNode.uuid, endNode.uuid)
 
             //           println ("nodeLine end: $endNode, ${nodeLineList.size} nodes")
             //           nodeLineLinkList.forEach{ println("nodeLine link: $it") }
 
-            return NodeLine(description = "path${Random.nextInt(256)}", nodes = nodeLineList, nodeLinks = nodeLineLinkList)
+            return NodeLine(description = "path${Random.nextInt(256)}", nodes = nodeLineSet, nodeLinks = nodeLineLinkSet, nodeOrder = nodeLineOrder)
         }
 
     }

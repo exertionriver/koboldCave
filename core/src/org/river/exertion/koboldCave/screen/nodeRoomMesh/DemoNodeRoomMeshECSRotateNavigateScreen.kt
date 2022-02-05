@@ -7,14 +7,10 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.utils.viewport.ExtendViewport
 import ktx.app.KtxScreen
 import ktx.ashley.contains
 import ktx.ashley.get
-import ktx.graphics.begin
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.assets.*
@@ -23,23 +19,12 @@ import org.river.exertion.ecs.component.entity.EntityKobold
 import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
 import org.river.exertion.ecs.component.environment.EnvironmentCave
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
-import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
-import org.river.exertion.koboldCave.node.Node
-import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
-import org.river.exertion.koboldCave.node.NodeLink
-import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
-import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
-import org.river.exertion.koboldCave.node.NodeLink.Companion.getNodeLink
-import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
-import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.buildNodeLine
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.koboldCave.screen.Render
 import org.river.exertion.koboldCave.screen.RenderPalette
-import org.river.exertion.koboldCave.screen.RenderPalette.FadeBackColors
-import org.river.exertion.koboldCave.screen.RenderPalette.FadeForeColors
 import org.river.exertion.koboldCave.screen.render
 
 class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
@@ -80,9 +65,9 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
 //        Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight())
 
         val prevExitNodes = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activatedExitNodes.size
-        val nodeRoomIdx = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.getCurrentRoomIdx(playerCharacter[ActionMoveComponent.mapper]!!.currentNode)
+//        val nodeRoomIdx = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.getCurrentRoomIdx(playerCharacter[ActionMoveComponent.mapper]!!.currentNode)
         cave[EnvironmentCave.mapper]!!.nodeRoomMesh.inactiveExitNodesInRange(playerCharacter[ActionMoveComponent.mapper]!!.currentNode).forEach {
-            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activateExitNode( playerCharacter[ActionMoveComponent.mapper]!!.currentNode, it ) }
         val currExitNodes = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activatedExitNodes.size
 
         if (prevExitNodes != currExitNodes) {
@@ -133,7 +118,7 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
 
         batch.use {
             font.drawLabel(batch, Point(300f, 100f), "${playerCharacter[ActionMoveComponent.mapper]!!.currentNode}\n${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink}\n" +
-                    "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys.toMutableList())}", RenderPalette.ForeColors[1])
+                    "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys)}", RenderPalette.ForeColors[1])
         }
 
         engine.update(delta)
@@ -143,8 +128,8 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
     }
 
     override fun show() {
-        val nodeRoomIdx = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.getCurrentRoomIdx(playerCharacter[ActionMoveComponent.mapper]!!.currentNode)
-        playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.inactiveExitNodesInRange(playerCharacter[ActionMoveComponent.mapper]!!.currentNode).forEach { nodeRoomMesh.activateExitNode( nodeRoomIdx, it ) }
+//        val nodeRoomIdx = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.getCurrentRoomIdx(playerCharacter[ActionMoveComponent.mapper]!!.currentNode)
+        playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.inactiveExitNodesInRange(playerCharacter[ActionMoveComponent.mapper]!!.currentNode).forEach { nodeRoomMesh.activateExitNode( playerCharacter[ActionMoveComponent.mapper]!!.currentNode, it ) }
 
         Render.initRender(playerCharacter[ActionMoveComponent.mapper]!!.camera!!, playerCharacter[ActionMoveComponent.mapper]!!.currentNode, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
         controlAreaCamera.setToOrtho(false, Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat())

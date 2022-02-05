@@ -44,10 +44,10 @@ class ActionMoveSystem : IteratingSystem(allOf(ActionMoveComponent::class).get()
             val currentAngle = entity[ActionMoveComponent.mapper]!!.currentAngle
             val nodeRoomMesh = entity[ActionMoveComponent.mapper]!!.nodeRoomMesh
 
-            entity[ActionMoveComponent.mapper]!!.forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle)
-            entity[ActionMoveComponent.mapper]!!.backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
-            entity[ActionMoveComponent.mapper]!!.leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.LEFT )
-            entity[ActionMoveComponent.mapper]!!.rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys.toMutableList(), currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
+            entity[ActionMoveComponent.mapper]!!.forwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys, currentNode, currentAngle)
+            entity[ActionMoveComponent.mapper]!!.backwardNextNodeAngle = nodeRoomMesh.nodeLinks.getNextNodeAngle(nodeRoomMesh.nodesMap.keys, currentNode, currentAngle, NodeLink.NextAngle.BACKWARD)
+            entity[ActionMoveComponent.mapper]!!.leftNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys, currentNode, currentAngle, NodeLink.NextAngle.LEFT )
+            entity[ActionMoveComponent.mapper]!!.rightNextAngle = nodeRoomMesh.nodeLinks.getNextAngle(nodeRoomMesh.nodesMap.keys, currentNode, currentAngle, NodeLink.NextAngle.RIGHT )
 
             val forwardNextNodeAngle = entity[ActionMoveComponent.mapper]!!.forwardNextNodeAngle
             val backwardNextNodeAngle = entity[ActionMoveComponent.mapper]!!.backwardNextNodeAngle

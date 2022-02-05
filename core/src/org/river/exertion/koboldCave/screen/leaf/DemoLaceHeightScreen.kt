@@ -35,13 +35,13 @@ class DemoLaceHeightScreen(private val batch: Batch,
             laceList.reversed().forEachIndexed { laceIdx, lace ->
                 font.drawLabel(it, lace.position + labelVertOffset, "Lace (height=${lace.topHeight})", ForeColors[laceIdx % ForeColors.size])
 
-                lace.getLineList().forEach { line ->
+                lace.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,BackColors[laceIdx % BackColors.size], 2F )
                     }
                 }
 
-                lace.getList().forEachIndexed { index, listLeaf ->
+                lace.getSet().forEachIndexed { index, listLeaf ->
                     drawer.filledCircle(listLeaf.position, 2F, ForeColors[laceIdx % ForeColors.size])
                 }
             }

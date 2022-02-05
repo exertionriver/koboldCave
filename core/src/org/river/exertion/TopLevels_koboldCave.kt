@@ -95,6 +95,8 @@ class ShapeDrawerConfig(val batch: Batch, val baseColor : Color = Color.WHITE) {
     }
 }
 
+val NextDistancePx = Game.initViewportWidth / Game.initViewportHeight * 16F
+
 object InputHandler {
 
     fun handleInput(camera : OrthographicCamera) {

@@ -8,7 +8,7 @@ import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.koboldCave.lattice.ArrayLattice
-import org.river.exertion.koboldCave.lattice.ILattice.Companion.getLineList
+import org.river.exertion.koboldCave.lattice.ILattice.Companion.getLineSet
 import org.river.exertion.koboldCave.screen.RenderPalette
 
 class DemoArrayLatticeAngledScreen(private val batch: Batch,
@@ -59,14 +59,14 @@ class DemoArrayLatticeAngledScreen(private val batch: Batch,
                             , "Lattice(height=${lattice.topHeight})\nangled ${lattice.topAngle} degrees", RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
                 }
 
-                lattice.getLineList().forEach { line ->
+                lattice.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.BackColors[idx % RenderPalette.BackColors.size], 2F )
                     }
                 }
 
-                lattice.getList().forEachIndexed { index, listLeaf ->
+                lattice.getSet().forEachIndexed { index, listLeaf ->
                     drawer.filledCircle(listLeaf.position, 2F, RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
                 }
             }

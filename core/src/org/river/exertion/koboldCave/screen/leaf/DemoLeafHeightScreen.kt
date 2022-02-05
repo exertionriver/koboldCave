@@ -35,13 +35,13 @@ class DemoLeafHeightScreen(private val batch: Batch,
             leafList.reversed().forEachIndexed { leafIdx, leaf ->
                 font.drawLabel(it, leaf.position + labelVertOffset, "Leaf (height=${leaf.topHeight})", ForeColors[leafIdx % ForeColors.size])
 
-                leaf.getLineList().forEach { line ->
+                leaf.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,BackColors[leafIdx % BackColors.size], 2F )
                     }
                 }
 
-                leaf.getList().forEachIndexed { index, listLeaf ->
+                leaf.getSet().forEachIndexed { index, listLeaf ->
                     drawer.filledCircle(listLeaf.position, 2F, ForeColors[leafIdx % ForeColors.size])
                 }
             }

@@ -23,8 +23,8 @@ class Leaf(override val topHeight : Int = 3
 
     override val uuid : UUID = UUID.randomUUID()
 
-    override val children: MutableList<ILeaf> = if (height == 0) mutableListOf()
-        else MutableList(size = getChildrenSize(height)) {
+    override val children: MutableSet<ILeaf> = if (height == 0) mutableSetOf()
+        else MutableList(size = getChildrenSize(height, topHeight)) {
             Leaf(topHeight = topHeight
                 , description = description
                 , height = height - 1
@@ -34,7 +34,7 @@ class Leaf(override val topHeight : Int = 3
                 , angleFromParent = this.getVarianceChildAngle(60F)
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
             )
-    }
+        }.toMutableSet()
 
     override fun getChildrenSize(height : Int, topHeight : Int): Int {
         return when {

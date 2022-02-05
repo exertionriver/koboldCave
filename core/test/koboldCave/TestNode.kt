@@ -17,8 +17,8 @@ class TestNode {
         val leaf = Leaf(topHeight = 5)
         val nodeList = mutableListOf<Node>()
 
-        println("leafList(${leaf.getList().size}):")
-        for (listLeaf in leaf.getList()) {
+        println("leafList(${leaf.getSet().size}):")
+        for (listLeaf in leaf.getSet()) {
             println(listLeaf)
             nodeList.add(Node(listLeaf))
         }
@@ -35,8 +35,8 @@ class TestNode {
         val leaf = Leaf(topHeight = 3)
         val nodeLinkList = mutableListOf<NodeLink>()
 
-        println("leafList(${leaf.getList().size}):")
-        for (listLeaf in leaf.getList()) {
+        println("leafList(${leaf.getSet().size}):")
+        for (listLeaf in leaf.getSet()) {
             println(listLeaf)
             nodeLinkList.addAll(listLeaf.nodeLinks(listLeaf.nodes()))
         }
@@ -57,14 +57,14 @@ class TestNode {
         val leafSecond = Leaf(topHeight = 3, position = startingPoint)
         val leafThird = Leaf(topHeight = 3, position = startingPoint)
 
-        println("leafNodeListFirst(" + leafFirst.getList().size + "): ")
-        for (leafNode in leafFirst.getList())
+        println("leafNodeListFirst(" + leafFirst.getSet().size + "): ")
+        for (leafNode in leafFirst.getSet())
             println(leafNode)
-        println("leafNodeListSecond(" + leafSecond.getList().size + "): ")
-        for (leafNode in leafSecond.getList())
+        println("leafNodeListSecond(" + leafSecond.getSet().size + "): ")
+        for (leafNode in leafSecond.getSet())
             println(leafNode)
-        println("leafNodeListThird(" + leafThird.getList().size + "): ")
-        for (leafNode in leafThird.getList())
+        println("leafNodeListThird(" + leafThird.getSet().size + "): ")
+        for (leafNode in leafThird.getSet())
             println(leafNode)
 
         val nodeMesh = leafFirst.nodeMesh() + leafSecond.nodeMesh() + leafThird.nodeMesh()

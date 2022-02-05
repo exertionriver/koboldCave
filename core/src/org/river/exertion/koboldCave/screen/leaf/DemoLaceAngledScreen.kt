@@ -58,14 +58,14 @@ class DemoLaceAngledScreen(private val batch: Batch,
                             , "Lace(height=${lace.topHeight})\nangled ${lace.topAngle} degrees", RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
                 }
 
-                lace.getLineList().forEach { line ->
+                lace.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.BackColors[idx % RenderPalette.BackColors.size], 2F )
                     }
                 }
 
-                lace.getList().forEachIndexed { index, listLeaf ->
+                lace.getSet().forEachIndexed { index, listLeaf ->
                     drawer.filledCircle(listLeaf.position, 2F, RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
                 }
             }

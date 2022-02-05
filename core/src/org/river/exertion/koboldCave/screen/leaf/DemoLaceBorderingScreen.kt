@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
-import org.river.exertion.koboldCave.leaf.ILeaf.Companion.NextDistancePx
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.nodeMesh
 import org.river.exertion.koboldCave.leaf.Lace
 import org.river.exertion.koboldCave.Line.Companion.borderLines
@@ -46,7 +45,7 @@ class DemoLaceBorderingScreen(private val batch: Batch,
     }
 
     val refNodeMeshCases = refNodesCases.mapIndexed { idx : Int, nodesCases: List<Node> ->
-        NodeMesh( nodes = nodesCases.toMutableList(), nodeLinks = refNodeLinksCases[idx].toMutableList())
+        NodeMesh( nodes = nodesCases.toMutableSet(), nodeLinks = refNodeLinksCases[idx].toMutableSet())
     }
 
     val topHeight = 10
@@ -76,12 +75,12 @@ class DemoLaceBorderingScreen(private val batch: Batch,
         batch.use { batch ->
 
             (0..5).forEach { idx ->
-                font.drawLabel(batch, refNodeMeshCases[idx].nodes[0].position - labelVertOffset
+                font.drawLabel(batch, refNodeMeshCases[idx].nodes.first().position - labelVertOffset
                     , "Test Case $idx", RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
-                font.drawLabel(batch, originalMesh[idx].nodes[0].position + leafHorizOffset
+                font.drawLabel(batch, originalMesh[idx].nodes.first().position + leafHorizOffset
                     , "Lace(height=$topHeight)", RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
 
-                originalMesh[idx].getLineList().forEach { line ->
+                originalMesh[idx].getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.BackColors[idx % RenderPalette.BackColors.size], 2F )
@@ -92,7 +91,7 @@ class DemoLaceBorderingScreen(private val batch: Batch,
                     drawer.filledCircle(listLace.position, 2F, RenderPalette.BackColors[idx % RenderPalette.BackColors.size])
                 }
 
-                for (line in refNodeMeshCases[idx].getLineList() ) {
+                for (line in refNodeMeshCases[idx].getLineSet() ) {
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.BackColors[idx % RenderPalette.BackColors.size], 2F )
@@ -110,7 +109,7 @@ class DemoLaceBorderingScreen(private val batch: Batch,
                     drawer.filledCircle(listPoint.position, 2F, RenderPalette.BackColors[idx % RenderPalette.BackColors.size])
                 }
 
-                for (line in borderingMesh[idx].getLineList()) {
+                for (line in borderingMesh[idx].getLineSet()) {
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size], 2F )

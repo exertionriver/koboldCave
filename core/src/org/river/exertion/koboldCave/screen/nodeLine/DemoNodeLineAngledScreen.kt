@@ -55,14 +55,14 @@ class DemoNodeLineAngledScreen(private val batch: Batch,
 
                 when {
                     (idx in 0..3) -> {
-                        font.drawLabel(batch, nodeLine.nodes[0].position - labelVertOffset / 4, labelText, RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
+                        font.drawLabel(batch, nodeLine.nodes.first().position - labelVertOffset / 4, labelText, RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
                     }
                     else -> {
-                        font.drawLabel(batch, nodeLine.nodes[0].position + labelVertOffset * 5, labelText, RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
+                        font.drawLabel(batch, nodeLine.nodes.first().position + labelVertOffset * 5, labelText, RenderPalette.ForeColors[idx % RenderPalette.ForeColors.size])
                     }
                 }
 
-                nodeLine.getLineList().forEach { line ->
+                nodeLine.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,
                             RenderPalette.BackColors[idx % RenderPalette.BackColors.size], 2F )

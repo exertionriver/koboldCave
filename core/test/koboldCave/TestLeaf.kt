@@ -14,8 +14,8 @@ class TestLeaf {
     fun testLeaf() {
         val leaf = Leaf(topHeight = 3)
         println(leaf)
-        println("leaf size : " + leaf.getList().size)
-        for(listLeaf in leaf.getList()) {
+        println("leaf size : " + leaf.getSet().size)
+        for(listLeaf in leaf.getSet()) {
             println(listLeaf)
         }
     }
@@ -26,18 +26,18 @@ class TestLeaf {
 
         val leaf = Leaf(topHeight = 4)
         println(leaf)
-        println("leaf size : " + leaf.getList().size)
-        for(listLeaf in leaf.getList()) {
+        println("leaf size : " + leaf.getSet().size)
+        for(listLeaf in leaf.getSet()) {
             println(listLeaf)
         }
 
-        val randLeafIdx = Random.nextInt(leaf.getList().size)
+        val randLeafIdx = Random.nextInt(leaf.getSet().size)
         println("rand idx: $randLeafIdx")
-        val randLeaf = leaf.getList()[randLeafIdx]
+        val randLeaf = leaf.getSet().toList()[randLeafIdx]
         println("rand leaf uuid: $randLeaf")
         println("rand leaf parent uuid: ${randLeaf.parent}")
 
-        randLeaf.getChildrenList()?.forEach { println("rand leaf child uuid: ${it.uuid}") }
+        randLeaf.getChildrenSet()?.forEach { println("rand leaf child uuid: ${it.uuid}") }
     }
 
     @Test
@@ -54,12 +54,12 @@ class TestLeaf {
 
         println(firstLeaf)
 
-        firstLeaf.getList().forEach { leaf -> println("firstLeaf: $leaf") }
-        secondLeaf.getList().forEach { leaf -> println("secondLeaf: $leaf") }
-        thirdLeaf.getList().forEach { leaf -> println("thirdLeaf: $leaf") }
-        fourthLeaf.getList().forEach { leaf -> println("fourthLeaf: $leaf") }
+        firstLeaf.getSet().forEach { leaf -> println("firstLeaf: $leaf") }
+        secondLeaf.getSet().forEach { leaf -> println("secondLeaf: $leaf") }
+        thirdLeaf.getSet().forEach { leaf -> println("thirdLeaf: $leaf") }
+        fourthLeaf.getSet().forEach { leaf -> println("fourthLeaf: $leaf") }
 
-        firstLeaf.getLineList().forEach { leafLine -> println("leafLine: $leafLine") }
+        firstLeaf.getLineSet().forEach { leafLine -> println("leafLine: $leafLine") }
 
     }
 

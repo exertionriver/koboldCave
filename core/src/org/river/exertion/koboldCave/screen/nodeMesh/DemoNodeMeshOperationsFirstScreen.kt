@@ -61,7 +61,7 @@ class DemoNodeMeshOperationsFirstScreen(private val batch: Batch,
             (0..4).forEach { nodeMeshIdx ->
                 font.drawLabel(it, locations[nodeMeshIdx + 1] + labelOffset * 2, "NodeMeshes (height=$meshHeight)\n${nodeMeshes.keys.toList()[nodeMeshIdx]}", ForeColors[nodeMeshIdx % ForeColors.size])
 
-                nodeMeshes.values.toList()[nodeMeshIdx].getLineList().forEach { line ->
+                nodeMeshes.values.toList()[nodeMeshIdx].getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first + locations[nodeMeshIdx + 1], line.second + locations[nodeMeshIdx + 1], BackColors[nodeMeshIdx % BackColors.size], 2F )
                     }

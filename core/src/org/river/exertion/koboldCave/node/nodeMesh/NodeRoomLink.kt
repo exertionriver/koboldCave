@@ -14,7 +14,7 @@ class NodeRoomLink(val firstNodeRoomUuid : UUID, val secondNodeRoomUuid : UUID
         , secondNodeRoomUuid = updSecondNodeUuid
     )
 
-    fun getDistance(nodes : MutableList<Node>) : Double? {
+    fun getDistance(nodes : MutableSet<Node>) : Double? {
         val firstNode = nodes.getNode(firstNodeRoomUuid)
         val secondNode = nodes.getNode(secondNodeRoomUuid)
 

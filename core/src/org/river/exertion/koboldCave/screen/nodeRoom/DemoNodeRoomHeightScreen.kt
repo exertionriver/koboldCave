@@ -45,7 +45,7 @@ class DemoNodeRoomHeightScreen(private val batch: Batch,
                         "(angleNoise:${nodeRoom.attributes.angleNoise})\n" +
                         "(heightNoise:${nodeRoom.attributes.heightNoise})", ForeColors[nodeRoomIdx % ForeColors.size])
 
-                nodeRoom.getLineList().forEach { line ->
+                nodeRoom.getLineSet().forEach { line ->
                     if (line != null) {
                         drawer.line(line.first, line.second,BackColors[nodeRoomIdx % BackColors.size], 2F )
                     }

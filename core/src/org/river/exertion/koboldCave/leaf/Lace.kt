@@ -23,9 +23,9 @@ class Lace(override val topHeight : Int = 3
 
     override val uuid : UUID = UUID.randomUUID()
 
-    override val children: MutableList<ILeaf> = if (height == 0) mutableListOf()
-        else MutableList(size = getChildrenSize(height)) {
-            Lace(topHeight = topHeight
+    override val children: MutableSet<ILeaf> = if (height == 0) mutableSetOf()
+        else MutableList(size = getChildrenSize(height, topHeight)) {
+                Lace(topHeight = topHeight
                 , description = description
                 , height = height - 1
                 , parent = this
@@ -34,7 +34,7 @@ class Lace(override val topHeight : Int = 3
                 , angleFromParent = this.getConvergentChildAngle(60F)
                 , cumlAngleFromTop = cumlAngleFromTop + (topAngle - angleFromParent)
             )
-    }
+        }.toMutableSet()
 
     override fun getChildrenSize(height : Int, topHeight : Int): Int {
         return ProbabilitySelect(
