@@ -11,6 +11,7 @@ import org.river.exertion.koboldCave.lattice.ILattice.Companion.nodeMesh
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.nodeMesh
 import org.river.exertion.koboldCave.leaf.Lace
 import org.river.exertion.koboldCave.Line.Companion.borderLines
+import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.nodeMesh.INodeMesh.Companion.setBordering
 import org.river.exertion.koboldCave.node.nodeMesh.NodeMesh
 import org.river.exertion.koboldCave.screen.RenderPalette
@@ -53,7 +54,7 @@ class DemoArrayLatticeBorderingScreen(private val batch: Batch,
 
     val originalMesh = borderingCases.map { latticeCase -> NodeMesh(copyNodeMesh = latticeCase) }
 
-    val borderingMesh = borderingCases.mapIndexed { idx : Int, latticeCase -> latticeCase.setBordering(refLacesCases[idx]) }
+    val borderingMesh = borderingCases.mapIndexed { idx : Int, latticeCase -> latticeCase.setBordering(refLacesCases[idx], refNode= Node(position= refLacesCases[idx].nodes.first().position - leafHorizOffset)) }
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()

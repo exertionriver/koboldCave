@@ -8,8 +8,7 @@ import org.river.exertion.koboldCave.node.Node.Companion.getFarthestNode
 import org.river.exertion.koboldCave.node.Node.Companion.getNode
 import org.river.exertion.koboldCave.node.Node.Companion.getRandomNode
 import org.river.exertion.koboldCave.node.Node.Companion.linkNearNodes
-import org.river.exertion.koboldCave.node.Node.Companion.removeNode
-import org.river.exertion.koboldCave.node.Node.Companion.removeOrphans
+import org.river.exertion.koboldCave.node.Node.Companion.processOrphans
 import org.river.exertion.koboldCave.node.NodeLink.Companion.consolidateNodeLinks
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
@@ -21,7 +20,9 @@ import org.river.exertion.NextDistancePx
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.node.Node
 import org.river.exertion.koboldCave.node.Node.Companion.averagePositionWithinNodes
+import org.river.exertion.koboldCave.node.Node.Companion.bridgeSegments
 import org.river.exertion.koboldCave.node.Node.Companion.getLineSet
+import org.river.exertion.koboldCave.node.Node.Companion.nearestNodesOrderedAsc
 import org.river.exertion.koboldCave.node.Node.Companion.randomPosition
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getLineSet
@@ -50,7 +51,9 @@ interface INodeMesh {
 
     fun consolidateNodeLinks() { nodeLinks = nodeLinks.consolidateNodeLinks(nodes) }
 
-    fun removeOrphans() { nodes = nodes.removeOrphans(nodeLinks, minPercent = 0.4); nodeLinks = nodeLinks.removeOrphanLinks(nodes) }
+    fun removeOrphans() { nodes = nodes.processOrphans(nodeLinks) ; nodeLinks = nodeLinks.removeOrphanLinks(nodes) }
+
+    fun bridgeSegments() { val bridgeMesh = nodes.bridgeSegments(nodeLinks); nodes.addAll(bridgeMesh.nodes) ; nodeLinks.addAll(bridgeMesh.nodeLinks) }
 
     fun getRandomNode() = nodes.getRandomNode()
 
@@ -74,51 +77,72 @@ interface INodeMesh {
             this.consolidateNodeLinks()
             this.nodifyIntersects()
             this.removeOrphans()
+            this.bridgeSegments()
+            this.consolidateNearNodes()
         }
 
-        fun INodeMesh.setBordering(nodeMeshToBorder : INodeMesh, orthoBorderDistance : Double = NextDistancePx * 0.2) : INodeMesh {
+        fun INodeMesh.setBordering(nodeMeshToBorder : INodeMesh, orthoBorderDistance : Double = NextDistancePx * 0.3, refNode : Node = Node(position = nodeMeshToBorder.nodes.averagePositionWithinNodes())) : INodeMesh {
 
-//            val refMeshNodeLinks = nodeMeshToBorder.nodeLinks
-            val refMeshNodeLines = nodeMeshToBorder.nodeLinks.getLineSet(nodeMeshToBorder.nodes).filterNotNull()
+            //get node mesh to border's nearest node to the refNode
+            val borderingNodes = this.nodes.nearestNodesOrderedAsc(refNode)
+            val nodesToRemove = mutableSetOf<Node>()
+            val nodeLinksToRemove = mutableSetOf<NodeLink>()
 
-            val thisNodes = this.nodes
-            val iterNodes = mutableListOf<Node>().apply { addAll(thisNodes) }
+            val refMeshNodeLines = nodeMeshToBorder.nodeLinks.getLineSet(nodeMeshToBorder.nodes)
 
-            iterNodes.forEach { node ->
-                //get nodelinks associated with this node
-                val borderingLeafNodeLinks = this.nodeLinks.getNodeLinks(node.uuid)
+//            val thisNodes = this.nodes
+//            val iterNodes = mutableListOf<Node>().apply { addAll(thisNodes) }
 
-                //check each line related to the closest node
-                refMeshNodeLines.forEach { refMeshNodeLine ->
-                    //check if this node falls within the borders of any line related to closest ref node
+            borderingNodes.forEach { borderingNode ->
+
+                if (nodesToRemove.contains(borderingNode)) {
+                    val borderingNodeLinks = this.nodeLinks.getNodeLinks(borderingNode.uuid)
+
+                    nodeLinksToRemove.addAll(borderingNodeLinks)
+                } else {
+                    //get nodelinks associated with this node
+                    val borderingNodeLinks = this.nodeLinks.getNodeLinks(borderingNode.uuid)
+
+                    //check each line related to the closest node
+                    refMeshNodeLines.forEach { refMeshNodeLine ->
+                        //check if this node falls within the borders of any line related to closest ref node
 //                    println("node within border? node:$node, refLine:$closestRefNodeLine")
-                    if (node.position.isInBorder(refMeshNodeLine, orthoBorderDistance.toInt())) {
-                        //if node in border, remove from result nodeMesh
-                        this.nodes.removeNode(this.nodeLinks, node.uuid)
-                        //                    println("node within border! node:$node, refLine:$closestRefNodeLine")
-                    }
+                        if (borderingNode.position.isInBorder(refMeshNodeLine, orthoBorderDistance.toInt())) {
+                            //if node in border, remove from result nodeMesh
+                            nodesToRemove.add(borderingNode)
+//                        this.nodes.removeNode(this.nodeLinks, node.uuid)
+                            //                    println("node within border! node:$node, refLine:$closestRefNodeLine")
+                        }
 
-                    //for each of these links,
-                    borderingLeafNodeLinks.forEach { borderingLeafNodeLink ->
+                        //for each of these links,
+                        borderingNodeLinks.forEach { borderingNodeLink ->
 
-                        //get the first and second nodes
-                        val firstNode = this.nodes.getNode(borderingLeafNodeLink.firstNodeUuid)
-                        val secondNode = this.nodes.getNode(borderingLeafNodeLink.secondNodeUuid)
+                            //get the first and second nodes
+                            val firstNode = this.nodes.getNode(borderingNodeLink.firstNodeUuid)
+                            val secondNode = this.nodes.getNode(borderingNodeLink.secondNodeUuid)
 
-                        //if these nodes are not null
-                        if ( (firstNode != null) && (secondNode != null) ) {
-                            //check if the nodeLink intersects with borderline
+                            //if these nodes are not null
+                            if ( (firstNode != null) && (secondNode != null) ) {
+                                //check if the nodeLink intersects with borderline
 //                              println("intersects? nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
-                            if ( Line(firstNode.position, secondNode.position)
-                                    .intersectsBorder(refMeshNodeLine, orthoBorderDistance.toInt()) ) {
-                                //if nodeLink intersects border, remove from result nodeMesh
-                                this.nodeLinks.removeNodeLink(borderingLeafNodeLink)
+                                if (nodesToRemove.contains(firstNode) || nodesToRemove.contains(secondNode)) {
+                                    if (borderingNodes.indexOf(firstNode) > borderingNodes.indexOf(secondNode)) nodesToRemove.add(firstNode) else nodesToRemove.add(secondNode)
+                                    nodeLinksToRemove.add(borderingNodeLink)
+                                } else if ( Line(firstNode.position, secondNode.position).intersectsBorder(refMeshNodeLine, orthoBorderDistance.toInt()) ) {
+                                    //if nodeLink intersects border, remove from result nodeMesh
+                                    if (borderingNodes.indexOf(firstNode) > borderingNodes.indexOf(secondNode)) nodesToRemove.add(firstNode) else nodesToRemove.add(secondNode)
+                                    nodeLinksToRemove.add(borderingNodeLink)
+//                                this.nodeLinks.removeNodeLink(borderingLeafNodeLink)
 //                                    println("intersection! nodeLink:(${firstNode.position}, ${secondNode.position}), refLine:$closestRefNodeLine")
+                                }
                             }
                         }
                     }
                 }
             }
+            this.nodes.removeAll(nodesToRemove)
+            this.nodeLinks.removeAll(nodeLinksToRemove)
+            this.removeOrphans()
             return this
         }
 

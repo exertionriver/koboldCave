@@ -60,7 +60,7 @@ class DemoLeafBorderingScreen(private val batch: Batch,
 
     val originalMesh = borderingCases.map { leafCase -> NodeMesh(leafCase) }
 
-    val borderingMesh = borderingCases.mapIndexed { idx,  leafCase -> leafCase.setBordering(refNodeMeshCases[idx]) }
+    val borderingMesh = borderingCases.mapIndexed { idx,  leafCase -> leafCase.setBordering(refNodeMeshCases[idx], refNode = Node(position = refNodesCases[idx][1].position + leafHorizOffset)) }
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()

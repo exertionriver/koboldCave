@@ -2,6 +2,7 @@ package org.river.exertion
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -10,9 +11,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils.cos
 import com.badlogic.gdx.math.MathUtils.sin
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Align
+import org.river.exertion.koboldCave.node.Node
 import space.earlygrey.shapedrawer.ShapeDrawer
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.roundToInt
 
@@ -96,6 +100,47 @@ class ShapeDrawerConfig(val batch: Batch, val baseColor : Color = Color.WHITE) {
 }
 
 val NextDistancePx = Game.initViewportWidth / Game.initViewportHeight * 16F
+
+class InputProcessorHandler(val renderCamera: OrthographicCamera, val nodes: MutableSet<Node>) : InputProcessor {
+    override fun keyDown(keycode: Int): Boolean {
+        return true
+    }
+
+    override fun keyUp(keycode: Int): Boolean {
+        return true
+    }
+
+    override fun keyTyped(character: Char): Boolean {
+        return true
+    }
+
+    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        if (button == Input.Buttons.LEFT) {
+            val point = Vector3()
+            renderCamera.unproject(point.set(screenX.toFloat(), screenY.toFloat(), 0f))
+            val clickedNode = nodes.filter { abs(it.position.x - point.x) < 5 && abs(it.position.y - point.y) < 5 }.firstOrNull()
+            println("$clickedNode: ${point.x}, ${point.y}")
+        }
+        return true
+    }
+
+    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        return true
+    }
+
+    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
+        return true
+    }
+
+    override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+        return true
+    }
+
+    override fun scrolled(amountX: Float, amountY: Float): Boolean {
+        return true
+    }
+
+}
 
 object InputHandler {
 

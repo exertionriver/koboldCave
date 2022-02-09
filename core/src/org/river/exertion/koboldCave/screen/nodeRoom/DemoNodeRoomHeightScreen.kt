@@ -9,6 +9,7 @@ import ktx.app.KtxScreen
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.koboldCave.node.nodeMesh.NodeRoomAttributes
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
 
@@ -20,17 +21,20 @@ class DemoNodeRoomHeightScreen(private val batch: Batch,
     val vertOffset = Game.initViewportHeight / 11
     val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
 
-    var circleNoise = 50
-    var angleNoise = 50
-    var heightNoise = 50
+    var circleNoise = 0
+    var angleNoise = 0
+    var heightNoise = 0
 
-    var nodeRoomList = List(3) { nodeRoomIdx ->
-        NodeRoom(height = nodeRoomIdx * 2 + 1, centerPoint = Point((3 - nodeRoomIdx) * horizOffset * 3f + horizOffset, nodeRoomIdx * vertOffset * 2 + vertOffset),
-            circleNoise = circleNoise, angleNoise = angleNoise, heightNoise = heightNoise)
+    var nodeRoomList = List(5) { nodeRoomIdx ->
+        NodeRoom(geomType = NodeRoomAttributes.GeomType.LEAF, geomStyle = NodeRoomAttributes.GeomStyle.CIRCLE
+                , height = nodeRoomIdx + 1, centerPoint = Point((3 - nodeRoomIdx) * horizOffset * 3f + horizOffset * 2.5f, nodeRoomIdx * vertOffset * 2 + vertOffset * 2)
+        , circleNoise = circleNoise, angleNoise = angleNoise, heightNoise = heightNoise)
     }
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
+
+//    val renderCamera = OrthographicCamera().apply { setToOrtho(false, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat()) }
 
     override fun render(delta: Float) {
 
@@ -40,7 +44,9 @@ class DemoNodeRoomHeightScreen(private val batch: Batch,
         batch.use {
 
             nodeRoomList.reversed().forEachIndexed { nodeRoomIdx, nodeRoom ->
-                font.drawLabel(it, Point(nodeRoom.centroid.position.x, labelVert.y), "NodeRoom (nodes=${nodeRoom.nodes.size}, exits=${nodeRoom.getExitNodes().size})\n" +
+                font.drawLabel(it, Point(nodeRoom.centroid.position.x, labelVert.y), "NodeRoom (${nodeRoom.attributes.geomType}, ${nodeRoom.attributes.geomStyle})\n" +
+                        "(@=${nodeRoom.centroid.position.x}, ${nodeRoom.centroid.position.y} height=${nodeRoom.attributes.geomHeight})\n" +
+                        "(nodes=${nodeRoom.nodes.size}, exits=${nodeRoom.getExitNodes().size})\n" +
                         "(circleNoise:${nodeRoom.attributes.circleNoise})\n" +
                         "(angleNoise:${nodeRoom.attributes.angleNoise})\n" +
                         "(heightNoise:${nodeRoom.attributes.heightNoise})", ForeColors[nodeRoomIdx % ForeColors.size])
@@ -49,10 +55,6 @@ class DemoNodeRoomHeightScreen(private val batch: Batch,
                     if (line != null) {
                         drawer.line(line.first, line.second,BackColors[nodeRoomIdx % BackColors.size], 2F )
                     }
-                }
-
-                nodeRoom.nodes.forEachIndexed { index, node ->
-                    drawer.filledCircle(node.position, 2F, BackColors[nodeRoomIdx % ForeColors.size])
                 }
 
                 nodeRoom.nodes.forEach { node ->
@@ -67,8 +69,10 @@ class DemoNodeRoomHeightScreen(private val batch: Batch,
             }
 
             InputHandler.handleInput(camera)
+            Gdx.input.inputProcessor = InputProcessorHandler(camera, nodeRoomList.reduce { allRooms, nodeRoom -> nodeRoom + allRooms }.nodes)
 
             when {
+                Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) -> println("click..!")
                 Gdx.input.isKeyJustPressed(Input.Keys.T) -> { if (circleNoise < 100) circleNoise += 10 }
                 Gdx.input.isKeyJustPressed(Input.Keys.Y) -> { if (angleNoise < 100) angleNoise += 10 }
                 Gdx.input.isKeyJustPressed(Input.Keys.U) -> { if (heightNoise < 100) heightNoise += 10 }

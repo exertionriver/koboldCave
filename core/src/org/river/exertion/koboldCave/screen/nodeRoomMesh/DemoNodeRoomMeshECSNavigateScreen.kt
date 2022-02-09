@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
-import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import ktx.app.KtxScreen
@@ -21,10 +21,10 @@ import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.koboldCave.screen.Render
 import org.river.exertion.koboldCave.screen.RenderPalette
-import org.river.exertion.koboldCave.screen.render
 
 class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
                                         private val font: BitmapFont,

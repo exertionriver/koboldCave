@@ -35,6 +35,7 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
 
         nodes = workNodeLine.nodes
         nodeLinks = workNodeLine.nodeLinks
+        nodeOrder = workNodeLine.nodeOrder
         this.lineNoise = lineNoise
     }
 
@@ -47,6 +48,7 @@ class NodeLine(override val uuid: UUID = UUID.randomUUID(), override val descrip
     ) {
         nodes = mutableSetOf<Node>().apply { addAll(copyNodeLine.nodes) }
         nodeLinks = mutableSetOf<NodeLink>().apply { addAll(copyNodeLine.nodeLinks) }
+        nodeOrder = mutableListOf<UUID>().apply { addAll(copyNodeLine.nodeOrder) }
     }
 
     fun getLineLength() = nodes.getLineLength()

@@ -4,10 +4,9 @@ import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
-import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.math.Vector3
 import ktx.app.KtxScreen
 import ktx.ashley.contains
 import ktx.ashley.get
@@ -19,17 +18,13 @@ import org.river.exertion.ecs.component.entity.EntityKobold
 import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
 import org.river.exertion.ecs.component.environment.EnvironmentCave
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
-import org.river.exertion.koboldCave.leaf.ILeaf
-import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
-import org.river.exertion.koboldCave.node.nodeMesh.NodeLine.Companion.buildNodeLine
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.koboldCave.screen.Render
 import org.river.exertion.koboldCave.screen.RenderPalette
-import org.river.exertion.koboldCave.screen.render
 
 class DemoNodeRoomECSRotateNavigateScreen(private val batch: Batch,
                                           private val font: BitmapFont,

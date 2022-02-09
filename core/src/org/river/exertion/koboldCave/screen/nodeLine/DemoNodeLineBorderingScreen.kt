@@ -39,13 +39,13 @@ class DemoNodeLineBorderingScreen(private val batch: Batch,
     }
 
     val borderingNodeLineCases = mutableListOf(
-        NodeLine(copyNodeLine = nodeLineCases[0]).apply { this.setBordering(nodeLineCases[1] + nodeLineCases[5]) }
-        , NodeLine(copyNodeLine = nodeLineCases[1]).apply { this.setBordering(nodeLineCases[2]) }
-        , NodeLine(copyNodeLine = nodeLineCases[2]).apply { this.setBordering(nodeLineCases[3]) }
+        NodeLine(copyNodeLine = nodeLineCases[0]).apply { this.setBordering(nodeLineCases[1] + nodeLineCases[5], refNode=nodeLineCases[1].nodes.first()) }
+        , NodeLine(copyNodeLine = nodeLineCases[1]).apply { this.setBordering(nodeLineCases[2], refNode=nodeLineCases[2].nodes.first()) }
+        , NodeLine(copyNodeLine = nodeLineCases[2]).apply { this.setBordering(nodeLineCases[3], refNode=nodeLineCases[3].nodes.first()) }
     ).apply list@ { ->
-        this.add(NodeLine(copyNodeLine = nodeLineCases[3]).apply { this.setBordering(this@list[0] + nodeLineCases[4]) } )
-        this.add(NodeLine(copyNodeLine = nodeLineCases[4]).apply { this.setBordering(this@list[1] + nodeLineCases[5]) } )
-        this.add(NodeLine(copyNodeLine = nodeLineCases[5]).apply { this.setBordering(this@list[2] + nodeLineCases[0]) } )
+        this.add(NodeLine(copyNodeLine = nodeLineCases[3]).apply { this.setBordering(this@list[0] + nodeLineCases[4], refNode=nodeLineCases[4].nodes.first()) } )
+        this.add(NodeLine(copyNodeLine = nodeLineCases[4]).apply { this.setBordering(this@list[1] + nodeLineCases[5], refNode=nodeLineCases[5].nodes.first()) } )
+        this.add(NodeLine(copyNodeLine = nodeLineCases[5]).apply { this.setBordering(this@list[2] + nodeLineCases[0], refNode=nodeLineCases[0].nodes.first()) } )
     }
 
     val sdc = ShapeDrawerConfig(batch)

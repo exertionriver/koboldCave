@@ -60,7 +60,7 @@ class DemoLaceBorderingScreen(private val batch: Batch,
 
     val originalMesh = borderingCases.mapIndexed { idx : Int, laceCase -> NodeMesh(laceCase) }
 
-    val borderingMesh = borderingCases.mapIndexed { idx : Int, laceCase -> laceCase.setBordering(refNodeMeshCases[idx]) }
+    val borderingMesh = borderingCases.mapIndexed { idx : Int, laceCase -> laceCase.setBordering(refNodeMeshCases[idx], refNode=Node(position = refNodesCases[idx][1].position + leafHorizOffset)) }
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()

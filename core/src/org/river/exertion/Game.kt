@@ -71,18 +71,18 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeMeshOperationsSecondScreen( inject(), inject(), inject(), inject()) )
             addScreen(DemoNodeMeshOperationsThirdScreen( inject(), inject(), inject(), inject()) )
 
-            addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
-*/
+*/            addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
+
     /*navigation
-            addScreen(DemoNodeRoomECSNavigateScreen( inject(), inject(), inject(), inject() ) )
-            addScreen(DemoNodeRoomECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
-
-*/            addScreen(DemoNodeRoomMeshECSNavigateScreen( inject(), inject(), inject(), inject() ) )
-            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
-
+*/     //       addScreen(DemoNodeRoomECSNavigateScreen( inject(), inject(), inject(), inject() ) )
+/*            addScreen(DemoNodeRoomECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
+*/
+//            addScreen(DemoNodeRoomMeshECSNavigateScreen( inject(), inject(), inject(), inject() ) )
+/*            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
+*/
         }
 
-        setScreen<DemoNodeRoomMeshECSNavigateScreen>()
+        setScreen<DemoNodeRoomHeightScreen>()
 //        super.create()
     }
 

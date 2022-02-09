@@ -12,6 +12,8 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.linkNodeDistance
 import org.river.exertion.koboldCave.node.NodeLink.Companion.stackedNodeDistance
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.node.nodeMesh.INodeMesh
+import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
+import org.river.exertion.koboldCave.node.nodeMesh.NodeMesh
 import java.util.*
 import kotlin.random.Random
 
@@ -258,182 +260,77 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
 
         fun MutableSet<Node>.getRandomNode() : Node = if (this.isNotEmpty()) this.toList()[Random.nextInt(this.size)] else Node()
 
-        fun MutableSet<Node>.removeOrphans(nodeLinks : MutableSet<NodeLink>, minPercent : Double) : MutableSet<Node> {
+        fun MutableSet<Node>.processOrphans(nodeLinks : MutableSet<NodeLink>) : MutableSet<Node> {
 
 //            println("checking for orphaned Nodes to remove...")
-
-            val nodeCountThreshhold = this.size * minPercent
-
-            val processedNodes = mutableSetOf<Node>()
-            val checkNodes = mutableSetOf<Node>()
-            val previousCheckNodes = mutableSetOf<Node>()
             val returnNodes = mutableSetOf<Node>()
 
-            while (processedNodes.size < this.size) {
-
-                val nodesRemaining = this
-                nodesRemaining.removeAll(returnNodes)
-
-                checkNodes.clear()
-                previousCheckNodes.clear()
-
-                previousCheckNodes.add(nodesRemaining.getRandomNode())
-//                println("adding randomNode, pcn:$previousCheckNodes")
-
-                while(checkNodes != previousCheckNodes) {
-                    previousCheckNodes.addAll(checkNodes)
-//                    println("pcn(${previousCheckNodes.size}): $previousCheckNodes")
-
-                    previousCheckNodes.forEach { previousCheckNode ->
-//                        println("adding $previousCheckNode children to checkNodes")
-
-                        val nodeChildren = previousCheckNode.getNodeChildren(this, nodeLinks)
-
-//                        println("nodeChildren: $nodeChildren")
-
-                        if (nodeChildren.isNullOrEmpty())
-                            checkNodes.add(previousCheckNode)
-                        else
-                            checkNodes.addAll(nodeChildren)
+            this.forEach {
+                val nodeChildren = it.getNodeChildren(this, nodeLinks)
+//                println("$it, ${nodeChildren.size}");
+                if (nodeChildren.size > 0) {
+                    nodeChildren.forEachIndexed { idx, node ->
+//                        print("$idx:$node")
                     }
-
-//                    println("cn(${checkNodes.size}): $checkNodes")
+//                    println()
+                    returnNodes.add(it)
                 }
-
-                if (checkNodes.size > nodeCountThreshhold) {
-//                    println("${checkNodes.size} < $nodeCountThreshhold: removing orphaned nodes: $checkNodes")
-                    returnNodes.addAll(checkNodes)
-                }
-
-                processedNodes.addAll(checkNodes)
-
             }
-
             return returnNodes
         }
 
-        fun MutableSet<Node>.adoptRoomOrphans(nodeLinks : MutableSet<NodeLink>, roomNodes : Map<String, MutableSet<Node>>) : MutableSet<Node> {
+        fun MutableSet<Node>.bridgeSegments(nodeLinks : MutableSet<NodeLink>) : INodeMesh {
 
-            println("checking for orphaned room Nodes to adopt...")
-
-            val returnNodes = mutableSetOf<Node>()
-
-            roomNodes.keys.forEach { roomNodeDescription ->
-
-                val nodeCountThreshhold = roomNodes[roomNodeDescription]!!.size * 0.25
-
-                val processedNodes = mutableSetOf<Node>()
-                val checkNodes = mutableSetOf<Node>()
-                val previousCheckNodes = mutableSetOf<Node>()
-                val returnRoomNodes = mutableSetOf<Node>()
+            val returnMesh = NodeMesh()
+            val processedNodes = mutableSetOf<Node>()
+//                val checkNodes = mutableSetOf<Node>()
+//                val previousCheckNodes = mutableSetOf<Node>()
+            val bridgeNodes = mutableSetOf<Node>()
+            val bridgeNodeLinks = mutableSetOf<NodeLink>()
 
 //                println("processing $roomNodeDescription")
 
-                //first, identify connected nodes
-                while (processedNodes.size < roomNodes[roomNodeDescription]!!.size) {
+            while (processedNodes.size < this.size) {
 
-                    val nodesRemaining = roomNodes[roomNodeDescription]!!
-                    nodesRemaining.removeAll(returnRoomNodes)
+                val segmentNodes = mutableSetOf<Node>()
+                val randomFirstNode = this.filter { !processedNodes.contains(it) }.first()
 
-                    checkNodes.clear()
-                    previousCheckNodes.clear()
+                segmentNodes.add(randomFirstNode)
+                var prevSegmentSize = 0
+                var currSegmentSize = 1
 
-                    previousCheckNodes.add(nodesRemaining.getRandomNode())
-//                println("adding randomNode, pcn:$previousCheckNodes")
-
-                    while(checkNodes != previousCheckNodes) {
-                        previousCheckNodes.addAll(checkNodes)
-//                    println("pcn(${previousCheckNodes.size}): $previousCheckNodes")
-
-                        previousCheckNodes.forEach { previousCheckNode ->
-//                        println("adding $previousCheckNode children to checkNodes")
-
-                            val nodeChildren = previousCheckNode.getNodeChildren(roomNodes[roomNodeDescription]!!, nodeLinks).filter { childNode -> childNode.description == roomNodeDescription }
-
-//                        println("nodeChildren: $nodeChildren")
-
-                            if (nodeChildren.isNullOrEmpty())
-                                checkNodes.add(previousCheckNode)
-                            else
-                                checkNodes.addAll(nodeChildren)
-                        }
-
-//                    println("cn(${checkNodes.size}): $checkNodes")
-                    }
-
-                    if (checkNodes.size > nodeCountThreshhold) {
-//                    println("${checkNodes.size} < $nodeCountThreshhold: removing orphaned nodes: $checkNodes")
-                        returnRoomNodes.addAll(checkNodes)
-                    }
-
-                    processedNodes.addAll(checkNodes)
-
+                while (prevSegmentSize < currSegmentSize) {
+                    prevSegmentSize = currSegmentSize
+                    val nodesToAdd = mutableSetOf<Node>()
+                    segmentNodes.forEach { nodesToAdd.addAll( it.getNodeChildren(this, nodeLinks) ) }
+                    segmentNodes.addAll(nodesToAdd)
+                    currSegmentSize = segmentNodes.size
                 }
 
-                //next, associated disconnected nodes with other rooms
-                val adoptNodes = processedNodes.minus(returnRoomNodes)
+//                println("processedNodes.size: ${processedNodes.size}; segmentNodes.size: ${segmentNodes.size}")
 
-                //create adoptNode associated with child room
-                adoptNodes.forEach { adoptNode ->
+                //if there is a segment apart from processedNodes
+                if ( (processedNodes.size > 0) && (segmentNodes.size > 0) ) {
+                    val processedClosestNode = segmentNodes.nearestNodesOrderedAsc(Node(position = processedNodes.averagePositionWithinNodes()))[0]
+                    val segmentClosestNode = processedNodes.nearestNodesOrderedAsc(Node(position = segmentNodes.averagePositionWithinNodes()))[0]
 
-                    var adoptRoom = adoptNode.description
-                    var adoptNodeScan = adoptNode
-                    val adoptNodeScanList = mutableListOf<Node>()
-
-                    while (adoptRoom == adoptNode.description) {
-                        val adoptRoomChildren = adoptNodeScan.getNodeChildren(this, nodeLinks).filter{ nodeChild -> nodeChild.description != roomNodeDescription }
-
-                        if (!adoptRoomChildren.isNullOrEmpty()) {
-                            adoptRoom = adoptRoomChildren[0].description
-                            println("adoptNode: $adoptNode going to ${adoptRoomChildren[0].description}")
-                            returnRoomNodes.add(Node(adoptNode, updDescription = adoptRoomChildren[0].description))
-                        } else {
-                            adoptNodeScanList.add(adoptNodeScan)
-                            adoptNodeScan = adoptNodeScan.getNodeChildren(this, nodeLinks).filter{ nodeChild -> !adoptNodeScanList.contains(nodeChild) }[0]
-                        }
+                    if (processedClosestNode.position.dst(segmentClosestNode.position) < consolidateNodeDistance * 2) {
+                        returnMesh.nodeLinks.add(NodeLink(processedClosestNode, segmentClosestNode))
                     }
+                    else {
+                        val bridgeLine = NodeLine(firstNode = processedClosestNode, lastNode = segmentClosestNode, lineNoise = 60)
 
+//                        println("bridgeLine.size: ${bridgeLine.nodes.size}")
 
+                        returnMesh.nodes.addAll(bridgeLine.nodes)
+                        returnMesh.nodeLinks.addAll(bridgeLine.nodeLinks)
+                    }
                 }
 
-                returnNodes.addAll(returnRoomNodes)
+                processedNodes.addAll(segmentNodes)
             }
 
-            return returnNodes
-        }
-
-        fun MutableSet<Node>.moveNodes(offset : Point) : MutableSet<Node> {
-
-            val returnNodes = mutableSetOf<Node>()
-
-            this.forEach { returnNodes.add(Node(it, updPosition = it.position + offset))}
-
-            return returnNodes
-        }
-
-        fun MutableSet<Node>.scaleNodes(pivot : Point = this.averagePositionWithinNodes(), scale : Float) : MutableSet<Node> {
-
-            val returnNodes = mutableSetOf<Node>()
-
-//            println ("pivot: $pivot, scale: $scale")
-
-            this.forEach { node ->
-                val secondPoint = node.position
-
-                val distance = pivot.dst(secondPoint)
-                val scaledDistance = distance * scale
-                val angleBetween = pivot.angleBetween(node.position)
-
-//                println ("distance: $distance, scaledDistance: $scaledDistance, angleBetween: $angleBetween")
-
-                val scaledPoint = pivot.getPositionByDistanceAndAngle(scaledDistance, angleBetween)
-
-//                println ("node $node scaled : (${scaledPoint.x}, ${scaledPoint.y})")
-
-                returnNodes.add( Node(node, updPosition = Point(scaledPoint.x, scaledPoint.y) ) )
-            }
-
-            return returnNodes
+            return returnMesh
         }
     }
 }

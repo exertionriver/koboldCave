@@ -7,9 +7,16 @@ import org.river.exertion.koboldCave.leaf.ILeaf
 import org.river.exertion.koboldCave.leaf.ILeaf.Companion.nodeMesh
 import org.river.exertion.koboldCave.leaf.Leaf
 import org.river.exertion.koboldCave.Line.Companion.angleBetween
+import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
+import org.river.exertion.koboldCave.lattice.ArrayLattice
+import org.river.exertion.koboldCave.lattice.ILattice.Companion.nodeMesh
+import org.river.exertion.koboldCave.lattice.RoundedLattice
+import org.river.exertion.koboldCave.leaf.Lace
 import org.river.exertion.koboldCave.node.Node
+import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
 import org.river.exertion.koboldCave.node.nodeMesh.INodeMesh.Companion.processMesh
 import org.river.exertion.koboldCave.node.Node.Companion.averagePositionWithinNodes
+import org.river.exertion.koboldCave.node.Node.Companion.getNode
 import org.river.exertion.koboldCave.node.Node.Companion.nearestNodesOrderedAsc
 import org.river.exertion.koboldCave.node.NodeAttributes
 import org.river.exertion.koboldCave.node.NodeLink
@@ -27,10 +34,12 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
     val activatedExitNodes = mutableSetOf<Node>()
 
     //build constructor
-    constructor(centerPoint: Point, height: Int, circleNoise : Int = 50, angleNoise : Int = 50, heightNoise : Int = 50, borderRooms : NodeRoom = NodeRoom(),
-                exitsAllowed : Int = maxGenerativeExits, initCentroid : Node? = null ) : this (
+    constructor(geomType: NodeRoomAttributes.GeomType = NodeRoomAttributes.GeomType.LEAF, geomStyle: NodeRoomAttributes.GeomStyle = NodeRoomAttributes.GeomStyle.CIRCLE
+                , centerPoint: Point, height: Int, circleNoise : Int = 50, angleNoise : Int = 50, heightNoise : Int = 50, borderRooms : NodeRoom = NodeRoom()
+                , exitsAllowed : Int = maxGenerativeExits, initCentroid : Node? = null ) : this (
     ) {
-        val workNodeRoom = centerPoint.buildNodeRoom(height, circleNoise, angleNoise, heightNoise, borderRooms, initCentroid)
+
+        val workNodeRoom = centerPoint.buildNodeRoom(geomType, geomStyle, height, circleNoise, angleNoise, heightNoise, borderRooms, initCentroid)
 
         this.description = workNodeRoom.description
         this.nodes = mutableSetOf<Node>().apply { addAll(workNodeRoom.nodes) }
@@ -46,9 +55,13 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
         this.attributes.angleNoise = angleNoise
         this.attributes.heightNoise = heightNoise
 
-//        println("new NodeRoomMesh: ${this.nodes.size}, ${workNodeRoom.centroid}, ${this.centroid}")
+        this.attributes.geomType = geomType
+        this.attributes.geomStyle = geomStyle
+        this.attributes.geomHeight = height
 
+//        println("new NodeRoomMesh: ${this.nodes.size}, ${workNodeRoom.centroid}, ${this.centroid}")
     }
+
 
     //NodeMesh constructor
     constructor(copyNodeMesh : NodeMesh
@@ -103,37 +116,109 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
         val maxGenerativeExits = 4
 
-        fun Point.buildNodeRoom(height : Int, circleNoise : Int = 0, angleNoise : Int = 0, heightNoise : Int = 0, borderRooms : NodeRoom = NodeRoom(), centroid : Node?) : NodeRoom {
+        fun Point.buildNodeRoom(geomType: NodeRoomAttributes.GeomType, geomStyle: NodeRoomAttributes.GeomStyle
+            , height : Int, circleNoise : Int = 0, angleNoise : Int = 0, heightNoise : Int = 0
+            , borderRooms : NodeRoom = NodeRoom(), centroid : Node?) : NodeRoom {
 
             var roomMesh = NodeRoom()
             roomMesh.centroid = centroid ?: Node(position = this)
 
             if (height < 1) return roomMesh
 
-            val leafMap = mutableMapOf<Angle, Point>()
-            val pointsOnCircle = height
+            val geomMap = mutableMapOf<Angle, Point>()
 
             //using as a divisor
             val cappedCircleNoise = if (circleNoise > 100) 100 else if (circleNoise < 0) 0 else circleNoise
             val cappedAngleNoise = if (angleNoise > 100) 100 else if (angleNoise < 0) 0 else angleNoise
 
-            val sliceOnCircle = 360F / height
+            when (geomStyle) {
+                NodeRoomAttributes.GeomStyle.OPPOSITE -> {
+                    val pointsOnCircle = height
+                    val angleVariance = 30f
 
-            (1..pointsOnCircle).toList().forEach{ idx ->
-                val pointOnCircle = ( sliceOnCircle * idx ).normalizeDeg()
-                val pointNoiseOnCircle = Probability(sliceOnCircle, sliceOnCircle / 2 * cappedCircleNoise / 100).getValue().normalizeDeg()
-                val noisyPointOnCircle = pointOnCircle + pointNoiseOnCircle
+                    (1..pointsOnCircle).toList().forEach{ idx ->
+                        val pointOnCircle = ( 180f * idx ).normalizeDeg()
+                        val pointNoiseOnCircle = Probability(angleVariance, angleVariance / 2 * cappedCircleNoise / 100).getValue().normalizeDeg()
+                        val noisyPointOnCircle = pointOnCircle + pointNoiseOnCircle
 
-                //points back to the center of the circle
-                val angleNoiseOnCircle = Probability(180f, 60f * cappedAngleNoise / 100).getValue().normalizeDeg()
-                val noisyAngleOnCircle = (angleNoiseOnCircle + noisyPointOnCircle).normalizeDeg()
+                        //points back to the center of the circle
+                        val angleNoiseOnCircle = Probability(180f, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
+                        val noisyAngleOnCircle = (angleNoiseOnCircle + noisyPointOnCircle).normalizeDeg()
 
-                leafMap[noisyAngleOnCircle] = ILeaf.getChildPosition(roomMesh.centroid.position, height * NextDistancePx / 2, noisyPointOnCircle)
+                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, noisyPointOnCircle)
+                    }
+                }
+                NodeRoomAttributes.GeomStyle.PARALLEL -> {
+                    val pointsOnCircle = height
+                    val angleVariance = 30f
+
+                    (1..pointsOnCircle).toList().forEach{ idx ->
+                        val pointOnCircle = ( 360f * idx ).normalizeDeg()
+                        val pointNoiseOnCircle = Probability(angleVariance, angleVariance / 2 * cappedCircleNoise / 100).getValue().normalizeDeg()
+                        val noisyPointOnCircle = pointOnCircle + pointNoiseOnCircle
+
+                        //points back to the center of the circle
+                        val angleNoiseOnCircle = Probability(180f, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
+                        val noisyAngleOnCircle = (angleNoiseOnCircle + noisyPointOnCircle).normalizeDeg()
+
+                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, noisyPointOnCircle)
+                    }
+                }
+                NodeRoomAttributes.GeomStyle.SEQUENCE -> {
+                    val originAngleOnCircle = Probability(360f, 180f * cappedCircleNoise / 100).getValue().normalizeDeg()
+                    val endingAngleOnCircle = (originAngleOnCircle - 180f).normalizeDeg()
+                    val originPointOnCircle = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, originAngleOnCircle)
+                    val endingPointOnCircle = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, endingAngleOnCircle)
+
+                    println("originAngle:${originAngleOnCircle}, endingAngle:${endingAngleOnCircle}, originPoint:${originPointOnCircle}, endingPoint:${endingPointOnCircle}, distance: ${originPointOnCircle.dst(endingPointOnCircle)}")
+
+                    val sequenceLine = NodeLine(firstNode = Node(position = originPointOnCircle), lastNode = Node(position=endingPointOnCircle), lineNoise = cappedAngleNoise)
+                    val angleVariance = 30f
+
+//                    println("nodeLine size:${sequenceLine.nodes.size}, order size:${sequenceLine.nodeOrder.size}")
+
+                    sequenceLine.nodeOrder.forEachIndexed { idx, lineNodeUUID ->
+//                        println("idx:$idx, lineNodeUUID:$lineNodeUUID")
+                        //get anglebetween this and next node
+                        if (idx < sequenceLine.nodes.size - 1) {
+                            val currNode = sequenceLine.nodes.getNode(lineNodeUUID)!!
+                            val nextNode = sequenceLine.nodes.getNode(sequenceLine.nodeOrder[idx + 1])!!
+
+                            val angleBetween = currNode.angleBetween(nextNode)
+                            geomMap[angleBetween] = currNode.position
+                        } else {
+                            val angleNoiseFinalNode = Probability(endingAngleOnCircle, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
+
+                            geomMap[angleNoiseFinalNode] = sequenceLine.nodes.getNode(lineNodeUUID)!!.position
+                        }
+                    }
+
+                    geomMap.entries.forEach {
+                        println("${it.key}: ${it.value}")
+                    }
+
+                }
+                else -> { //CIRCLE / NONE
+                    val pointsOnCircle = height
+                    val sliceOnCircle = 360F / height
+
+                    (1..pointsOnCircle).toList().forEach{ idx ->
+                        val pointOnCircle = ( sliceOnCircle * idx ).normalizeDeg()
+                        val pointNoiseOnCircle = Probability(sliceOnCircle, sliceOnCircle / 2 * cappedCircleNoise / 100).getValue().normalizeDeg()
+                        val noisyPointOnCircle = pointOnCircle + pointNoiseOnCircle
+
+                        //points back to the center of the circle
+                        val angleNoiseOnCircle = Probability(180f, 60f * cappedAngleNoise / 100).getValue().normalizeDeg()
+                        val noisyAngleOnCircle = (angleNoiseOnCircle + noisyPointOnCircle).normalizeDeg()
+
+                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, noisyPointOnCircle)
+                    }
+                }
             }
 
             val cappedHeightNoise = if (heightNoise > 100) 100 else if (heightNoise < 0) 0 else heightNoise
 
-            leafMap.forEach {
+            geomMap.forEach {
 
                 val minHeight = if (height > 1) height - 1 else 1
                 val maxHeight = height + 1
@@ -146,16 +231,21 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                     )
                 ).getSelectedProbability()!!.toInt()
 
-                roomMesh += NodeRoom(Leaf(topHeight = noisyHeight, topAngle = it.key, position = it.value).nodeMesh().setBordering(borderRooms, NextDistancePx * .5) as NodeMesh)
-
+                roomMesh += when (geomType) {
+                    NodeRoomAttributes.GeomType.LACE -> NodeRoom(Lace(topHeight = noisyHeight, topAngle = it.key, position = it.value).nodeMesh().setBordering(borderRooms, NextDistancePx * .5, Node(position = this)) as NodeMesh)
+                    NodeRoomAttributes.GeomType.ROUNDED_LATTICE -> NodeRoom(RoundedLattice(topHeight = noisyHeight, topAngle = it.key, position = it.value).nodeMesh().setBordering(borderRooms, NextDistancePx * .5, Node(position = this)) as NodeMesh)
+                    NodeRoomAttributes.GeomType.ARRAY_LATTICE -> NodeRoom(ArrayLattice(topHeight = noisyHeight, topAngle = it.key, position = it.value).nodeMesh().setBordering(borderRooms, NextDistancePx * .5, Node(position = this)) as NodeMesh)
+                    //else LEAF / NONE
+                    else -> NodeRoom(Leaf(topHeight = noisyHeight, topAngle = it.key, position = it.value).nodeMesh().setBordering(borderRooms, NextDistancePx * .5, Node(position = this)) as NodeMesh)
+                }
             }
 
             roomMesh.processMesh()
 
             //remove links that are too long as a hack to prevent for long cross-link room creation
-            val removeLinks = mutableListOf<NodeLink>()
-            roomMesh.nodeLinks.forEach { if (it.getDistance(roomMesh.nodes)!! > NextDistancePx * 1.5) removeLinks.add(it) }
-            roomMesh.nodeLinks.removeAll(removeLinks)
+//            val removeLinks = mutableListOf<NodeLink>()
+//            roomMesh.nodeLinks.forEach { if (it.getDistance(roomMesh.nodes)!! > NextDistancePx * 1.5) removeLinks.add(it) }
+//            roomMesh.nodeLinks.removeAll(removeLinks)
 
             //reset centroid after adding and processing
             roomMesh.centroid = Node(position = roomMesh.nodes.averagePositionWithinNodes() )

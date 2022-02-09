@@ -4,7 +4,8 @@ import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
-import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -22,10 +23,10 @@ import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.koboldCave.screen.Render
 import org.river.exertion.koboldCave.screen.RenderPalette
-import org.river.exertion.koboldCave.screen.render
 
 class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
                                               private val font: BitmapFont,
@@ -56,8 +57,10 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
     var imgAlpha = 0f
     var imgAlphaAsc = false
     lateinit var imgSprite : Texture
+//    lateinit var caveSprite : Texture
 
     val spriteBatch = SpriteBatch()
+//    val caveBatch = SpriteBatch()
 
     override fun render(delta: Float) {
 
@@ -97,9 +100,17 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
             imgAlpha = if (imgAlpha > 1f) 1f else if (imgAlpha < 0f) 0f else imgAlpha
             imgAlpha = if (imgAlphaAsc) imgAlpha + 0.02f else imgAlpha - 0.02f
             spriteBatch.setColor(curColor.r, curColor.g, curColor.b, imgAlpha)
-
         }
-
+/*
+        caveBatch.use {
+            controlAreaCamera.update()
+            caveBatch.projectionMatrix = controlAreaCamera.combined
+            caveBatch.draw(caveSprite, 0f, 650f, 300f, 150f )
+            caveBatch.draw(caveSprite, 300f, 650f, 300f, 150f )
+            caveBatch.draw(caveSprite, 600f, 650f, 300f, 150f )
+            caveBatch.draw(caveSprite, 900f, 650f, 300f, 150f )
+        }
+*/
         batch.projectionMatrix = camera.combined
         camera.update()
 
@@ -145,6 +156,7 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
 
         assets[MusicAssets.NavajoNight].apply { isLooping = true }.play()
         imgSprite = assets[TextureAssets.Suenos]
+//        caveSprite = assets[TextureAssets.Cave]
 //        imgSprite.setAlpha(imgAlpha)
     }
 

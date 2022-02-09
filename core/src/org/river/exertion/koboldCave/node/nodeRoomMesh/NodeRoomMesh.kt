@@ -1,6 +1,8 @@
 package org.river.exertion.koboldCave.node.nodeRoomMesh
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.MathUtils.lerp
 import org.river.exertion.*
 import org.river.exertion.koboldCave.Line
 import org.river.exertion.koboldCave.Line.Companion.getPositionByDistanceAndAngle
@@ -16,6 +18,7 @@ import org.river.exertion.koboldCave.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getLineSet
 import org.river.exertion.koboldCave.node.NodeLink.Companion.removeNodeLink
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.koboldCave.node.nodeMesh.NodeRoomAttributes
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoomLink
 import org.river.exertion.koboldCave.screen.RenderPalette
 import java.util.*
@@ -108,7 +111,9 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         val newNodeRoomAngle = currentNodeRoom.centroid.angleBetween(roomExitNode)
         val newNodeRoomPosition = roomExitNode.position.getPositionByDistanceAndAngle(NextDistancePx, newNodeRoomAngle)
 
-        val newNodeRoom = NodeRoom(height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms(), exitsAllowed = maxRoomExits - currentRoomExits)
+        val geomType = NodeRoomAttributes.GeomType.values()[Random.nextInt(NodeRoomAttributes.GeomType.values().size)]
+
+        val newNodeRoom = NodeRoom(geomType = geomType, height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms(), exitsAllowed = maxRoomExits - currentRoomExits)
 //        println("new NodeRoom created! node count: ${newNodeRoom.nodes.size}")
 
         if (newNodeRoom.nodes.size > 1) {
@@ -209,10 +214,19 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                 val firstNode = this.nodesMap.keys.getNode(link.firstNodeUuid)!!
                 val secondNode = this.nodesMap.keys.getNode(link.secondNodeUuid)!!
 
+                //trying a lerp for general wall thickness
+                val refNodeRoom = getNodeRoom(firstNode)
+                val centerToEdge = refNodeRoom.centroid.position.dst(refNodeRoom.getFarthestNode(refNodeRoom.centroid).position)
+                val firstNodeToEdge = refNodeRoom.centroid.position.dst(firstNode.position)
+
+                val pathBounds = lerp(0.3f, 0.2f, firstNodeToEdge / centerToEdge)
+                val wallBounds = lerp(0.4f, 0.3f, firstNodeToEdge / centerToEdge)
+                val wallFadeBounds = lerp(0.6f, 0.5f, firstNodeToEdge / centerToEdge)
+
 //                println ("processing render link between ${firstNode.uuid} and ${secondNode.uuid}")
                 val line = Line(firstNode.position, secondNode.position)
 
-                line.pointsInBorder((NextDistancePx * 0.2).toInt()).forEach { pathPoint ->
+                line.pointsInBorder((NextDistancePx * pathBounds).toInt()).forEach { pathPoint ->
 
                     val challenge = (Pair(firstNode, secondNode).getPointChallenge(pathPoint) - 0.5f) / 10f
                     this.obstaclePath[pathPoint] = if (this.obstaclePath[pathPoint] == null) challenge else (this.obstaclePath[pathPoint]!! + challenge) / 2
@@ -229,14 +243,14 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                         Point((this.builtPath[pathPoint]!!.x + basePoint.x) / 2, (this.builtPath[pathPoint]!!.y + basePoint.y) / 2 )
                 }
 
-                line.pointsInBorder((NextDistancePx * 0.3).toInt()).forEach { wallPoint -> this.builtWall[wallPoint] = wallPoint +
+                line.pointsInBorder((NextDistancePx * wallBounds).toInt()).forEach { wallPoint -> this.builtWall[wallPoint] = wallPoint +
                         Point(Probability(mean = 1f, range = 0.5f).getValue(), Probability(mean = 1f, range = 0.5f).getValue()) }
 
                 this.builtWall.keys.removeAll(builtPath.keys)
                 this.pastWall.keys.removeAll(builtPath.keys)
                 this.currentWall.keys.removeAll(builtPath.keys)
 
-                line.pointsInBorder((NextDistancePx * 0.5).toInt()).forEach { wallFadePoint -> this.builtWallFade[wallFadePoint] = wallFadePoint +
+                line.pointsInBorder((NextDistancePx * wallFadeBounds).toInt()).forEach { wallFadePoint -> this.builtWallFade[wallFadePoint] = wallFadePoint +
                         Point(Probability(mean = 0.5f, range = 0.3f).getValue(), Probability(mean = 0.5f, range = 0.3f).getValue()) }
 
                 this.builtWallFade.keys.removeAll(builtPath.keys)
@@ -327,6 +341,61 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 //                println("final rayLengthIter: $rayLengthIter")
             }
             return returnLosMap
+        }
+
+        fun NodeRoomMesh.render(batch: Batch) {
+
+            val currentWallColor = RenderPalette.BackColors[1]
+            val currentFloorColor = RenderPalette.FadeForeColors[4]
+            val pastFloorColor = RenderPalette.FadeBackColors[4]
+            val currentStairsColor = RenderPalette.FadeForeColors[1]
+            val pastColor = RenderPalette.FadeBackColors[1]
+
+            val sdc = ShapeDrawerConfig(batch)
+            val drawer = sdc.getDrawer()
+
+            this.nodeRooms.forEach {
+                it.getExitNodes().forEachIndexed { index, exitNode ->
+                    drawer.filledCircle(exitNode.position, 4F, RenderPalette.ForeColors[1])
+                }
+            }
+
+            this.pastPath.entries.forEach { pathPoint ->
+                val baseRadius = 0.3f
+                val obsRadius = this.obstaclePath[pathPoint.key] ?: 0f
+                val radius = baseRadius + obsRadius
+//            val eleRadius = (this.elevationPath[pathPoint.key] ?: 0.5f) - 0.25f
+                drawer.filledCircle(pathPoint.value, radius, pastFloorColor)
+            }
+
+            this.currentPath.entries.forEach { pathPoint ->
+                val baseRadius = 0.3f
+                val obsRadius = this.obstaclePath[pathPoint.key] ?: 0f
+                val radius = baseRadius + obsRadius
+
+                val color = this.colorPath[pathPoint.key] ?: pastFloorColor
+
+//            println(this.elevationPath[pathPoint.key].toString() + ", " + color)
+                drawer.filledCircle(pathPoint.value, radius, color)
+            }
+
+            this.pastWall.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.5F, pastColor)
+            }
+
+            this.currentWall.values.forEach { wallPoint ->
+                drawer.filledCircle(wallPoint, 0.5F, currentWallColor)
+            }
+
+            this.pastWallFade.values.forEach { wallNode ->
+                drawer.filledCircle(wallNode, 0.3F, pastColor)
+            }
+
+            this.currentWallFade.values.forEach { wallFadePoint ->
+                drawer.filledCircle(wallFadePoint, 0.3F, currentWallColor)
+            }
+
+            sdc.disposeShapeDrawerConfig()
         }
     }
 }
