@@ -15,6 +15,7 @@ import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.getEntityComponent
 import org.river.exertion.isEntity
 import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
+import org.river.exertion.koboldCave.node.NodeAttributes
 import org.river.exertion.koboldCave.node.NodeLink
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
@@ -27,7 +28,7 @@ import org.river.exertion.rightAngleBetween
 
 class ActionMoveSystem : IteratingSystem(allOf(ActionMoveComponent::class).get()) {
 
-    val pathNoise = 0
+    val pathNoise = 70
     val distancePerStep = .25f
 
     var modForwardPathNoise = pathNoise
@@ -53,6 +54,9 @@ class ActionMoveSystem : IteratingSystem(allOf(ActionMoveComponent::class).get()
             val backwardNextNodeAngle = entity[ActionMoveComponent.mapper]!!.backwardNextNodeAngle
 
             entity[ActionMoveComponent.mapper]!!.currentNodeLink = nodeRoomMesh.nodeLinks.getNodeLink(currentNode.uuid, forwardNextNodeAngle.first.uuid)!!
+
+            nodeRoomMesh.nodesMap.keys.filter { it.uuid == currentNode.uuid }.firstOrNull()?.attributes?.renderState = NodeAttributes.RenderState.RENDERED
+            nodeRoomMesh.nodesMap.keys.filter { it.uuid == forwardNextNodeAngle.first.uuid }.firstOrNull()?.attributes?.renderState = NodeAttributes.RenderState.RENDERED
 
 //            println("moving direction: ${entity[ActionMoveComponent.mapper]!!.direction}")
 

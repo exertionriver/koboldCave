@@ -10,6 +10,10 @@ import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
 import org.river.exertion.koboldCave.node.nodeMesh.NodeRoomAttributes
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.render
+import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.koboldCave.screen.RenderPalette.BackColors
 import org.river.exertion.koboldCave.screen.RenderPalette.ForeColors
 
@@ -21,71 +25,94 @@ class DemoNodeRoomHeightScreen(private val batch: Batch,
     val vertOffset = Game.initViewportHeight / 11
     val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
 
-    var circleNoise = 0
-    var angleNoise = 0
-    var heightNoise = 0
+    val attributes = NodeRoomAttributes()
+    var toggleWalls = false
+    var rebuildNodeRooms = false
+    var rerenderPathsAndWalls = false
+    var minHeight = 2
+    var centerPointList = List(5) { idx -> Point((3 - idx) * horizOffset * 3f + horizOffset * 2.5f, idx * vertOffset * 2 + vertOffset * 2) }
 
-    var nodeRoomList = List(5) { nodeRoomIdx ->
-        NodeRoom(geomType = NodeRoomAttributes.GeomType.LEAF, geomStyle = NodeRoomAttributes.GeomStyle.CIRCLE
-                , height = nodeRoomIdx + 1, centerPoint = Point((3 - nodeRoomIdx) * horizOffset * 3f + horizOffset * 2.5f, nodeRoomIdx * vertOffset * 2 + vertOffset * 2)
-        , circleNoise = circleNoise, angleNoise = angleNoise, heightNoise = heightNoise)
-    }
+    var nodeRoomList = List(5) { nodeRoomIdx -> NodeRoom(attributes.apply { this.geomHeight = nodeRoomIdx + minHeight }, centerPointList[nodeRoomIdx]) }
+
+    val nodeRoomMeshList = MutableList(5) { nodeRoomMeshIdx -> NodeRoomMesh(nodeRoomList[nodeRoomMeshIdx]) }
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
-
-//    val renderCamera = OrthographicCamera().apply { setToOrtho(false, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat()) }
 
     override fun render(delta: Float) {
 
         batch.projectionMatrix = camera.combined
         camera.update()
 
+        InputHandler.handleInput(camera)
+        Gdx.input.inputProcessor = InputProcessorHandler(camera, nodeRoomList.reduce { allRooms, nodeRoom -> nodeRoom + allRooms }.nodes)
+
+        when {
+            Gdx.input.isKeyJustPressed(Input.Keys.T) -> { if (attributes.circleNoise < 100) attributes.circleNoise += 10; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.Y) -> { if (attributes.angleNoise < 100) attributes.angleNoise += 10; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.U) -> { if (attributes.heightNoise < 100) attributes.heightNoise += 10; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.G) -> { if (attributes.circleNoise > 0) attributes.circleNoise -= 10; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.H) -> { if (attributes.angleNoise > 0) attributes.angleNoise -= 10; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.J) -> { if (attributes.heightNoise > 0) attributes.heightNoise -= 10; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.EQUALS) -> { if (minHeight < 3) minHeight++; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.MINUS) -> { if (minHeight > 0) minHeight--; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.N) -> { if (attributes.geomType.ordinal == NodeRoomAttributes.GeomType.values().size - 1) attributes.geomType = NodeRoomAttributes.GeomType.values()[0] else attributes.geomType = NodeRoomAttributes.GeomType.values()[attributes.geomType.ordinal+1]; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.M) -> { if (attributes.geomStyle.ordinal == NodeRoomAttributes.GeomStyle.values().size - 1) attributes.geomStyle = NodeRoomAttributes.GeomStyle.values()[0] else attributes.geomStyle = NodeRoomAttributes.GeomStyle.values()[attributes.geomStyle.ordinal+1]; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.B) -> { toggleWalls = !toggleWalls; rerenderPathsAndWalls = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> { rebuildNodeRooms = true }
+
+            Gdx.input.isKeyJustPressed(Input.Keys.I) -> { if (attributes.pathThickness < .5) attributes.pathThickness += 0.05f ; rerenderPathsAndWalls = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.O) -> { if (attributes.pathThickness > .1) attributes.pathThickness -= 0.05f ; rerenderPathsAndWalls = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.K) -> { if (attributes.centerToEdgeThicknessVariance < .5) attributes.pathThickness += 0.05f ; rerenderPathsAndWalls = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.L) -> { if (attributes.centerToEdgeThicknessVariance > .1) attributes.pathThickness -= 0.05f ; rerenderPathsAndWalls = true }
+        }
+
+        if (rebuildNodeRooms) {
+            nodeRoomList = List(5) { nodeRoomIdx -> NodeRoom(attributes.apply { this.geomHeight = nodeRoomIdx + minHeight }, centerPointList[nodeRoomIdx]) }
+            rerenderPathsAndWalls = true
+            rebuildNodeRooms = false
+        }
+
         batch.use {
 
             nodeRoomList.reversed().forEachIndexed { nodeRoomIdx, nodeRoom ->
-                font.drawLabel(it, Point(nodeRoom.centroid.position.x, labelVert.y), "NodeRoom (${nodeRoom.attributes.geomType}, ${nodeRoom.attributes.geomStyle})\n" +
+                font.drawLabel(it, Point(3f * nodeRoomIdx * horizOffset, labelVert.y), "NodeRoom (${nodeRoom.attributes.geomType}, ${nodeRoom.attributes.geomStyle})\n" +
                         "(@=${nodeRoom.centroid.position.x}, ${nodeRoom.centroid.position.y} height=${nodeRoom.attributes.geomHeight})\n" +
                         "(nodes=${nodeRoom.nodes.size}, exits=${nodeRoom.getExitNodes().size})\n" +
                         "(circleNoise:${nodeRoom.attributes.circleNoise})\n" +
                         "(angleNoise:${nodeRoom.attributes.angleNoise})\n" +
                         "(heightNoise:${nodeRoom.attributes.heightNoise})", ForeColors[nodeRoomIdx % ForeColors.size])
 
-                nodeRoom.getLineSet().forEach { line ->
-                    if (line != null) {
+                if (toggleWalls) {
+                    if (rerenderPathsAndWalls) {
+                        nodeRoomList.forEachIndexed { idx, nodeRoom ->
+                            nodeRoom.attributes.pathThickness = attributes.pathThickness
+                            nodeRoom.attributes.centerToEdgeThicknessVariance = attributes.centerToEdgeThicknessVariance
+                            nodeRoomMeshList[idx] = NodeRoomMesh(nodeRoom)
+                            nodeRoomMeshList[idx].buildWallsAndPath()
+                            nodeRoomMeshList[idx].renderWallsAndPath()
+                        }
+                        rerenderPathsAndWalls = false
+                    }
+
+                    nodeRoomMeshList.forEach { it.render(batch) }
+                } else {
+                    nodeRoom.getLineSet().forEach { line ->
                         drawer.line(line.first, line.second,BackColors[nodeRoomIdx % BackColors.size], 2F )
                     }
-                }
 
-                nodeRoom.nodes.forEach { node ->
-                    drawer.filledCircle(node.position, 2F, ForeColors[nodeRoomIdx % ForeColors.size])
-                }
+                    nodeRoom.nodes.forEach { node ->
+                        drawer.filledCircle(node.position, 2F, ForeColors[nodeRoomIdx % ForeColors.size])
+                    }
 
-                drawer.filledCircle(nodeRoom.centroid.position, 6F, ForeColors[nodeRoomIdx % ForeColors.size])
+                    drawer.filledCircle(nodeRoom.centroid.position, 6F, ForeColors[nodeRoomIdx % ForeColors.size])
 
-                nodeRoom.getExitNodes().forEachIndexed { index, exitNode ->
-                    drawer.filledCircle(exitNode.position, 4F, ForeColors[nodeRoomIdx % ForeColors.size])
-                }
-            }
-
-            InputHandler.handleInput(camera)
-            Gdx.input.inputProcessor = InputProcessorHandler(camera, nodeRoomList.reduce { allRooms, nodeRoom -> nodeRoom + allRooms }.nodes)
-
-            when {
-                Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) -> println("click..!")
-                Gdx.input.isKeyJustPressed(Input.Keys.T) -> { if (circleNoise < 100) circleNoise += 10 }
-                Gdx.input.isKeyJustPressed(Input.Keys.Y) -> { if (angleNoise < 100) angleNoise += 10 }
-                Gdx.input.isKeyJustPressed(Input.Keys.U) -> { if (heightNoise < 100) heightNoise += 10 }
-                Gdx.input.isKeyJustPressed(Input.Keys.G) -> { if (circleNoise > 0) circleNoise -= 10 }
-                Gdx.input.isKeyJustPressed(Input.Keys.H) -> { if (angleNoise > 0) angleNoise -= 10 }
-                Gdx.input.isKeyJustPressed(Input.Keys.J) -> { if (heightNoise > 0) heightNoise -= 10 }
-                Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> {
-                    nodeRoomList = List(3) { nodeRoomIdx ->
-                        NodeRoom(height = nodeRoomIdx * 2 + 1, centerPoint = Point((3 - nodeRoomIdx) * horizOffset * 3f + horizOffset, nodeRoomIdx * vertOffset * 2 + vertOffset),
-                            circleNoise = circleNoise, angleNoise = angleNoise, heightNoise = heightNoise)
+                    nodeRoom.getExitNodes().forEachIndexed { index, exitNode ->
+                        drawer.filledCircle(exitNode.position, 4F, ForeColors[nodeRoomIdx % ForeColors.size])
                     }
                 }
             }
+
         }
 
     }

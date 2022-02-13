@@ -34,8 +34,16 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
     val activatedExitNodes = mutableSetOf<Node>()
 
     //build constructor
-    constructor(geomType: NodeRoomAttributes.GeomType = NodeRoomAttributes.GeomType.LEAF, geomStyle: NodeRoomAttributes.GeomStyle = NodeRoomAttributes.GeomStyle.CIRCLE
-                , centerPoint: Point, height: Int, circleNoise : Int = 50, angleNoise : Int = 50, heightNoise : Int = 50, borderRooms : NodeRoom = NodeRoom()
+    constructor(attributes: NodeRoomAttributes, centerPoint: Point, borderRooms : NodeRoom = NodeRoom()
+                , exitsAllowed : Int = maxGenerativeExits, initCentroid : Node? = null ) : this (
+        attributes.geomType, attributes.geomStyle, centerPoint, attributes.geomHeight, attributes.circleNoise, attributes.angleNoise, attributes.heightNoise
+        , borderRooms, exitsAllowed, initCentroid
+    )
+
+        //build constructor
+    constructor(geomType: NodeRoomAttributes.GeomType = NodeRoomAttributes.GeomType.LEAF
+                , geomStyle: NodeRoomAttributes.GeomStyle = NodeRoomAttributes.GeomStyle.CIRCLE
+                , centerPoint: Point, height: Int = 3, circleNoise : Int = 50, angleNoise : Int = 50, heightNoise : Int = 50, borderRooms : NodeRoom = NodeRoom()
                 , exitsAllowed : Int = maxGenerativeExits, initCentroid : Node? = null ) : this (
     ) {
 
@@ -133,7 +141,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
 
             when (geomStyle) {
                 NodeRoomAttributes.GeomStyle.OPPOSITE -> {
-                    val pointsOnCircle = height
+                    val pointsOnCircle = 2
                     val angleVariance = 30f
 
                     (1..pointsOnCircle).toList().forEach{ idx ->
@@ -148,8 +156,8 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                         geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, noisyPointOnCircle)
                     }
                 }
-                NodeRoomAttributes.GeomStyle.PARALLEL -> {
-                    val pointsOnCircle = height
+                NodeRoomAttributes.GeomStyle.SINGLE -> {
+                    val pointsOnCircle = 1
                     val angleVariance = 30f
 
                     (1..pointsOnCircle).toList().forEach{ idx ->
@@ -187,8 +195,9 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                             val angleBetween = currNode.angleBetween(nextNode)
                             geomMap[angleBetween] = currNode.position
                         } else {
-                            val angleNoiseFinalNode = Probability(endingAngleOnCircle, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
+                            var angleNoiseFinalNode = Probability(endingAngleOnCircle, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
 
+                            while (geomMap[angleNoiseFinalNode] != null) angleNoiseFinalNode++
                             geomMap[angleNoiseFinalNode] = sequenceLine.nodes.getNode(lineNodeUUID)!!.position
                         }
                     }

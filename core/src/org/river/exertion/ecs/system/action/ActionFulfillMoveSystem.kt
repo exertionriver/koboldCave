@@ -66,6 +66,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                     entity[ActionMoveComponent.mapper]!!.currentPosition = entity[ActionMoveComponent.mapper]!!.finalNode.position
 
                     currentStepAngle = entity[ActionMoveComponent.mapper]!!.finalAngle
+//                    entity[ActionMoveComponent.mapper]!!.currentAngle = currentStepAngle
 
                     entity[ActionMoveComponent.mapper]!!.currentNode = entity[ActionMoveComponent.mapper]!!.finalNode
 
@@ -75,6 +76,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                     entity[ActionMoveComponent.mapper]!!.currentPosition = currentStep.position
 
                     currentStepAngle = currentStep.angleBetween(nextStep)
+//                    entity[ActionMoveComponent.mapper]!!.currentAngle = currentStepAngle
 
 //                    println("currentAngle:$currentAngle, currentStepAngle: $currentStepAngle, leftTurnEasing:$leftTurnEasing, rightTurnEasing: $rightTurnEasing")
                 }
@@ -99,6 +101,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                     entity[ActionMoveComponent.mapper]!!.currentPosition = entity[ActionMoveComponent.mapper]!!.finalNode.position
 
                     currentStepAngle = entity[ActionMoveComponent.mapper]!!.finalAngle
+//                    entity[ActionMoveComponent.mapper]!!.currentAngle = currentStepAngle
 
                     entity[ActionMoveComponent.mapper]!!.currentNode = entity[ActionMoveComponent.mapper]!!.finalNode
                 } else {
@@ -107,6 +110,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                     entity[ActionMoveComponent.mapper]!!.currentPosition = currentStep.position
 
                     currentStepAngle = nextStep.angleBetween(currentStep)
+//                    entity[ActionMoveComponent.mapper]!!.currentAngle = currentStepAngle
 
 //                    println("currentAngle:$currentAngle, currentStepAngle: $currentStepAngle, leftTurnEasing:$leftTurnEasing, rightTurnEasing: $rightTurnEasing")
                 }

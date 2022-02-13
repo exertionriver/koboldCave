@@ -29,7 +29,7 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                    , var nodesMap : MutableMap<Node, UUID> = mutableMapOf(), var nodeLinks : MutableSet<NodeLink> = mutableSetOf() ) :
     INodeRoomMesh {
 
-    val maxRoomExits = 18
+    val maxRoomExits = 36
     var currentRoomExits = 0
 
     val activatedExitNodes = mutableSetOf<Node>()
@@ -111,45 +111,74 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         val newNodeRoomAngle = currentNodeRoom.centroid.angleBetween(roomExitNode)
         val newNodeRoomPosition = roomExitNode.position.getPositionByDistanceAndAngle(NextDistancePx, newNodeRoomAngle)
 
-        val geomType = NodeRoomAttributes.GeomType.values()[Random.nextInt(NodeRoomAttributes.GeomType.values().size)]
+        //check for circuit
+        //TODO: complete circuit if nearestOtherRoomNode is not past wall
+        val otherRoomNodes = getAllRooms().nodes.filter { getNodeRoom(roomExitNode) != getNodeRoom(it) }.toMutableSet()
 
-        val newNodeRoom = NodeRoom(geomType = geomType, height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms(), exitsAllowed = maxRoomExits - currentRoomExits)
-//        println("new NodeRoom created! node count: ${newNodeRoom.nodes.size}")
+        val nearestOtherRoomNodes = if (!otherRoomNodes.isEmpty()) otherRoomNodes.nearestNodesOrderedAsc(roomExitNode) else mutableListOf()
 
-        if (newNodeRoom.nodes.size > 1) {
+        val nearestOtherRoomNode = if (!nearestOtherRoomNodes.isEmpty()) nearestOtherRoomNodes.filter {
+            it.attributes.nodeType != NodeAttributes.NodeType.EXIT &&
+            it.attributes.renderState != NodeAttributes.RenderState.RENDERED }[0] else null
 
-            this.nodeRooms.add(newNodeRoom)
-//            val newNodeRoomIdx = nodeRooms.size - 1
+        if (nearestOtherRoomNode != null && nearestOtherRoomNode.position.dst(roomExitNode.position) < NextDistancePx * 1.8) {
+            val linkNodeRoom = getNodeRoom(nearestOtherRoomNode)
 
-            newNodeRoom.nodes.forEach { nodesMap[it] = newNodeRoom.uuid }
-            newNodeRoom.nodeLinks.forEach { nodeLinks.add ( it ) }
-            newNodeRoom.getExitNodes().forEach { exitNodes.add ( it ) }
-            currentRoomExits += newNodeRoom.getExitNodes().size
+            this.nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestOtherRoomNode.uuid)
+            this.nodeRoomLinks.add(NodeRoomLink(this.uuid, linkNodeRoom.uuid))
+            this.nodeRooms.filter { it.uuid == currentNodeRoom.uuid }.first().nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestOtherRoomNode.uuid )
+            this.nodeRooms.filter { it.uuid == linkNodeRoom.uuid }.first().nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestOtherRoomNode.uuid )
 
- //           println("new NodeRoomMesh: ${this.nodeRooms.size}, ${this.nodeRoomLinks.size}")
+            //           println("new NodeRoom linked!")
 
-            //next, bridge between the two NodeRooms with NodeLink
-            val nearestNewRoomNode = newNodeRoom.nodes.nearestNodesOrderedAsc(roomExitNode)[0]
-
-            this.nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid)
-            this.nodeRoomLinks.add(NodeRoomLink(this.uuid, newNodeRoom.uuid))
-            this.nodeRooms.filter { it.uuid == currentNodeRoom.uuid }.first().nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid )
-            this.nodeRooms.filter { it.uuid == newNodeRoom.uuid }.first().nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid )
-
- //           println("new NodeRoom linked!")
-
-            nearestNewRoomNode.attributes.nodeType = NodeAttributes.NodeType.EXIT
-            this.nodesMap[nearestNewRoomNode] = newNodeRoom.uuid
-            this.activatedExitNodes.add(nearestNewRoomNode)
+            nearestOtherRoomNode.attributes.nodeType = NodeAttributes.NodeType.EXIT
+            this.activatedExitNodes.add(nearestOtherRoomNode)
 
             //re-build adjacent node walls
             renderedNodeLinks.removeNodeLink(currentNode.uuid, roomExitNode.uuid)
-            renderedNodeLinks.removeNodeLink(roomExitNode.uuid, nearestNewRoomNode.uuid)
+            renderedNodeLinks.removeNodeLink(roomExitNode.uuid, nearestOtherRoomNode.uuid)
+        } else {
+            // build nodeRoom from Scratch
+            val geomType = NodeRoomAttributes.GeomType.values()[Random.nextInt(NodeRoomAttributes.GeomType.values().size)]
+            val newNodeRoom = NodeRoom(geomType = geomType, height = 3, centerPoint = newNodeRoomPosition, borderRooms = getAllRooms(), exitsAllowed = maxRoomExits - currentRoomExits)
+//        println("new NodeRoom created! node count: ${newNodeRoom.nodes.size}")
+
+            if (newNodeRoom.nodes.size > 1) {
+
+                this.nodeRooms.add(newNodeRoom)
+//            val newNodeRoomIdx = nodeRooms.size - 1
+
+                newNodeRoom.nodes.forEach { nodesMap[it] = newNodeRoom.uuid }
+                newNodeRoom.nodeLinks.forEach { nodeLinks.add ( it ) }
+                newNodeRoom.getExitNodes().forEach { exitNodes.add ( it ) }
+                currentRoomExits += newNodeRoom.getExitNodes().size
+
+                //           println("new NodeRoomMesh: ${this.nodeRooms.size}, ${this.nodeRoomLinks.size}")
+
+                //next, bridge between the two NodeRooms with NodeLink
+                val nearestNewRoomNode = newNodeRoom.nodes.nearestNodesOrderedAsc(roomExitNode)[0]
+
+                this.nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid)
+                this.nodeRoomLinks.add(NodeRoomLink(this.uuid, newNodeRoom.uuid))
+                this.nodeRooms.filter { it.uuid == currentNodeRoom.uuid }.first().nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid )
+                this.nodeRooms.filter { it.uuid == newNodeRoom.uuid }.first().nodeLinks.addNodeLink(this.nodesMap.keys, roomExitNode.uuid, nearestNewRoomNode.uuid )
+
+                //           println("new NodeRoom linked!")
+
+                nearestNewRoomNode.attributes.nodeType = NodeAttributes.NodeType.EXIT
+                this.nodesMap[nearestNewRoomNode] = newNodeRoom.uuid
+                this.activatedExitNodes.add(nearestNewRoomNode)
+
+                //re-build adjacent node walls
+                renderedNodeLinks.removeNodeLink(currentNode.uuid, roomExitNode.uuid)
+                renderedNodeLinks.removeNodeLink(roomExitNode.uuid, nearestNewRoomNode.uuid)
 
 //            println ("activating node ${roomExitNode.uuid} from ${this.nodeRooms[nodeRoomIdx].uuid}" )
 //            println ("removing rendered link between ${this.nodeRooms[nodeRoomIdx].uuid} and ${roomExitNode.uuid}")
 //            println ("removing rendered link between ${roomExitNode.uuid} and ${nearestNewRoomNode.uuid}")
+            }
         }
+
     }
 
     override fun toString() = "${NodeRoomMesh::class.simpleName}(${uuid}) : $description, ${nodeRooms}, $nodeRoomLinks"
@@ -214,14 +243,17 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                 val firstNode = this.nodesMap.keys.getNode(link.firstNodeUuid)!!
                 val secondNode = this.nodesMap.keys.getNode(link.secondNodeUuid)!!
 
+                firstNode.attributes.renderState = NodeAttributes.RenderState.BUILT
+                secondNode.attributes.renderState = NodeAttributes.RenderState.BUILT
+
                 //trying a lerp for general wall thickness
                 val refNodeRoom = getNodeRoom(firstNode)
                 val centerToEdge = refNodeRoom.centroid.position.dst(refNodeRoom.getFarthestNode(refNodeRoom.centroid).position)
                 val firstNodeToEdge = refNodeRoom.centroid.position.dst(firstNode.position)
 
-                val pathBounds = lerp(0.3f, 0.2f, firstNodeToEdge / centerToEdge)
-                val wallBounds = lerp(0.4f, 0.3f, firstNodeToEdge / centerToEdge)
-                val wallFadeBounds = lerp(0.6f, 0.5f, firstNodeToEdge / centerToEdge)
+                val pathBounds = lerp(refNodeRoom.attributes.pathThickness + refNodeRoom.attributes.centerToEdgeThicknessVariance, refNodeRoom.attributes.pathThickness, firstNodeToEdge / centerToEdge)
+                val wallBounds = lerp(refNodeRoom.attributes.wallThickness + refNodeRoom.attributes.pathThickness + refNodeRoom.attributes.centerToEdgeThicknessVariance, refNodeRoom.attributes.wallThickness + refNodeRoom.attributes.pathThickness, firstNodeToEdge / centerToEdge)
+                val wallFadeBounds = lerp(refNodeRoom.attributes.wallFadeThickness + refNodeRoom.attributes.wallThickness + refNodeRoom.attributes.pathThickness + refNodeRoom.attributes.centerToEdgeThicknessVariance, refNodeRoom.attributes.wallFadeThickness + refNodeRoom.attributes.wallThickness + refNodeRoom.attributes.pathThickness, firstNodeToEdge / centerToEdge)
 
 //                println ("processing render link between ${firstNode.uuid} and ${secondNode.uuid}")
                 val line = Line(firstNode.position, secondNode.position)

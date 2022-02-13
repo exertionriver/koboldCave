@@ -87,8 +87,9 @@ class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
         batch.projectionMatrix = controlAreaCamera.combined
 
         batch.use {
-            font.drawLabel(batch, Point(300f, 100f), "${playerCharacter[ActionMoveComponent.mapper]!!.currentNode}\n${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink}\n" +
-                    "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys)}", RenderPalette.ForeColors[1])
+            font.drawLabel(batch, Point(300f, 150f), "${playerCharacter[ActionMoveComponent.mapper]!!.currentNode}\n${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink}\n" +
+                    "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys)}\n" +
+                    "nodeRenderState:${playerCharacter[ActionMoveComponent.mapper]!!.currentNode.attributes.renderState}", RenderPalette.ForeColors[1])
         }
 
         engine.update(delta)

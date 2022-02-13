@@ -33,6 +33,14 @@ class NodeAttributes {
     }
     var nodeElevation : NodeElevation = NodeElevation.NONE
 
+    enum class RenderState {
+        NONE
+        , BUILT
+        , RENDERED
+    }
+
+    var renderState : RenderState = RenderState.NONE
+
     override fun toString(): String {
         return "${super.toString()}, $nodeType"
     }
