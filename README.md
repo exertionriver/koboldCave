@@ -1,5 +1,5 @@
 # koboldCave
-Demonstration of probabilistically-generated caves using libGDX framework.
+open source Kotlin/LibKTX perceptual / exploration RPG
 
 Built using IntelliJ Community Edition 2021.3.2 / libGDX 1.10.0 / libktx 1.10.0-rc1 / on Ubuntu 20.04
 
