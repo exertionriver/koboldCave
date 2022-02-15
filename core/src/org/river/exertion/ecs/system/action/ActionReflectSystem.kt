@@ -13,7 +13,7 @@ class ActionReflectSystem : IteratingSystem(allOf(ActionReflectComponent::class)
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         if ( ActionPlexSystem.readyToExecute(entity, ActionReflectComponent.mapper) && entity.isEntity() ) {
-            println ("entity ${entity.getEntityComponent().name} thinks things over for a moment..")
+        //    println ("entity ${entity.getEntityComponent().name} thinks things over for a moment..")
 
             entity[ActionReflectComponent.mapper]!!.executed = true
         }

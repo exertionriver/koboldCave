@@ -2,20 +2,14 @@ package org.river.exertion.ecs.system.action
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
-import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.math.Vector3
 import ktx.ashley.allOf
+import ktx.ashley.contains
 import ktx.ashley.get
 import org.river.exertion.*
 import org.river.exertion.ecs.component.action.*
-import org.river.exertion.ecs.component.entity.core.IEntity
-import org.river.exertion.ecs.system.action.core.ActionPlexSystem
-import org.river.exertion.koboldCave.node.Node
+import org.river.exertion.ecs.system.action.ActionFulfillMoveSystem.Companion.tooClose
 import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
-import org.river.exertion.koboldCave.node.NodeLink
-import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
-import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
-import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
 
 class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponent::class).get(), 1/120f) {
 
@@ -30,6 +24,16 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
 
             val currentPosition = entity[ActionMoveComponent.mapper]!!.currentPosition
             val currentAngle = entity[ActionMoveComponent.mapper]!!.currentAngle
+            val stepPathFifthNextNode = entity[ActionMoveComponent.mapper]!!.stepPathFifthNextNode()
+
+            val otherEntities = engine.entities.filter { it != entity && it.contains(ActionMoveComponent.mapper) }
+
+            if (otherEntities.isNotEmpty()) otherEntities.forEach { otherEntity ->
+                //entities are too close, five steps ahead
+                if ( Pair(stepPathFifthNextNode.position, otherEntity[ActionMoveComponent.mapper]!!.currentPosition).tooClose() ) {
+                    entity[ActionMoveComponent.mapper]!!.halt()
+                }
+            }
 
             val leftTurnEasing = entity[ActionMoveComponent.mapper]!!.leftTurnEasing
             val rightTurnEasing = entity[ActionMoveComponent.mapper]!!.rightTurnEasing
@@ -104,6 +108,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
 //                    entity[ActionMoveComponent.mapper]!!.currentAngle = currentStepAngle
 
                     entity[ActionMoveComponent.mapper]!!.currentNode = entity[ActionMoveComponent.mapper]!!.finalNode
+
                 } else {
                     val currentStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes.first { it.uuid == entity[ActionMoveComponent.mapper]!!.stepPath.nodeOrder[currentIdx] }
                     val nextStep = entity[ActionMoveComponent.mapper]!!.stepPath.nodes.first { it.uuid == entity[ActionMoveComponent.mapper]!!.stepPath.nodeOrder[currentIdx + 1] }
@@ -129,11 +134,10 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
     }
 
     companion object {
-        fun moveComplete(entity : Entity) : Boolean {
-            return (entity[ActionMoveComponent.mapper]!!.leftTurnEasing +
-                 entity[ActionMoveComponent.mapper]!!.rightTurnEasing +
-                 entity[ActionMoveComponent.mapper]!!.forwardStepEasing +
-                 entity[ActionMoveComponent.mapper]!!.backwardStepEasing) < 1f
+
+        fun Pair<Point, Point>.tooClose() : Boolean {
+            return this.first.dst(this.second) < NextDistancePx / 3
         }
- }
+
+    }
 }

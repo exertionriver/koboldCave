@@ -1,7 +1,9 @@
 package org.river.exertion.ecs.component.action
 
 import com.badlogic.ashley.core.Component
+import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.graphics.OrthographicCamera
+import ktx.ashley.get
 import ktx.ashley.mapperFor
 import org.river.exertion.Angle
 import org.river.exertion.Point
@@ -60,10 +62,52 @@ class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component
     var finalAngle : Angle = 0.0f
     var direction = Direction.FORWARD
 
+    var prevNetMove = netMove()
+//    var prevPosition = currentPosition
+    var prevTurnMaxEasing = 0f
+    var curTurnMaxEasing = 0f
+
+    fun stepPathCurrentNode() = if (forwardStepEasing > 0) stepPath.nodes.filter { it.uuid == stepPath.nodeOrder[stepPath.nodes.size - forwardStepEasing] }.first()
+        else if (backwardStepEasing > 0) stepPath.nodes.filter { it.uuid == stepPath.nodeOrder[stepPath.nodes.size - backwardStepEasing] }.first()
+        else finalNode
+
+    fun stepPathFifthNextNode() = if (forwardStepEasing > 5) stepPath.nodes.filter { it.uuid == stepPath.nodeOrder[stepPath.nodes.size - forwardStepEasing + 5] }.first()
+        else if (backwardStepEasing > 5) stepPath.nodes.filter { it.uuid == stepPath.nodeOrder[stepPath.nodes.size - backwardStepEasing + 5] }.first()
+        else finalNode
+
     var moment = Moment(0f)
     var momentCountdown = 0f
 
     var camera : OrthographicCamera? = null
+
+
+    fun halt() {
+        leftTurnEasing = 0f
+        rightTurnEasing = 0f
+        forwardStepEasing = 0
+        backwardStepEasing = 0
+        direction = Direction.NONE
+    }
+
+    fun netMove() : Float {
+        return leftTurnEasing + rightTurnEasing + forwardStepEasing + backwardStepEasing
+    }
+
+    fun moveStale() : Boolean {
+        val curNetMove = netMove()
+
+        val isStale = ( (prevNetMove == curNetMove) || (prevTurnMaxEasing == curTurnMaxEasing) )
+
+        prevNetMove = curNetMove
+
+        return isStale
+    }
+
+    fun moveIncomplete() = netMove() > 0f
+
+    fun moveComplete() = !moveIncomplete()
+
+    var beganByMoving = Direction.NONE
 
     companion object {
         val mapper = mapperFor<ActionMoveComponent>()

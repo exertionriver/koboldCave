@@ -13,7 +13,7 @@ class ActionWatchSystem : IteratingSystem(allOf(ActionWatchComponent::class).get
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         if ( ActionPlexSystem.readyToExecute(entity, ActionWatchComponent.mapper) && entity.isEntity() ) {
-            println ("entity ${entity.getEntityComponent().name} watches..")
+      //      println ("entity ${entity.getEntityComponent().name} watches..")
 
             entity[ActionWatchComponent.mapper]!!.executed = true
         }

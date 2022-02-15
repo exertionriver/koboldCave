@@ -21,6 +21,7 @@ class ActionPlexSystem(private val pooledEngine: PooledEngine, val initInterval 
         pooledEngine.addSystem(ActionInstantiateSystem())
         pooledEngine.addSystem(ActionLookSystem())
         pooledEngine.addSystem(ActionSimpleMoveSystem())
+        pooledEngine.addSystem(ActionSimpleDecideMoveSystem())
         pooledEngine.addSystem(ActionMoveSystem())
         pooledEngine.addSystem(ActionFulfillMoveSystem())
         pooledEngine.addSystem(ActionReflectSystem())

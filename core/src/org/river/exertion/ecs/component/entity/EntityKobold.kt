@@ -11,6 +11,9 @@ import org.river.exertion.ecs.component.entity.core.EntityNone
 import org.river.exertion.ecs.component.entity.core.IEntity
 import org.river.exertion.getEntityComponent
 import org.river.exertion.getEnvironmentComponent
+import org.river.exertion.koboldCave.node.NodeLink
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
 import org.river.exertion.koboldCave.node.NodeLink.Companion.getRandomNextNodeLinkAngle
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
@@ -53,6 +56,7 @@ class EntityKobold : IEntity, Component {
     )
     override var extendedActions = mutableMapOf<IActionComponent, Probability>(
         ActionMoveComponent() to Probability(30f, 0),
+        ActionSimpleDecideMoveComponent() to Probability(30f, 0),
         ActionIdleComponent() to Probability(25f, 0),
         ActionLookComponent() to Probability(20f, 0),
         ActionWatchComponent() to Probability(15f, 0),
@@ -70,6 +74,7 @@ class EntityKobold : IEntity, Component {
 
             newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh = cave.getEnvironmentComponent().nodeRoomMesh
             newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom = newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms.first()
+            //TODO: getRandomNodeExcluding(listofPopulatedNodes) to avoid instantiating on other entities
             newKobold[ActionMoveComponent.mapper]!!.currentNode = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNode()
             newKobold[ActionMoveComponent.mapper]!!.currentPosition = newKobold[ActionMoveComponent.mapper]!!.currentNode.position
 

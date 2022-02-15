@@ -15,6 +15,9 @@ import org.river.exertion.ecs.component.entity.core.EntityNone
 import org.river.exertion.ecs.component.entity.core.IEntity
 import org.river.exertion.getEntityComponent
 import org.river.exertion.getEnvironmentComponent
+import org.river.exertion.koboldCave.node.NodeLink
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextAngle
+import org.river.exertion.koboldCave.node.NodeLink.Companion.getNextNodeAngle
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.time.Moment
 

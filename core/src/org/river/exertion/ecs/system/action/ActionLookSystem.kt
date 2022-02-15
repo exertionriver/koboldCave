@@ -23,8 +23,8 @@ class ActionLookSystem : IteratingSystem(allOf(ActionLookComponent::class).get()
                     lookDigest += it.getEntityComponent().description + ", "
                 }
             }
-            if (lookDigest.isNotEmpty()) println ("entity ${entity.getEntityComponent().name} sees $lookDigest")
-            else println ("entity ${entity.getEntityComponent().name} sees nothing")
+      //      if (lookDigest.isNotEmpty()) println ("entity ${entity.getEntityComponent().name} sees $lookDigest")
+       //     else println ("entity ${entity.getEntityComponent().name} sees nothing")
 
             entity[ActionLookComponent.mapper]!!.executed = true
         }

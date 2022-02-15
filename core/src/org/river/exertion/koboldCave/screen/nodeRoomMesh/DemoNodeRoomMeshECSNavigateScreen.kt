@@ -81,7 +81,11 @@ class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
                 Kobold.render(batch, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
             }
             PlayerCharacter.render(batch, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
-        }
+
+/*            drawer.filledCircle(playerCharacter[ActionMoveComponent.mapper]!!.currentNode.position, 2F, RenderPalette.ForeColors[3])
+            drawer.filledCircle(playerCharacter[ActionMoveComponent.mapper]!!.forwardNextNodeAngle.first.position, 2F, RenderPalette.ForeColors[4])
+            drawer.filledCircle(playerCharacter[ActionMoveComponent.mapper]!!.backwardNextNodeAngle.first.position, 2F, RenderPalette.ForeColors[5])
+  */      }
 
         controlAreaCamera.update()
         batch.projectionMatrix = controlAreaCamera.combined

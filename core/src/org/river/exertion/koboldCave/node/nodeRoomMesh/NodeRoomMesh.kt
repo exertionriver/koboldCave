@@ -115,11 +115,12 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         //TODO: complete circuit if nearestOtherRoomNode is not past wall
         val otherRoomNodes = getAllRooms().nodes.filter { getNodeRoom(roomExitNode) != getNodeRoom(it) }.toMutableSet()
 
-        val nearestOtherRoomNodes = if (!otherRoomNodes.isEmpty()) otherRoomNodes.nearestNodesOrderedAsc(roomExitNode) else mutableListOf()
+        val nearestOtherRoomNodes = if (otherRoomNodes.isNotEmpty()) otherRoomNodes.nearestNodesOrderedAsc(roomExitNode) else mutableListOf()
 
-        val nearestOtherRoomNode = if (!nearestOtherRoomNodes.isEmpty()) nearestOtherRoomNodes.filter {
+        val nearestOtherRoomNode = nearestOtherRoomNodes.firstOrNull {
             it.attributes.nodeType != NodeAttributes.NodeType.EXIT &&
-            it.attributes.renderState != NodeAttributes.RenderState.RENDERED }[0] else null
+            it.attributes.renderState != NodeAttributes.RenderState.RENDERED
+        }
 
         if (nearestOtherRoomNode != null && nearestOtherRoomNode.position.dst(roomExitNode.position) < NextDistancePx * 1.8) {
             val linkNodeRoom = getNodeRoom(nearestOtherRoomNode)

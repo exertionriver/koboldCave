@@ -57,10 +57,10 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
     var imgAlpha = 0f
     var imgAlphaAsc = false
     lateinit var imgSprite : Texture
-//    lateinit var caveSprite : Texture
+    lateinit var caveSprite : Texture
 
     val spriteBatch = SpriteBatch()
-//    val caveBatch = SpriteBatch()
+    val caveBatch = SpriteBatch()
 
     override fun render(delta: Float) {
 
@@ -85,7 +85,7 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.BACKWARD }
             Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.LEFT }
             Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.RIGHT }
-            Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> { imgAlphaAsc = !imgAlphaAsc }
+            Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> { imgAlphaAsc = !imgAlphaAsc; caveSprite = assets[TextureAssets.Cave2] }
         }
 
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
@@ -94,23 +94,20 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
             controlAreaCamera.update()
             spriteBatch.projectionMatrix = controlAreaCamera.combined
 
-            spriteBatch.draw(imgSprite, 50f, 400f, 500f, 300f )
+            spriteBatch.draw(imgSprite, 50f, 300f, 320f, 280f )
             val curColor = spriteBatch.color
 //            println("imgAlphaAsc: $imgAlphaAsc, imgAlpha: $imgAlpha")
             imgAlpha = if (imgAlpha > 1f) 1f else if (imgAlpha < 0f) 0f else imgAlpha
             imgAlpha = if (imgAlphaAsc) imgAlpha + 0.02f else imgAlpha - 0.02f
             spriteBatch.setColor(curColor.r, curColor.g, curColor.b, imgAlpha)
         }
-/*
+
         caveBatch.use {
             controlAreaCamera.update()
             caveBatch.projectionMatrix = controlAreaCamera.combined
-            caveBatch.draw(caveSprite, 0f, 650f, 300f, 150f )
-            caveBatch.draw(caveSprite, 300f, 650f, 300f, 150f )
-            caveBatch.draw(caveSprite, 600f, 650f, 300f, 150f )
-            caveBatch.draw(caveSprite, 900f, 650f, 300f, 150f )
+            caveBatch.draw(caveSprite, 0f, Gdx.graphics.height.toFloat() - 50f, 1024f, 100f )
         }
-*/
+
         batch.projectionMatrix = camera.combined
         camera.update()
 
@@ -155,9 +152,8 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
 //        println("done!")
 
         assets[MusicAssets.NavajoNight].apply { isLooping = true }.play()
-        imgSprite = assets[TextureAssets.Suenos]
-//        caveSprite = assets[TextureAssets.Cave]
-//        imgSprite.setAlpha(imgAlpha)
+        imgSprite = assets[TextureAssets.Kobold]
+        caveSprite = assets[TextureAssets.Cave1]
     }
 
     override fun pause() {

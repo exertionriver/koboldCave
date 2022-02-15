@@ -32,7 +32,9 @@ operator fun AssetManager.get(asset: MusicAssets) = getAsset<Music>(asset.path)
 
 // texture atlas
 enum class TextureAssets(val path: String) {
-    Suenos("images/taos_suenos.jpg")
+    Kobold("images/kobold1.jpg"),
+    Cave1("images/cave_bg1.jpg"),
+    Cave2("images/cave_bg2.jpg")
 }
 
 fun AssetManager.load(asset: TextureAssets) = load<Texture>(asset.path)

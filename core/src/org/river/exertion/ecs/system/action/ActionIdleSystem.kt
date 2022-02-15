@@ -13,7 +13,7 @@ class ActionIdleSystem : IteratingSystem(allOf(ActionIdleComponent::class).get()
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         if ( ActionPlexSystem.readyToExecute(entity, ActionIdleComponent.mapper) && entity.isEntity() ) {
-            println ("entity ${entity.getEntityComponent().name} putters around for a bit..")
+          //  println ("entity ${entity.getEntityComponent().name} putters around for a bit..")
 
             entity[ActionIdleComponent.mapper]!!.executed = true
         }
