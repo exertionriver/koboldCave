@@ -8,8 +8,7 @@ import ktx.ashley.contains
 import ktx.ashley.get
 import org.river.exertion.*
 import org.river.exertion.ecs.component.action.*
-import org.river.exertion.ecs.system.action.ActionFulfillMoveSystem.Companion.tooClose
-import org.river.exertion.koboldCave.node.Node.Companion.angleBetween
+import org.river.exertion.geom.node.Node.Companion.angleBetween
 
 class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponent::class).get(), 1/120f) {
 

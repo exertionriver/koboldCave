@@ -13,8 +13,7 @@ import org.river.exertion.ecs.component.action.core.ActionPlexComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.ecs.component.environment.core.EnvironmentNone
 import org.river.exertion.ecs.component.environment.core.IEnvironment
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldQueue.time.Moment
 import java.util.*
 

@@ -8,16 +8,13 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.math.MathUtils.cos
-import com.badlogic.gdx.math.MathUtils.sin
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Align
-import org.river.exertion.koboldCave.node.Node
+import org.river.exertion.geom.node.Node
 import space.earlygrey.shapedrawer.ShapeDrawer
 import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.atan
 import kotlin.math.roundToInt
 
 typealias Point = Vector2

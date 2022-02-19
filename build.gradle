@@ -23,7 +23,6 @@ allprojects {
         gdxVersion = '1.10.0'
         roboVMVersion = '2.3.12'
         box2DLightsVersion = '1.5'
-        ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
         ktxVersion = '1.10.0-rc1'
         kotlinxVersion = '1.5.2'
@@ -35,6 +34,8 @@ allprojects {
         mavenCentral()
         maven { url 'https://jitpack.io' }
         maven { url 'https://kotlin.bintray.com/kotlinx/' }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
 }
 
@@ -110,5 +111,6 @@ project(":core") {
         testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
         testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
         implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxVersion"
+        implementation "com.badlogicgames.gdx:gdx-ai:$aiVersion"
     }
 }

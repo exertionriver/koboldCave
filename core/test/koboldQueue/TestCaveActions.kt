@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import org.river.exertion.ecs.component.environment.EnvironmentCave
 import org.river.exertion.ecs.system.action.core.ActionPlexSystem
 import org.river.exertion.getEnvironmentComponent
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi

@@ -8,10 +8,8 @@ import org.river.exertion.ecs.component.action.core.ActionNoneComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.ActionType
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.koboldCave.node.Node
-import org.river.exertion.koboldCave.node.NodeLink
-import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
+import org.river.exertion.geom.node.Node
+import org.river.exertion.geom.node.nodeMesh.NodeRoom
 
 class ActionSimpleMoveComponent(base : Boolean = false)  : IActionComponent, Component {
 

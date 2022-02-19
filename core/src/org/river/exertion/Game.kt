@@ -11,17 +11,7 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
-import org.river.exertion.koboldCave.screen.lattice.*
-import org.river.exertion.koboldCave.screen.leaf.*
-import org.river.exertion.koboldCave.screen.nodeLine.DemoNodeLineAngledScreen
-import org.river.exertion.koboldCave.screen.nodeLine.DemoNodeLineBorderingScreen
-import org.river.exertion.koboldCave.screen.nodeLine.DemoNodeLineHeightScreen
-import org.river.exertion.koboldCave.screen.nodeMesh.DemoNodeMeshOperationsFirstScreen
-import org.river.exertion.koboldCave.screen.nodeMesh.DemoNodeMeshOperationsSecondScreen
-import org.river.exertion.koboldCave.screen.nodeMesh.DemoNodeMeshOperationsThirdScreen
-import org.river.exertion.koboldCave.screen.nodeRoom.*
-import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshECSNavigateScreen
-import org.river.exertion.koboldCave.screen.nodeRoomMesh.DemoNodeRoomMeshECSRotateNavigateScreen
+import org.river.exertion.demos.s2d.DemoNodeRoomS2DNavigateScreen
 
 class Game : KtxGame<KtxScreen>() {
     private val context = Context()
@@ -77,12 +67,13 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeRoomECSNavigateScreen( inject(), inject(), inject(), inject() ) )
           addScreen(DemoNodeRoomECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 */
-            addScreen(DemoNodeRoomMeshECSNavigateScreen( inject(), inject(), inject(), inject() ) )
-/*            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
+/*            addScreen(DemoNodeRoomMeshECSNavigateScreen( inject(), inject(), inject(), inject() ) )
+            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 */
+            addScreen(DemoNodeRoomS2DNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
         }
 
-        setScreen<DemoNodeRoomMeshECSNavigateScreen>()
+        setScreen<DemoNodeRoomS2DNavigateScreen>()
 //        super.create()
     }
 

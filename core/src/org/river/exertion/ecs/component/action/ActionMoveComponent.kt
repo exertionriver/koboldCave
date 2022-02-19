@@ -1,9 +1,7 @@
 package org.river.exertion.ecs.component.action
 
 import com.badlogic.ashley.core.Component
-import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.graphics.OrthographicCamera
-import ktx.ashley.get
 import ktx.ashley.mapperFor
 import org.river.exertion.Angle
 import org.river.exertion.Point
@@ -11,11 +9,11 @@ import org.river.exertion.ecs.component.action.core.ActionNoneComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.ActionType
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.koboldCave.node.Node
-import org.river.exertion.koboldCave.node.NodeLink
-import org.river.exertion.koboldCave.node.nodeMesh.NodeLine
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.geom.node.Node
+import org.river.exertion.geom.node.NodeLink
+import org.river.exertion.geom.node.nodeMesh.NodeLine
+import org.river.exertion.geom.node.nodeMesh.NodeRoom
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldQueue.time.Moment
 
 class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component {

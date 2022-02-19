@@ -5,8 +5,7 @@ import com.badlogic.ashley.core.Entity
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionPlexComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.koboldCave.node.nodeMesh.NodeRoom
-import org.river.exertion.koboldCave.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.time.Moment
 
