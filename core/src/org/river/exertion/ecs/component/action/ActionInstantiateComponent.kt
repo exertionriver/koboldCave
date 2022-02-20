@@ -1,6 +1,7 @@
 package org.river.exertion.ecs.component.action
 
 import com.badlogic.ashley.core.Component
+import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.ashley.mapperFor
 import org.river.exertion.ecs.component.action.core.ActionNoneComponent
 import org.river.exertion.ecs.component.action.core.ActionState
@@ -26,6 +27,8 @@ class ActionInstantiateComponent(base : Boolean = false)  : IActionComponent, Co
     //in moments
     override var stateCountdown = 0
     override var executed = false
+
+    lateinit var stage : Stage
 
     companion object {
         val mapper = mapperFor<ActionInstantiateComponent>()

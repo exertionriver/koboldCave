@@ -155,3 +155,6 @@ object InputHandler {
         }
     }
 }
+
+const val ECS_S2D_BRIDGE = 1
+const val S2D_ECS_BRIDGE = 2

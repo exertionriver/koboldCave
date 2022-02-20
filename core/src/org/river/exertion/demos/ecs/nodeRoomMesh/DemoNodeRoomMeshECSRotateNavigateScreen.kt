@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.app.KtxScreen
 import ktx.ashley.contains
 import ktx.ashley.get
@@ -33,6 +34,7 @@ import org.river.exertion.s2d.ActorPlayerCharacter
 class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
                                               private val font: BitmapFont,
                                               private val assets: AssetManager,
+                                              private val stage: Stage,
                                               private val camera: OrthographicCamera) : KtxScreen {
 
     val horizOffset = Game.initViewportWidth / 11
@@ -44,8 +46,8 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
     val visualRadius = NextDistancePx * 1.5f
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
-    val cave = EnvironmentCave.instantiate(engine, "spookyCave", nodeRoomMesh)
-    val playerCharacter = EntityPlayerCharacter.instantiate(engine, cave = cave, camera = camera)
+    val cave = EnvironmentCave.instantiate(engine, stage,"spookyCave", nodeRoomMesh)
+    val playerCharacter = EntityPlayerCharacter.instantiate(engine, stage, cave = cave, camera = camera)
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()

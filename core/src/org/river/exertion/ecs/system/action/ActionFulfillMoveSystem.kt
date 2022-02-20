@@ -2,12 +2,14 @@ package org.river.exertion.ecs.system.action
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
+import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import ktx.ashley.allOf
 import ktx.ashley.contains
 import ktx.ashley.get
 import org.river.exertion.*
 import org.river.exertion.ecs.component.action.*
+import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
 import org.river.exertion.geom.node.Node.Companion.angleBetween
 
 class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponent::class).get(), 1/120f) {
@@ -129,6 +131,9 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                 entity[ActionMoveComponent.mapper]!!.backwardStepEasing--
 //                println("backwardStepEasing:$backwardStepEasing, stepPath.nodes.size: ${stepPath.nodes.size}, currentIdx: $currentIdx, currentAngle:$currentAngle")
             }
+
+            if ((currentPosition != entity[ActionMoveComponent.mapper]!!.currentPosition) || (currentAngle != entity[ActionMoveComponent.mapper]!!.currentAngle) )
+                MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, ECS_S2D_BRIDGE, entity[ActionMoveComponent.mapper]!!)
         }
     }
 

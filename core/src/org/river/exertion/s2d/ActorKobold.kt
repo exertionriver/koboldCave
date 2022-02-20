@@ -1,25 +1,39 @@
 package org.river.exertion.s2d
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ai.msg.MessageManager
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import org.river.exertion.*
 import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.geom.Line.Companion.onSegment
 import org.river.exertion.RenderPalette
+import org.river.exertion.ecs.component.action.ActionMoveComponent
 import space.earlygrey.shapedrawer.JoinType
 
-class ActorKobold(initName : String, initPosition : Point, initAngle : Angle) : Image() {
+class ActorKobold(initName : String, initPosition : Point, initAngle : Angle) : Actor(), BaseActor {
+
+    override var actorName: String = initName
+    override var currentPosition = initPosition
+    override var currentAngle = initAngle
 
     init {
         name = initName
         x = initPosition.x
         y = initPosition.y
         rotation = initAngle
+        MessageManager.getInstance().addListener(this, ECS_S2D_BRIDGE)
     }
 
     override fun draw(batch : Batch, parentAlpha : Float) {
+        x = currentPosition.x
+        y = currentPosition.y
+        rotation = currentAngle
+
         render(batch, Point(x, y), rotation, scaleX)
     }
 

@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.app.KtxScreen
 import ktx.ashley.contains
 import ktx.ashley.get
@@ -31,6 +32,7 @@ import org.river.exertion.s2d.ActorPlayerCharacter
 class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
                                         private val font: BitmapFont,
                                         private val assets: AssetManager,
+                                        private val stage: Stage,
                                         private val camera: OrthographicCamera) : KtxScreen {
 
     val horizOffset = Game.initViewportWidth / 11
@@ -40,8 +42,8 @@ class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
     var nodeRoomMesh = NodeRoomMesh(NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f)))
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
-    val cave = EnvironmentCave.instantiate(engine, "spookyCave", nodeRoomMesh)
-    val playerCharacter = EntityPlayerCharacter.instantiate(engine, cave = cave, camera = null)
+    val cave = EnvironmentCave.instantiate(engine, stage, "spookyCave", nodeRoomMesh)
+    val playerCharacter = EntityPlayerCharacter.instantiate(engine, stage, cave = cave, camera = null)
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
@@ -79,15 +81,18 @@ class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
         batch.use {
             cave[EnvironmentCave.mapper]!!.nodeRoomMesh.render(batch)
 
-            engine.entities.filter { checkEntity -> checkEntity.isEntity() && checkEntity.contains(EntityKobold.mapper) }.forEach { renderKobold ->
-                ActorKobold.render(batch, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
-            }
-            ActorPlayerCharacter.render(batch, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
+//            engine.entities.filter { checkEntity -> checkEntity.isEntity() && checkEntity.contains(EntityKobold.mapper) }.forEach { renderKobold ->
+//                ActorKobold.render(batch, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
+ //           }
+  //          ActorPlayerCharacter.render(batch, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
 
 /*            drawer.filledCircle(playerCharacter[ActionMoveComponent.mapper]!!.currentNode.position, 2F, RenderPalette.ForeColors[3])
             drawer.filledCircle(playerCharacter[ActionMoveComponent.mapper]!!.forwardNextNodeAngle.first.position, 2F, RenderPalette.ForeColors[4])
             drawer.filledCircle(playerCharacter[ActionMoveComponent.mapper]!!.backwardNextNodeAngle.first.position, 2F, RenderPalette.ForeColors[5])
   */      }
+
+        stage.draw()
+        stage.act()
 
         controlAreaCamera.update()
         batch.projectionMatrix = controlAreaCamera.combined

@@ -3,7 +3,14 @@ package org.river.exertion.ecs.component.entity
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ai.msg.MessageManager
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.ai.msg.Telegraph
+import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.ashley.*
+import org.river.exertion.ECS_S2D_BRIDGE
+import org.river.exertion.S2D_ECS_BRIDGE
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionPlexComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
@@ -14,6 +21,8 @@ import org.river.exertion.getEnvironmentComponent
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.koboldQueue.time.Moment
+import org.river.exertion.s2d.ActorKobold
+import org.river.exertion.s2d.ActorPlayerCharacter
 import java.util.*
 
 class EntityKobold : IEntity, Component {
@@ -32,6 +41,8 @@ class EntityKobold : IEntity, Component {
 
         entity.add(actionPlex)
 
+//        MessageManager.getInstance().addListener(this, S2D_ECS_BRIDGE)
+
         println ("$initName initialized!")
     }
 
@@ -48,7 +59,7 @@ class EntityKobold : IEntity, Component {
     override var actionPlex = ActionPlexComponent(actionPlexMaxSize, moment)
 
     override var baseActions = mutableListOf<IActionComponent>(
-        ActionLookComponent(base = true), ActionReflectComponent(base = true)
+        ActionLookComponent(base = true), ActionReflectComponent(base = true), MessageComponent()
     )
     override var extendedActions = mutableMapOf<IActionComponent, Probability>(
         ActionMoveComponent() to Probability(30f, 0),
@@ -63,7 +74,7 @@ class EntityKobold : IEntity, Component {
     companion object {
         val mapper = mapperFor<EntityKobold>()
 
-        fun instantiate(engine: PooledEngine, initName : String = "krazza" + Random().nextInt(), cave : Entity) : Entity {
+        fun instantiate(engine: PooledEngine, stage : Stage, initName : String = "krazza" + Random().nextInt(), cave : Entity) : Entity {
             val newKobold = engine.entity {
                 with<EntityKobold>()
             }.apply { this[mapper]?.initialize(initName, this) }
@@ -79,10 +90,24 @@ class EntityKobold : IEntity, Component {
             newKobold[ActionMoveComponent.mapper]!!.currentAngle = randomNodeLinkAngle.second
             newKobold[ActionMoveComponent.mapper]!!.moment = newKobold[mapper]!!.moment
 
+            newKobold[MessageComponent.mapper]!!.name = initName
+
+            stage.addActor(ActorKobold(initName, newKobold[ActionMoveComponent.mapper]!!.currentPosition, newKobold[ActionMoveComponent.mapper]!!.currentAngle ) )
+
             println ("entity ${newKobold.getEntityComponent().name} instantiated at ${newKobold[ActionMoveComponent.mapper]!!.currentNode}, pointing ${newKobold[ActionMoveComponent.mapper]!!.currentAngle}..!")
 
             return newKobold
         }
-
     }
+    /*
+    override fun handleMessage(msg: Telegram?): Boolean {
+        if ( msg != null && msg.sender is ActorKobold) {
+            Gdx.app.log("message","EntityKobold received telegram:${msg.message}, ${(msg.sender as ActorPlayerCharacter).name}, ${msg.extraInfo}")
+
+            return true
+        }
+
+        return false
+    }
+     */
 }

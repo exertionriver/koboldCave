@@ -45,8 +45,8 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
     var nodeRoomMesh = NodeRoomMesh(nodeRoom)
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
-    val cave = EnvironmentCave.instantiate(engine, "spookyCave", nodeRoomMesh)
-    val playerCharacter = EntityPlayerCharacter.instantiate(engine, cave = cave, camera = null)
+    val cave = EnvironmentCave.instantiate(engine, stage, "spookyCave", nodeRoomMesh)
+    val playerCharacter = EntityPlayerCharacter.instantiate(engine, stage, cave = cave, camera = null)
 
     val controlAreaCamera = OrthographicCamera()
 //    val controlAreaViewport = ExtendViewport(Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat(), controlAreaCamera)
@@ -67,27 +67,9 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
         camera.update()
         batch.projectionMatrix = camera.combined
 
-        engine.entities.filter { checkEntity -> checkEntity.isEntity() && checkEntity.contains(EntityKobold.mapper) }.forEach { entity ->
-            val entityKobold = entity[EntityKobold.mapper]!!
-            val entityKoboldMoveComponent = entity[ActionMoveComponent.mapper]!!
-
-            val actorKobold = stage.actors.select { it.name == entityKobold.name }.firstOrNull()
-
-            if (actorKobold == null) {
-                stage.addActor(ActorKobold(entityKobold.name, entityKoboldMoveComponent.currentPosition, entityKoboldMoveComponent.currentAngle).apply { this.addAction(ScaleToAction().apply { this.setScale(0.75f); this.duration = 3f }) })
-            } else {
-                stage.actors.select { it.name == entityKobold.name }.first().setPosition(entityKoboldMoveComponent.currentPosition.x, entityKoboldMoveComponent.currentPosition.y)
-                stage.actors.select { it.name == entityKobold.name }.first().rotation = entityKoboldMoveComponent.currentAngle
-            }
-        }
-
         batch.use {
             cave[EnvironmentCave.mapper]!!.nodeRoomMesh.render(batch)
         }
-
-
-        stage.actors.select { it.name == "PC" }.first().setPosition(playerCharacter[ActionMoveComponent.mapper]!!.currentPosition.x, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition.y)
-        stage.actors.select { it.name == "PC" }.first().rotation = playerCharacter[ActionMoveComponent.mapper]!!.currentAngle
 
         stage.draw()
         stage.act()
@@ -110,11 +92,10 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
     override fun show() {
         Render.initRender(camera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
         controlAreaCamera.setToOrtho(false, Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat())
-
-        val actor = ActorPlayerCharacter("PC", playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle )
-
+/*
+        val actor = ActorPlayerCharacter("PlayerCharacter", playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle )
         stage.addActor(actor.apply { this.addAction(s2aBig) } )
-
+*/
         cave[EnvironmentCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
         cave[EnvironmentCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
 
