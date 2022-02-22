@@ -48,9 +48,11 @@ class DemoNodeRoomHeightScreen(private val batch: Batch,
         Gdx.input.inputProcessor = InputProcessorHandler(camera, nodeRoomList.reduce { allRooms, nodeRoom -> nodeRoom + allRooms }.nodes)
 
         when {
+            Gdx.input.isKeyJustPressed(Input.Keys.R) -> { if (attributes.geomNoise < 100) attributes.geomNoise += 10; rebuildNodeRooms = true }
             Gdx.input.isKeyJustPressed(Input.Keys.T) -> { if (attributes.circleNoise < 100) attributes.circleNoise += 10; rebuildNodeRooms = true }
             Gdx.input.isKeyJustPressed(Input.Keys.Y) -> { if (attributes.angleNoise < 100) attributes.angleNoise += 10; rebuildNodeRooms = true }
             Gdx.input.isKeyJustPressed(Input.Keys.U) -> { if (attributes.heightNoise < 100) attributes.heightNoise += 10; rebuildNodeRooms = true }
+            Gdx.input.isKeyJustPressed(Input.Keys.F) -> { if (attributes.geomNoise > 0) attributes.geomNoise -= 10; rebuildNodeRooms = true }
             Gdx.input.isKeyJustPressed(Input.Keys.G) -> { if (attributes.circleNoise > 0) attributes.circleNoise -= 10; rebuildNodeRooms = true }
             Gdx.input.isKeyJustPressed(Input.Keys.H) -> { if (attributes.angleNoise > 0) attributes.angleNoise -= 10; rebuildNodeRooms = true }
             Gdx.input.isKeyJustPressed(Input.Keys.J) -> { if (attributes.heightNoise > 0) attributes.heightNoise -= 10; rebuildNodeRooms = true }
@@ -81,7 +83,8 @@ class DemoNodeRoomHeightScreen(private val batch: Batch,
                         "(nodes=${nodeRoom.nodes.size}, exits=${nodeRoom.getExitNodes().size})\n" +
                         "(circleNoise:${nodeRoom.attributes.circleNoise})\n" +
                         "(angleNoise:${nodeRoom.attributes.angleNoise})\n" +
-                        "(heightNoise:${nodeRoom.attributes.heightNoise})", ForeColors[nodeRoomIdx % ForeColors.size])
+                        "(heightNoise:${nodeRoom.attributes.heightNoise})\n" +
+                        "(geomNoise:${nodeRoom.attributes.geomNoise})\n", ForeColors[nodeRoomIdx % ForeColors.size])
 
                 if (toggleWalls) {
                     if (rerenderPathsAndWalls) {

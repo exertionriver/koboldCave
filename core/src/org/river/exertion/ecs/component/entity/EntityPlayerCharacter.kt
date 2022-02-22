@@ -77,7 +77,8 @@ class EntityPlayerCharacter : IEntity, Component {
 
             newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh = cave.getEnvironmentComponent().nodeRoomMesh
             newPC[ActionMoveComponent.mapper]!!.currentNodeRoom = newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms.first()
-            newPC[ActionMoveComponent.mapper]!!.currentNode = newPC[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNode()
+            newPC[ActionMoveComponent.mapper]!!.currentNode = newPC[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomUnoccupiedNode()
+            newPC[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = true
             newPC[ActionMoveComponent.mapper]!!.currentPosition = newPC[ActionMoveComponent.mapper]!!.currentNode.position
 
             val randomNodeLinkAngle = newPC[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNextNodeLinkAngle(newPC[ActionMoveComponent.mapper]!!.currentNode)

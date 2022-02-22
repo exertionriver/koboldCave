@@ -82,7 +82,8 @@ class EntityKobold : IEntity, Component {
             newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh = cave.getEnvironmentComponent().nodeRoomMesh
             newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom = newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms.first()
             //TODO: getRandomNodeExcluding(listofPopulatedNodes) to avoid instantiating on other entities
-            newKobold[ActionMoveComponent.mapper]!!.currentNode = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNode()
+            newKobold[ActionMoveComponent.mapper]!!.currentNode = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomUnoccupiedNode()
+            newKobold[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = true
             newKobold[ActionMoveComponent.mapper]!!.currentPosition = newKobold[ActionMoveComponent.mapper]!!.currentNode.position
 
             val randomNodeLinkAngle = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNextNodeLinkAngle(newKobold[ActionMoveComponent.mapper]!!.currentNode)

@@ -64,6 +64,8 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
             if ( (forwardStepEasing > 0) && ((leftTurnEasing + rightTurnEasing) == 0f) ) {
                 val currentIdx = entity[ActionMoveComponent.mapper]!!.stepPath.nodes.size - forwardStepEasing
 //                println("forwardStepEasing:$forwardStepEasing, stepPath.nodes.size: ${stepPath.nodes.size}, currentIdx: $currentIdx, currentAngle:$currentAngle")
+                entity[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = true
+                entity[ActionMoveComponent.mapper]!!.finalNode.attributes.occupied = true
 
                 val currentStepAngle : Angle
 
@@ -73,6 +75,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                     currentStepAngle = entity[ActionMoveComponent.mapper]!!.finalAngle
 //                    entity[ActionMoveComponent.mapper]!!.currentAngle = currentStepAngle
 
+                    entity[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = false
                     entity[ActionMoveComponent.mapper]!!.currentNode = entity[ActionMoveComponent.mapper]!!.finalNode
 
                 } else {
@@ -99,6 +102,8 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
             if ( (backwardStepEasing > 0) && ((leftTurnEasing + rightTurnEasing) == 0f) ) {
                 val currentIdx = entity[ActionMoveComponent.mapper]!!.stepPath.nodes.size - backwardStepEasing
                 //               println("backwardStepEasing:$backwardStepEasing, stepPath.nodes.size: ${stepPath.nodes.size}, currentIdx: $currentIdx, currentAngle:$currentAngle")
+                entity[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = true
+                entity[ActionMoveComponent.mapper]!!.finalNode.attributes.occupied = true
 
                 val currentStepAngle : Angle
 
@@ -108,6 +113,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                     currentStepAngle = entity[ActionMoveComponent.mapper]!!.finalAngle
 //                    entity[ActionMoveComponent.mapper]!!.currentAngle = currentStepAngle
 
+                    entity[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = false
                     entity[ActionMoveComponent.mapper]!!.currentNode = entity[ActionMoveComponent.mapper]!!.finalNode
 
                 } else {

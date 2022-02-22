@@ -12,6 +12,7 @@ import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
 import org.river.exertion.demos.ecs.nodeRoomMesh.DemoNodeRoomMeshECSNavigateScreen
+import org.river.exertion.demos.geom.nodeRoom.DemoNodeRoomHeightScreen
 import org.river.exertion.demos.s2d.DemoNodeRoomS2DNavigateScreen
 
 class Game : KtxGame<KtxScreen>() {
@@ -62,19 +63,19 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeMeshOperationsSecondScreen( inject(), inject(), inject(), inject()) )
             addScreen(DemoNodeMeshOperationsThirdScreen( inject(), inject(), inject(), inject()) )
 
-*/  //          addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
+*/            addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
 
     /*navigation
             addScreen(DemoNodeRoomECSNavigateScreen( inject(), inject(), inject(), inject() ) )
           addScreen(DemoNodeRoomECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 */
-            addScreen(DemoNodeRoomMeshECSNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
+//            addScreen(DemoNodeRoomMeshECSNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
 /*            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 */
-      //      addScreen(DemoNodeRoomS2DNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
+//            addScreen(DemoNodeRoomS2DNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
         }
 
-        setScreen<DemoNodeRoomMeshECSNavigateScreen>()
+        setScreen<DemoNodeRoomHeightScreen>()
 //        super.create()
     }
 

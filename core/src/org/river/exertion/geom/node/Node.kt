@@ -259,6 +259,8 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
 
         fun MutableSet<Node>.getRandomNode() : Node = if (this.isNotEmpty()) this.toList()[Random.nextInt(this.size)] else Node()
 
+        fun MutableSet<Node>.getRandomUnoccupiedNode() : Node = if (this.isNotEmpty()) { val nodeList = this.filter { !it.attributes.occupied }.toList() ; nodeList[Random.nextInt(nodeList.size)] } else Node()
+
         fun MutableSet<Node>.processOrphans(nodeLinks : MutableSet<NodeLink>) : MutableSet<Node> {
 
 //            println("checking for orphaned Nodes to remove...")

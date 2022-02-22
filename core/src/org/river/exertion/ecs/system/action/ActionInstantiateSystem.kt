@@ -20,7 +20,7 @@ class ActionInstantiateSystem : IteratingSystem(allOf(ActionInstantiateComponent
 
             //max three entities spawning for now
             if ( engine.entities.filter { it.isEntity() }.count() < 3) {
-                val newKobold = EntityKobold.instantiate(this.engine as PooledEngine, entity[ActionInstantiateComponent.mapper]!!.stage, cave = entity)
+                EntityKobold.instantiate(this.engine as PooledEngine, entity[ActionInstantiateComponent.mapper]!!.stage, cave = entity)
 
                 entity[ActionInstantiateComponent.mapper]!!.executed = true
             }

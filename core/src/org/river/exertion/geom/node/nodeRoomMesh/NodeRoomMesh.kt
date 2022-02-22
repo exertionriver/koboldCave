@@ -102,6 +102,10 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
         return nodeRooms.filter { it.uuid == nodesMap[currentNode]}.first()
     }
 
+    fun numOccupiedNodes() : Int {
+        return this.nodesMap.keys.filter { it.attributes.occupied }.size
+    }
+
     //called by the room being exited, with the exit node
     fun activateExitNode(currentNode : Node, roomExitNode : Node) {
 

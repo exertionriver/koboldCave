@@ -21,6 +21,7 @@ import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.Node.Companion.averagePositionWithinNodes
 import org.river.exertion.geom.node.Node.Companion.bridgeSegments
 import org.river.exertion.geom.node.Node.Companion.getLineSet
+import org.river.exertion.geom.node.Node.Companion.getRandomUnoccupiedNode
 import org.river.exertion.geom.node.Node.Companion.nearestNodesOrderedAsc
 import org.river.exertion.geom.node.Node.Companion.randomPosition
 import org.river.exertion.geom.node.NodeLink
@@ -55,6 +56,8 @@ interface INodeMesh {
     fun bridgeSegments() { val bridgeMesh = nodes.bridgeSegments(nodeLinks); nodes.addAll(bridgeMesh.nodes) ; nodeLinks.addAll(bridgeMesh.nodeLinks) }
 
     fun getRandomNode() = nodes.getRandomNode()
+
+    fun getRandomUnoccupiedNode() = nodes.getRandomUnoccupiedNode()
 
     fun getRandomNextNodeLinkAngle(node : Node) = nodeLinks.getRandomNextNodeLinkAngle(nodes, node)
 

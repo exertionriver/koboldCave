@@ -53,6 +53,9 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
     val s2aBig = ScaleToAction().apply { this.setScale(2f); this.duration = 5f }
     val s2aSmall = ScaleToAction().apply { this.setScale(0.75f); this.duration = 3f }
 
+    val sdc = ShapeDrawerConfig(batch)
+    val drawer = sdc.getDrawer()
+
     override fun render(delta: Float) {
 
         InputHandler.handleInput(camera)
@@ -69,6 +72,10 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
 
         batch.use {
             cave[EnvironmentCave.mapper]!!.nodeRoomMesh.render(batch)
+
+//            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.nodesMap.keys.filter { it.attributes.occupied }.forEach {
+//                drawer.filledCircle(it.position, 2F, RenderPalette.ForeColors[3])
+//            }
         }
 
         stage.draw()
@@ -78,9 +85,11 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
         batch.projectionMatrix = controlAreaCamera.combined
 
         batch.use {
-            font.drawLabel(batch, Point(300f, 100f), "${playerCharacter[ActionMoveComponent.mapper]!!.currentNode}\n${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink}\n" +
-                    "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys)}", RenderPalette.ForeColors[1])
+            font.drawLabel(batch, Point(300f, 200f), "${playerCharacter[ActionMoveComponent.mapper]!!.currentNode}\n${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink}\n" +
+                    "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys)}\n" +
+                    "occupiedNodes:${cave[EnvironmentCave.mapper]!!.nodeRoomMesh.numOccupiedNodes()}/${cave[EnvironmentCave.mapper]!!.nodeRoomMesh.nodesMap.size}", RenderPalette.ForeColors[1])
         }
+
 
         engine.update(delta)
 

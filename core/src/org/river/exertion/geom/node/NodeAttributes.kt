@@ -5,6 +5,8 @@ import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 
 class NodeAttributes {
 
+    var occupied = false
+
     enum class NodeType {
         CENTROID //usually not within rendered mesh nodes
         , START

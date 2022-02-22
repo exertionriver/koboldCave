@@ -1,5 +1,6 @@
 package org.river.exertion.geom.node.nodeMesh
 
+import com.badlogic.gdx.Gdx
 import org.river.exertion.koboldQueue.condition.Probability
 import org.river.exertion.koboldQueue.condition.ProbabilitySelect
 import org.river.exertion.*
@@ -36,17 +37,19 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
     constructor(attributes: NodeRoomAttributes, centerPoint: Point, borderRooms : NodeRoom = NodeRoom()
                 , exitsAllowed : Int = maxGenerativeExits, initCentroid : Node? = null ) : this (
         attributes.geomType, attributes.geomStyle, centerPoint, attributes.geomHeight, attributes.circleNoise, attributes.angleNoise, attributes.heightNoise
+        , attributes.geomNoise
         , borderRooms, exitsAllowed, initCentroid
     )
 
         //build constructor
     constructor(geomType: NodeRoomAttributes.GeomType = NodeRoomAttributes.GeomType.LEAF
-                , geomStyle: NodeRoomAttributes.GeomStyle = NodeRoomAttributes.GeomStyle.CIRCLE
-                , centerPoint: Point, height: Int = 3, circleNoise : Int = 50, angleNoise : Int = 50, heightNoise : Int = 50, borderRooms : NodeRoom = NodeRoom()
+                , geomStyle: NodeRoomAttributes.GeomStyle = NodeRoomAttributes.GeomStyle.CIRCLE_IN
+                , centerPoint: Point, height: Int = 3, circleNoise : Int = 50, angleNoise : Int = 50, heightNoise : Int = 50, geomNoise : Int = 0
+                , borderRooms : NodeRoom = NodeRoom()
                 , exitsAllowed : Int = maxGenerativeExits, initCentroid : Node? = null ) : this (
     ) {
 
-        val workNodeRoom = centerPoint.buildNodeRoom(geomType, geomStyle, height, circleNoise, angleNoise, heightNoise, borderRooms, initCentroid)
+        val workNodeRoom = centerPoint.buildNodeRoom(geomType, geomStyle, height, circleNoise, angleNoise, heightNoise, geomNoise, borderRooms, initCentroid)
 
         this.description = workNodeRoom.description
         this.nodes = mutableSetOf<Node>().apply { addAll(workNodeRoom.nodes) }
@@ -61,6 +64,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
         this.attributes.circleNoise = circleNoise
         this.attributes.angleNoise = angleNoise
         this.attributes.heightNoise = heightNoise
+        this.attributes.geomNoise = geomNoise
 
         this.attributes.geomType = geomType
         this.attributes.geomStyle = geomStyle
@@ -124,7 +128,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
         val maxGenerativeExits = 4
 
         fun Point.buildNodeRoom(geomType: NodeRoomAttributes.GeomType, geomStyle: NodeRoomAttributes.GeomStyle
-            , height : Int, circleNoise : Int = 0, angleNoise : Int = 0, heightNoise : Int = 0
+            , height : Int, circleNoise : Int = 0, angleNoise : Int = 0, heightNoise : Int = 0, geomNoise : Int = 0
             , borderRooms : NodeRoom = NodeRoom(), centroid : Node?) : NodeRoom {
 
             var roomMesh = NodeRoom()
@@ -206,7 +210,23 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                     }
 
                 }
-                else -> { //CIRCLE / NONE
+                NodeRoomAttributes.GeomStyle.CIRCLE_OUT -> {
+                    val pointsOnCircle = height
+                    val sliceOnCircle = 360F / height
+
+                    (1..pointsOnCircle).toList().forEach{ idx ->
+                        val pointOnCircle = ( sliceOnCircle * idx ).normalizeDeg()
+                        val pointNoiseOnCircle = Probability(sliceOnCircle, sliceOnCircle / 2 * cappedCircleNoise / 100).getValue().normalizeDeg()
+                        val noisyPointOnCircle = pointOnCircle + pointNoiseOnCircle
+
+                        //points back to the center of the circle
+                        val angleNoiseOnCircle = Probability(180f, 60f * cappedAngleNoise / 100).getValue().normalizeDeg()
+                        val noisyAngleOnCircle = (angleNoiseOnCircle + noisyPointOnCircle).normalizeDeg()
+
+                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position
+                    }
+                }
+                else -> { //CIRCLE_IN / NONE
                     val pointsOnCircle = height
                     val sliceOnCircle = 360F / height
 
@@ -225,6 +245,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
             }
 
             val cappedHeightNoise = if (heightNoise > 100) 100 else if (heightNoise < 0) 0 else heightNoise
+            val cappedGeomNoise = if (geomNoise > 100) 100 else if (geomNoise < 0) 0 else geomNoise
 
             geomMap.forEach {
 
@@ -239,7 +260,20 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                     )
                 ).getSelectedProbability()!!.toInt()
 
-                roomMesh += when (geomType) {
+                //geomNoise
+                val minGeomProbability = 100 / NodeRoomAttributes.GeomType.values().size
+                val geomProbability = minGeomProbability + (100 - minGeomProbability) * (100 - cappedGeomNoise) / 100
+                val otherGeomProbability = (100 - geomProbability) / (NodeRoomAttributes.GeomType.values().size - 1)
+
+//                Gdx.app.log("geomNoise", "noise:$geomNoise, prob:$geomProbability, other:$otherGeomProbability")
+
+                val noisyGeomMap = mutableMapOf(geomType to Probability(geomProbability, 0))
+                NodeRoomAttributes.GeomType.values().forEach { checkGeomType ->
+                    if (checkGeomType != geomType) noisyGeomMap[checkGeomType] = Probability(otherGeomProbability, 0)
+                }
+                val noisyGeom = ProbabilitySelect(noisyGeomMap.toMap()).getSelectedProbability()!!
+
+                roomMesh += when (noisyGeom) {
                     NodeRoomAttributes.GeomType.LACE -> NodeRoom(Lace(topHeight = noisyHeight, topAngle = it.key, position = it.value).nodeMesh().setBordering(borderRooms, NextDistancePx * .5, Node(position = this)) as NodeMesh)
                     NodeRoomAttributes.GeomType.ROUNDED_LATTICE -> NodeRoom(RoundedLattice(topHeight = noisyHeight, topAngle = it.key, position = it.value).nodeMesh().setBordering(borderRooms, NextDistancePx * .5, Node(position = this)) as NodeMesh)
                     NodeRoomAttributes.GeomType.ARRAY_LATTICE -> NodeRoom(ArrayLattice(topHeight = noisyHeight, topAngle = it.key, position = it.value).nodeMesh().setBordering(borderRooms, NextDistancePx * .5, Node(position = this)) as NodeMesh)
