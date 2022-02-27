@@ -181,7 +181,6 @@ class Node(val uuid: UUID = UUID.randomUUID(), val position : Point, val descrip
             return returnNodeLinks
         }
 
-        //TODO: retain previous links
         fun MutableSet<Node>.linkNearNodes(nodeLinks : MutableSet<NodeLink> = mutableSetOf(), nodeMeshToBorder : INodeMesh? = null, orthoBorderDistance : Double = NextDistancePx * 0.2, linkOrphans : Boolean = true) : MutableSet<NodeLink> {
 //            println("checking for nodes to link...")
             val returnNodeLinks = nodeLinks

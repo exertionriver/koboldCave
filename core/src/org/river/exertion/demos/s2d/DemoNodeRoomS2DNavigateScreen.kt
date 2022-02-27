@@ -41,7 +41,7 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
     val cave = LocationCave.instantiate(engine, stage, "spookyCave", nodeRoomMesh)
-    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, stage, cave = cave, camera = null)
+    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, stage, location = cave, camera = null)
 
     val controlAreaCamera = OrthographicCamera()
 //    val controlAreaViewport = ExtendViewport(Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat(), controlAreaCamera)

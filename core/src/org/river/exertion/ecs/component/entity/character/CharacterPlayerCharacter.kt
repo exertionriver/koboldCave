@@ -12,11 +12,10 @@ import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.ecs.component.entity.location.ILocation
 import org.river.exertion.s2d.ActorPlayerCharacter
 
-class CharacterPlayerCharacter : IEntity, Component {
+class CharacterPlayerCharacter : ICharacter, Component {
 
     override lateinit var entityName : String
 
@@ -42,28 +41,16 @@ class CharacterPlayerCharacter : IEntity, Component {
 
         fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is CharacterPlayerCharacter } != null }
 
-        fun instantiate(engine: PooledEngine, stage : Stage, initName : String = "PlayerCharacter", cave : Entity, camera : OrthographicCamera?) : Entity {
+        fun instantiate(engine: PooledEngine, stage : Stage, initName : String = "PlayerCharacter", location : Entity, camera : OrthographicCamera?) : Entity {
             val newPC = engine.entity {
                 with<CharacterPlayerCharacter>()
             }.apply { this[mapper]?.initialize(initName, this) }
 
-            //TODO: put following code in initialize()?
-            newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh = ILocation.getFor(cave)!!.nodeRoomMesh
-            newPC[ActionMoveComponent.mapper]!!.currentNodeRoom = newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms.first()
-            newPC[ActionMoveComponent.mapper]!!.currentNode = newPC[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomUnoccupiedNode()
-            newPC[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = true
-            newPC[ActionMoveComponent.mapper]!!.currentPosition = newPC[ActionMoveComponent.mapper]!!.currentNode.position
-
-            val randomNodeLinkAngle = newPC[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNextNodeLinkAngle(newPC[ActionMoveComponent.mapper]!!.currentNode)
-            newPC[ActionMoveComponent.mapper]!!.currentNodeLink = randomNodeLinkAngle.first
-            newPC[ActionMoveComponent.mapper]!!.currentAngle = randomNodeLinkAngle.second
-            newPC[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.NONE
-
-            newPC[ActionMoveComponent.mapper]!!.camera = camera
+            newPC[ActionMoveComponent.mapper]!!.initialize(ILocation.getFor(location)!!, camera)
 
             stage.addActor(ActorPlayerCharacter(initName, newPC[ActionMoveComponent.mapper]!!.currentPosition, newPC[ActionMoveComponent.mapper]!!.currentAngle ) )
 
-            Gdx.app.log (this.javaClass.name, "entity $initName instantiated at ${newPC[ActionMoveComponent.mapper]!!.currentNode}, pointing ${newPC[ActionMoveComponent.mapper]!!.currentAngle}..!")
+            Gdx.app.log (this.javaClass.name, "$initName instantiated at ${newPC[ActionMoveComponent.mapper]!!.currentNode}, pointing ${newPC[ActionMoveComponent.mapper]!!.currentAngle}..!")
 
             return newPC
         }

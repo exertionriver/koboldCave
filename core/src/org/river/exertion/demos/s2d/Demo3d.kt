@@ -50,7 +50,7 @@ class Demo3d(private val menuBatch: Batch,
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
     val cave = LocationCave.instantiate(engine, menuStage, "spookyCave", nodeRoomMesh)
-    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, menuStage, cave = cave, camera = null)
+    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, menuStage, location = cave, camera = null)
 
 //    val controlAreaCamera = OrthographicCamera()
     val gameAreaViewport = StretchViewport(Game.initViewportWidth, Game.initViewportHeight, gameCamera)

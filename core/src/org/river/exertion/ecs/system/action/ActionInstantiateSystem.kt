@@ -7,6 +7,7 @@ import ktx.ashley.*
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.entity.character.CharacterKobold
 import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.component.entity.character.ICharacter
 import org.river.exertion.ecs.component.entity.location.ILocation
 
 class ActionInstantiateSystem : IteratingSystem(allOf(ActionInstantiateComponent::class).get()) {
@@ -17,8 +18,8 @@ class ActionInstantiateSystem : IteratingSystem(allOf(ActionInstantiateComponent
             entity[MomentComponent.mapper]!!.reset(this.javaClass.name)
 
             //max three entities spawning for now
-            if ( engine.entities.filter { IEntity.has(it) }.count() < 3) {
-                CharacterKobold.instantiate(this.engine as PooledEngine, entity[ActionInstantiateComponent.mapper]!!.stage, cave = entity)
+            if ( engine.entities.filter { CharacterKobold.has(it) }.count() < 2) {
+                CharacterKobold.instantiate(this.engine as PooledEngine, entity[ActionInstantiateComponent.mapper]!!.stage, location = entity)
             }
         }
     }

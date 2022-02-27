@@ -50,7 +50,7 @@ class LocationCave : ILocation, Component {
             }
             newCave[ActionInstantiateComponent.mapper]!!.stage = stage
 
-            Gdx.app.log (this.javaClass.name, "environment $initName instantiated..!")
+            Gdx.app.log (this.javaClass.name, "$initName instantiated..!")
 
             return newCave
         }

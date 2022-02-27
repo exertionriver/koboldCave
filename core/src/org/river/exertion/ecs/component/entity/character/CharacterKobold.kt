@@ -5,17 +5,19 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Stage
-import ktx.ashley.*
-import org.river.exertion.ecs.component.action.*
-import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.IEntity
+import ktx.ashley.entity
+import ktx.ashley.get
+import ktx.ashley.mapperFor
+import ktx.ashley.with
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
+import org.river.exertion.ecs.component.action.*
+import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.ecs.component.entity.location.ILocation
 import org.river.exertion.s2d.ActorKobold
 import java.util.*
 
-class CharacterKobold : IEntity, Component {
+class CharacterKobold : ICharacter, Component {
 
     override lateinit var entityName : String
 
@@ -51,21 +53,12 @@ class CharacterKobold : IEntity, Component {
 
         fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is CharacterKobold } != null }
 
-        fun instantiate(engine: PooledEngine, stage : Stage, initName : String = "krazza" + Random().nextInt(), cave : Entity) : Entity {
+        fun instantiate(engine: PooledEngine, stage : Stage, initName : String = "krazza" + Random().nextInt(), location : Entity) : Entity {
             val newKobold = engine.entity {
                 with<CharacterKobold>()
             }.apply { this[mapper]?.initialize(initName, this) }
 
-            newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh = ILocation.getFor(cave)!!.nodeRoomMesh
-            newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom = newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms.first()
-            //TODO: getRandomNodeExcluding(listofPopulatedNodes) to avoid instantiating on other entities
-            newKobold[ActionMoveComponent.mapper]!!.currentNode = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomUnoccupiedNode()
-            newKobold[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = true
-            newKobold[ActionMoveComponent.mapper]!!.currentPosition = newKobold[ActionMoveComponent.mapper]!!.currentNode.position
-
-            val randomNodeLinkAngle = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomNextNodeLinkAngle(newKobold[ActionMoveComponent.mapper]!!.currentNode)
-            newKobold[ActionMoveComponent.mapper]!!.currentNodeLink = randomNodeLinkAngle.first
-            newKobold[ActionMoveComponent.mapper]!!.currentAngle = randomNodeLinkAngle.second
+            newKobold[ActionMoveComponent.mapper]!!.initialize(ILocation.getFor(location)!!)
 
             stage.addActor(ActorKobold(initName, newKobold[ActionMoveComponent.mapper]!!.currentPosition, newKobold[ActionMoveComponent.mapper]!!.currentAngle ) )
 

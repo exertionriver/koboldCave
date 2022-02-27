@@ -45,7 +45,7 @@ class DemoS2DTableScrollUI(private val menuBatch: Batch,
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
     val cave = LocationCave.instantiate(engine, menuStage, "spookyCave", nodeRoomMesh)
-    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, menuStage, cave = cave, camera = null)
+    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, menuStage, location = cave, camera = null)
 
     val sdc = ShapeDrawerConfig(menuBatch)
     val drawer = sdc.getDrawer()

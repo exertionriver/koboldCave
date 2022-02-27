@@ -294,7 +294,6 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
             return roomMesh
         }
 
-        //todo: exclude angles that open into existing rooms
         fun NodeRoom.setExitNodes(exitsAllowed : Int) {
 
             val returnNodes = mutableListOf<Node>()

@@ -1,11 +1,14 @@
 package org.river.exertion.ecs.component.action
 
 import com.badlogic.ashley.core.Component
+import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.graphics.OrthographicCamera
+import ktx.ashley.get
 import ktx.ashley.mapperFor
 import org.river.exertion.Angle
 import org.river.exertion.Point
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.entity.location.ILocation
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.NodeLink
 import org.river.exertion.geom.node.nodeMesh.NodeLine
@@ -17,6 +20,25 @@ class ActionMoveComponent : IActionComponent, Component {
     enum class Direction { NONE, FORWARD, BACKWARD, LEFT, RIGHT }
 
     override val componentName = "Move"
+
+    fun initialize(location : ILocation, camera: OrthographicCamera? = null) {
+
+        this.nodeRoomMesh = location.nodeRoomMesh
+        this.currentNodeRoom = this.nodeRoomMesh.nodeRooms.first()
+        this.currentNode = this.currentNodeRoom.getRandomUnoccupiedNode()
+        this.currentNode.attributes.occupied = true
+        this.currentPosition = this.currentNode.position
+
+        val randomNodeLinkAngle = this.currentNodeRoom.getRandomNextNodeLinkAngle(this.currentNode)
+
+        this.currentNodeLink = randomNodeLinkAngle.first
+        this.currentAngle = randomNodeLinkAngle.second
+        this.direction = Direction.NONE
+
+        this.camera = camera
+
+    }
+
 
     //TODO: split this into location component?
     var nodeRoomMesh = NodeRoomMesh()
