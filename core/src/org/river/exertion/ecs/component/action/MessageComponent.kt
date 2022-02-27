@@ -6,12 +6,12 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import ktx.ashley.mapperFor
-import org.river.exertion.S2D_ECS_BRIDGE
+import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.core.ActionNoneComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.ActionType
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.s2d.BaseActor
+import org.river.exertion.s2d.IBaseActor
 
 class MessageComponent(base : Boolean = false)  : IActionComponent, Component, Telegraph {
 
@@ -36,7 +36,7 @@ class MessageComponent(base : Boolean = false)  : IActionComponent, Component, T
     lateinit var name : String
 
     init {
-        MessageManager.getInstance().addListener(this, S2D_ECS_BRIDGE)
+        MessageManager.getInstance().addListener(this, MessageIds.S2D_ECS_BRIDGE.id())
     }
 
     companion object {
@@ -44,8 +44,8 @@ class MessageComponent(base : Boolean = false)  : IActionComponent, Component, T
     }
 
     override fun handleMessage(msg: Telegram?): Boolean {
-        if ( msg != null && (msg.sender as BaseActor).actorName == name) {
-            Gdx.app.log("message","entity $name received telegram:${msg.message}, ${(msg.sender as BaseActor).actorName}, ${msg.extraInfo}")
+        if ( msg != null && (msg.sender as IBaseActor).actorName == name) {
+            Gdx.app.log("message","entity $name received telegram:${msg.message}, ${(msg.sender as IBaseActor).actorName}, ${msg.extraInfo}")
 
             return true
         }

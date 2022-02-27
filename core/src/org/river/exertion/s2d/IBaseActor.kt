@@ -4,20 +4,19 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
-import org.river.exertion.ECS_S2D_BRIDGE
+import org.river.exertion.MessageIds
 import org.river.exertion.Point
-import org.river.exertion.S2D_ECS_BRIDGE
 import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.MessageComponent
 
-interface BaseActor : Telegraph {
+interface IBaseActor : Telegraph {
 
     var actorName : String
     var currentPosition : Point
     var currentAngle : Float
 
     fun init() {
-        MessageManager.getInstance().addListener(this, ECS_S2D_BRIDGE)
+        MessageManager.getInstance().addListener(this, MessageIds.ECS_S2D_BRIDGE.id())
     }
 
     override fun handleMessage(msg: Telegram?): Boolean {
@@ -32,7 +31,7 @@ interface BaseActor : Telegraph {
                 currentAngle = (msg.extraInfo as ActionMoveComponent).currentAngle
             }
 
-            MessageManager.getInstance().dispatchMessage(this, S2D_ECS_BRIDGE)
+            MessageManager.getInstance().dispatchMessage(this, MessageIds.S2D_ECS_BRIDGE.id())
 
             return true
         }

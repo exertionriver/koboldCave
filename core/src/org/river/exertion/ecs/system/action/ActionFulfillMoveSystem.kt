@@ -1,6 +1,7 @@
 package org.river.exertion.ecs.system.action
 
 import com.badlogic.ashley.core.Entity
+import com.badlogic.ashley.core.EntitySystem
 import com.badlogic.ashley.systems.IntervalIteratingSystem
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
@@ -139,7 +140,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
             }
 
             if ((currentPosition != entity[ActionMoveComponent.mapper]!!.currentPosition) || (currentAngle != entity[ActionMoveComponent.mapper]!!.currentAngle) )
-                MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, ECS_S2D_BRIDGE, entity[ActionMoveComponent.mapper]!!)
+                MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, MessageIds.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
         }
     }
 

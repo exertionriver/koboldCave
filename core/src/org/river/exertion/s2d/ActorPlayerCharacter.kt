@@ -2,20 +2,15 @@ package org.river.exertion.s2d
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.msg.MessageManager
-import com.badlogic.gdx.ai.msg.Telegram
-import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import ktx.ashley.get
 import org.river.exertion.*
-import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
 import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
 import space.earlygrey.shapedrawer.JoinType
 
-class ActorPlayerCharacter(initName : String = "PlayerCharacter", initPosition : Point, initAngle : Angle) : Image(), BaseActor {
+class ActorPlayerCharacter(initName : String = "PlayerCharacter", initPosition : Point, initAngle : Angle) : Image(), IBaseActor {
 
     override var actorName: String = initName
     override var currentPosition = initPosition
@@ -26,7 +21,7 @@ class ActorPlayerCharacter(initName : String = "PlayerCharacter", initPosition :
         x = initPosition.x
         y = initPosition.y
         rotation = initAngle
-        MessageManager.getInstance().addListener(this, ECS_S2D_BRIDGE)
+        MessageManager.getInstance().addListener(this, MessageIds.ECS_S2D_BRIDGE.id())
     }
 
     override fun draw(batch : Batch, parentAlpha : Float) {

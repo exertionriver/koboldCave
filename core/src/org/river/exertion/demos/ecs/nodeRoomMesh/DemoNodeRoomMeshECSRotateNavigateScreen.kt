@@ -92,7 +92,6 @@ class DemoNodeRoomMeshECSRotateNavigateScreen(private val batch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> { imgAlphaAsc = !imgAlphaAsc; caveSprite = assets[TextureAssets.Cave2] }
         }
 
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         spriteBatch.use {
             controlAreaCamera.update()

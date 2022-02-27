@@ -1,0 +1,164 @@
+package org.river.exertion.demos.s2d
+
+import com.badlogic.ashley.core.PooledEngine
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g3d.*
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute.createDiffuse
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.viewport.FitViewport
+import com.badlogic.gdx.utils.viewport.StretchViewport
+import ktx.app.KtxScreen
+import ktx.ashley.contains
+import ktx.ashley.get
+import ktx.graphics.use
+import ktx.scene2d.*
+import org.river.exertion.*
+import org.river.exertion.assets.*
+import org.river.exertion.ecs.component.action.ActionMoveComponent
+import org.river.exertion.ecs.component.entity.EntityKobold
+import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
+import org.river.exertion.ecs.component.environment.EnvironmentCave
+import org.river.exertion.ecs.system.action.core.ActionPlexSystem
+import org.river.exertion.geom.node.nodeMesh.NodeRoom
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
+import org.river.exertion.Render
+import org.river.exertion.RenderPalette
+import org.river.exertion.ecs.component.action.core.ActionNoneComponent.label
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderPerspective
+import org.river.exertion.s2d.ActorKobold
+import org.river.exertion.s2d.ActorPlayerCharacter
+import org.river.exertion.s2d.ui.UIPlanTable
+import java.time.LocalDateTime
+import javax.swing.text.AttributeSet.ColorAttribute.*
+
+class DemoS2DTableScrollUI(private val menuBatch: Batch,
+                           private val font: BitmapFont,
+                           private val assets: AssetManager,
+                           private val menuStage: Stage,
+                           private val menuCamera: OrthographicCamera) : KtxScreen {
+
+    val horizOffset = Game.initViewportWidth / 11
+    val vertOffset = Game.initViewportHeight / 11
+    val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
+
+    var nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
+    var nodeRoomMesh = NodeRoomMesh(nodeRoom)
+
+    val engine = PooledEngine().apply { ActionPlexSystem(this) }
+    val cave = EnvironmentCave.instantiate(engine, menuStage, "spookyCave", nodeRoomMesh)
+    val playerCharacter = EntityPlayerCharacter.instantiate(engine, menuStage, cave = cave, camera = null)
+
+    val sdc = ShapeDrawerConfig(menuBatch)
+    val drawer = sdc.getDrawer()
+
+    @Suppress("NewApi")
+    override fun render(delta: Float) {
+
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+        InputHandler.handleInput(menuCamera)
+
+        when {
+            Gdx.input.isKeyJustPressed(Input.Keys.UP) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.FORWARD }
+            Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.BACKWARD }
+            Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.LEFT }
+            Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.RIGHT }
+            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { menuStage.root.findActor<Table>("planTable").add("test ${LocalDateTime.now()}").row() }
+            Gdx.input.isKeyJustPressed(Input.Keys.X) -> { val staticTable = menuStage.root.findActor<Table>("planTable"); if (staticTable.children.size > 0) staticTable.getChild(0).remove() }
+            Gdx.input.isKeyJustPressed(Input.Keys.C) -> { menuStage.root.findActor<Table>("feelingTable").add("test ${LocalDateTime.now()}").row() }
+            Gdx.input.isKeyJustPressed(Input.Keys.B) -> { val scrollTable = menuStage.root.findActor<Table>("feelingTable") ; if (scrollTable.children.size > 0) scrollTable.getChild(0).remove() }
+            Gdx.input.isKeyJustPressed(Input.Keys.N) -> { menuStage.root.findActor<Table>("perceptionTable").add("test ${LocalDateTime.now()}").row() }
+            Gdx.input.isKeyJustPressed(Input.Keys.M) -> { val scrollTable = menuStage.root.findActor<Table>("perceptionTable") ; if (scrollTable.children.size > 0) scrollTable.getChild(0).remove() }
+        }
+
+        menuCamera.update()
+        menuBatch.projectionMatrix = menuCamera.combined
+
+        menuBatch.use {
+            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.render(menuBatch)
+        }
+
+        menuStage.draw()
+        menuStage.act()
+
+        menuBatch.use {
+            font.drawLabel(menuBatch, Point(300f, 200f), "${playerCharacter[ActionMoveComponent.mapper]!!.currentNode}\n${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink}\n" +
+                    "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys)}\n" +
+                    "occupiedNodes:${cave[EnvironmentCave.mapper]!!.nodeRoomMesh.numOccupiedNodes()}/${cave[EnvironmentCave.mapper]!!.nodeRoomMesh.nodesMap.size}", RenderPalette.ForeColors[1])
+        }
+
+        engine.update(delta)
+
+    }
+
+    override fun hide() {
+    }
+
+    override fun show() {
+        Render.initRender(menuCamera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
+
+        Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("skin/clean-crispy-ui.json"))
+
+        menuStage.addActor(UIPlanTable(Scene2DSkin.defaultSkin))
+
+        val feelingTable = scene2d.table {
+            x = Gdx.graphics.width / 8f
+            y = 5 * Gdx.graphics.height / 8f
+            name = "feelingTable"
+            label ("feelingTable")
+        }
+        feelingTable.row()
+        feelingTable.setBounds(feelingTable.x, feelingTable.y, 100f, 50f)
+        feelingTable.debug = true
+        menuStage.addActor(feelingTable)
+
+        val perceptionTable = scene2d.table {
+            x = 2 * Gdx.graphics.width / 8f
+            y = 4 * Gdx.graphics.height / 8f
+            name = "perceptionTable"
+            label ("perceptionTable")
+        }
+        perceptionTable.row()
+        perceptionTable.setBounds(perceptionTable.x, perceptionTable.y, 100f, 300f)
+        perceptionTable.debug = true
+        menuStage.addActor(perceptionTable)
+
+        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
+        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
+
+        // start the playback of the background music when the screen is shown
+        MusicAssets.values().forEach { assets.load(it) }
+        assets.finishLoading()
+//        println("done!")
+        assets[MusicAssets.NavajoNight].apply { isLooping = true }.play()
+    }
+
+    override fun pause() {
+    }
+
+    override fun resume() {
+    }
+
+    override fun resize(width: Int, height: Int) {
+        menuCamera.viewportWidth = width.toFloat()
+        menuCamera.viewportHeight = height.toFloat()
+    }
+
+    override fun dispose() {
+        assets.dispose()
+    }
+}

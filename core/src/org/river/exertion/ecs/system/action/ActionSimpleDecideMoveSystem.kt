@@ -2,8 +2,10 @@ package org.river.exertion.ecs.system.action
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
+import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
 import ktx.ashley.get
+import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.isEntity
 import org.river.exertion.koboldQueue.condition.Probability
@@ -22,6 +24,9 @@ class ActionSimpleDecideMoveSystem : IteratingSystem(allOf(ActionSimpleDecideMov
                     entity[ActionMoveComponent.mapper]!!.direction = randomPositionDirectionExcluding(entity[ActionMoveComponent.mapper]!!.direction)
   //                  println("$entity position-selecting direction ${entity[ActionMoveComponent.mapper]!!.direction}")
                 }
+
+            if (entity[ActionMoveComponent.mapper]!!.direction != ActionMoveComponent.Direction.NONE)
+                MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, MessageIds.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
         }
     }
 

@@ -154,7 +154,32 @@ object InputHandler {
 //                else -> //do nothing
         }
     }
+
+
+    fun handleInput(camera : PerspectiveCamera, refPoint : Point) {
+        when {
+            Gdx.input.isKeyJustPressed(Input.Keys.W) -> { camera.position.y += 10f }
+            Gdx.input.isKeyJustPressed(Input.Keys.S) -> { camera.position.y -= 10f }
+            Gdx.input.isKeyJustPressed(Input.Keys.A) -> { camera.position.x -= 10f }
+            Gdx.input.isKeyJustPressed(Input.Keys.D) -> { camera.position.x += 10f }
+            Gdx.input.isKeyJustPressed(Input.Keys.Q) -> { camera.position.z -= 10f }
+            Gdx.input.isKeyJustPressed(Input.Keys.E) -> { camera.position.z += 10f }
+//usually, it is better to use Quaternion
+
+                Gdx.input.isKeyJustPressed(Input.Keys.R) -> { camera.rotateAround(Vector3(refPoint.x, refPoint.y, 0f), Vector3(1f, 0f, 0f), 30f) }
+                Gdx.input.isKeyJustPressed(Input.Keys.F) -> { camera.rotateAround(Vector3(refPoint.x, refPoint.y, 0f), Vector3(0f, 1f, 0f), 30f) }
+                Gdx.input.isKeyJustPressed(Input.Keys.V) -> { camera.rotateAround(Vector3(refPoint.x, refPoint.y, 0f), Vector3(0f, 0f, 1f), 30f) }
+//                else -> //do nothing
+        }
+    }
 }
 
-const val ECS_S2D_BRIDGE = 1
-const val S2D_ECS_BRIDGE = 2
+enum class MessageIds {
+    ECS_S2D_BRIDGE,
+    S2D_ECS_BRIDGE,
+    PLAN_BRIDGE,
+    PERCEPTION_BRIDGE,
+    FEELING_BRIDGE;
+
+    fun id() = this.ordinal
+}

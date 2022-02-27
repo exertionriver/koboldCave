@@ -1,6 +1,7 @@
 package koboldQueue
 
 import com.badlogic.ashley.core.PooledEngine
+import com.badlogic.gdx.scenes.scene2d.Stage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -23,11 +24,11 @@ class TestKoboldActions {
 
     val engine = PooledEngine().apply { ActionPlexSystem(this) }
 
-    val cave = EnvironmentCave.instantiate(engine, "spookyCave", NodeRoomMesh())
+    val cave = EnvironmentCave.instantiate(engine, Stage(), "spookyCave", NodeRoomMesh())
 
-    val kobold = EntityKobold.instantiate(engine, "gragga", cave)
-    val koboldSecond = EntityKobold.instantiate(engine, "krakka", cave)
-    val koboldThird = EntityKobold.instantiate(engine, "razza", cave)
+    val kobold = EntityKobold.instantiate(engine, Stage(),"gragga", cave)
+    val koboldSecond = EntityKobold.instantiate(engine, Stage(),"krakka", cave)
+    val koboldThird = EntityKobold.instantiate(engine, Stage(),"razza", cave)
 
     @Test
     fun testActionEnumeration() {

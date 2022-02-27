@@ -3,8 +3,10 @@ package org.river.exertion
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.PerspectiveCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.*
+import com.badlogic.gdx.graphics.g3d.ModelBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxGame
@@ -13,7 +15,9 @@ import ktx.inject.Context
 import ktx.inject.register
 import org.river.exertion.demos.ecs.nodeRoomMesh.DemoNodeRoomMeshECSNavigateScreen
 import org.river.exertion.demos.geom.nodeRoom.DemoNodeRoomHeightScreen
+import org.river.exertion.demos.s2d.Demo3d
 import org.river.exertion.demos.s2d.DemoNodeRoomS2DNavigateScreen
+import org.river.exertion.demos.s2d.DemoS2DTableScrollUI
 
 class Game : KtxGame<KtxScreen>() {
     private val context = Context()
@@ -23,18 +27,23 @@ class Game : KtxGame<KtxScreen>() {
         bitmapFont.region.texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
         bitmapFont.data.setScale(.4F, .4F) //32 size
 
-        val camera = OrthographicCamera().apply { setToOrtho(false, initViewportWidth, initViewportHeight) }
-        val viewport = FitViewport(initViewportWidth, initViewportHeight, camera)
-        val batch = PolygonSpriteBatch()
-        val stage = Stage(viewport, batch)
+        val perspectiveCamera = PerspectiveCamera(75f, initViewportWidth, initViewportHeight )
+        val orthoCamera = OrthographicCamera().apply { setToOrtho(false, initViewportWidth, initViewportHeight) }
+//        val gameViewport = FitViewport(initViewportWidth, initViewportHeight, perspectiveCamera)
+        val menuViewport = FitViewport(initViewportWidth, initViewportHeight, orthoCamera)
+        val gameBatch = ModelBatch()
+        val menuBatch = PolygonSpriteBatch()
+        val menuStage = Stage(menuViewport, menuBatch)
         val assets = AssetManager()
 
         context.register {
-            bindSingleton<Batch>(batch)
+            bindSingleton(perspectiveCamera)
+            bindSingleton(orthoCamera)
+            bindSingleton<Batch>(menuBatch)
+            bindSingleton(gameBatch)
 //            https://github.com/libgdx/libgdx/wiki/Distance-field-fonts
             bindSingleton(bitmapFont)
-            bindSingleton(camera)
-            bindSingleton(stage)
+            bindSingleton(menuStage)
             bindSingleton(assets)
 
 /*
@@ -63,7 +72,7 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeMeshOperationsSecondScreen( inject(), inject(), inject(), inject()) )
             addScreen(DemoNodeMeshOperationsThirdScreen( inject(), inject(), inject(), inject()) )
 
-*/            addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
+*///            addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
 
     /*navigation
             addScreen(DemoNodeRoomECSNavigateScreen( inject(), inject(), inject(), inject() ) )
@@ -73,9 +82,12 @@ class Game : KtxGame<KtxScreen>() {
 /*            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 */
 //            addScreen(DemoNodeRoomS2DNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
+//            addScreen(DemoS2DTableScrollUI( inject(), inject(), inject(), inject(), inject() ) )
+            addScreen(Demo3d( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+
         }
 
-        setScreen<DemoNodeRoomHeightScreen>()
+        setScreen<Demo3d>()
 //        super.create()
     }
 

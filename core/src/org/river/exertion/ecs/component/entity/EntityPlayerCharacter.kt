@@ -13,8 +13,6 @@ import ktx.ashley.entity
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.with
-import org.river.exertion.ECS_S2D_BRIDGE
-import org.river.exertion.S2D_ECS_BRIDGE
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionPlexComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
