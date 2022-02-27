@@ -8,7 +8,7 @@ import org.river.exertion.*
 import org.river.exertion.geom.Line
 import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.geom.Line.Companion.pointsInBorder
-import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.Probability
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.Node.Companion.angleBetween
 import org.river.exertion.geom.node.Node.Companion.getNode
@@ -22,7 +22,6 @@ import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeMesh.NodeRoomAttributes
 import org.river.exertion.geom.node.nodeMesh.NodeRoomLink
 import org.river.exertion.RenderPalette
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
 import java.util.*
 import kotlin.random.Random
 

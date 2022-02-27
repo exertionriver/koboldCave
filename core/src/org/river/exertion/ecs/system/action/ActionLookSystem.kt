@@ -7,33 +7,28 @@ import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.ActionLookComponent
-import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.MessageComponent
-import org.river.exertion.ecs.system.action.core.ActionPlexSystem
-import org.river.exertion.getEntityComponent
-import org.river.exertion.isEntity
+import org.river.exertion.ecs.component.action.MomentComponent
+import org.river.exertion.ecs.component.entity.core.IEntity
 
 class ActionLookSystem : IteratingSystem(allOf(ActionLookComponent::class).get()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         var lookDigest = ""
 
-        if ( ActionPlexSystem.readyToExecute(entity, ActionLookComponent.mapper) && entity.isEntity() ) {
+        if ( IEntity.has(entity) && MomentComponent.has(entity) && entity[MomentComponent.mapper]!!.ready()) {
+         //   entity[MomentComponent.mapper]!!.reset(this.javaClass.name)
 
-            engine.entities.filter { it.isEntity() }.forEach {
+            engine.entities.filter { IEntity.has(it) }.forEach {
 
                 //for now, look is external--entity cannot see themselves
                 if (entity != it) {
-                    lookDigest += it.getEntityComponent().description + ", "
+                    lookDigest += IEntity.getFor(it)!!.description + ", "
                 }
             }
-      //      if (lookDigest.isNotEmpty()) println ("entity ${entity.getEntityComponent().name} sees $lookDigest")
+            val lookReport = if (lookDigest.isNotEmpty()) "sees $lookDigest" else "sees nothing"
 
-        MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, MessageIds.PERCEPTION_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.toString()}")
-
-            //     else println ("entity ${entity.getEntityComponent().name} sees nothing")
-
-            entity[ActionLookComponent.mapper]!!.executed = true
+            MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, MessageIds.PERCEPTION_BRIDGE.id(), lookReport)
         }
     }
 }

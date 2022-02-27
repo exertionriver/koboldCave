@@ -1,4 +1,4 @@
-package org.river.exertion.koboldQueue.condition
+package org.river.exertion
 
 import kotlin.math.pow
 import kotlin.random.Random
@@ -21,7 +21,7 @@ class ProbabilitySelect<T>(val probabilities : Map<T, Probability>) {
         return null
     }
 
-    override fun toString() = "org.river.exertion.koboldQueue.condition.ProbabilitySelect(${totalPossibility}, ${selectedProbability}) : ${getSelectedProbability()}"
+    override fun toString() = "org.river.exertion.ProbabilitySelect(${totalPossibility}, ${selectedProbability}) : ${getSelectedProbability()}"
 
     companion object {
         fun <T> psAccumulating(entries : List<T>) : ProbabilitySelect<T> {

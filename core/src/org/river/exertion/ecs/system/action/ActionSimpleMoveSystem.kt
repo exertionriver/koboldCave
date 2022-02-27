@@ -5,14 +5,13 @@ import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.ecs.component.action.*
-import org.river.exertion.ecs.system.action.core.ActionPlexSystem
-import org.river.exertion.isEntity
 import org.river.exertion.geom.node.NodeLink.Companion.getNextNodeAngle
 
 class ActionSimpleMoveSystem : IteratingSystem(allOf(ActionSimpleMoveComponent::class).get()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        if ( ActionPlexSystem.readyToExecute(entity, ActionSimpleMoveComponent.mapper) && entity.isEntity() ) {
+        if ( MomentComponent.has(entity) && entity[MomentComponent.mapper]!!.ready()) {
+//            entity[MomentComponent.mapper]!!.reset(this.javaClass.name)
 
             val currentNodeRoom = entity[ActionSimpleMoveComponent.mapper]!!.currentNodeRoom
             val currentNode = entity[ActionSimpleMoveComponent.mapper]!!.currentNode
@@ -28,8 +27,6 @@ class ActionSimpleMoveSystem : IteratingSystem(allOf(ActionSimpleMoveComponent::
             entity[ActionSimpleMoveComponent.mapper]!!.currentAngle = forwardNextNodeAngle.second
 
 //            println ("entity ${entity.getEntityComponent().name} moves to ${entity[ActionSimpleMoveComponent.mapper]!!.currentNode.position}.")
-
-            entity[ActionSimpleMoveComponent.mapper]!!.executed = true
         }
     }
 

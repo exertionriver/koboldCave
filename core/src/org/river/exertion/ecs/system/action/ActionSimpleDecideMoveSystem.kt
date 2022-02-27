@@ -7,14 +7,14 @@ import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.*
-import org.river.exertion.isEntity
-import org.river.exertion.koboldQueue.condition.Probability
-import org.river.exertion.koboldQueue.condition.ProbabilitySelect
+import org.river.exertion.Probability
+import org.river.exertion.ProbabilitySelect
 
 class ActionSimpleDecideMoveSystem : IteratingSystem(allOf(ActionSimpleDecideMoveComponent::class).get()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        if ( entity.isEntity() ) {
+        if ( MomentComponent.has(entity) ) { //&& entity[MomentComponent.mapper]!!.ready()) {
+//            entity[MomentComponent.mapper]!!.reset(this.javaClass.name)
 
             if (entity[ActionMoveComponent.mapper]!!.moveComplete() )
                 if ( entity[ActionMoveComponent.mapper]!!.currentPosition == entity[ActionMoveComponent.mapper]!!.currentNode.position ) {

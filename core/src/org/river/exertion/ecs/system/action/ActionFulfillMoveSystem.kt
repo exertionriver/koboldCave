@@ -2,6 +2,7 @@ package org.river.exertion.ecs.system.action
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntitySystem
+import com.badlogic.ashley.core.Family
 import com.badlogic.ashley.systems.IntervalIteratingSystem
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
@@ -19,10 +20,8 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
     var modDegreesPerAngle = degreesPerAngle
 
     override fun processEntity(entity: Entity) {
-        entity[ActionMoveComponent.mapper]!!.momentCountdown += interval
-
-        if ( entity.isEntity() && entity[ActionMoveComponent.mapper]!!.momentCountdown > entity[ActionMoveComponent.mapper]!!.moment.milliseconds * interval / 1000) {
-            entity[ActionMoveComponent.mapper]!!.momentCountdown = 0f
+        if ( MomentComponent.has(entity) ) { //&& entity[MomentComponent.mapper]!!.ready()) {
+//            entity[MomentComponent.mapper]!!.reset(this.javaClass.name)
 
             val currentPosition = entity[ActionMoveComponent.mapper]!!.currentPosition
             val currentAngle = entity[ActionMoveComponent.mapper]!!.currentAngle

@@ -49,7 +49,7 @@ class ActorPlayerCharacter(initName : String = "PlayerCharacter", initPosition :
 
             ego.clear()
 
-            Gdx.app.log("render","scaleX: $scaleX")
+//            Gdx.app.log("render","scaleX: $scaleX")
 
             val bottomArrow = currentPos.getPositionByDistanceAndAngle(4f * scaleX, (currentAngle + 180f).normalizeDeg())
             val topArrow = currentPos.getPositionByDistanceAndAngle(6f * scaleX, currentAngle)

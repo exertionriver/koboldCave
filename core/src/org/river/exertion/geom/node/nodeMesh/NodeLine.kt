@@ -1,6 +1,6 @@
 package org.river.exertion.geom.node.nodeMesh
 
-import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.Probability
 import org.river.exertion.Point
 import org.river.exertion.geom.Line
 import org.river.exertion.geom.Line.Companion.isQ1

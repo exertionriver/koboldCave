@@ -5,39 +5,20 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import ktx.ashley.mapperFor
 import org.river.exertion.Angle
 import org.river.exertion.Point
-import org.river.exertion.ecs.component.action.core.ActionNoneComponent
-import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.action.core.ActionType
 import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.NodeLink
 import org.river.exertion.geom.node.nodeMesh.NodeLine
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
-import org.river.exertion.koboldQueue.time.Moment
 
-class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component {
+class ActionMoveComponent : IActionComponent, Component {
 
     enum class Direction { NONE, FORWARD, BACKWARD, LEFT, RIGHT }
 
-    override val label = "Move"
-    override val description = { "Move" }
-    override var type = if (base) ActionType.Continual else ActionNoneComponent.type
-    override var priority = ActionNoneComponent.priority
-    override var state = if (base) ActionState.ActionQueue else ActionState.ActionStateNone
+    override val componentName = "Move"
 
-    override var plexSlotsFilled = ActionNoneComponent.plexSlotsFilled
-    override var plexSlotsRequired = ActionNoneComponent.plexSlotsRequired
-    override var maxParallel = ActionNoneComponent.maxParallel
-
-    override val momentsToPrepare = ActionNoneComponent.momentsToPrepare
-    override val momentsToExecute = ActionNoneComponent.momentsToExecute
-    override val momentsToRecover = ActionNoneComponent.momentsToRecover
-
-    //in moments
-    override var stateCountdown = 0
-    override var executed = false
-
+    //TODO: split this into location component?
     var nodeRoomMesh = NodeRoomMesh()
     var currentNodeRoom = NodeRoom()
     var currentNode = Node()
@@ -73,9 +54,6 @@ class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component
         else if (backwardStepEasing > 5) stepPath.nodes.filter { it.uuid == stepPath.nodeOrder[stepPath.nodes.size - backwardStepEasing + 5] }.first()
         else finalNode
 
-    var moment = Moment(0f)
-    var momentCountdown = 0f
-
     var camera : OrthographicCamera? = null
 
 
@@ -89,16 +67,6 @@ class ActionMoveComponent(base : Boolean = false)  : IActionComponent, Component
 
     fun netMove() : Float {
         return leftTurnEasing + rightTurnEasing + forwardStepEasing + backwardStepEasing
-    }
-
-    fun moveStale() : Boolean {
-        val curNetMove = netMove()
-
-        val isStale = ( (prevNetMove == curNetMove) || (prevTurnMaxEasing == curTurnMaxEasing) )
-
-        prevNetMove = curNetMove
-
-        return isStale
     }
 
     fun moveIncomplete() = netMove() > 0f

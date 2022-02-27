@@ -1,14 +1,14 @@
 package org.river.exertion.geom.leaf
 
 import org.river.exertion.*
-import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.Probability
 import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.Node.Companion.addNode
 import org.river.exertion.geom.node.NodeLink
 import org.river.exertion.geom.node.NodeLink.Companion.addNodeLink
 import org.river.exertion.geom.node.nodeMesh.NodeMesh
-import org.river.exertion.koboldQueue.condition.ProbabilitySelect
+import org.river.exertion.ProbabilitySelect
 import java.util.*
 
 interface ILeaf {

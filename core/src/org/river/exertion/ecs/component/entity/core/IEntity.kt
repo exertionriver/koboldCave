@@ -1,24 +1,24 @@
 package org.river.exertion.ecs.component.entity.core
 
 import com.badlogic.ashley.core.Entity
-import org.river.exertion.ecs.component.action.core.ActionPlexComponent
+import org.river.exertion.ecs.component.action.MomentComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.koboldQueue.condition.Probability
-import org.river.exertion.koboldQueue.time.Moment
 
 interface IEntity {
 
-    var name : String
+    var entityName : String
     var description : String
 
     fun initialize(initName : String, entity: Entity)
 
-    var actionPlexMaxSize : Int
-    var actionPlex : ActionPlexComponent
+    var actions : MutableList<IActionComponent>
 
-    var baseActions : MutableList<IActionComponent>
-    var extendedActions : MutableMap<IActionComponent, Probability>
+    //tenths of a second
+    var moment : Float
 
-    var moment : Moment
-    var momentCountdown : Float
+    companion object {
+        fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is IEntity } != null }
+
+        fun getFor(entity : Entity) : IEntity? = if ( has(entity) ) entity.components.first { it is IEntity } as IEntity else null
+    }
 }

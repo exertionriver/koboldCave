@@ -11,29 +11,13 @@ import org.river.exertion.ecs.component.action.core.ActionNoneComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.ActionType
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.entity.core.EntityNone
 import org.river.exertion.s2d.IBaseActor
 
-class MessageComponent(base : Boolean = false)  : IActionComponent, Component, Telegraph {
+class MessageComponent(val initName : String) : IActionComponent, Component, Telegraph {
 
-    override val label = "Watch"
-    override val description = { "Watch" }
-    override var type = if (base) ActionType.Continual else ActionNoneComponent.type
-    override var priority = ActionNoneComponent.priority
-    override var state = if (base) ActionState.ActionQueue else ActionState.ActionStateNone
-
-    override var plexSlotsFilled = ActionNoneComponent.plexSlotsFilled
-    override var plexSlotsRequired = ActionNoneComponent.plexSlotsRequired
-    override var maxParallel = ActionNoneComponent.maxParallel
-
-    override val momentsToPrepare = ActionNoneComponent.momentsToPrepare
-    override val momentsToExecute = ActionNoneComponent.momentsToExecute
-    override val momentsToRecover = ActionNoneComponent.momentsToRecover
-
-    //in moments
-    override var stateCountdown = 0
-    override var executed = false
-
-    lateinit var name : String
+    override val componentName = "MessageComponent"
+    var entityName = initName
 
     init {
         MessageManager.getInstance().addListener(this, MessageIds.S2D_ECS_BRIDGE.id())
@@ -44,8 +28,8 @@ class MessageComponent(base : Boolean = false)  : IActionComponent, Component, T
     }
 
     override fun handleMessage(msg: Telegram?): Boolean {
-        if ( msg != null && (msg.sender as IBaseActor).actorName == name) {
-            Gdx.app.log("message","entity $name received telegram:${msg.message}, ${(msg.sender as IBaseActor).actorName}, ${msg.extraInfo}")
+        if ( msg != null && (msg.sender as IBaseActor).actorName == entityName) {
+            Gdx.app.log("message","entity $entityName received telegram:${msg.message}, ${(msg.sender as IBaseActor).actorName}, ${msg.extraInfo}")
 
             return true
         }

@@ -11,25 +11,9 @@ import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 
-class ActionSimpleMoveComponent(base : Boolean = false)  : IActionComponent, Component {
+class ActionSimpleMoveComponent : IActionComponent, Component {
 
-    override val label = "SimpleMove"
-    override val description = { "SimpleMove" }
-    override var type = if (base) ActionType.Continual else ActionNoneComponent.type
-    override var priority = ActionNoneComponent.priority
-    override var state = if (base) ActionState.ActionQueue else ActionState.ActionStateNone
-
-    override var plexSlotsFilled = ActionNoneComponent.plexSlotsFilled
-    override var plexSlotsRequired = ActionNoneComponent.plexSlotsRequired
-    override var maxParallel = ActionNoneComponent.maxParallel
-
-    override val momentsToPrepare = ActionNoneComponent.momentsToPrepare
-    override val momentsToExecute = ActionNoneComponent.momentsToExecute
-    override val momentsToRecover = ActionNoneComponent.momentsToRecover
-
-    //in moments
-    override var stateCountdown = 0
-    override var executed = false
+    override val componentName = "SimpleMove"
 
     var currentNodeRoom = NodeRoom()
     var currentNode = Node()

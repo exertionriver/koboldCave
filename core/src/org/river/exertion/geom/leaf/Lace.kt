@@ -1,7 +1,7 @@
 package org.river.exertion.geom.leaf
 
-import org.river.exertion.koboldQueue.condition.Probability
-import org.river.exertion.koboldQueue.condition.ProbabilitySelect
+import org.river.exertion.Probability
+import org.river.exertion.ProbabilitySelect
 import org.river.exertion.Angle
 import org.river.exertion.Point
 import org.river.exertion.geom.leaf.ILeaf.Companion.getChildPosition

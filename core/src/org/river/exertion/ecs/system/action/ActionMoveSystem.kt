@@ -7,7 +7,8 @@ import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.*
-import org.river.exertion.isEntity
+import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
+import org.river.exertion.ecs.component.entity.core.IEntity
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.Node.Companion.angleBetween
 import org.river.exertion.geom.node.NodeAttributes
@@ -31,9 +32,7 @@ class ActionMoveSystem : IteratingSystem(allOf(ActionMoveComponent::class).get()
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
 
-        if ( //ActionPlexSystem.readyToExecute(entity, ActionMoveComponent.mapper) &&
-                //ActionFulfillMoveSystem.moveComplete(entity) &&
-                entity.isEntity() ) {
+        if ( IEntity.has(entity) ) {
 
             val currentPosition = entity[ActionMoveComponent.mapper]!!.currentPosition
             val currentNode = entity[ActionMoveComponent.mapper]!!.currentNode
@@ -162,7 +161,6 @@ class ActionMoveSystem : IteratingSystem(allOf(ActionMoveComponent::class).get()
 
 //            println ("entity ${entity.getEntityComponent().name} moves to ${entity[ActionMoveComponent.mapper]!!.currentNode.position}.")
 
-            entity[ActionMoveComponent.mapper]!!.executed = true
         }
     }
 

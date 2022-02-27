@@ -8,27 +8,22 @@ import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g3d.*
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute.createDiffuse
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import ktx.app.KtxScreen
-import ktx.ashley.contains
 import ktx.ashley.get
 import ktx.graphics.use
 import ktx.scene2d.*
 import org.river.exertion.*
-import org.river.exertion.assets.*
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.EntityKobold
 import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
 import org.river.exertion.ecs.component.environment.EnvironmentCave
-import org.river.exertion.ecs.system.action.core.ActionPlexSystem
+import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
@@ -36,12 +31,7 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
-import org.river.exertion.ecs.component.action.core.ActionNoneComponent.label
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderPerspective
-import org.river.exertion.s2d.ActorKobold
-import org.river.exertion.s2d.ActorPlayerCharacter
 import java.time.LocalDateTime
-import javax.swing.text.AttributeSet.ColorAttribute.*
 
 class Demo3d(private val menuBatch: Batch,
              private val gameBatch: ModelBatch,
@@ -58,7 +48,7 @@ class Demo3d(private val menuBatch: Batch,
     var nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
     var nodeRoomMesh = NodeRoomMesh(nodeRoom)
 
-    val engine = PooledEngine().apply { ActionPlexSystem(this) }
+    val engine = PooledEngine().apply { SystemManager.init(this) }
     val cave = EnvironmentCave.instantiate(engine, menuStage, "spookyCave", nodeRoomMesh)
     val playerCharacter = EntityPlayerCharacter.instantiate(engine, menuStage, cave = cave, camera = null)
 

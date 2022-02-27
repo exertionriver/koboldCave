@@ -1,8 +1,7 @@
 package org.river.exertion.geom.node.nodeMesh
 
-import com.badlogic.gdx.Gdx
-import org.river.exertion.koboldQueue.condition.Probability
-import org.river.exertion.koboldQueue.condition.ProbabilitySelect
+import org.river.exertion.Probability
+import org.river.exertion.ProbabilitySelect
 import org.river.exertion.*
 import org.river.exertion.geom.leaf.ILeaf.Companion.nodeMesh
 import org.river.exertion.geom.leaf.Leaf

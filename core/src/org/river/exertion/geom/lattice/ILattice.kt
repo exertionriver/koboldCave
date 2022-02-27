@@ -1,6 +1,6 @@
 package org.river.exertion.geom.lattice
 
-import org.river.exertion.koboldQueue.condition.Probability
+import org.river.exertion.Probability
 import org.river.exertion.geom.Line.Companion.getArrayedPositionByAngle
 import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.geom.node.Node
@@ -11,7 +11,7 @@ import org.river.exertion.geom.node.nodeMesh.NodeMesh
 import org.river.exertion.Angle
 import org.river.exertion.NextDistancePx
 import org.river.exertion.Point
-import org.river.exertion.koboldQueue.condition.ProbabilitySelect
+import org.river.exertion.ProbabilitySelect
 import org.river.exertion.geom.node.NodeLink.Companion.addNodeLinks
 import org.river.exertion.round
 import java.util.*

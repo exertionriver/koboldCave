@@ -18,7 +18,7 @@ import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.entity.EntityKobold
 import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
 import org.river.exertion.ecs.component.environment.EnvironmentCave
-import org.river.exertion.ecs.system.action.core.ActionPlexSystem
+import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
@@ -26,6 +26,7 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
+import org.river.exertion.ecs.component.entity.core.IEntity
 import org.river.exertion.s2d.ActorKobold
 import org.river.exertion.s2d.ActorPlayerCharacter
 
@@ -43,7 +44,7 @@ class DemoNodeRoomECSRotateNavigateScreen(private val batch: Batch,
     var nodeRoomMesh = NodeRoomMesh(nodeRoom)
     val visualRadius = NextDistancePx * 1.5f
 
-    val engine = PooledEngine().apply { ActionPlexSystem(this) }
+    val engine = PooledEngine().apply { SystemManager.init(this) }
     val cave = EnvironmentCave.instantiate(engine, stage, "spookyCave", nodeRoomMesh)
     val playerCharacter = EntityPlayerCharacter.instantiate(engine, stage, cave = cave, camera = camera)
 
@@ -74,7 +75,7 @@ class DemoNodeRoomECSRotateNavigateScreen(private val batch: Batch,
 
             ActorPlayerCharacter.render(batch, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
 
-            engine.entities.filter { checkEntity -> checkEntity.isEntity() && checkEntity.contains(EntityKobold.mapper)}.forEach { renderKobold ->
+            engine.entities.filter { checkEntity -> EntityKobold.has(checkEntity) }.forEach { renderKobold ->
                 ActorKobold.renderLos(batch, losMap, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
             }
         }

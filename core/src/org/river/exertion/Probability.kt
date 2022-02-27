@@ -1,4 +1,4 @@
-package org.river.exertion.koboldQueue.condition
+package org.river.exertion
 
 import kotlin.random.Random
 

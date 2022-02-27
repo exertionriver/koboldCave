@@ -1,8 +1,8 @@
 package geom
 
 import org.junit.jupiter.api.Test
-import org.river.exertion.koboldQueue.condition.Probability
-import org.river.exertion.koboldQueue.condition.ProbabilitySelect
+import org.river.exertion.Probability
+import org.river.exertion.ProbabilitySelect
 
 @ExperimentalUnsignedTypes
 class TestProb {

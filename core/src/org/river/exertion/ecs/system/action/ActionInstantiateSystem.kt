@@ -6,23 +6,19 @@ import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.*
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.entity.EntityKobold
-import org.river.exertion.ecs.system.action.core.ActionPlexSystem
-import org.river.exertion.getEntityComponent
-import org.river.exertion.getEnvironmentComponent
-import org.river.exertion.isEntity
-import org.river.exertion.isEnvironment
+import org.river.exertion.ecs.component.entity.core.IEntity
+import org.river.exertion.ecs.component.environment.core.IEnvironment
 
 class ActionInstantiateSystem : IteratingSystem(allOf(ActionInstantiateComponent::class).get()) {
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
 
-        if ( ActionPlexSystem.readyToExecute(entity, ActionInstantiateComponent.mapper) && entity.isEnvironment() ) {
+        if ( IEnvironment.has(entity) && MomentComponent.has(entity) && entity[MomentComponent.mapper]!!.ready()) {
+            entity[MomentComponent.mapper]!!.reset(this.javaClass.name)
 
             //max three entities spawning for now
-            if ( engine.entities.filter { it.isEntity() }.count() < 3) {
+            if ( engine.entities.filter { IEntity.has(it) }.count() < 3) {
                 EntityKobold.instantiate(this.engine as PooledEngine, entity[ActionInstantiateComponent.mapper]!!.stage, cave = entity)
-
-                entity[ActionInstantiateComponent.mapper]!!.executed = true
             }
         }
     }
