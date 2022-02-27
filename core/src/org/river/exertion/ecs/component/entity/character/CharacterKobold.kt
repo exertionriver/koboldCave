@@ -1,4 +1,4 @@
-package org.river.exertion.ecs.component.entity
+package org.river.exertion.ecs.component.entity.character
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
@@ -8,15 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.ashley.*
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.core.EntityNone
-import org.river.exertion.ecs.component.entity.core.IEntity
+import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
-import org.river.exertion.ecs.component.environment.core.IEnvironment
+import org.river.exertion.ecs.component.entity.location.ILocation
 import org.river.exertion.s2d.ActorKobold
 import java.util.*
 
-class EntityKobold : IEntity, Component {
+class CharacterKobold : IEntity, Component {
 
     override lateinit var entityName : String
 
@@ -45,19 +44,19 @@ class EntityKobold : IEntity, Component {
         ActionMoveComponent(),
         ActionSimpleDecideMoveComponent(),
         ActionScreechComponent()
-    ).apply { this.addAll(EntityNone.actions) }
+    ).apply { this.addAll(CharacterNone.actions) }
 
     companion object {
-        val mapper = mapperFor<EntityKobold>()
+        val mapper = mapperFor<CharacterKobold>()
 
-        fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is EntityKobold } != null }
+        fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is CharacterKobold } != null }
 
         fun instantiate(engine: PooledEngine, stage : Stage, initName : String = "krazza" + Random().nextInt(), cave : Entity) : Entity {
             val newKobold = engine.entity {
-                with<EntityKobold>()
+                with<CharacterKobold>()
             }.apply { this[mapper]?.initialize(initName, this) }
 
-            newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh = IEnvironment.getFor(cave)!!.nodeRoomMesh
+            newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh = ILocation.getFor(cave)!!.nodeRoomMesh
             newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom = newKobold[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms.first()
             //TODO: getRandomNodeExcluding(listofPopulatedNodes) to avoid instantiating on other entities
             newKobold[ActionMoveComponent.mapper]!!.currentNode = newKobold[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomUnoccupiedNode()

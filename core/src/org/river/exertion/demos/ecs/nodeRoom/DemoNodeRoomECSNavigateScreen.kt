@@ -9,15 +9,14 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.app.KtxScreen
-import ktx.ashley.contains
 import ktx.ashley.get
 import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.assets.*
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.EntityKobold
-import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
-import org.river.exertion.ecs.component.environment.EnvironmentCave
+import org.river.exertion.ecs.component.entity.character.CharacterKobold
+import org.river.exertion.ecs.component.entity.character.CharacterPlayerCharacter
+import org.river.exertion.ecs.component.entity.location.LocationCave
 import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
@@ -26,7 +25,6 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
-import org.river.exertion.ecs.component.entity.core.IEntity
 import org.river.exertion.s2d.ActorKobold
 import org.river.exertion.s2d.ActorPlayerCharacter
 
@@ -44,8 +42,8 @@ class DemoNodeRoomECSNavigateScreen(private val batch: Batch,
     var nodeRoomMesh = NodeRoomMesh(nodeRoom)
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
-    val cave = EnvironmentCave.instantiate(engine, stage,"spookyCave", nodeRoomMesh)
-    val playerCharacter = EntityPlayerCharacter.instantiate(engine, stage, cave = cave, camera = null)
+    val cave = LocationCave.instantiate(engine, stage,"spookyCave", nodeRoomMesh)
+    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, stage, cave = cave, camera = null)
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
@@ -69,11 +67,11 @@ class DemoNodeRoomECSNavigateScreen(private val batch: Batch,
 
         batch.use {
 
-            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.render(batch)
+            cave[LocationCave.mapper]!!.nodeRoomMesh.render(batch)
 
             ActorPlayerCharacter.render(batch, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
 
-            engine.entities.filter { checkEntity -> EntityKobold.has(checkEntity) }.forEach { renderKobold ->
+            engine.entities.filter { checkEntity -> CharacterKobold.has(checkEntity) }.forEach { renderKobold ->
                 ActorKobold.render(batch, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
             }
         }
@@ -97,8 +95,8 @@ class DemoNodeRoomECSNavigateScreen(private val batch: Batch,
         Render.initRender(camera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
         controlAreaCamera.setToOrtho(false, Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat())
 
-        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
-        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
+        cave[LocationCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
+        cave[LocationCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
 
         // start the playback of the background music when the screen is shown
         MusicAssets.values().forEach { assets.load(it) }

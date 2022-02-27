@@ -14,8 +14,8 @@ import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.assets.*
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
-import org.river.exertion.ecs.component.environment.EnvironmentCave
+import org.river.exertion.ecs.component.entity.character.CharacterPlayerCharacter
+import org.river.exertion.ecs.component.entity.location.LocationCave
 import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
@@ -38,8 +38,8 @@ class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
     var nodeRoomMesh = NodeRoomMesh(NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f)))
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
-    val cave = EnvironmentCave.instantiate(engine, stage, "spookyCave", nodeRoomMesh)
-    val playerCharacter = EntityPlayerCharacter.instantiate(engine, stage, cave = cave, camera = null)
+    val cave = LocationCave.instantiate(engine, stage, "spookyCave", nodeRoomMesh)
+    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, stage, cave = cave, camera = null)
 
     val sdc = ShapeDrawerConfig(batch)
     val drawer = sdc.getDrawer()
@@ -51,15 +51,15 @@ class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
 //        println ("delta:$delta, rps:${1f/delta}")
 //        Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight())
 
-        val prevExitNodes = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activatedExitNodes.size
+        val prevExitNodes = cave[LocationCave.mapper]!!.nodeRoomMesh.activatedExitNodes.size
  //       val nodeRoomIdx = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.getCurrentRoomIdx(playerCharacter[ActionMoveComponent.mapper]!!.currentNode)
-        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.inactiveExitNodesInRange(playerCharacter[ActionMoveComponent.mapper]!!.currentNode).forEach {
-            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activateExitNode( playerCharacter[ActionMoveComponent.mapper]!!.currentNode, it ) }
-        val currExitNodes = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.activatedExitNodes.size
+        cave[LocationCave.mapper]!!.nodeRoomMesh.inactiveExitNodesInRange(playerCharacter[ActionMoveComponent.mapper]!!.currentNode).forEach {
+            cave[LocationCave.mapper]!!.nodeRoomMesh.activateExitNode( playerCharacter[ActionMoveComponent.mapper]!!.currentNode, it ) }
+        val currExitNodes = cave[LocationCave.mapper]!!.nodeRoomMesh.activatedExitNodes.size
 
         if (prevExitNodes != currExitNodes) {
-            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
-            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
+            cave[LocationCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
+            cave[LocationCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
         }
 
         InputHandler.handleInput(camera)
@@ -75,7 +75,7 @@ class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
         camera.update()
 
         batch.use {
-            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.render(batch)
+            cave[LocationCave.mapper]!!.nodeRoomMesh.render(batch)
 
 //            engine.entities.filter { checkEntity -> checkEntity.isEntity() && checkEntity.contains(EntityKobold.mapper) }.forEach { renderKobold ->
 //                ActorKobold.render(batch, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
@@ -112,8 +112,8 @@ class DemoNodeRoomMeshECSNavigateScreen(private val batch: Batch,
         Render.initRender(camera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
         controlAreaCamera.setToOrtho(false, Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat())
 
-        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
-        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
+        cave[LocationCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
+        cave[LocationCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
 
         // start the playback of the background music when the screen is shown
         MusicAssets.values().forEach { assets.load(it) }

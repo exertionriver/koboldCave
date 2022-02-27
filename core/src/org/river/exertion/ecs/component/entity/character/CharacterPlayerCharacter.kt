@@ -1,4 +1,4 @@
-package org.river.exertion.ecs.component.entity
+package org.river.exertion.ecs.component.entity.character
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
@@ -12,12 +12,11 @@ import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.core.EntityNone
-import org.river.exertion.ecs.component.entity.core.IEntity
-import org.river.exertion.ecs.component.environment.core.IEnvironment
+import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.component.entity.location.ILocation
 import org.river.exertion.s2d.ActorPlayerCharacter
 
-class EntityPlayerCharacter : IEntity, Component {
+class CharacterPlayerCharacter : IEntity, Component {
 
     override lateinit var entityName : String
 
@@ -36,20 +35,20 @@ class EntityPlayerCharacter : IEntity, Component {
     override var actions = mutableListOf<IActionComponent>(
             MomentComponent(moment),
             ActionMoveComponent()
-    ).apply { this.addAll(EntityNone.actions) }
+    ).apply { this.addAll(CharacterNone.actions) }
 
     companion object {
-        val mapper = mapperFor<EntityPlayerCharacter>()
+        val mapper = mapperFor<CharacterPlayerCharacter>()
 
-        fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is EntityPlayerCharacter } != null }
+        fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is CharacterPlayerCharacter } != null }
 
         fun instantiate(engine: PooledEngine, stage : Stage, initName : String = "PlayerCharacter", cave : Entity, camera : OrthographicCamera?) : Entity {
             val newPC = engine.entity {
-                with<EntityPlayerCharacter>()
+                with<CharacterPlayerCharacter>()
             }.apply { this[mapper]?.initialize(initName, this) }
 
             //TODO: put following code in initialize()?
-            newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh = IEnvironment.getFor(cave)!!.nodeRoomMesh
+            newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh = ILocation.getFor(cave)!!.nodeRoomMesh
             newPC[ActionMoveComponent.mapper]!!.currentNodeRoom = newPC[ActionMoveComponent.mapper]!!.nodeRoomMesh.nodeRooms.first()
             newPC[ActionMoveComponent.mapper]!!.currentNode = newPC[ActionMoveComponent.mapper]!!.currentNodeRoom.getRandomUnoccupiedNode()
             newPC[ActionMoveComponent.mapper]!!.currentNode.attributes.occupied = true

@@ -1,11 +1,12 @@
-package org.river.exertion.ecs.component.entity.core
+package org.river.exertion.ecs.component.entity.location
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 
-object EntityNone : IEntity {
+object LocationNone : ILocation {
 
     override var entityName = "None"
     override var description = "None"
@@ -17,13 +18,11 @@ object EntityNone : IEntity {
         }
     }
 
-    override var moment = 1f
-
     override var actions = mutableListOf<IActionComponent>(
-        ActionLookComponent()
-        , ActionReflectComponent()
-        , ActionIdleComponent()
-        , ActionWatchComponent()
+        ActionInstantiateComponent(), ActionDestantiateComponent()
     )
 
+    override var moment = 50f
+
+    override var nodeRoomMesh = NodeRoomMesh()
 }

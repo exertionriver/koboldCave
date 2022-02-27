@@ -1,7 +1,6 @@
-package org.river.exertion.ecs.component.entity.core
+package org.river.exertion.ecs.component.entity
 
 import com.badlogic.ashley.core.Entity
-import org.river.exertion.ecs.component.action.MomentComponent
 import org.river.exertion.ecs.component.action.core.IActionComponent
 
 interface IEntity {
@@ -18,7 +17,6 @@ interface IEntity {
 
     companion object {
         fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is IEntity } != null }
-
         fun getFor(entity : Entity) : IEntity? = if ( has(entity) ) entity.components.first { it is IEntity } as IEntity else null
     }
 }

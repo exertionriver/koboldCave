@@ -7,11 +7,7 @@ import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import ktx.ashley.mapperFor
 import org.river.exertion.MessageIds
-import org.river.exertion.ecs.component.action.core.ActionNoneComponent
-import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.action.core.ActionType
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.core.EntityNone
 import org.river.exertion.s2d.IBaseActor
 
 class MessageComponent(val initName : String) : IActionComponent, Component, Telegraph {

@@ -9,7 +9,7 @@ import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.ActionLookComponent
 import org.river.exertion.ecs.component.action.MessageComponent
 import org.river.exertion.ecs.component.action.MomentComponent
-import org.river.exertion.ecs.component.entity.core.IEntity
+import org.river.exertion.ecs.component.entity.IEntity
 
 class ActionLookSystem : IteratingSystem(allOf(ActionLookComponent::class).get()) {
 

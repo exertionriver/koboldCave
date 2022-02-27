@@ -7,8 +7,7 @@ import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.*
-import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
-import org.river.exertion.ecs.component.entity.core.IEntity
+import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.Node.Companion.angleBetween
 import org.river.exertion.geom.node.NodeAttributes

@@ -17,8 +17,8 @@ import ktx.scene2d.*
 import org.river.exertion.*
 import org.river.exertion.assets.*
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.EntityPlayerCharacter
-import org.river.exertion.ecs.component.environment.EnvironmentCave
+import org.river.exertion.ecs.component.entity.character.CharacterPlayerCharacter
+import org.river.exertion.ecs.component.entity.location.LocationCave
 import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
@@ -44,8 +44,8 @@ class DemoS2DTableScrollUI(private val menuBatch: Batch,
     var nodeRoomMesh = NodeRoomMesh(nodeRoom)
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
-    val cave = EnvironmentCave.instantiate(engine, menuStage, "spookyCave", nodeRoomMesh)
-    val playerCharacter = EntityPlayerCharacter.instantiate(engine, menuStage, cave = cave, camera = null)
+    val cave = LocationCave.instantiate(engine, menuStage, "spookyCave", nodeRoomMesh)
+    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, menuStage, cave = cave, camera = null)
 
     val sdc = ShapeDrawerConfig(menuBatch)
     val drawer = sdc.getDrawer()
@@ -74,7 +74,7 @@ class DemoS2DTableScrollUI(private val menuBatch: Batch,
         menuBatch.projectionMatrix = menuCamera.combined
 
         menuBatch.use {
-            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.render(menuBatch)
+            cave[LocationCave.mapper]!!.nodeRoomMesh.render(menuBatch)
         }
 
         menuStage.draw()
@@ -83,7 +83,7 @@ class DemoS2DTableScrollUI(private val menuBatch: Batch,
         menuBatch.use {
             font.drawLabel(menuBatch, Point(300f, 200f), "${playerCharacter[ActionMoveComponent.mapper]!!.currentNode}\n${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink}\n" +
                     "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys)}\n" +
-                    "occupiedNodes:${cave[EnvironmentCave.mapper]!!.nodeRoomMesh.numOccupiedNodes()}/${cave[EnvironmentCave.mapper]!!.nodeRoomMesh.nodesMap.size}", RenderPalette.ForeColors[1])
+                    "occupiedNodes:${cave[LocationCave.mapper]!!.nodeRoomMesh.numOccupiedNodes()}/${cave[LocationCave.mapper]!!.nodeRoomMesh.nodesMap.size}", RenderPalette.ForeColors[1])
         }
 
         engine.update(delta)
@@ -122,8 +122,8 @@ class DemoS2DTableScrollUI(private val menuBatch: Batch,
         perceptionTable.debug = true
         menuStage.addActor(perceptionTable)
 
-        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
-        cave[EnvironmentCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
+        cave[LocationCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
+        cave[LocationCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
 
         // start the playback of the background music when the screen is shown
         MusicAssets.values().forEach { assets.load(it) }
