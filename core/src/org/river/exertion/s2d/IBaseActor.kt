@@ -22,10 +22,10 @@ interface IBaseActor : Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null && (msg.sender as MessageComponent).entityName == actorName) {
-            Gdx.app.log("message","actor $actorName received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
+ //           Gdx.app.log("message","actor $actorName received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
 
             if (msg.extraInfo != null && msg.extraInfo is ActionMoveComponent) {
-                Gdx.app.log("message","update currentPosition to: ${(msg.extraInfo as ActionMoveComponent).currentPosition}, currentAngle to: ${(msg.extraInfo as ActionMoveComponent).currentAngle}")
+ //               Gdx.app.log("message","update currentPosition to: ${(msg.extraInfo as ActionMoveComponent).currentPosition}, currentAngle to: ${(msg.extraInfo as ActionMoveComponent).currentAngle}")
 
                 currentPosition = (msg.extraInfo as ActionMoveComponent).currentPosition
                 currentAngle = (msg.extraInfo as ActionMoveComponent).currentAngle

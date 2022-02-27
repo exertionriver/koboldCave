@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.ashley.entity
 import ktx.ashley.get
@@ -11,6 +12,7 @@ import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.ecs.component.action.ActionInstantiateComponent
 import org.river.exertion.ecs.component.action.MomentComponent
+import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import java.util.*
@@ -19,6 +21,8 @@ class LocationCave : ILocation, Component {
 
     override var entityName = "Cave"
     override var description = "Cave"
+
+    override val stateMachine = DefaultStateMachine(this, ActionState.NONE)
 
     override fun initialize(initName: String, entity: Entity) {
         entityName = initName

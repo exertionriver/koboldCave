@@ -1,4 +1,4 @@
-package org.river.exertion.demos.s2d
+package org.river.exertion.demos.fsm
 
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
@@ -34,11 +34,11 @@ import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.s2d.ui.UIPlanTable
 import java.time.LocalDateTime
 
-class DemoS2DTableScrollUI(private val menuBatch: Batch,
-                           private val font: BitmapFont,
-                           private val assets: AssetManager,
-                           private val menuStage: Stage,
-                           private val menuCamera: OrthographicCamera) : KtxScreen {
+class DemoFSM(private val menuBatch: Batch,
+              private val font: BitmapFont,
+              private val assets: AssetManager,
+              private val menuStage: Stage,
+              private val menuCamera: OrthographicCamera) : KtxScreen {
 
     val horizOffset = Game.initViewportWidth / 11
     val vertOffset = Game.initViewportHeight / 11
@@ -66,12 +66,7 @@ class DemoS2DTableScrollUI(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.BACKWARD }
             Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.LEFT }
             Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.RIGHT }
-            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { menuStage.root.findActor<Table>("planTable").add("test ${LocalDateTime.now()}").row() }
-            Gdx.input.isKeyJustPressed(Input.Keys.X) -> { val staticTable = menuStage.root.findActor<Table>("planTable"); if (staticTable.children.size > 0) staticTable.getChild(0).remove() }
-            Gdx.input.isKeyJustPressed(Input.Keys.C) -> { menuStage.root.findActor<Table>("feelingTable").add("test ${LocalDateTime.now()}").row() }
-            Gdx.input.isKeyJustPressed(Input.Keys.B) -> { val scrollTable = menuStage.root.findActor<Table>("feelingTable") ; if (scrollTable.children.size > 0) scrollTable.getChild(0).remove() }
-            Gdx.input.isKeyJustPressed(Input.Keys.N) -> { menuStage.root.findActor<Table>("perceptionTable").add("test ${LocalDateTime.now()}").row() }
-            Gdx.input.isKeyJustPressed(Input.Keys.M) -> { val scrollTable = menuStage.root.findActor<Table>("perceptionTable") ; if (scrollTable.children.size > 0) scrollTable.getChild(0).remove() }
+            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { MessageManager.getInstance().dispatchMessage(IEntity.getFor(playerCharacter)!!, IEntity.getFor(playerCharacter)!!, MessageIds.ECS_FSM_BRIDGE.id(), "hello from ${IEntity.getFor(playerCharacter)!!.entityName}") }
         }
 
         menuCamera.update()
@@ -99,32 +94,6 @@ class DemoS2DTableScrollUI(private val menuBatch: Batch,
 
     override fun show() {
         Render.initRender(menuCamera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
-
-        Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("skin/clean-crispy-ui.json"))
-
-        menuStage.addActor(UIPlanTable(Scene2DSkin.defaultSkin))
-
-        val feelingTable = scene2d.table {
-            x = Gdx.graphics.width / 8f
-            y = 5 * Gdx.graphics.height / 8f
-            name = "feelingTable"
-            label ("feelingTable")
-        }
-        feelingTable.row()
-        feelingTable.setBounds(feelingTable.x, feelingTable.y, 100f, 50f)
-        feelingTable.debug = true
-        menuStage.addActor(feelingTable)
-
-        val perceptionTable = scene2d.table {
-            x = 2 * Gdx.graphics.width / 8f
-            y = 4 * Gdx.graphics.height / 8f
-            name = "perceptionTable"
-            label ("perceptionTable")
-        }
-        perceptionTable.row()
-        perceptionTable.setBounds(perceptionTable.x, perceptionTable.y, 100f, 300f)
-        perceptionTable.debug = true
-        menuStage.addActor(perceptionTable)
 
         cave[LocationCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
         cave[LocationCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()

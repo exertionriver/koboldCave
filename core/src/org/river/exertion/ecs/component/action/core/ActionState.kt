@@ -1,21 +1,47 @@
 package org.river.exertion.ecs.component.action.core
 
-class ActionState(val state: String, val ordering: Int) : Comparable<ActionState> {
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ai.fsm.State
+import com.badlogic.gdx.ai.msg.Telegram
+import org.river.exertion.MessageIds
+import org.river.exertion.ecs.component.entity.IEntity
 
-    companion object {
-        val ActionQueue = ActionState("actionQueue", 1)
-        val ActionPrepare = ActionState("actionPrepare", 2)
-        val ActionExecute = ActionState("actionExecute", 3)
-        val ActionRecover = ActionState("actionRecover", 4)
-        val ActionStateNone = ActionState("actionStateNone", 0)
+enum class ActionState : State<IEntity> {
 
-        val InProcess = listOf(ActionPrepare, ActionExecute, ActionRecover)
-        val Interruptable = listOf(ActionPrepare, ActionExecute, ActionRecover)
-        val Preemptable = listOf(ActionPrepare)
+    NONE {
+        override fun update(entity : IEntity) {
+            Gdx.app.log(this.javaClass.name, "${entity.entityName}: status none")
+
+            entity.stateMachine.changeState(SOME)
+        }
+    },
+    SOME {
+        override fun update(entity : IEntity) {
+            Gdx.app.log(this.javaClass.name, "${entity.entityName}: status some")
+
+            entity.stateMachine.changeState(NONE)
+        }
     }
 
-    override fun toString() = "${ActionState::class.simpleName}($state)"
+    ;
 
-    override fun compareTo(other: ActionState): Int = this.ordering.compareTo(other.ordering)
+    abstract override fun update(entity : IEntity)
+
+    override fun enter(entity: IEntity?) {
+    }
+
+    override fun exit(entity: IEntity?) {
+    }
+
+    override fun onMessage(entity: IEntity?, telegram: Telegram?): Boolean {
+
+        if (telegram != null && telegram.message == MessageIds.ECS_FSM_BRIDGE.id() ) {
+
+            Gdx.app.log(this.javaClass.name, "received telegram from ${entity!!.entityName}: ${telegram!!.sender}, ${telegram!!.message}, ${telegram!!.extraInfo}")
+
+            return true
+        }
+        return false
+    }
 
 }

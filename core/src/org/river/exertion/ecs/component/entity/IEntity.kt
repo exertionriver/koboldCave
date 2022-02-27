@@ -1,12 +1,20 @@
 package org.river.exertion.ecs.component.entity
 
 import com.badlogic.ashley.core.Entity
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.ai.msg.Telegraph
+import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
 
-interface IEntity {
+interface IEntity : Telegraph {
 
     var entityName : String
     var description : String
+
+    val stateMachine : DefaultStateMachine<IEntity, ActionState>
+
+    override fun handleMessage(msg: Telegram?): Boolean = stateMachine.handleMessage(msg)
 
     fun initialize(initName : String, entity: Entity)
 

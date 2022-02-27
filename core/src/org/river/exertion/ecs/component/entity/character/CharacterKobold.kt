@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.ashley.entity
 import ktx.ashley.get
@@ -12,6 +13,7 @@ import ktx.ashley.with
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
 import org.river.exertion.ecs.component.action.*
+import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.ecs.component.entity.location.ILocation
 import org.river.exertion.s2d.ActorKobold
@@ -23,6 +25,8 @@ class CharacterKobold : ICharacter, Component {
 
     //TODO: move description into describable component
     override var description = getDesc()
+
+    override val stateMachine = DefaultStateMachine(this, ActionState.NONE)
 
     fun getDesc(): String = ProbabilitySelect(mapOf(
             "ugly Kobold!" to Probability(40f, 0)

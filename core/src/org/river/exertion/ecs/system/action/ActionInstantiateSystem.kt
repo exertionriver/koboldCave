@@ -14,8 +14,7 @@ class ActionInstantiateSystem : IteratingSystem(allOf(ActionInstantiateComponent
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
 
-        if ( ILocation.has(entity) && MomentComponent.has(entity) && entity[MomentComponent.mapper]!!.ready()) {
-            entity[MomentComponent.mapper]!!.reset(this.javaClass.name)
+        if ( ILocation.has(entity) && MomentComponent.has(entity) ) {
 
             //max three entities spawning for now
             if ( engine.entities.filter { CharacterKobold.has(it) }.count() < 2) {

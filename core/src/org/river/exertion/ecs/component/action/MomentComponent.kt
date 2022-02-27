@@ -15,11 +15,7 @@ class MomentComponent(val initMoment : Float = 10f) : IActionComponent, Componen
     var momentCountdown = initMoment
 
     fun ready() = momentCountdown <= 0
-    fun reset(systemName : String) {
-        momentCountdown = moment
-
-        Gdx.app.log(systemName, "resets the countdown..!")
-    }
+    fun reset() { momentCountdown = moment }
 
     companion object {
         val mapper = mapperFor<MomentComponent>()

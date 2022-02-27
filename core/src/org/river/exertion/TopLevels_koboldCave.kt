@@ -177,6 +177,7 @@ object InputHandler {
 enum class MessageIds {
     ECS_S2D_BRIDGE,
     S2D_ECS_BRIDGE,
+    ECS_FSM_BRIDGE,
     PLAN_BRIDGE,
     PERCEPTION_BRIDGE,
     FEELING_BRIDGE;

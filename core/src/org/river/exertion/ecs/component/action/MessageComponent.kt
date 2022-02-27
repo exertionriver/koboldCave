@@ -25,7 +25,7 @@ class MessageComponent(val initName : String) : IActionComponent, Component, Tel
 
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( msg != null && (msg.sender as IBaseActor).actorName == entityName) {
-            Gdx.app.log("message","entity $entityName received telegram:${msg.message}, ${(msg.sender as IBaseActor).actorName}, ${msg.extraInfo}")
+//            Gdx.app.log("message","entity $entityName received telegram:${msg.message}, ${(msg.sender as IBaseActor).actorName}, ${msg.extraInfo}")
 
             return true
         }
