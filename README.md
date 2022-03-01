@@ -9,6 +9,8 @@ Example usage, after cloning / downloading:
 
 Hope this may help you in your development work. - IanP
 
+v0.10 - expanding cave geometries, ECS enhancement, adding s2d and GDXAI FSM
+
 v0.9 - line of sight rendering, ECS movement, rendering performance improvement
 
 https://user-images.githubusercontent.com/13192685/152280190-1e8093de-421e-4001-a1a9-26dc6e93b2c3.mp4
