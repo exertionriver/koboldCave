@@ -10,30 +10,30 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.entity.IEntity
 
-class UIPlanTable(initSkin : Skin) : Table(), Telegraph {
+class UIFeelingTable(initSkin : Skin) : Table(), Telegraph {
 
     val tableMax = 5
 
     val register = mutableMapOf<String, String>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageIds.PLAN_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageIds.FEELING_BRIDGE.id())
 
         skin = initSkin
         x = Gdx.graphics.width / 8f
-        y = 4 * Gdx.graphics.height / 8f
-        name = "planTable"
+        y = 5 * Gdx.graphics.height / 8f
+        name = "feelingTable"
         this.debug = true
-        this.add(Label("planTable", initSkin) )
+        this.add(Label("feelingTable", initSkin) )
         this.row()
     }
 
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null) {
-//            Gdx.app.log("message","planTable received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
+//            Gdx.app.log("message","feelingTable received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
 
-            if ( (this.children.size >= tableMax) || (this.getChild(0) as Label).textEquals("planTable") ) {
+            if ( (this.children.size >= tableMax) || (this.getChild(0) as Label).textEquals("feelingTable") ) {
                 if (this.children.size > 0) this.getChild(0).remove()
             }
 

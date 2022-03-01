@@ -151,8 +151,8 @@ class ActionMoveSystem : IteratingSystem(allOf(ActionMoveComponent::class).get()
                     }
                 }
             }
-            if (entity[ActionMoveComponent.mapper]!!.direction != ActionMoveComponent.Direction.NONE)
-                MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, MessageIds.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
+//            if (entity[ActionMoveComponent.mapper]!!.direction != ActionMoveComponent.Direction.NONE)
+                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
 
             entity[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.NONE
             entity[ActionMoveComponent.mapper]!!.currentNodeRoom = nodeRoomMesh.getNodeRoom(currentNode)

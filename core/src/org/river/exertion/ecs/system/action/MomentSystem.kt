@@ -13,11 +13,11 @@ import org.river.exertion.ecs.component.entity.location.ILocation
 class MomentSystem : IntervalIteratingSystem(allOf(MomentComponent::class).get(), 1/10f) {
 
     override fun processEntity(entity: Entity) {
-        if (entity[MomentComponent.mapper]!!.momentCountdown > 0) entity[MomentComponent.mapper]!!.momentCountdown--
+        if (MomentComponent.getFor(entity)!!.momentCountdown > 0) MomentComponent.getFor(entity)!!.momentCountdown--
 
-        if (entity[MomentComponent.mapper]!!.ready()) {
+        if (MomentComponent.getFor(entity)!!.ready()) {
             IEntity.getFor(entity)!!.stateMachine.update()
-            entity[MomentComponent.mapper]!!.reset()
+            MomentComponent.getFor(entity)!!.reset()
         }
 
         GdxAI.getTimepiece().update(1/10f)

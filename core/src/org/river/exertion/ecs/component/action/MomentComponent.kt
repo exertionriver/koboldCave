@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.Gdx
 import ktx.ashley.mapperFor
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.entity.IEntity
 
 class MomentComponent(val initMoment : Float = 10f) : IActionComponent, Component {
 
@@ -21,6 +22,8 @@ class MomentComponent(val initMoment : Float = 10f) : IActionComponent, Componen
         val mapper = mapperFor<MomentComponent>()
 
         fun has(entity : Entity) : Boolean = entity.components.firstOrNull{ it is MomentComponent } != null
+        fun getFor(entity : Entity) : MomentComponent? = if (has(entity)) entity.components.first { it is MomentComponent } as MomentComponent else null
+
     }
 
 }

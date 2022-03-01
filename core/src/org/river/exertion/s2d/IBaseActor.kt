@@ -7,7 +7,7 @@ import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.MessageIds
 import org.river.exertion.Point
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.action.MessageComponent
+import org.river.exertion.ecs.component.entity.IEntity
 
 interface IBaseActor : Telegraph {
 
@@ -21,7 +21,7 @@ interface IBaseActor : Telegraph {
 
     override fun handleMessage(msg: Telegram?): Boolean {
 
-        if (msg != null && (msg.sender as MessageComponent).entityName == actorName) {
+        if (msg != null && (msg.sender as IEntity).entityName == actorName) {
  //           Gdx.app.log("message","actor $actorName received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
 
             if (msg.extraInfo != null && msg.extraInfo is ActionMoveComponent) {

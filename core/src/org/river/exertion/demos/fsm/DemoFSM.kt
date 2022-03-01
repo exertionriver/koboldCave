@@ -29,7 +29,6 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
-import org.river.exertion.ecs.component.action.MessageComponent
 import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.s2d.ui.UIPlanTable
 import java.time.LocalDateTime

@@ -9,6 +9,7 @@ import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
+import org.river.exertion.ecs.component.entity.IEntity
 
 class ActionSimpleDecideMoveSystem : IteratingSystem(allOf(ActionSimpleDecideMoveComponent::class).get()) {
 
@@ -25,8 +26,8 @@ class ActionSimpleDecideMoveSystem : IteratingSystem(allOf(ActionSimpleDecideMov
   //                  println("$entity position-selecting direction ${entity[ActionMoveComponent.mapper]!!.direction}")
                 }
 
-            if (entity[ActionMoveComponent.mapper]!!.direction != ActionMoveComponent.Direction.NONE)
-                MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, MessageIds.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
+//            if (entity[ActionMoveComponent.mapper]!!.direction != ActionMoveComponent.Direction.NONE)
+                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
         }
     }
 

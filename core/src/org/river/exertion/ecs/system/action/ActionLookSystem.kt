@@ -7,7 +7,6 @@ import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.ActionLookComponent
-import org.river.exertion.ecs.component.action.MessageComponent
 import org.river.exertion.ecs.component.action.MomentComponent
 import org.river.exertion.ecs.component.entity.IEntity
 
@@ -16,7 +15,7 @@ class ActionLookSystem : IteratingSystem(allOf(ActionLookComponent::class).get()
     override fun processEntity(entity: Entity, deltaTime: Float) {
         var lookDigest = ""
 
-        if ( IEntity.has(entity) && MomentComponent.has(entity) && entity[MomentComponent.mapper]!!.ready()) {
+        if ( IEntity.has(entity) && MomentComponent.has(entity) ) {
          //   entity[MomentComponent.mapper]!!.reset(this.javaClass.name)
 
             engine.entities.filter { IEntity.has(it) }.forEach {
@@ -28,7 +27,7 @@ class ActionLookSystem : IteratingSystem(allOf(ActionLookComponent::class).get()
             }
             val lookReport = if (lookDigest.isNotEmpty()) "sees $lookDigest" else "sees nothing"
 
-            MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, MessageIds.PERCEPTION_BRIDGE.id(), lookReport)
+            MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.PERCEPTION_BRIDGE.id(), lookReport)
         }
     }
 }

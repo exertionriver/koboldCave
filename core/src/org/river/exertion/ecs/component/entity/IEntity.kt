@@ -1,11 +1,14 @@
 package org.river.exertion.ecs.component.entity
 
 import com.badlogic.ashley.core.Entity
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
+import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.s2d.IBaseActor
 
 interface IEntity : Telegraph {
 
@@ -14,7 +17,17 @@ interface IEntity : Telegraph {
 
     val stateMachine : DefaultStateMachine<IEntity, ActionState>
 
-    override fun handleMessage(msg: Telegram?): Boolean = stateMachine.handleMessage(msg)
+    override fun handleMessage(msg: Telegram?): Boolean {
+        if ( msg != null ) {
+            if (msg.message == MessageIds.S2D_ECS_BRIDGE.id() && (msg.sender as IBaseActor).actorName == entityName) {
+//            Gdx.app.log("message","entity $entityName received telegram:${msg.message}, ${(msg.sender as IBaseActor).actorName}, ${msg.extraInfo}")
+                return true
+            } else if (msg.message == MessageIds.ECS_FSM_BRIDGE.id()) {
+                stateMachine.handleMessage(msg)
+            }
+        }
+        return false
+    }
 
     fun initialize(initName : String, entity: Entity)
 

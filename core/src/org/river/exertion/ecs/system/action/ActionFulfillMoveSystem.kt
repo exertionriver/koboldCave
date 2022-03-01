@@ -9,6 +9,7 @@ import ktx.ashley.contains
 import ktx.ashley.get
 import org.river.exertion.*
 import org.river.exertion.ecs.component.action.*
+import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.geom.node.Node.Companion.angleBetween
 
 class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponent::class).get(), 1/120f) {
@@ -136,7 +137,7 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
             }
 
             if ((currentPosition != entity[ActionMoveComponent.mapper]!!.currentPosition) || (currentAngle != entity[ActionMoveComponent.mapper]!!.currentAngle) )
-                MessageManager.getInstance().dispatchMessage(entity[MessageComponent.mapper]!!, MessageIds.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
+                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
         }
     }
 
