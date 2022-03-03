@@ -180,7 +180,10 @@ enum class MessageIds {
     ECS_FSM_BRIDGE,
     PLAN_BRIDGE,
     PERCEPTION_BRIDGE,
-    FEELING_BRIDGE;
+    FEELING_BRIDGE,
+    CURNODE_BRIDGE,
+    NODEROOMMESH_BRIDGE
+    ;
 
     fun id() = this.ordinal
 }

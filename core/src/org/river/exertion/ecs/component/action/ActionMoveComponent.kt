@@ -8,6 +8,7 @@ import ktx.ashley.mapperFor
 import org.river.exertion.Angle
 import org.river.exertion.Point
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.ecs.component.entity.location.ILocation
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.NodeLink
@@ -99,5 +100,9 @@ class ActionMoveComponent : IActionComponent, Component {
 
     companion object {
         val mapper = mapperFor<ActionMoveComponent>()
+
+        fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is ActionMoveComponent } != null }
+        fun getFor(entity : Entity) : ActionMoveComponent? = if ( has(entity) ) entity.components.first { it is ActionMoveComponent } as ActionMoveComponent else null
+
     }
 }

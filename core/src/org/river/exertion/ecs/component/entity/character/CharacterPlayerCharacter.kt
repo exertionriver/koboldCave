@@ -17,6 +17,7 @@ import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.ecs.component.entity.location.ILocation
 import org.river.exertion.s2d.ActorPlayerCharacter
 
@@ -49,6 +50,7 @@ class CharacterPlayerCharacter : ICharacter, Component {
         val mapper = mapperFor<CharacterPlayerCharacter>()
 
         fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is CharacterPlayerCharacter } != null }
+        fun getFor(entity : Entity) : CharacterPlayerCharacter? = if (has(entity)) entity.components.first { it is CharacterPlayerCharacter } as CharacterPlayerCharacter else null
 
         fun instantiate(engine: PooledEngine, stage : Stage, initName : String = "PlayerCharacter", location : Entity, camera : OrthographicCamera?) : Entity {
             val newPC = engine.entity {

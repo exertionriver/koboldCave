@@ -15,9 +15,9 @@ interface IBaseActor : Telegraph {
     var currentPosition : Point
     var currentAngle : Float
 
-    fun init() {
-        MessageManager.getInstance().addListener(this, MessageIds.ECS_S2D_BRIDGE.id())
-    }
+//    fun init() {
+//        MessageManager.getInstance().addListener(this, MessageIds.ECS_S2D_BRIDGE.id())
+//    }
 
     override fun handleMessage(msg: Telegram?): Boolean {
 

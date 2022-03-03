@@ -10,7 +10,11 @@ import ktx.ashley.get
 import org.river.exertion.*
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.component.entity.character.CharacterPlayerCharacter
+import org.river.exertion.ecs.component.entity.location.LocationCave
 import org.river.exertion.geom.node.Node.Companion.angleBetween
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 
 class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponent::class).get(), 1/120f) {
 
@@ -24,6 +28,8 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
             val currentPosition = entity[ActionMoveComponent.mapper]!!.currentPosition
             val currentAngle = entity[ActionMoveComponent.mapper]!!.currentAngle
             val stepPathFifthNextNode = entity[ActionMoveComponent.mapper]!!.stepPathFifthNextNode()
+
+            val currentNode = ActionMoveComponent.getFor(entity)!!.currentNode
 
             val otherEntities = engine.entities.filter { it != entity && it.contains(ActionMoveComponent.mapper) }
 
@@ -134,6 +140,25 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                 camera?.position?.lerp(Vector3(currentPosition.x, currentPosition.y, 0f), 0.5f)
                 entity[ActionMoveComponent.mapper]!!.backwardStepEasing--
 //                println("backwardStepEasing:$backwardStepEasing, stepPath.nodes.size: ${stepPath.nodes.size}, currentIdx: $currentIdx, currentAngle:$currentAngle")
+            }
+
+            if (currentNode != ActionMoveComponent.getFor(entity)!!.currentNode && CharacterPlayerCharacter.has(entity)) {
+                val prevExitNodes = ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.activatedExitNodes.size
+                //       val nodeRoomIdx = cave[EnvironmentCave.mapper]!!.nodeRoomMesh.getCurrentRoomIdx(playerCharacter[ActionMoveComponent.mapper]!!.currentNode)
+                ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.inactiveExitNodesInRange(ActionMoveComponent.getFor(entity)!!.currentNode).forEach {
+                    ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.activateExitNode( ActionMoveComponent.getFor(entity)!!.currentNode, it ) }
+                val currExitNodes = ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.activatedExitNodes.size
+
+                if (prevExitNodes != currExitNodes) {
+                    ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.buildWallsAndPath()
+                    ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPath()
+
+                    MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageIds.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
+                }
+
+                MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageIds.ECS_S2D_BRIDGE.id(), ActionMoveComponent.getFor(entity)!!.currentNode)
+
+
             }
 
             if ((currentPosition != entity[ActionMoveComponent.mapper]!!.currentPosition) || (currentAngle != entity[ActionMoveComponent.mapper]!!.currentAngle) )

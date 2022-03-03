@@ -25,6 +25,7 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
+import org.river.exertion.s2d.ActorCave
 
 class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
                                     private val font: BitmapFont,
@@ -48,8 +49,8 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
     val s2aBig = ScaleToAction().apply { this.setScale(2f); this.duration = 5f }
     val s2aSmall = ScaleToAction().apply { this.setScale(0.75f); this.duration = 3f }
 
-    val sdc = ShapeDrawerConfig(batch)
-    val drawer = sdc.getDrawer()
+//    val sdc = ShapeDrawerConfig(batch)
+//    val drawer = sdc.getDrawer()
 
     override fun render(delta: Float) {
 
@@ -65,13 +66,13 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
         camera.update()
         batch.projectionMatrix = camera.combined
 
-        batch.use {
-            cave[LocationCave.mapper]!!.nodeRoomMesh.render(batch)
+//        batch.use {
+//            ActorCave.render(batch, cave[LocationCave.mapper]!!.nodeRoomMesh)
 
 //            cave[EnvironmentCave.mapper]!!.nodeRoomMesh.nodesMap.keys.filter { it.attributes.occupied }.forEach {
 //                drawer.filledCircle(it.position, 2F, RenderPalette.ForeColors[3])
 //            }
-        }
+//        }
 
         stage.draw()
         stage.act()
@@ -100,8 +101,8 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
         val actor = ActorPlayerCharacter("PlayerCharacter", playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle )
         stage.addActor(actor.apply { this.addAction(s2aBig) } )
 */
-        cave[LocationCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
-        cave[LocationCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
+ //       cave[LocationCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
+ //       cave[LocationCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
 
         // start the playback of the background music when the screen is shown
         MusicAssets.values().forEach { assets.load(it) }

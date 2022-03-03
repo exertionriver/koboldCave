@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g3d.*
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute.createDiffuse
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
@@ -31,6 +32,7 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render3d
 import java.time.LocalDateTime
 
 class Demo3d(private val menuBatch: Batch,
@@ -58,9 +60,6 @@ class Demo3d(private val menuBatch: Batch,
     val sdc = ShapeDrawerConfig(menuBatch)
     val drawer = sdc.getDrawer()
 
-    val modelBuilder = ModelBuilder()
-    var modelPoint = Model()
-    lateinit var modelInstance : ModelInstance
     val environment = Environment()
 
     @Suppress("NewApi")
@@ -75,26 +74,23 @@ class Demo3d(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.BACKWARD }
             Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.LEFT }
             Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.RIGHT }
-            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { (menuStage.actors.find { it.name == "staticTable"} as Table).add("test ${LocalDateTime.now()}").row() }
-            Gdx.input.isKeyJustPressed(Input.Keys.X) -> { (menuStage.actors.find { it.name == "staticTable"} as Table).getChild(0).remove() }
-            Gdx.input.isKeyJustPressed(Input.Keys.C) -> { menuStage.root.findActor<Table>("scrollTableInner").add("test ${LocalDateTime.now()}").row() }
-            Gdx.input.isKeyJustPressed(Input.Keys.B) -> { menuStage.root.findActor<Table>("scrollTableInner").getChild(0).remove() }
         }
 
         gameCamera.update()
         gameBatch.begin(gameCamera)
-        gameBatch.render(modelInstance, environment)
+        cave[LocationCave.mapper]!!.nodeRoomMesh.render3d(gameBatch, environment)
+        //gameBatch.render(modelInstance, environment)
         gameBatch.end()
 
-        menuCamera.update()
-        menuBatch.projectionMatrix = menuCamera.combined
+//        menuCamera.update()
+//        menuBatch.projectionMatrix = menuCamera.combined
 
-        menuBatch.use {
-            cave[LocationCave.mapper]!!.nodeRoomMesh.render(menuBatch)
-        }
+//        menuBatch.use {
+//            cave[LocationCave.mapper]!!.nodeRoomMesh.render(menuBatch)
+//        }
 
-        menuStage.draw()
-        menuStage.act()
+//        menuStage.draw()
+//        menuStage.act()
 
         menuBatch.use {
             font.drawLabel(menuBatch, Point(300f, 200f), "${playerCharacter[ActionMoveComponent.mapper]!!.currentNode}\n${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink}\n" +
@@ -115,43 +111,10 @@ class Demo3d(private val menuBatch: Batch,
 
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("skin/clean-crispy-ui.json"))
 
-        val myTable = scene2d.table {
-            x = 600f
-            y = 600f
-            height = 100f
-            name = "staticTable"
-            label ("test 123")
-        }
-        myTable.row()
-
-        val mySecondTable = scene2d.table {
-            x = 400f
-            y = 600f
-            height = 100f
-            name = "scrollTableOuter"
-            label ("test 456")
-            scrollPane {
-                name = "scrollPane"
-                listOf("test 789", "test 890")
-                table {
-                    name = "scrollTableInner"
-                    label ("test 789")
-                    setBounds(400f, 600f, 100f, 200f)
-                }
-            }
-        }
-//        mySecondTable.setFillParent(true)
-//        (mySecondTable.getChild(0) as ScrollPane)
-
-//        val test = ScrollPane(mySecondTable)
-//            mySecondTable.add(test).expand().fill()
-        menuStage.addActor(myTable)
-        menuStage.addActor(mySecondTable)
-
-        modelPoint = modelBuilder.createSphere(10f, 10f, 10f, 20, 20, Material(createDiffuse(Color.BLUE)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong())
-        modelInstance = ModelInstance(modelPoint, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.x, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.y, 0f)
-//        environment.set(ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1f))
-        environment.add(DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f))
+//        modelPoint = modelBuilder.createSphere(10f, 10f, 10f, 20, 20, Material(createDiffuse(Color.BLUE)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong())
+//        modelInstance = ModelInstance(modelPoint, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.x, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.y, 0f)
+        environment.set(ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 0.4f))
+        environment.add(DirectionalLight().set(1.0f, 1.0f, 1.0f, -1f, -0.8f, -0.2f))
 
         cave[LocationCave.mapper]!!.nodeRoomMesh.buildWallsAndPath()
         cave[LocationCave.mapper]!!.nodeRoomMesh.renderWallsAndPath()
@@ -178,6 +141,5 @@ class Demo3d(private val menuBatch: Batch,
 
     override fun dispose() {
         assets.dispose()
-        modelPoint.dispose()
     }
 }

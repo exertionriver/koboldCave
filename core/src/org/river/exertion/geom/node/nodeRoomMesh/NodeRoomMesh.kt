@@ -2,7 +2,11 @@ package org.river.exertion.geom.node.nodeRoomMesh
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.PerspectiveCamera
+import com.badlogic.gdx.graphics.VertexAttributes
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g3d.*
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
 import com.badlogic.gdx.math.MathUtils.lerp
 import org.river.exertion.*
 import org.river.exertion.geom.Line
@@ -434,20 +438,28 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 
             sdc.disposeShapeDrawerConfig()
         }
-        fun NodeRoomMesh.renderPerspective(batch: Batch, perspectiveCamera: PerspectiveCamera) {
 
+        fun NodeRoomMesh.render3d(gameBatch : ModelBatch, environment : Environment)//gameBatch.render(modelInstance, environment)
+        {
             val currentWallColor = RenderPalette.BackColors[1]
             val currentFloorColor = RenderPalette.FadeForeColors[4]
             val pastFloorColor = RenderPalette.FadeBackColors[4]
             val currentStairsColor = RenderPalette.FadeForeColors[1]
             val pastColor = RenderPalette.FadeBackColors[1]
 
-            val sdc = ShapeDrawerConfig(batch)
-            val drawer = sdc.getDrawer()
+            val modelBuilder = ModelBuilder()
+            lateinit var modelInstance : ModelInstance
+
+
+            val wallPoint = modelBuilder.createSphere(.8f, .8f, .8f, 10, 10, Material(ColorAttribute.createDiffuse(currentWallColor)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong())
+            val wallFadePoint = modelBuilder.createSphere(.5f, .5f, .5f, 10, 10, Material(ColorAttribute.createDiffuse(currentWallColor)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong())
+            val floorPoint = modelBuilder.createSphere(.5f, .5f, .5f, 10, 10, Material(ColorAttribute.createDiffuse(pastFloorColor)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong())
+
 
             this.nodeRooms.forEach {
                 it.getExitNodes().forEachIndexed { index, exitNode ->
-                    drawer.filledCircle(exitNode.position, 4F, RenderPalette.ForeColors[1])
+                    modelInstance = ModelInstance(wallPoint, exitNode.position.x, exitNode.position.y, 30f)
+                    gameBatch.render(modelInstance, environment)
                 }
             }
 
@@ -455,38 +467,46 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
                 val baseRadius = 0.3f
                 val obsRadius = this.obstaclePath[pathPoint.key] ?: 0f
                 val radius = baseRadius + obsRadius
-//            val eleRadius = (this.elevationPath[pathPoint.key] ?: 0.5f) - 0.25f
-                drawer.filledCircle(pathPoint.value, radius, pastFloorColor)
+                modelInstance = ModelInstance(floorPoint, pathPoint.value.x, pathPoint.value.y, this.elevationPath[pathPoint.key]!! * 10)
+                gameBatch.render(modelInstance, environment)
             }
 
             this.currentPath.entries.forEach { pathPoint ->
                 val baseRadius = 0.3f
                 val obsRadius = this.obstaclePath[pathPoint.key] ?: 0f
                 val radius = baseRadius + obsRadius
-
-                val color = this.colorPath[pathPoint.key] ?: pastFloorColor
-
-//            println(this.elevationPath[pathPoint.key].toString() + ", " + color)
-                drawer.filledCircle(pathPoint.value, radius, color)
+                modelInstance = ModelInstance(floorPoint, pathPoint.value.x, pathPoint.value.y, this.elevationPath[pathPoint.key]!! * 10)
+                gameBatch.render(modelInstance, environment)
             }
 
             this.pastWall.values.forEach { wallNode ->
-                drawer.filledCircle(wallNode, 0.5F, pastColor)
+                (-5..5 step 2).forEach { z ->
+                    modelInstance = ModelInstance(wallPoint, wallNode.x, wallNode.y, z.toFloat())
+                    gameBatch.render(modelInstance, environment)
+                }
             }
 
-            this.currentWall.values.forEach { wallPoint ->
-                drawer.filledCircle(wallPoint, 0.5F, currentWallColor)
+            this.currentWall.values.forEach { wallNode ->
+                (-5..5 step 2).forEach { z ->
+                    modelInstance = ModelInstance(wallPoint, wallNode.x, wallNode.y, z.toFloat())
+                    gameBatch.render(modelInstance, environment)
+                }
             }
 
-            this.pastWallFade.values.forEach { wallNode ->
-                drawer.filledCircle(wallNode, 0.3F, pastColor)
+            this.pastWallFade.values.forEach { wallFadeNode ->
+                (-5..5 step 2).forEach { z ->
+                    modelInstance = ModelInstance(wallFadePoint, wallFadeNode.x, wallFadeNode.y, z.toFloat())
+                    gameBatch.render(modelInstance, environment)
+                }
             }
 
-            this.currentWallFade.values.forEach { wallFadePoint ->
-                drawer.filledCircle(wallFadePoint, 0.3F, currentWallColor)
+            this.currentWallFade.values.forEach { wallFadeNode ->
+                (-5..5 step 2).forEach { z ->
+                    modelInstance = ModelInstance(wallFadePoint, wallFadeNode.x, wallFadeNode.y, z.toFloat())
+                    gameBatch.render(modelInstance, environment)
+                }
             }
 
-            sdc.disposeShapeDrawerConfig()
         }
     }
 }

@@ -155,7 +155,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                         val angleNoiseOnCircle = Probability(180f, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
                         val noisyAngleOnCircle = (angleNoiseOnCircle + noisyPointOnCircle).normalizeDeg()
 
-                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, noisyPointOnCircle)
+                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx, noisyPointOnCircle)
                     }
                 }
                 NodeRoomAttributes.GeomStyle.SINGLE -> {
@@ -171,7 +171,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                         val angleNoiseOnCircle = Probability(180f, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
                         val noisyAngleOnCircle = (angleNoiseOnCircle + noisyPointOnCircle).normalizeDeg()
 
-                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, noisyPointOnCircle)
+                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx, noisyPointOnCircle)
                     }
                 }
                 NodeRoomAttributes.GeomStyle.SEQUENCE -> {
@@ -185,7 +185,6 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                     val sequenceLine = NodeLine(firstNode = Node(position = originPointOnCircle), lastNode = Node(position=endingPointOnCircle), lineNoise = cappedAngleNoise)
                     val angleVariance = 30f
 
-//                    println("nodeLine size:${sequenceLine.nodes.size}, order size:${sequenceLine.nodeOrder.size}")
 
                     sequenceLine.nodeOrder.forEachIndexed { idx, lineNodeUUID ->
 //                        println("idx:$idx, lineNodeUUID:$lineNodeUUID")
@@ -195,14 +194,19 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                             val nextNode = sequenceLine.nodes.getNode(sequenceLine.nodeOrder[idx + 1])!!
 
                             val angleBetween = currNode.angleBetween(nextNode)
-                            geomMap[angleBetween] = currNode.position
+                            var angleBetweenNoise = Probability(angleBetween, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
+
+                            while (geomMap[angleBetweenNoise] != null) angleBetweenNoise += 0.01f
+                            geomMap[angleBetweenNoise] = currNode.position
                         } else {
                             var angleNoiseFinalNode = Probability(endingAngleOnCircle, angleVariance * cappedAngleNoise / 100).getValue().normalizeDeg()
 
-                            while (geomMap[angleNoiseFinalNode] != null) angleNoiseFinalNode++
+                            while (geomMap[angleNoiseFinalNode] != null) angleNoiseFinalNode += 0.01f
                             geomMap[angleNoiseFinalNode] = sequenceLine.nodes.getNode(lineNodeUUID)!!.position
                         }
                     }
+
+                    println("nodeLine size:${sequenceLine.nodes.size}, order size:${sequenceLine.nodeOrder.size}, geomMap size:${geomMap.entries.size}")
 
                     geomMap.entries.forEach {
                         println("${it.key}: ${it.value}")
@@ -238,7 +242,7 @@ class NodeRoom(override val uuid: UUID = UUID.randomUUID(), override var descrip
                         val angleNoiseOnCircle = Probability(180f, 60f * cappedAngleNoise / 100).getValue().normalizeDeg()
                         val noisyAngleOnCircle = (angleNoiseOnCircle + noisyPointOnCircle).normalizeDeg()
 
-                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx / 2, noisyPointOnCircle)
+                        geomMap[noisyAngleOnCircle] = roomMesh.centroid.position.getPositionByDistanceAndAngle(height * NextDistancePx, noisyPointOnCircle)
                     }
                 }
             }
