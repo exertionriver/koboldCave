@@ -2,10 +2,13 @@ package org.river.exertion.ecs.component.action
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
+import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.graphics.OrthographicCamera
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import org.river.exertion.Angle
+import org.river.exertion.MessageIds
+import org.river.exertion.NextDistancePx
 import org.river.exertion.Point
 import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.ecs.component.entity.IEntity
@@ -15,6 +18,8 @@ import org.river.exertion.geom.node.NodeLink
 import org.river.exertion.geom.node.nodeMesh.NodeLine
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 
 class ActionMoveComponent : IActionComponent, Component {
 

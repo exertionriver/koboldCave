@@ -18,6 +18,7 @@ import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.MomentComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
@@ -55,7 +56,7 @@ class LocationCave : ILocation, Component {
 
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( msg != null && msg.message == MessageIds.NODEROOMMESH_BRIDGE.id() ) {
-            Gdx.app.log("message","entity $entityName received telegram:${msg.message}, ${(msg.sender as IBaseActor).actorName}, ${msg.extraInfo}")
+            Gdx.app.log("message","entity $entityName received telegram:${msg.message}, ${(msg.sender as IEntity).entityName}, ${msg.extraInfo}")
             this.nodeRoomMesh = msg.extraInfo as NodeRoomMesh
         }
         return super.handleMessage(msg)
@@ -72,7 +73,7 @@ class LocationCave : ILocation, Component {
             }.apply { this[mapper]?.initialize(initName, this)
                 this[mapper]!!.nodeRoomMesh = nodeRoomMesh
                 this[mapper]!!.nodeRoomMesh.buildWallsAndPath()
-                this[mapper]!!.nodeRoomMesh.renderWallsAndPath()
+                //this[mapper]!!.nodeRoomMesh.renderWallsAndPath()
             }
             newCave[ActionInstantiateComponent.mapper]!!.stage = stage
 

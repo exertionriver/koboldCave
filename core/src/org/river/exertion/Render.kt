@@ -20,8 +20,8 @@ object Render {
     fun initRender(camera: PerspectiveCamera, currentNode: Node, currentAngle: Angle) {
         camera.position.set(currentNode.position.x, currentNode.position.y, 100f)
         camera.lookAt(currentNode.position.x, currentNode.position.y, 0f)
-        camera.near = 50f
-        camera.far = 150f
+        camera.near = 0.1f
+        camera.far = 500f
 
         val angleToRotate = cameraAngle.leftAngleBetween(currentAngle)
         camera.rotate(Vector3.Z, angleToRotate)

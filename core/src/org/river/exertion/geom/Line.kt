@@ -2,6 +2,7 @@ package org.river.exertion.geom
 
 import com.badlogic.gdx.math.MathUtils.cos
 import com.badlogic.gdx.math.MathUtils.sin
+import com.badlogic.gdx.math.Vector3
 import org.river.exertion.*
 import kotlin.math.*
 

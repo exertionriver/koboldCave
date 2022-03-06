@@ -74,7 +74,7 @@ class DemoNodeRoomECSRotateNavigateScreen(private val batch: Batch,
             ActorPlayerCharacter.render(batch, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
 
             engine.entities.filter { checkEntity -> CharacterKobold.has(checkEntity) }.forEach { renderKobold ->
-                ActorKobold.renderLos(batch, losMap, playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
+                ActorKobold.renderLos(batch, losMap, renderKobold[ActionMoveComponent.mapper]!!.currentPosition, renderKobold[ActionMoveComponent.mapper]!!.currentAngle)
             }
         }
 

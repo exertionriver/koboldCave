@@ -15,6 +15,7 @@ import org.river.exertion.ecs.component.entity.location.LocationCave
 import org.river.exertion.geom.node.Node.Companion.angleBetween
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 
 class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponent::class).get(), 1/120f) {
 
@@ -151,17 +152,25 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
 
                 if (prevExitNodes != currExitNodes) {
                     ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.buildWallsAndPath()
-                    ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPath()
 
-                    MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageIds.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
+                    if (ActionMoveComponent.getFor(entity)!!.camera == null) {
+                        ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPath()
+                    }
+
+                    MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageIds.NODEROOMMESH_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!.nodeRoomMesh)
                 }
 
-                MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageIds.ECS_S2D_BRIDGE.id(), ActionMoveComponent.getFor(entity)!!.currentNode)
-
+                MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageIds.CURNODE_BRIDGE.id(), ActionMoveComponent.getFor(entity)!!.currentNode)
 
             }
 
-            if ((currentPosition != entity[ActionMoveComponent.mapper]!!.currentPosition) || (currentAngle != entity[ActionMoveComponent.mapper]!!.currentAngle) )
+            if (ActionMoveComponent.getFor(entity)!!.camera != null) {
+                val losMap = ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPathLos(ActionMoveComponent.getFor(entity)!!.currentPosition, ActionMoveComponent.getFor(entity)!!.currentAngle, NextDistancePx * 1.5f)
+
+                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.LOSMAP_BRIDGE.id(), losMap)
+            }
+
+        if ((currentPosition != entity[ActionMoveComponent.mapper]!!.currentPosition) || (currentAngle != entity[ActionMoveComponent.mapper]!!.currentAngle) )
                 MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
         }
     }

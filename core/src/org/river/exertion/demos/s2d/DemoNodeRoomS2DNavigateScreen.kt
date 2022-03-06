@@ -42,7 +42,7 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
     val cave = LocationCave.instantiate(engine, stage, "spookyCave", nodeRoomMesh)
-    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, stage, location = cave, camera = null)
+    val playerCharacter = CharacterPlayerCharacter.instantiate(engine, stage, location = cave, camera = camera)
 
     val controlAreaCamera = OrthographicCamera()
 //    val controlAreaViewport = ExtendViewport(Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat(), controlAreaCamera)
@@ -95,7 +95,10 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
     }
 
     override fun show() {
-        Render.initRender(camera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
+        //overhead, following character
+        Render.initRender(playerCharacter[ActionMoveComponent.mapper]!!.camera!!, playerCharacter[ActionMoveComponent.mapper]!!.currentNode, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
+        //overhead
+//        Render.initRender(camera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
         controlAreaCamera.setToOrtho(false, Gdx.graphics.getWidth().toFloat(), Gdx.graphics.getHeight().toFloat())
 /*
         val actor = ActorPlayerCharacter("PlayerCharacter", playerCharacter[ActionMoveComponent.mapper]!!.currentPosition, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle )

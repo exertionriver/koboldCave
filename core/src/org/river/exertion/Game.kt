@@ -13,12 +13,10 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
-import org.river.exertion.demos.ecs.nodeRoomMesh.DemoNodeRoomMeshECSNavigateScreen
-import org.river.exertion.demos.fsm.DemoFSM
+import org.river.exertion.demos.gdx3d.Demo3d
+import org.river.exertion.demos.gdx3d.Demo3dShapes
 import org.river.exertion.demos.geom.nodeRoom.DemoNodeRoomHeightScreen
-import org.river.exertion.demos.s2d.Demo3d
 import org.river.exertion.demos.s2d.DemoNodeRoomS2DNavigateScreen
-import org.river.exertion.demos.s2d.DemoS2DTableScrollUI
 
 class Game : KtxGame<KtxScreen>() {
     private val context = Context()
@@ -73,7 +71,7 @@ class Game : KtxGame<KtxScreen>() {
             addScreen(DemoNodeMeshOperationsSecondScreen( inject(), inject(), inject(), inject()) )
             addScreen(DemoNodeMeshOperationsThirdScreen( inject(), inject(), inject(), inject()) )
 
-*/ //           addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
+*///            addScreen(DemoNodeRoomHeightScreen( inject(), inject(), inject() ) )
 
     /*navigation
             addScreen(DemoNodeRoomECSNavigateScreen( inject(), inject(), inject(), inject() ) )
@@ -82,15 +80,16 @@ class Game : KtxGame<KtxScreen>() {
 //            addScreen(DemoNodeRoomMeshECSNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
 /*            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 */
-            addScreen(DemoNodeRoomS2DNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
+//            addScreen(DemoNodeRoomS2DNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(DemoS2DTableScrollUI( inject(), inject(), inject(), inject(), inject() ) )
 
 //            addScreen(DemoFSM( inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3d( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+            addScreen(Demo3dShapes( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 
         }
 
-        setScreen<DemoNodeRoomS2DNavigateScreen>()
+        setScreen<Demo3dShapes>()
 //        super.create()
     }
 

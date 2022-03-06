@@ -1,4 +1,4 @@
-package org.river.exertion.demos.s2d
+package org.river.exertion.demos.gdx3d
 
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
@@ -9,12 +9,10 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g3d.*
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute.createDiffuse
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
+import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import ktx.app.KtxScreen
 import ktx.ashley.get
@@ -28,12 +26,10 @@ import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render3d
-import java.time.LocalDateTime
 
 class Demo3d(private val menuBatch: Batch,
              private val gameBatch: ModelBatch,
@@ -60,6 +56,8 @@ class Demo3d(private val menuBatch: Batch,
     val sdc = ShapeDrawerConfig(menuBatch)
     val drawer = sdc.getDrawer()
 
+    val originPosition = Vector3(playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.x, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.y, 0f)
+
     val environment = Environment()
 
     @Suppress("NewApi")
@@ -67,7 +65,7 @@ class Demo3d(private val menuBatch: Batch,
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
 
-        InputHandler.handleInput(gameCamera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position)
+        InputHandler.handleInput(gameCamera, originPosition)
 
         when {
             Gdx.input.isKeyJustPressed(Input.Keys.UP) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.FORWARD }

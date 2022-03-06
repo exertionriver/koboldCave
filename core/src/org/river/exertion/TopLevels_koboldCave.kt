@@ -29,12 +29,23 @@ fun Point.round() : Point = Point(this.x.roundToInt().toFloat(), this.y.roundToI
 
 fun middle(firstPoint : Point, secondPoint : Point) : Point = Point((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2)
 
+fun middle(firstPoint : Vector3, secondPoint : Vector3) : Vector3 = Vector3((firstPoint.x + secondPoint.x) / 2, (firstPoint.y + secondPoint.y) / 2, (firstPoint.z + secondPoint.z) / 2)
+
 typealias Angle = Float
 fun Angle.normalizeDeg() : Angle {
     var returnAngle = this
 
     while ( returnAngle >= 360 ) returnAngle -= 360
     while ( returnAngle < 0 ) returnAngle += 360
+
+    return returnAngle
+}
+
+fun Angle.normalizePolarDeg() : Angle {
+    var returnAngle = this
+
+    while ( returnAngle >= 180 ) returnAngle -= 180
+    while ( returnAngle < 0 ) returnAngle += 180
 
     return returnAngle
 }
@@ -156,7 +167,7 @@ object InputHandler {
     }
 
 
-    fun handleInput(camera : PerspectiveCamera, refPoint : Point) {
+    fun handleInput(camera : PerspectiveCamera, refVector : Vector3) {
         when {
             Gdx.input.isKeyJustPressed(Input.Keys.W) -> { camera.position.y += 10f }
             Gdx.input.isKeyJustPressed(Input.Keys.S) -> { camera.position.y -= 10f }
@@ -166,9 +177,9 @@ object InputHandler {
             Gdx.input.isKeyJustPressed(Input.Keys.E) -> { camera.position.z += 10f }
 //usually, it is better to use Quaternion
 
-                Gdx.input.isKeyJustPressed(Input.Keys.R) -> { camera.rotateAround(Vector3(refPoint.x, refPoint.y, 0f), Vector3(1f, 0f, 0f), 30f) }
-                Gdx.input.isKeyJustPressed(Input.Keys.F) -> { camera.rotateAround(Vector3(refPoint.x, refPoint.y, 0f), Vector3(0f, 1f, 0f), 30f) }
-                Gdx.input.isKeyJustPressed(Input.Keys.V) -> { camera.rotateAround(Vector3(refPoint.x, refPoint.y, 0f), Vector3(0f, 0f, 1f), 30f) }
+                Gdx.input.isKeyJustPressed(Input.Keys.R) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(1f, 0f, 0f), 30f) }
+                Gdx.input.isKeyJustPressed(Input.Keys.F) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(0f, 1f, 0f), 30f) }
+                Gdx.input.isKeyJustPressed(Input.Keys.V) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(0f, 0f, 1f), 30f) }
 //                else -> //do nothing
         }
     }
@@ -182,7 +193,8 @@ enum class MessageIds {
     PERCEPTION_BRIDGE,
     FEELING_BRIDGE,
     CURNODE_BRIDGE,
-    NODEROOMMESH_BRIDGE
+    NODEROOMMESH_BRIDGE,
+    LOSMAP_BRIDGE
     ;
 
     fun id() = this.ordinal

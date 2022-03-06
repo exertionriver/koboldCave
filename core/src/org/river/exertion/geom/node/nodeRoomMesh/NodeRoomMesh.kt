@@ -381,6 +381,8 @@ class NodeRoomMesh(override val uuid: UUID = UUID.randomUUID(), override val des
 //                println("playerEyeLevel: ${playerEyeLevel}, diff:${curElevation - refElevation}")
 //                println("final rayLengthIter: $rayLengthIter")
             }
+            returnLosMap[360] = refPosition // current position
+
             return returnLosMap
         }
 

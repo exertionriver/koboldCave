@@ -14,11 +14,14 @@ import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.MessageIds
+import org.river.exertion.NextDistancePx
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
 import org.river.exertion.ecs.component.entity.IEntity
 import org.river.exertion.ecs.component.entity.location.ILocation
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
+import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
 import org.river.exertion.s2d.ActorPlayerCharacter
 
 class CharacterPlayerCharacter : ICharacter, Component {
@@ -57,7 +60,14 @@ class CharacterPlayerCharacter : ICharacter, Component {
                 with<CharacterPlayerCharacter>()
             }.apply { this[mapper]?.initialize(initName, this) }
 
-            newPC[ActionMoveComponent.mapper]!!.initialize(ILocation.getFor(location)!!, camera)
+            ActionMoveComponent.getFor(newPC)!!.initialize(ILocation.getFor(location)!!, camera)
+
+            if (camera == null) {
+                ActionMoveComponent.getFor(newPC)!!.nodeRoomMesh.renderWallsAndPath()
+            } else {
+                val losMap = ActionMoveComponent.getFor(newPC)!!.nodeRoomMesh.renderWallsAndPathLos(ActionMoveComponent.getFor(newPC)!!.currentPosition, ActionMoveComponent.getFor(newPC)!!.currentAngle, NextDistancePx * 1.5f)
+                MessageManager.getInstance().dispatchMessage(MessageIds.LOSMAP_BRIDGE.id(), losMap)
+            }
 
             stage.addActor(ActorPlayerCharacter(initName, newPC[ActionMoveComponent.mapper]!!.currentPosition, newPC[ActionMoveComponent.mapper]!!.currentAngle ) )
 
