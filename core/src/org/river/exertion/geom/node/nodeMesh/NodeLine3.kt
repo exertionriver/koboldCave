@@ -1,6 +1,7 @@
 package org.river.exertion.geom.node.nodeMesh
 
 import com.badlogic.gdx.math.Vector3
+import ktx.math.compareTo
 import ktx.math.plus
 import org.river.exertion.Point
 import org.river.exertion.Probability
@@ -22,11 +23,11 @@ class NodeLine3(override val uuid: UUID = UUID.randomUUID(), override val descri
                 , var nodeOrder : MutableList<UUID> = mutableListOf()) :
     INodeMesh3 {
 
-    var lineNoise : Int = 0
+    var lineNoise = Vector3(0f, 0f, 0f)
 
     //build constructor
     constructor(description: String = "nodeLine${Random.nextInt(256)}"
-                , firstNode : Node3, lastNode : Node3, lineNoise : Int) : this (
+                , firstNode : Node3, lastNode : Node3, lineNoise : Vector3) : this (
     ) {
         val workNodeLine = Pair(firstNode, lastNode).buildNodeLine(lineNoise, description)
 
@@ -64,6 +65,38 @@ class NodeLine3(override val uuid: UUID = UUID.randomUUID(), override val descri
         return returnList
     }
 
+    fun getPositions() : MutableList<Vector3> {
+
+        val returnList = mutableListOf<Vector3>()
+
+        nodeOrder.forEachIndexed { idx, uuid ->
+            if (idx > 0) {
+                returnList.add(nodes.filter { it.uuid == nodeOrder[idx - 1] }.first().position)
+            }
+        }
+
+        return returnList
+    }
+
+    fun getPositionVertices() : FloatArray {
+
+        val returnFloatArray = FloatArray(this.nodes.size * 8)
+        var arrayIndex = 0
+
+        this.getPositions().forEach {
+            returnFloatArray[arrayIndex++] = it.x
+            returnFloatArray[arrayIndex++] = it.y
+            returnFloatArray[arrayIndex++] = it.z
+            returnFloatArray[arrayIndex++] = 0f
+            returnFloatArray[arrayIndex++] = 0f
+            returnFloatArray[arrayIndex++] = 1f //normal to z
+//            returnFloatArray[arrayIndex++] = 0.5f //texturex
+//            returnFloatArray[arrayIndex++] = 0.5f //texturey
+        }
+
+        return returnFloatArray
+    }
+
     fun getLineLength() = nodes.getLineLength()
 
     override fun toString() = "${NodeLine3::class.simpleName}(${uuid}) : $description, $nodes, $nodeLinks"
@@ -81,9 +114,9 @@ class NodeLine3(override val uuid: UUID = UUID.randomUUID(), override val descri
             return Vector3.dst(xMin, yMin, zMin, xMax, yMax, zMax)
         }
 
-        //noise goes from 0 to 100
+        //noise.x goes from 0 to 100, noise.y is plane compression, 0 to 90, noise.z is noise plane rotation, 0 to 90
         //does node / node need to be "?" ?
-        fun Pair<Node3, Node3>.buildNodeLine(noise : Int = 0, nodeLineDescription : String = this.first.description, linkDistance : Float = NodeLink.consolidateNodeDistance + 1) : NodeLine3 {
+        fun Pair<Node3, Node3>.buildNodeLine(noise : Vector3 = Vector3(0f, 0f, 0f), nodeLineDescription : String = this.first.description, linkDistance : Float = NodeLink.consolidateNodeDistance + 1) : NodeLine3 {
 
             if (this.first.position == this.second.position) return NodeLine3(description = nodeLineDescription, nodes = mutableSetOf(this.first))
 
@@ -95,7 +128,7 @@ class NodeLine3(override val uuid: UUID = UUID.randomUUID(), override val descri
             val endNode = this.second
             val lineLength = mutableSetOf(this.first, this.second).getLineLength()
 
-            val cappedNoise = if (noise < 0) 0 else if (noise > 100) 100 else noise
+            val cappedNoise = if (noise.x < 0) 0 else if (noise.x > 100) 100 else noise.x.toInt()
 
 //            println ("nodeLine start: $startNode step $linkDistance")
 
@@ -129,7 +162,7 @@ class NodeLine3(override val uuid: UUID = UUID.randomUUID(), override val descri
                 currentPositionNoiseCircleAngle = Probability(180F, 180F).getValue()
 
                 //find noise position
-                currentNoisePosition = Pair(previousPosition, currentPosition).applyNoise(currentPositionNoiseCircleRadius, currentPositionNoiseCircleAngle)
+                currentNoisePosition = Pair(previousPosition, currentPosition).applyNoise(currentPositionNoiseCircleRadius, Vector3(currentPositionNoiseCircleAngle, noise.y, noise.z))
 
                 currentNode = Node3(position = currentNoisePosition)
 

@@ -14,6 +14,7 @@ import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
 import org.river.exertion.demos.gdx3d.Demo3d
+import org.river.exertion.demos.gdx3d.Demo3dHall
 import org.river.exertion.demos.gdx3d.Demo3dShapes
 import org.river.exertion.demos.geom.nodeRoom.DemoNodeRoomHeightScreen
 import org.river.exertion.demos.s2d.DemoNodeRoomS2DNavigateScreen
@@ -85,11 +86,12 @@ class Game : KtxGame<KtxScreen>() {
 
 //            addScreen(DemoFSM( inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3d( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
-            addScreen(Demo3dShapes( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+//            addScreen(Demo3dShapes( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+            addScreen(Demo3dHall( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 
         }
 
-        setScreen<Demo3dShapes>()
+        setScreen<Demo3dHall>()
 //        super.create()
     }
 

@@ -57,6 +57,7 @@ class Demo3d(private val menuBatch: Batch,
     val drawer = sdc.getDrawer()
 
     val originPosition = Vector3(playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.x, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.y, 0f)
+    val camPosition = Vector3(playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.x, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid.position.y, 0f)
 
     val environment = Environment()
 
@@ -104,7 +105,7 @@ class Demo3d(private val menuBatch: Batch,
     }
 
     override fun show() {
-        Render.initRender(gameCamera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
+        Render.initRender(gameCamera, camPosition, originPosition)
         Render.initRender(menuCamera, playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.centroid, Render.cameraAngle)
 
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("skin/clean-crispy-ui.json"))

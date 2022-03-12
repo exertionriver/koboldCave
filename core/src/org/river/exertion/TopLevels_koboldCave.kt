@@ -169,17 +169,17 @@ object InputHandler {
 
     fun handleInput(camera : PerspectiveCamera, refVector : Vector3) {
         when {
-            Gdx.input.isKeyJustPressed(Input.Keys.W) -> { camera.position.y += 10f }
-            Gdx.input.isKeyJustPressed(Input.Keys.S) -> { camera.position.y -= 10f }
-            Gdx.input.isKeyJustPressed(Input.Keys.A) -> { camera.position.x -= 10f }
-            Gdx.input.isKeyJustPressed(Input.Keys.D) -> { camera.position.x += 10f }
-            Gdx.input.isKeyJustPressed(Input.Keys.Q) -> { camera.position.z -= 10f }
-            Gdx.input.isKeyJustPressed(Input.Keys.E) -> { camera.position.z += 10f }
+            Gdx.input.isKeyJustPressed(Input.Keys.W) -> { camera.position.y += 1f }
+            Gdx.input.isKeyJustPressed(Input.Keys.S) -> { camera.position.y -= 1f }
+            Gdx.input.isKeyJustPressed(Input.Keys.A) -> { camera.position.x -= 1f }
+            Gdx.input.isKeyJustPressed(Input.Keys.D) -> { camera.position.x += 1f }
+            Gdx.input.isKeyJustPressed(Input.Keys.Q) -> { camera.position.z -= 1f }
+            Gdx.input.isKeyJustPressed(Input.Keys.E) -> { camera.position.z += 1f }
 //usually, it is better to use Quaternion
 
-                Gdx.input.isKeyJustPressed(Input.Keys.R) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(1f, 0f, 0f), 30f) }
-                Gdx.input.isKeyJustPressed(Input.Keys.F) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(0f, 1f, 0f), 30f) }
-                Gdx.input.isKeyJustPressed(Input.Keys.V) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(0f, 0f, 1f), 30f) }
+                Gdx.input.isKeyJustPressed(Input.Keys.R) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(1f, 0f, 0f), 5f) }
+                Gdx.input.isKeyJustPressed(Input.Keys.F) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(0f, 1f, 0f), 5f) }
+                Gdx.input.isKeyJustPressed(Input.Keys.V) -> { camera.rotateAround(Vector3(refVector.x, refVector.y, refVector.z), Vector3(0f, 0f, 1f), 5f) }
 //                else -> //do nothing
         }
     }

@@ -25,31 +25,7 @@ class Line3(val first : Vector3, val second: Vector3) {
 
             return Vector3(positionX, positionY, positionZ)
         }
-/*
-        fun Line3.isQ1() : Boolean {
-            return ( (this.second.x - this.first.x) > 0 && (this.second.y - this.first.y) >= 0 )
-        }
 
-        fun Line3.isQ2() : Boolean {
-            return ( (this.second.x - this.first.x) <= 0 && (this.second.y - this.first.y) > 0 )
-        }
-
-        fun Line3.isQ3() : Boolean {
-            return ( (this.second.x - this.first.x) < 0 && (this.second.y - this.first.y) <= 0 )
-        }
-
-        fun Line3.isQ4() : Boolean {
-            return ( (this.second.x - this.first.x) >= 0 && (this.second.y - this.first.y) < 0 )
-        }
-
-        fun Line3.isH1() : Boolean {
-            return (this.second.z - this.first.z) >= 0
-        }
-
-        fun Line3.isH2() : Boolean {
-            return (this.second.z - this.first.z) < 0
-        }
-*/
         //verified with https://planetcalc.com/7952/
         //returns Pair(azimuth, polar) angles
         fun Pair<Vector3, Vector3>.anglesBetween() : Pair<Angle, Angle> {
@@ -61,22 +37,61 @@ class Line3(val first : Vector3, val second: Vector3) {
             return Pair(azimuth, polar)
         }
 
-        //transform plots verified with https://c3d.libretexts.org/CalcPlot3D/index.html
+        //transform and rotation plots verified with https://c3d.libretexts.org/CalcPlot3D/index.html
         //circle radius and angle for noise to be applied to axis firstPosition -> secondPosition at secondPosition
         //outputs position for noise
-        fun Pair<Vector3, Vector3>.applyNoise(radius : Float, noiseCircleAngle : Float) : Vector3 {
+
+        //anglesVector == x = noiseCircleAngle, y = planarCompressAzimuth, z = planarRotateAzimuth
+        //noiseCircleAngle is between 0 and 360 deg (from x-axis)
+        //planarCompressAzimuth is between 0 and 90 deg (from y-axis to x-axis)
+        //planarRotateAzimuth is between 0 and 90 deg (from x-axis to y-axis)
+        fun Pair<Vector3, Vector3>.applyNoise(radius : Float, anglesVector : Vector3) : Vector3 {
 
             val angles = Pair(this.first, this.second).anglesBetween()
             val azimuth = angles.first
             val polar = angles.second
 
-            val noiseCircle = Vector3(radius * cos(noiseCircleAngle.radians()), radius * sin(noiseCircleAngle.radians()), 0f)
+            val planeCompressedNoiseCircleAngle = anglesVector.x.planarNoiseCompress(anglesVector.y)
 
+            val noiseCircle = Vector3(radius * cos(planeCompressedNoiseCircleAngle.radians()), radius * sin(planeCompressedNoiseCircleAngle.radians()), 0f)
+
+            //rotate by planarRotation
+            noiseCircle.rotate(Vector3(0f, 0f, 1f), anglesVector.z)
             noiseCircle.rotate(Vector3(0f, 1f, 0f), polar)
             noiseCircle.rotate(Vector3(0f, 0f, 1f), azimuth)
             noiseCircle.add(this.second)
 
             return noiseCircle
         }
+
+        //compression verified with https://c3d.libretexts.org/CalcPlot3D/index.html
+        //returns noise angle compressed from y-axis to x-axis by gateAzimuth
+        //gateAzimuth 0 == y-axis, 90 == x-axis
+        fun Angle.planarNoiseCompress(compressAzimuth : Angle) : Angle {
+
+            val gateSize = 90f * sin(compressAzimuth.radians())
+            val openAngles = 90f - gateSize
+            val quadrant = (this / 90f).toInt()
+
+            val quadAngle = when (quadrant + 1) {
+                1 -> this
+                2 -> 180f - this
+                3 -> this - 180f
+                4 -> 360 - this
+                else -> 0f
+            }
+
+//            println("png() -> noise angle:$this, gate azimuth:$gateAzimuth, gate size:$gateSize, openAngles:$openAngles")
+//            println("png() -> quadrant:$quadrant, quadAngle:$quadAngle")
+
+            return when (quadrant + 1) {
+                1 -> if (openAngles > 0f) quadAngle * openAngles / 90f else 0f
+                2 -> if (openAngles > 0f) 180f - (quadAngle * openAngles / 90f) else 180f
+                3 -> if (openAngles > 0f) 180f + (quadAngle * openAngles / 90f) else 180f
+                4 -> if (openAngles > 0f) 360 - (quadAngle * openAngles / 90f) else 0f
+                else -> 0f
+            }
+        }
+
     }
 }

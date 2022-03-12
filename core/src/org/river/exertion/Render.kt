@@ -17,14 +17,12 @@ object Render {
         camera.rotate(Vector3.Z, angleToRotate)
     }
 
-    fun initRender(camera: PerspectiveCamera, currentNode: Node, currentAngle: Angle) {
-        camera.position.set(currentNode.position.x, currentNode.position.y, 100f)
-        camera.lookAt(currentNode.position.x, currentNode.position.y, 0f)
+    fun initRender(camera: PerspectiveCamera, position: Vector3, lookAt : Vector3) {
+        camera.fieldOfView = 30f
+        camera.position.set(position)
+        camera.lookAt(lookAt)
         camera.near = 0.1f
         camera.far = 500f
-
-        val angleToRotate = cameraAngle.leftAngleBetween(currentAngle)
-        camera.rotate(Vector3.Z, angleToRotate)
     }
 }
 

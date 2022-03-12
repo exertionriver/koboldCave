@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.river.exertion.geom.Line3.Companion.anglesBetween
 import org.river.exertion.geom.Line3.Companion.applyNoise
 import org.river.exertion.geom.Line3.Companion.getPositionByDistanceAndAngles
+import org.river.exertion.geom.Line3.Companion.planarNoiseCompress
 
 
 @ExperimentalUnsignedTypes
@@ -135,35 +136,62 @@ class TestLine3 {
         var firstPosition = Vector3(1f, 1f, 1f)
         var secondPosition = Vector3(7f, 9f, 11f)
 
-        val pi14 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, noiseAngle)
+        val pi14 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle, 0f, 0f))
         println("$noiseRadius at $noiseAngle applied to V($firstPosition -> $secondPosition) yields noise point: $pi14")
 
         noiseAngle = 90f
-        val pi24 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, noiseAngle)
+        val pi24 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle, 0f, 0f))
         println("$noiseRadius at $noiseAngle applied to V($firstPosition -> $secondPosition) yields noise point: $pi24")
 
         noiseAngle = 135f
-        val pi34 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, noiseAngle)
+        val pi34 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle, 0f, 0f))
         println("$noiseRadius at $noiseAngle applied to V($firstPosition -> $secondPosition) yields noise point: $pi34")
 
         noiseAngle = 180f
-        val pi44 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, noiseAngle)
+        val pi44 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle, 0f, 0f))
         println("$noiseRadius at $noiseAngle applied to V($firstPosition -> $secondPosition) yields noise point: $pi44")
 
         noiseAngle = 225f
-        val pi54 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, noiseAngle)
+        val pi54 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle, 0f, 0f))
         println("$noiseRadius at $noiseAngle applied to V($firstPosition -> $secondPosition) yields noise point: $pi54")
 
         noiseAngle = 270f
-        val pi64 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, noiseAngle)
+        val pi64 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle, 0f, 0f))
         println("$noiseRadius at $noiseAngle applied to V($firstPosition -> $secondPosition) yields noise point: $pi64")
 
         noiseAngle = 315f
-        val pi74 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, noiseAngle)
+        val pi74 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle, 0f, 0f))
         println("$noiseRadius at $noiseAngle applied to V($firstPosition -> $secondPosition) yields noise point: $pi74")
 
         noiseAngle = 360f
-        val pi84 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, noiseAngle)
+        val pi84 = Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle, 0f, 0f))
         println("$noiseRadius at $noiseAngle applied to V($firstPosition -> $secondPosition) yields noise point: $pi84")
+    }
+
+    @Test
+    fun testPlanarNoiseGate() {
+        (0..360 step 45).forEach { noiseAngle ->
+            (0..90 step 15).forEach{ gateAzimuth ->
+                println("test() -> noiseAngle:$noiseAngle, gateAzimuth:$gateAzimuth, gatedAngle:${(noiseAngle.toFloat()).planarNoiseCompress(gateAzimuth.toFloat())}")
+            }
+        }
+    }
+
+    @Test
+    fun testApplyNoiseWithCompressionAndRotation() {
+
+        var noiseRadius = 3f
+        var compressionAngle = 45f
+        var rotationAngle = 30f
+        var firstPosition = Vector3(1f, 1f, 1f)
+        var secondPosition = Vector3(7f, 9f, 11f)
+
+        (0..360 step 45).forEach { noiseAngle ->
+            println("test() -> noiseAngle:$noiseAngle, gateAzimuth:$compressionAngle, compressed position:${Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle.toFloat(), compressionAngle, 0f))}")
+        }
+
+        (0..360 step 45).forEach { noiseAngle ->
+            println("test() -> noiseAngle:$noiseAngle, rotationAzimuth:$rotationAngle, compressed and rotated position:${Pair(firstPosition, secondPosition).applyNoise(noiseRadius, Vector3(noiseAngle.toFloat(), compressionAngle, rotationAngle))}")
+        }
     }
 }
