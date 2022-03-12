@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.UBJsonReader
 import com.badlogic.gdx.utils.viewport.StretchViewport
 import ktx.app.KtxScreen
+import ktx.math.minus
 import ktx.math.plus
 import ktx.scene2d.*
 import org.river.exertion.*
@@ -66,6 +67,8 @@ class Demo3dHallElevation(private val menuBatch: Batch,
 
     val modelBuilder = ModelBuilder()
 
+    val modelLightInstances = mutableListOf<ModelInstance>()
+
     lateinit var modelLightInstance : ModelInstance
     lateinit var modelWallsInstance : ModelInstance
     lateinit var modelFloorsInstance : ModelInstance
@@ -101,6 +104,8 @@ class Demo3dHallElevation(private val menuBatch: Batch,
 
     val shader = BasicShader().apply { this.init() }
 
+    val elevationMap = mutableMapOf<Pair<Int, Int>, Float>()
+
     lateinit var modelLight : Model
     lateinit var modelWalls : Model
     lateinit var modelFloors : Model
@@ -110,6 +115,43 @@ class Demo3dHallElevation(private val menuBatch: Batch,
 
     lateinit var animationController : AnimationController
 
+    fun interpolateElevation(x : Int, y: Int) : Float {
+
+        var zVal = 0f
+        var count = 0
+
+        (x-1 .. x+1).forEach { xVal ->
+            (y-1..y+1).forEach { yVal ->
+                if (elevationMap[Pair(xVal, yVal)] != null) {
+                    count++
+                    zVal += elevationMap[Pair(xVal, yVal)]!!
+                }
+            }
+        }
+
+        return if (count > 0) zVal / count else 0f
+    }
+
+    fun updateModelPosition(delta: Float, currentAnimationId : String) {
+
+        if (animationController.current.time < animationController.current.duration) {
+            val prevModelPosition = currentModelPosition
+
+            //no change for left turn / right turn
+            currentAnimationPosition = when (currentAnimationId) {
+                "Walking" -> walkingAnimationDistance * (delta / animationController.current.duration) * animationController.current.speed
+                "StopWalking" -> stoppingAnimationDistance * (delta / animationController.current.duration) * animationController.current.speed
+                else -> 0f
+            }
+
+            currentModelPosition += Vector3(0f, currentAnimationPosition * sin(currentAnimationDirection.radians()), 0f)
+
+//            val modelZ = elevationMap[Pair(currentModelPosition.x.toInt(), currentModelPosition.y.toInt())] ?: interpolateElevation(currentModelPosition.x.toInt(), currentModelPosition.y.toInt())
+            val modelZ = interpolateElevation(currentModelPosition.x.toInt(), currentModelPosition.y.toInt())
+            currentModelPosition = Vector3(currentModelPosition.x, currentModelPosition.y, modelZ)
+            modelEntityInstance.transform.trn(Vector3(0f, 0f, modelZ - prevModelPosition.z))
+        }
+    }
 
     fun updateModel(currentAnimationId : String, nextAnimationId : String) {
         if (animationController.current != null) {
@@ -121,17 +163,18 @@ class Demo3dHallElevation(private val menuBatch: Batch,
             }
             if (currentAnimationId == "StopWalking") {
                 modelEntityInstance.transform.trn(Vector3(0f, stoppingAnimationDistance * sin(currentAnimationDirection.radians()), 0f))
-                currentModelPosition += Vector3(0f, stoppingAnimationDistance * sin(currentAnimationDirection.radians()), 0f)
+   //             currentModelPosition += Vector3(0f, stoppingAnimationDistance * sin(currentAnimationDirection.radians()), 0f)
             }
             if (currentAnimationId == "Walking") {
                 currentAnimationPosition = walkingAnimationDistance * (animationController.current.time / animationController.current.duration)
 
-                currentModelPosition += if (nextAnimationId == currentAnimationId) { // walking loop
+  //              currentModelPosition +=
+                        if (nextAnimationId == currentAnimationId) { // walking loop
                     modelEntityInstance.transform.trn(Vector3(0f, walkingAnimationDistance * sin(currentAnimationDirection.radians()), 0f))
-                    Vector3(0f, walkingAnimationDistance * sin(currentAnimationDirection.radians()), 0f)
+  //                  Vector3(0f, walkingAnimationDistance * sin(currentAnimationDirection.radians()), 0f)
                 } else { //interrupt walking
                     modelEntityInstance.transform.trn(Vector3(0f, currentAnimationPosition * sin(currentAnimationDirection.radians()), 0f))
-                    Vector3(0f, currentAnimationPosition * sin(currentAnimationDirection.radians()), 0f)
+    //                Vector3(0f, currentAnimationPosition * sin(currentAnimationDirection.radians()), 0f)
                 }
             }
         }
@@ -209,9 +252,11 @@ class Demo3dHallElevation(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.SLASH) -> { lightZ -= 10f ; spotLight.setDirection(lightX, lightY, lightZ); modelLightInstance = ModelInstance(modelLight, Vector3(lightX, lightY, lightZ)) }
 
         }
+        if (animationController.current != null) {
+            updateModelPosition(delta, animationController.current.animation.id)
+        }
 
-
-//        gameCamera.position.lerp(Vector3(currentModelPosition.x, currentModelPosition.y, overhead.z), 0.01f)
+        gameCamera.position.set(Vector3(currentModelPosition.x, currentModelPosition.y, overhead.z))
 
         gameCamera.update()
         animationController.update(delta)
@@ -224,7 +269,10 @@ class Demo3dHallElevation(private val menuBatch: Batch,
 //        shader.begin(gameCamera, renderContext)
 
 //        gameBatch.render(modelWallsInstance, shader)
-//        gameBatch.render(modelLightInstance, environment)
+
+//        modelLightInstances.forEach {
+//            gameBatch.render(it, modelEnvironment)
+//        }
         gameBatch.render(modelWallsInstance, wallEnvironment)
         gameBatch.render(modelFloorsInstance, floorEnvironment)
         gameBatch.render(modelEntityInstance, modelEnvironment)
@@ -247,14 +295,11 @@ class Demo3dHallElevation(private val menuBatch: Batch,
         TextureAssets.values().forEach { assets.load(it) }
         assets.finishLoading()
 
-        modelLight = modelBuilder.createSphere(5f, 5f, 5f, 20, 20, Material(createDiffuse(Color.BLUE)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong())
-        modelLightInstance = ModelInstance(modelLight, overhead)
-
         modelFloorsInstance = ModelInstance(modelBuilder.createLineGrid(10, 10, 10f, 10f, Material(createDiffuse(Color.BLUE)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong()), lookAt.x, lookAt.y, 0f)
 
         var prevNodeLine3 = NodeLine3()
         var currNodeLine3 = NodeLine3()
-        var floorNoise = Vector3(100f, 70f, 90f)
+        var floorNoise = Vector3(100f, 60f, 90f)
         val wallNoise = Vector3(100f, 40f, 90f)
         val attr = (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal or VertexAttributes.Usage.TextureCoordinates).toLong()
 
@@ -269,14 +314,25 @@ class Demo3dHallElevation(private val menuBatch: Batch,
                 val yIdx = zIdx * 6f
                 val yIdx1 = (zIdx + 5) * 6f
 
-                if (xIdx == 5)
+                if (xIdx == 5) {
                     currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, yIdx, zIdx + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, yIdx1, zIdx + 5 + zIdxNoise)), lineNoise = floorNoise)
+
+                    val cnl3Vertices = currNodeLine3.getPositions()
+
+                    cnl3Vertices.forEach { vec3 ->
+                        if ( elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())] == null || vec3.z < elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())]!! ) elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())] = vec3.z
+                    }
+                }
                 else {
                     prevNodeLine3 = currNodeLine3
                     currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, yIdx, zIdx + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, yIdx1, zIdx + 5 + zIdxNoise)), lineNoise = floorNoise)
 
                     val pnl3Vertices = prevNodeLine3.getPositions()
                     val cnl3Vertices = currNodeLine3.getPositions()
+
+                    cnl3Vertices.forEach { vec3 ->
+                        if ( elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())] == null || vec3.z < elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())]!! ) elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())] = vec3.z
+                    }
 
                     //assuming they are same size?
                     (1 until pnl3Vertices.size).forEach { idx ->
@@ -290,6 +346,12 @@ class Demo3dHallElevation(private val menuBatch: Batch,
         }
         modelFloors = modelBuilder.end()
         modelFloorsInstance = ModelInstance(modelFloors, 0f, 10f, 0f)
+
+        modelLight = modelBuilder.createSphere(1f, 1f, 1f, 20, 20, Material(createDiffuse(Color.BLUE)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong())
+
+        elevationMap.entries.forEach {
+            modelLightInstances.add(ModelInstance(modelLight, it.key.first + 0f, it.key.second + 10f, it.value))
+        }
 
         modelBuilder.begin()
         //side wall 1
@@ -407,7 +469,11 @@ class Demo3dHallElevation(private val menuBatch: Batch,
         modelWalls = modelBuilder.end()
         modelWallsInstance = ModelInstance(modelWalls, 0f, 10f, 0f)
 
-        currentModelPosition = lookAt + Vector3(0f, 30f, 0f)
+//        val modelZVal = elevationMap[Pair(lookAt.x.toInt(), lookAt.y.toInt() + 30)] ?: interpolateElevation(lookAt.x.toInt(), lookAt.y.toInt() + 30)
+
+        val modelZVal = interpolateElevation(lookAt.x.toInt(), lookAt.y.toInt() + 30)
+
+        currentModelPosition = lookAt + Vector3(0f, 30f, modelZVal)
 
         modelEntity = G3dModelLoader(UBJsonReader()).loadModel(Gdx.files.getFileHandle("models/pc_model_Walking.g3db", Files.FileType.Internal))
 
