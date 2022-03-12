@@ -39,13 +39,13 @@ import org.river.exertion.geom.node.nodeMesh.NodeLine3
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 
-class Demo3dHallElevationObstacle(private val menuBatch: Batch,
-                                  private val gameBatch: ModelBatch,
-                                  private val font: BitmapFont,
-                                  private val assets: AssetManager,
-                                  private val menuStage: Stage,
-                                  private val menuCamera: OrthographicCamera,
-                                  private val gameCamera: PerspectiveCamera) : KtxScreen {
+class Demo3dHallElevation(private val menuBatch: Batch,
+                          private val gameBatch: ModelBatch,
+                          private val font: BitmapFont,
+                          private val assets: AssetManager,
+                          private val menuStage: Stage,
+                          private val menuCamera: OrthographicCamera,
+                          private val gameCamera: PerspectiveCamera) : KtxScreen {
 
     val horizOffset = Game.initViewportWidth / 11
     val vertOffset = Game.initViewportHeight / 11
@@ -192,9 +192,9 @@ class Demo3dHallElevationObstacle(private val menuBatch: Batch,
                 }
             }
 
-            Gdx.input.isKeyJustPressed(Input.Keys.T) -> { spotLight.setDirection(overhead); modelLightInstance = ModelInstance(modelLight, overhead) }
-            Gdx.input.isKeyJustPressed(Input.Keys.Y) -> { spotLight.setDirection(frontHall); modelLightInstance = ModelInstance(modelLight, frontHall) }
-            Gdx.input.isKeyJustPressed(Input.Keys.U) -> { spotLight.setDirection(backHall); modelLightInstance = ModelInstance(modelLight, backHall) }
+            Gdx.input.isKeyJustPressed(Input.Keys.T) -> { dirLight.setDirection(overhead); modelLightInstance = ModelInstance(modelLight, overhead) }
+            Gdx.input.isKeyJustPressed(Input.Keys.Y) -> { dirLight.setDirection(Vector3(frontHall.x, -30f, frontHall.z)); modelLightInstance = ModelInstance(modelLight, frontHall) }
+            Gdx.input.isKeyJustPressed(Input.Keys.U) -> { dirLight.setDirection(Vector3(frontHall.x, 30f, frontHall.z)); modelLightInstance = ModelInstance(modelLight, backHall) }
             Gdx.input.isKeyJustPressed(Input.Keys.I) -> { spotLight.setDirection(centerHall); modelLightInstance = ModelInstance(modelLight, centerHall) }
             Gdx.input.isKeyJustPressed(Input.Keys.G) -> { gameCamera.position.set(overhead); gameCamera.lookAt(lookAt) }
             Gdx.input.isKeyJustPressed(Input.Keys.H) -> { gameCamera.position.set(frontHall); gameCamera.lookAt(backHall) }
@@ -210,11 +210,14 @@ class Demo3dHallElevationObstacle(private val menuBatch: Batch,
 
         }
 
+
+//        gameCamera.position.lerp(Vector3(currentModelPosition.x, currentModelPosition.y, overhead.z), 0.01f)
+
         gameCamera.update()
         animationController.update(delta)
 
         Gdx.app.log("animation position / direction", "$currentAnimationPosition / $currentAnimationDirection")
-        Gdx.app.log("model position", "$currentModelPosition")
+        Gdx.app.log("model position / camera position", "$currentModelPosition / ${gameCamera.position}")
 
 //        renderContext.begin()
         gameBatch.begin(gameCamera)
@@ -251,32 +254,37 @@ class Demo3dHallElevationObstacle(private val menuBatch: Batch,
 
         var prevNodeLine3 = NodeLine3()
         var currNodeLine3 = NodeLine3()
-        val floorNoise = Vector3(100f, 70f, 90f)
-        val wallNoise = Vector3(100f, 0f, 90f)
+        var floorNoise = Vector3(100f, 70f, 90f)
+        val wallNoise = Vector3(100f, 40f, 90f)
         val attr = (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal or VertexAttributes.Usage.TextureCoordinates).toLong()
 
         modelBuilder.begin()
         //floor
-        (5 .. 25 ).forEach { xIdx ->
+        (0 .. 20 step 5).forEach { zIdx ->
+            (5 .. 25 ).forEach { xIdx ->
 
-            val xIdxNoise = Probability(0, 10).getValue() / 100f
-            val zIdxNoise = 1f + Probability(0, 10).getValue() / 100f
+                val xIdxNoise = Probability(0, 10).getValue() / 100f
+                val zIdxNoise = 1f + Probability(0, 10).getValue() / 100f
 
-            if (xIdx == 5)
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 0f, 0f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 120f, 0f + zIdxNoise)), lineNoise = floorNoise)
-            else {
-                prevNodeLine3 = currNodeLine3
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 0f, 0f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 120f, 0f + zIdxNoise)), lineNoise = floorNoise)
+                val yIdx = zIdx * 6f
+                val yIdx1 = (zIdx + 5) * 6f
 
-                val pnl3Vertices = prevNodeLine3.getPositions()
-                val cnl3Vertices = currNodeLine3.getPositions()
+                if (xIdx == 5)
+                    currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, yIdx, zIdx + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, yIdx1, zIdx + 5 + zIdxNoise)), lineNoise = floorNoise)
+                else {
+                    prevNodeLine3 = currNodeLine3
+                    currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, yIdx, zIdx + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, yIdx1, zIdx + 5 + zIdxNoise)), lineNoise = floorNoise)
 
-                //assuming they are same size?
-                (1 until pnl3Vertices.size).forEach { idx ->
-                    val normal = Vector3(pnl3Vertices[idx - 1])
-                    modelBuilder.part("id${idx}", GL20.GL_TRIANGLES, attr, Material(TextureAttribute.createDiffuse(assets[TextureAssets.CaveWall]))).rect(
-                            pnl3Vertices[idx - 1], cnl3Vertices[idx - 1], cnl3Vertices[idx], pnl3Vertices[idx], normal.crs(cnl3Vertices[idx])
-                    )
+                    val pnl3Vertices = prevNodeLine3.getPositions()
+                    val cnl3Vertices = currNodeLine3.getPositions()
+
+                    //assuming they are same size?
+                    (1 until pnl3Vertices.size).forEach { idx ->
+                        val normal = Vector3(pnl3Vertices[idx - 1])
+                        modelBuilder.part("id${idx}", GL20.GL_TRIANGLES, attr, Material(TextureAttribute.createDiffuse(assets[TextureAssets.CaveWall]))).rect(
+                                pnl3Vertices[idx - 1], cnl3Vertices[idx - 1], cnl3Vertices[idx], pnl3Vertices[idx], normal.crs(cnl3Vertices[idx])
+                        )
+                    }
                 }
             }
         }
@@ -289,15 +297,19 @@ class Demo3dHallElevationObstacle(private val menuBatch: Batch,
 
             val xIdxNoise1 = Probability(0, 5).getValue() / 10f
             val yIdxNoise = Probability(yIdx, 2).getValue()
+            val zIdx = yIdx / 6f
 
             if (yIdx == 10)
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(5f + xIdxNoise1, yIdxNoise, 0f)), lastNode = Node3(position = Vector3(5f + xIdxNoise1, yIdxNoise, 30f)), lineNoise = wallNoise)
+                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(5f + xIdxNoise1, yIdxNoise, zIdx)), lastNode = Node3(position = Vector3(5f + xIdxNoise1, yIdxNoise, zIdx + 30f)), lineNoise = wallNoise)
             else {
                 prevNodeLine3 = currNodeLine3
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(5f + xIdxNoise1, yIdxNoise, 0f)), lastNode = Node3(position = Vector3(5f + xIdxNoise1, yIdxNoise, 30f)), lineNoise = wallNoise)
+                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(5f + xIdxNoise1, yIdxNoise, zIdx)), lastNode = Node3(position = Vector3(5f + xIdxNoise1, yIdxNoise, zIdx + 30f)), lineNoise = wallNoise)
 
                 val pnl3Vertices = prevNodeLine3.getPositions()
                 val cnl3Vertices = currNodeLine3.getPositions()
+
+                if (pnl3Vertices.size > cnl3Vertices.size) pnl3Vertices.remove(pnl3Vertices.last())
+                if (cnl3Vertices.size > pnl3Vertices.size) cnl3Vertices.remove(cnl3Vertices.last())
 
                 if (pnl3Vertices.size != cnl3Vertices.size) Gdx.app.log("vertices:", "${pnl3Vertices.size} != ${cnl3Vertices.size}")
 
@@ -317,10 +329,10 @@ class Demo3dHallElevationObstacle(private val menuBatch: Batch,
             val zIdxNoise = 1f + Probability(0, 10).getValue() / 100f
 
             if (xIdx == 0)
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 10f, 30.5f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 110f, 30.5f + zIdxNoise)), lineNoise = wallNoise)
+                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 10f, 1.25f + 30.5f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 110f, 18.75f + 30.5f + zIdxNoise)), lineNoise = wallNoise)
             else {
                 prevNodeLine3 = currNodeLine3
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 10f, 30.5f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 110f, 30.5f + zIdxNoise)), lineNoise = wallNoise)
+                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 10f, 1.25f + 30.5f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 110f, 18.75f + 30.5f + zIdxNoise)), lineNoise = wallNoise)
 
                 val pnl3Vertices = prevNodeLine3.getPositions()
                 val cnl3Vertices = currNodeLine3.getPositions()
@@ -341,15 +353,19 @@ class Demo3dHallElevationObstacle(private val menuBatch: Batch,
 
             val xIdxNoise1 = Probability(0, 5).getValue() / 10f
             val yIdxNoise = Probability(yIdx, 2).getValue()
+            val zIdx = yIdx / 6f
 
             if (yIdx == 110)
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(25f + xIdxNoise1, yIdxNoise, 0f)), lastNode = Node3(position = Vector3(25f + xIdxNoise1, yIdxNoise, 30f)), lineNoise = wallNoise)
+                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(25f + xIdxNoise1, yIdxNoise, zIdx)), lastNode = Node3(position = Vector3(25f + xIdxNoise1, yIdxNoise, zIdx + 30f)), lineNoise = wallNoise)
             else {
                 prevNodeLine3 = currNodeLine3
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(25f + xIdxNoise1, yIdxNoise, 0f)), lastNode = Node3(position = Vector3(25f + xIdxNoise1, yIdxNoise, 30f)), lineNoise = wallNoise)
+                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(25f + xIdxNoise1, yIdxNoise, zIdx)), lastNode = Node3(position = Vector3(25f + xIdxNoise1, yIdxNoise, zIdx + 30f)), lineNoise = wallNoise)
 
                 val pnl3Vertices = prevNodeLine3.getPositions()
                 val cnl3Vertices = currNodeLine3.getPositions()
+
+                if (pnl3Vertices.size > cnl3Vertices.size) pnl3Vertices.remove(pnl3Vertices.last())
+                if (cnl3Vertices.size > pnl3Vertices.size) cnl3Vertices.remove(cnl3Vertices.last())
 
                 if (pnl3Vertices.size != cnl3Vertices.size) Gdx.app.log("vertices:", "${pnl3Vertices.size} != ${cnl3Vertices.size}")
 
@@ -369,10 +385,10 @@ class Demo3dHallElevationObstacle(private val menuBatch: Batch,
             val zIdxNoise = 1f + Probability(0, 10).getValue() / 100f
 
             if (xIdx == 23)
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 10f, 30.5f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 110f, 30.5f + zIdxNoise)), lineNoise = wallNoise)
+                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 10f, 1.25f + 30.5f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 110f, 18.75f + 30.5f + zIdxNoise)), lineNoise = wallNoise)
             else {
                 prevNodeLine3 = currNodeLine3
-                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 10f, 30.5f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 110f, 30.5f + zIdxNoise)), lineNoise = wallNoise)
+                currNodeLine3 = NodeLine3(firstNode = Node3(position = Vector3(xIdx + xIdxNoise, 10f, 1.25f + 30.5f + zIdxNoise)), lastNode = Node3(position = Vector3(xIdx + xIdxNoise, 110f, 18.75f + 30.5f + zIdxNoise)), lineNoise = wallNoise)
 
                 val pnl3Vertices = prevNodeLine3.getPositions()
                 val cnl3Vertices = currNodeLine3.getPositions()
@@ -444,6 +460,7 @@ class Demo3dHallElevationObstacle(private val menuBatch: Batch,
         modelEnvironment.set(ColorAttribute(ColorAttribute.AmbientLight, 0.5f, 0.5f, 0.5f, 0.5f))
         modelEnvironment.add(spotLight)
         modelEnvironment.add(dirLight)
+
     }
 
     override fun pause() {

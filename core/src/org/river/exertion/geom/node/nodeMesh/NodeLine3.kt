@@ -158,7 +158,7 @@ class NodeLine3(override val uuid: UUID = UUID.randomUUID(), override val descri
                 currentPosition += Vector3(1f, azimuth, polar).getPositionByDistanceAndAngles()
 
                 //get offset distance due to noise
-                currentPositionNoiseCircleRadius = Probability(0F, (cappedNoise / 100f * 1f)).getValue().absoluteValue
+                currentPositionNoiseCircleRadius = Probability(0F, (cappedNoise / 100f * 3f)).getValue().absoluteValue
                 currentPositionNoiseCircleAngle = Probability(180F, 180F).getValue()
 
                 //find noise position

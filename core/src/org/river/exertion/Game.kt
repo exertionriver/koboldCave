@@ -13,11 +13,8 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
-import org.river.exertion.demos.gdx3d.Demo3d
-import org.river.exertion.demos.gdx3d.Demo3dHall
-import org.river.exertion.demos.gdx3d.Demo3dShapes
-import org.river.exertion.demos.geom.nodeRoom.DemoNodeRoomHeightScreen
-import org.river.exertion.demos.s2d.DemoNodeRoomS2DNavigateScreen
+import org.river.exertion.demos.gdx3d.Demo3dHallElevation
+import org.river.exertion.demos.gdx3d.Demo3dHallRoughness
 
 class Game : KtxGame<KtxScreen>() {
     private val context = Context()
@@ -87,11 +84,13 @@ class Game : KtxGame<KtxScreen>() {
 //            addScreen(DemoFSM( inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3d( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3dShapes( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
-            addScreen(Demo3dHall( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+//            addScreen(Demo3dHall( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+//            addScreen(Demo3dHallRoughness( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+            addScreen(Demo3dHallElevation( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 
         }
 
-        setScreen<Demo3dHall>()
+        setScreen<Demo3dHallElevation>()
 //        super.create()
     }
 
