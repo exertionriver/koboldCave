@@ -257,6 +257,7 @@ class Demo3dHallElevation(private val menuBatch: Batch,
         }
 
         gameCamera.position.set(Vector3(currentModelPosition.x, currentModelPosition.y, overhead.z))
+        gameCamera.fieldOfView = currentModelPosition.y / 5 + 20
 
         gameCamera.update()
         animationController.update(delta)
@@ -330,6 +331,9 @@ class Demo3dHallElevation(private val menuBatch: Batch,
                     val pnl3Vertices = prevNodeLine3.getPositions()
                     val cnl3Vertices = currNodeLine3.getPositions()
 
+                    if (pnl3Vertices.size > cnl3Vertices.size) pnl3Vertices.remove(pnl3Vertices.last())
+                    if (cnl3Vertices.size > pnl3Vertices.size) cnl3Vertices.remove(cnl3Vertices.last())
+
                     cnl3Vertices.forEach { vec3 ->
                         if ( elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())] == null || vec3.z < elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())]!! ) elevationMap[Pair(vec3.x.toInt(), vec3.y.toInt())] = vec3.z
                     }
@@ -399,6 +403,9 @@ class Demo3dHallElevation(private val menuBatch: Batch,
                 val pnl3Vertices = prevNodeLine3.getPositions()
                 val cnl3Vertices = currNodeLine3.getPositions()
 
+                if (pnl3Vertices.size > cnl3Vertices.size) pnl3Vertices.remove(pnl3Vertices.last())
+                if (cnl3Vertices.size > pnl3Vertices.size) cnl3Vertices.remove(cnl3Vertices.last())
+
                 if (pnl3Vertices.size != cnl3Vertices.size) Gdx.app.log("vertices:", "${pnl3Vertices.size} != ${cnl3Vertices.size}")
 
                 //assuming they are same size?
@@ -454,6 +461,9 @@ class Demo3dHallElevation(private val menuBatch: Batch,
 
                 val pnl3Vertices = prevNodeLine3.getPositions()
                 val cnl3Vertices = currNodeLine3.getPositions()
+
+                if (pnl3Vertices.size > cnl3Vertices.size) pnl3Vertices.remove(pnl3Vertices.last())
+                if (cnl3Vertices.size > pnl3Vertices.size) cnl3Vertices.remove(cnl3Vertices.last())
 
                 if (pnl3Vertices.size != cnl3Vertices.size) Gdx.app.log("vertices:", "${pnl3Vertices.size} != ${cnl3Vertices.size}")
 
