@@ -1,0 +1,12 @@
+import idle1:"org.river.exertion.btree.IdleTask1"
+import idle2:"org.river.exertion.btree.IdleTask2"
+
+root
+  selector
+    parallel policy:"selector"
+      wait seconds:"uniform,3,6"
+      randomSelector
+        idle1 doing:"hello"
+        idle2 doing:"abcd"
+        idle1 doing:"nothing much"
+        idle2 doing:"something not so much"

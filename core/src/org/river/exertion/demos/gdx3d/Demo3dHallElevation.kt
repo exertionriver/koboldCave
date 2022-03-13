@@ -256,8 +256,8 @@ class Demo3dHallElevation(private val menuBatch: Batch,
             updateModelPosition(delta, animationController.current.animation.id)
         }
 
-        gameCamera.position.set(Vector3(currentModelPosition.x, currentModelPosition.y, overhead.z))
-        gameCamera.fieldOfView = currentModelPosition.y / 5 + 20
+//        gameCamera.position.set(Vector3(currentModelPosition.x, currentModelPosition.y, overhead.z))
+//        gameCamera.fieldOfView = currentModelPosition.y / 5 + 20
 
         gameCamera.update()
         animationController.update(delta)

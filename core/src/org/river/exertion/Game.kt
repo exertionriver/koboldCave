@@ -13,6 +13,7 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
+import org.river.exertion.demos.btree.DemoBasicBtree
 import org.river.exertion.demos.gdx3d.Demo3dHallElevation
 import org.river.exertion.demos.gdx3d.Demo3dHallElevationHigh
 import org.river.exertion.demos.gdx3d.Demo3dHallRoughness
@@ -88,11 +89,12 @@ class Game : KtxGame<KtxScreen>() {
 //            addScreen(Demo3dHall( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3dHallRoughness( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3dHallElevation( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
-            addScreen(Demo3dHallElevationHigh( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
-
+//            addScreen(Demo3dHallElevationHigh( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+//
+            addScreen(DemoBasicBtree( inject(), inject(), inject(), inject(), inject() ) )
         }
 
-        setScreen<Demo3dHallElevationHigh>()
+        setScreen<DemoBasicBtree>()
 //        super.create()
     }
 

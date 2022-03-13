@@ -256,8 +256,8 @@ class Demo3dHallElevationHigh(private val menuBatch: Batch,
             updateModelPosition(delta, animationController.current.animation.id)
         }
 
-        gameCamera.lookAt(Vector3(currentModelPosition.x, currentModelPosition.y, 1.75f))
-        gameCamera.fieldOfView = currentModelPosition.y / 5 + 20
+        gameCamera.lookAt(Vector3(currentModelPosition.x, currentModelPosition.y, interpolateElevation(currentModelPosition.x.toInt(), currentModelPosition.y.toInt())))
+//        gameCamera.fieldOfView = currentModelPosition.y / 5 + 20
 
         gameCamera.update()
         animationController.update(delta)
