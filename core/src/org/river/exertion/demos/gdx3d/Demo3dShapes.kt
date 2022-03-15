@@ -32,8 +32,8 @@ import org.river.exertion.assets.TextureAssets
 import org.river.exertion.assets.get
 import org.river.exertion.assets.load
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.character.CharacterPlayerCharacter
-import org.river.exertion.ecs.component.entity.location.LocationCave
+import org.river.exertion.ecs.entity.character.CharacterPlayerCharacter
+import org.river.exertion.ecs.entity.location.LocationCave
 import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.Node3

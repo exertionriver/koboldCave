@@ -1,4 +1,4 @@
-package org.river.exertion.s2d
+package org.river.exertion.s2d.actor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.msg.MessageManager
@@ -7,7 +7,7 @@ import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.MessageIds
 import org.river.exertion.Point
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.entity.IEntity
 
 interface IBaseActor : Telegraph {
 

@@ -1,8 +1,8 @@
-package org.river.exertion.ecs.component.entity.character
+package org.river.exertion.ecs.entity.character
 
 import com.badlogic.ashley.core.Entity
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.entity.IEntity
 
 interface ICharacter : IEntity {
 

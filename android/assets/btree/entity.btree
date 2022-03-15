@@ -1,0 +1,44 @@
+import isDead?:"org.river.exertion.btree.IsDeadCondition"
+import isSleeping?:"org.river.exertion.btree.IsSleepingCondition"
+import isDreaming?:"org.river.exertion.btree.IsDreamingCondition"
+import isThinking?:"org.river.exertion.btree.IsThinkingCondition"
+import isOther?:"org.river.exertion.btree.IsOtherCondition"
+import isThreat?:"org.river.exertion.btree.IsThreatCondition"
+import isImproving?:"org.river.exertion.btree.IsImprovingCondition"
+import isWorsening?:"org.river.exertion.btree.IsWorseningCondition"
+
+import hasInternalStim?:"org.river.exertion.btree.HasInternalStimCondition"
+import hasExternalStim?:"org.river.exertion.btree.HasExternalStimCondition"
+import hasRecognition?:"org.river.exertion.btree.HasRecognitionCondition"
+import hasResolution?:"org.river.exertion.btree.HasResolutionCondition"
+
+subtree name:"complementAbsorbed"
+    selector
+        hasInternalStim?
+        isDead?
+        isSleeping?
+
+subtree name:"internalAbsorbed"
+    selector
+        hasExternalStim?
+        isDreaming?
+        isThinking?
+
+subtree name:"externalAbsorbed"
+    selector
+        hasRecognition?
+        isOther?
+        isThreat?
+
+subtree name:"encounterAbsorbed"
+    selector
+        hasResolution?
+        isImproving?
+        isWorsening?
+
+root
+    sequence
+        $complementAbsorbed
+        $internalAbsorbed
+        $externalAbsorbed
+        $encounterAbsorbed

@@ -1,4 +1,4 @@
-package org.river.exertion.s2d
+package org.river.exertion.s2d.actor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.msg.MessageManager
@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import org.river.exertion.*
-import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 

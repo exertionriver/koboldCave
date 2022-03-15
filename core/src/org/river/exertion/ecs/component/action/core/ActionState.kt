@@ -7,7 +7,7 @@ import com.badlogic.gdx.ai.msg.Telegram
 import ktx.ashley.get
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.entity.IEntity
 
 enum class ActionState : State<IEntity> {
 

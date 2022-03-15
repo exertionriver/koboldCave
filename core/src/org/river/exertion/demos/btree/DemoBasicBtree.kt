@@ -1,8 +1,7 @@
 package org.river.exertion.demos.btree
 
-import com.badlogic.ashley.core.PooledEngine
+import com.badlogic.gdx.Application.LOG_DEBUG
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -10,23 +9,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction
 import ktx.app.KtxScreen
-import ktx.ashley.get
-import ktx.graphics.use
 import org.river.exertion.*
 import org.river.exertion.assets.*
-import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.character.CharacterPlayerCharacter
-import org.river.exertion.ecs.component.entity.location.LocationCave
-import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
-import org.river.exertion.Render
-import org.river.exertion.RenderPalette
 import org.river.exertion.btree.KoboldCharacter
-import org.river.exertion.s2d.ActorCave
 
 class DemoBasicBtree(private val batch: Batch,
                      private val font: BitmapFont,
@@ -98,6 +85,7 @@ class DemoBasicBtree(private val batch: Batch,
     }
 
     override fun show() {
+        Gdx.app.logLevel = LOG_DEBUG
         //overhead, following character
 //        Render.initRender(playerCharacter[ActionMoveComponent.mapper]!!.camera!!, playerCharacter[ActionMoveComponent.mapper]!!.currentNode, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
         //overhead

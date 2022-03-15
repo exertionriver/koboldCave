@@ -4,7 +4,7 @@ import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 
-class IdleTask1 : LeafTask<KoboldCharacter>() {
+class HelloWorldTask : LeafTask<KoboldCharacter>() {
 
     @JvmField
     @TaskAttribute
@@ -14,7 +14,7 @@ class IdleTask1 : LeafTask<KoboldCharacter>() {
 
         val description = `object`.description
 
-        println("$description kobold doing ${doing}")
+        println("$description kobold doing $doing")
 
         return Status.SUCCEEDED
     }

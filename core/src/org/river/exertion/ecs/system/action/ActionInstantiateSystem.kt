@@ -6,10 +6,10 @@ import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.*
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.entity.character.CharacterKobold
-import org.river.exertion.ecs.component.entity.IEntity
-import org.river.exertion.ecs.component.entity.character.ICharacter
-import org.river.exertion.ecs.component.entity.location.ILocation
+import org.river.exertion.ecs.entity.character.CharacterKobold
+import org.river.exertion.ecs.entity.IEntity
+import org.river.exertion.ecs.entity.character.ICharacter
+import org.river.exertion.ecs.entity.location.ILocation
 
 class ActionInstantiateSystem : IteratingSystem(allOf(ActionInstantiateComponent::class).get()) {
 

@@ -1,6 +1,5 @@
-package org.river.exertion.s2d
+package org.river.exertion.s2d.actor
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -10,8 +9,6 @@ import org.river.exertion.*
 import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.geom.Line.Companion.onSegment
 import org.river.exertion.RenderPalette
-import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.IEntity
 import space.earlygrey.shapedrawer.JoinType
 
 class ActorKobold(initName : String, initPosition : Point, initAngle : Angle) : Actor(), IBaseActor {

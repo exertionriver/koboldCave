@@ -1,4 +1,4 @@
-package org.river.exertion.ecs.component.entity.character
+package org.river.exertion.ecs.entity.character
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
@@ -17,8 +17,8 @@ import org.river.exertion.ProbabilitySelect
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.location.ILocation
-import org.river.exertion.s2d.ActorKobold
+import org.river.exertion.ecs.entity.location.ILocation
+import org.river.exertion.s2d.actor.ActorKobold
 import java.util.*
 
 class CharacterKobold : ICharacter, Component {

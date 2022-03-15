@@ -11,8 +11,8 @@ import org.river.exertion.MessageIds
 import org.river.exertion.NextDistancePx
 import org.river.exertion.Point
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.IEntity
-import org.river.exertion.ecs.component.entity.location.ILocation
+import org.river.exertion.ecs.entity.IEntity
+import org.river.exertion.ecs.entity.location.ILocation
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.NodeLink
 import org.river.exertion.geom.node.nodeMesh.NodeLine

@@ -1,11 +1,10 @@
-package org.river.exertion.ecs.component.entity.character
+package org.river.exertion.ecs.entity.character
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
-import com.badlogic.gdx.ai.fsm.StateMachine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -18,11 +17,10 @@ import org.river.exertion.NextDistancePx
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.IEntity
-import org.river.exertion.ecs.component.entity.location.ILocation
+import org.river.exertion.ecs.entity.location.ILocation
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
-import org.river.exertion.s2d.ActorPlayerCharacter
+import org.river.exertion.s2d.actor.ActorPlayerCharacter
 
 class CharacterPlayerCharacter : ICharacter, Component {
 

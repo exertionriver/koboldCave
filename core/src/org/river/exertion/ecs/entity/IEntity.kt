@@ -1,14 +1,13 @@
-package org.river.exertion.ecs.component.entity
+package org.river.exertion.ecs.entity
 
 import com.badlogic.ashley.core.Entity
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.s2d.IBaseActor
+import org.river.exertion.s2d.actor.IBaseActor
 
 interface IEntity : Telegraph {
 

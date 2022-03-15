@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import org.river.exertion.MessageIds
-import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.entity.IEntity
 
 class UIFeelingTable(initSkin : Skin) : Table(), Telegraph {
 

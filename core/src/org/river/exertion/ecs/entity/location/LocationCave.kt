@@ -1,4 +1,4 @@
-package org.river.exertion.ecs.component.entity.location
+package org.river.exertion.ecs.entity.location
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
@@ -14,17 +14,13 @@ import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.ActionInstantiateComponent
-import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.MomentComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
-import org.river.exertion.s2d.ActorCave
-import org.river.exertion.s2d.ActorPlayerCharacter
-import org.river.exertion.s2d.IBaseActor
+import org.river.exertion.s2d.actor.ActorCave
 import java.util.*
 
 class LocationCave : ILocation, Component {

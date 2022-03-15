@@ -19,8 +19,8 @@ import ktx.scene2d.*
 import org.river.exertion.*
 import org.river.exertion.assets.*
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.component.entity.character.CharacterPlayerCharacter
-import org.river.exertion.ecs.component.entity.location.LocationCave
+import org.river.exertion.ecs.entity.character.CharacterPlayerCharacter
+import org.river.exertion.ecs.entity.location.LocationCave
 import org.river.exertion.ecs.system.action.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
@@ -29,7 +29,7 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
-import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.s2d.ui.UIPlanTable
 import java.time.LocalDateTime
 

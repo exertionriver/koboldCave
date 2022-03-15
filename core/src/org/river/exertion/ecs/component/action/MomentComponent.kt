@@ -5,7 +5,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.Gdx
 import ktx.ashley.mapperFor
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.entity.IEntity
 
 class MomentComponent(val initMoment : Float = 10f) : IActionComponent, Component {
 

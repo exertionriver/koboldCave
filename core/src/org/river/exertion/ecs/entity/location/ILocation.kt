@@ -1,7 +1,7 @@
-package org.river.exertion.ecs.component.entity.location
+package org.river.exertion.ecs.entity.location
 
 import com.badlogic.ashley.core.Entity
-import org.river.exertion.ecs.component.entity.IEntity
+import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 
 interface ILocation : IEntity {

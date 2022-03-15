@@ -1,4 +1,4 @@
-package org.river.exertion.ecs.component.entity.location
+package org.river.exertion.ecs.entity.character
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
@@ -6,9 +6,9 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
+import org.river.exertion.ecs.entity.IEntity
 
-object LocationNone : ILocation {
+object CharacterNone : ICharacter {
 
     override var entityName = "None"
     override var description = "None"
@@ -22,11 +22,13 @@ object LocationNone : ILocation {
         }
     }
 
+    override var moment = 1f
+
     override var actions = mutableListOf<IActionComponent>(
-        ActionInstantiateComponent(), ActionDestantiateComponent()
+        ActionLookComponent()
+        , ActionReflectComponent()
+        , ActionIdleComponent()
+        , ActionWatchComponent()
     )
 
-    override var moment = 50f
-
-    override var nodeRoomMesh = NodeRoomMesh()
 }

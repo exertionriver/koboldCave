@@ -7,8 +7,8 @@ import com.badlogic.gdx.ai.GdxAI
 import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.ecs.component.action.*
-import org.river.exertion.ecs.component.entity.IEntity
-import org.river.exertion.ecs.component.entity.location.ILocation
+import org.river.exertion.ecs.entity.IEntity
+import org.river.exertion.ecs.entity.location.ILocation
 
 class MomentSystem : IntervalIteratingSystem(allOf(MomentComponent::class).get(), 1/10f) {
 
