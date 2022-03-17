@@ -1,0 +1,58 @@
+import isDead?:"org.river.exertion.btree.v0_1.IsDeadCondition"
+import isAwake?:"org.river.exertion.btree.v0_1.IsAwakeCondition"
+import isOther?:"org.river.exertion.btree.v0_1.IsOtherCondition"
+
+import hasInternalStim?:"org.river.exertion.btree.v0_1.HasInternalStimCondition"
+import hasExternalStim?:"org.river.exertion.btree.v0_1.HasExternalStimCondition"
+import hasRecognition?:"org.river.exertion.btree.v0_1.HasRecognitionCondition"
+
+import continue:"org.river.exertion.btree.v0_1.ContinueTask"
+import think:"org.river.exertion.btree.v0_1.ThinkTask"
+import watch:"org.river.exertion.btree.v0_1.WatchTask"
+import look:"org.river.exertion.btree.v0_1.LookTask"
+import reflect:"org.river.exertion.btree.v0_1.ReflectTask"
+import approach:"org.river.exertion.btree.v0_1.ApproachTask"
+import scan:"org.river.exertion.btree.v0_1.ScanTask"
+import assessThreat:"org.river.exertion.btree.v0_1.AssessThreatTask"
+import assessOpportunity:"org.river.exertion.btree.v0_1.AssessOpportunityTask"
+import resolve:"org.river.exertion.btree.v0_1.ResolveTask"
+
+subtree name:"complementAbsorbed"
+    selector
+        hasInternalStim?
+        isDead?
+        isAwake? howAwake:0
+
+subtree name:"internalAbsorbed"
+    selector
+        invert
+            hasInternalStim?
+        selector
+            hasExternalStim?
+            isAwake? howAwake:.2
+            randomSelector
+                think
+                watch
+                look
+                reflect
+
+subtree name:"externalAbsorbed"
+    selector
+        invert
+            hasExternalStim?
+        selector
+            hasRecognition?
+            repeat times:5
+                sequence
+                    approach
+                    scan
+                    isOther?
+                    sequence
+                        assessThreat
+                        assessOpportunity
+
+root
+    sequence
+        $complementAbsorbed
+        $internalAbsorbed
+        $externalAbsorbed

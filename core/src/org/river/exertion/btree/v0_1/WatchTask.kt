@@ -1,11 +1,10 @@
-package org.river.exertion.btree;
+package org.river.exertion.btree.v0_1;
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 
-class IsDreamingCondition : LeafTask<KoboldCharacter>() {
+class WatchTask : LeafTask<KoboldCharacter>() {
 
 //    @JvmField
 //    @TaskAttribute
@@ -13,9 +12,9 @@ class IsDreamingCondition : LeafTask<KoboldCharacter>() {
 
     override fun execute(): Status {
 
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.isDreaming}")
+        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aWisdom}) watches..")
 
-        return if (`object`.isDreaming) Status.SUCCEEDED else Status.FAILED
+        return Status.SUCCEEDED
     }
 
     override fun copyTo(task: Task<KoboldCharacter>?): Task<KoboldCharacter> {

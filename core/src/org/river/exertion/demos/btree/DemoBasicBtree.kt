@@ -13,7 +13,7 @@ import org.river.exertion.*
 import org.river.exertion.assets.*
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
-import org.river.exertion.btree.KoboldCharacter
+import org.river.exertion.btree.v0_1.KoboldCharacter
 
 class DemoBasicBtree(private val batch: Batch,
                      private val font: BitmapFont,

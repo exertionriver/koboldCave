@@ -1,21 +1,22 @@
-package org.river.exertion.btree;
+package org.river.exertion.btree.v0_1;
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
 
-class IsThinkingCondition : LeafTask<KoboldCharacter>() {
+class HasExternalStimCondition : LeafTask<KoboldCharacter>() {
 
 //    @JvmField
 //    @TaskAttribute
 //    var doing : String? = null
 
+    fun hasExternalStim() = `object`.mExtAnxiety > .2
+
     override fun execute(): Status {
 
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.isThinking}")
+        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${hasExternalStim()}")
 
-        return if (`object`.isThinking) Status.SUCCEEDED else Status.FAILED
+        return if (hasExternalStim()) Status.SUCCEEDED else Status.FAILED
     }
 
     override fun copyTo(task: Task<KoboldCharacter>?): Task<KoboldCharacter> {

@@ -1,11 +1,11 @@
-package org.river.exertion.btree;
+package org.river.exertion.btree.v0_1;
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
-import org.river.exertion.btree.v0_1.KoboldCharacter
+import com.badlogic.gdx.ai.btree.annotation.TaskAttribute
 
-class HelloWorldTask : LeafTask<KoboldCharacter>() {
+class ContinueTask : LeafTask<KoboldCharacter>() {
 
     @JvmField
     @TaskAttribute
@@ -13,9 +13,7 @@ class HelloWorldTask : LeafTask<KoboldCharacter>() {
 
     override fun execute(): Status {
 
-        val description = `object`.description
-
-        println("$description kobold doing $doing")
+        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} continue doing $doing")
 
         return Status.SUCCEEDED
     }

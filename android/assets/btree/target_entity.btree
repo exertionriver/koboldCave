@@ -1,0 +1,70 @@
+
+
+subtree name:"complementAbsorbed"
+    selector
+        hasInternalStim?
+        isDead?
+        isSleeping?
+        isMeditating?
+
+subtree name:"internalAbsorbed"
+    selector
+        hasExternalStim?
+        isDreaming?
+        isDaydreaming?
+        isThinking?
+        isWatching?
+        isLooking?
+        isReflecting?
+
+subtree name:"externalAbsorbed"
+    selector
+        hasRecognition?
+            scanning
+            assessing
+            recalling
+            approaching
+            sensing
+        isHarmless?
+        isThreat?
+            compareChances
+        isOther?
+            determineThreat
+
+subtree name:"encounterAbsorbed"
+    selector
+        hasResolution?
+        isFriendly?
+            assessRelationship
+            engage
+        isAlluring?
+            assessValue
+            pursue
+        isDangerous?
+            assessStrength
+            defend
+        isPredatory?
+            assessWeakness
+            stalk
+        isShadow?
+            assessOther
+            follow
+        isImproving?
+            isThreatToPress?
+                blockThreat
+            isOpportunityToPress?
+                pressEncounter
+        isWorsening?
+            isAbleToMitigate
+                mitigate
+            isMomentToEscape?
+                escapeEncounter
+        continueEncounter
+            assessToImprove
+
+root
+    sequence
+        $complementAbsorbed
+        $internalAbsorbed
+        $externalAbsorbed
+        $encounterAbsorbed

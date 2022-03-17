@@ -1,10 +1,10 @@
-package org.river.exertion.btree;
+package org.river.exertion.btree.v0_1;
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 
-class IsDeadCondition : LeafTask<KoboldCharacter>() {
+class AssessOpportunityTask : LeafTask<KoboldCharacter>() {
 
 //    @JvmField
 //    @TaskAttribute
@@ -12,9 +12,9 @@ class IsDeadCondition : LeafTask<KoboldCharacter>() {
 
     override fun execute(): Status {
 
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.isDead()}")
+        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} assesses opportunity..")
 
-        return if (`object`.isDead()) Status.SUCCEEDED else Status.FAILED
+        return Status.SUCCEEDED
     }
 
     override fun copyTo(task: Task<KoboldCharacter>?): Task<KoboldCharacter> {

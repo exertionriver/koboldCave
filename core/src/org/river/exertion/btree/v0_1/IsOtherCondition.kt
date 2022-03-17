@@ -1,4 +1,4 @@
-package org.river.exertion.btree;
+package org.river.exertion.btree.v0_1;
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.LeafTask;
