@@ -1,6 +1,7 @@
 package org.river.exertion.demos.btree
 
 import com.badlogic.gdx.Application.LOG_DEBUG
+import com.badlogic.gdx.Application.LOG_INFO
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.*
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction
 import ktx.app.KtxScreen
 import org.river.exertion.*
 import org.river.exertion.assets.*
+import org.river.exertion.btree.v0_1.ExecLeafTask
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.btree.v0_1.KoboldCharacter
@@ -41,9 +43,59 @@ class DemoBasicBtree(private val batch: Batch,
 //    val sdc = ShapeDrawerConfig(batch)
 //    val drawer = sdc.getDrawer()
 
+    @Suppress("NewApi")
     override fun render(delta: Float) {
 
-        koboldCharacter.tree.step()
+        koboldCharacter.considerTimer += delta
+        koboldCharacter.actionTimer += delta
+
+//        println("delta:$delta")
+
+        if (koboldCharacter.considerTimer > koboldCharacter.considerMoment) {
+            koboldCharacter.considerTimer -= koboldCharacter.considerMoment
+            koboldCharacter.tree.step()
+
+            val taskCount = koboldCharacter.decideMap[koboldCharacter.considerList]
+                if ((taskCount != null) && koboldCharacter.considerList.isNotEmpty() )  {
+                    koboldCharacter.decideMap[koboldCharacter.considerList] = taskCount + 1
+                }
+                else
+                    koboldCharacter.decideMap[koboldCharacter.considerList] = 1
+
+//            Gdx.app.debug("kobold task", "${koboldCharacter.currentTask}: (${koboldCharacter.decideMap[koboldCharacter.considerList]})")
+
+            koboldCharacter.considerList = mutableListOf()
+        }
+
+
+        if (koboldCharacter.actionTimer > koboldCharacter.actionMoment) {
+            Gdx.app.debug("kobold measures", "intX:${koboldCharacter.mIntAnxiety}, extX:${koboldCharacter.mExtAnxiety}")
+            koboldCharacter.actionTimer -= koboldCharacter.actionTimer
+
+            koboldCharacter.decideMap.entries.sortedByDescending { it.value }.forEach {
+                Gdx.app.debug("kobold decideMap", "${it.key}: (${it.value})")
+            }
+
+            if (koboldCharacter.currentDecision.isEmpty()) {
+
+                val maxDecision = koboldCharacter.decideMap.entries.filter { it.key.isNotEmpty() }.maxByOrNull { it.value }
+                if (maxDecision != null) {
+                    koboldCharacter.currentDecision = maxDecision.key
+                }
+            }
+
+            koboldCharacter.currentAction = koboldCharacter.currentDecision.first()
+            koboldCharacter.currentDecision.remove(koboldCharacter.currentDecision.first())
+
+            Gdx.app.debug("kobold current decision", "${koboldCharacter.currentDecision}")
+            Gdx.app.log("kobold action", "${koboldCharacter.currentAction}")
+
+            koboldCharacter.decideMap.entries.removeIf { it.key != koboldCharacter.currentDecision || it.key.isEmpty() }
+
+            if (koboldCharacter.currentAction is ExecLeafTask) (koboldCharacter.currentAction as ExecLeafTask).executeTask()
+        }
+
+
 //        InputHandler.handleInput(camera)
 /*
         when {
@@ -85,7 +137,7 @@ class DemoBasicBtree(private val batch: Batch,
     }
 
     override fun show() {
-        Gdx.app.logLevel = LOG_DEBUG
+        Gdx.app.logLevel = LOG_INFO
         //overhead, following character
 //        Render.initRender(playerCharacter[ActionMoveComponent.mapper]!!.camera!!, playerCharacter[ActionMoveComponent.mapper]!!.currentNode, playerCharacter[ActionMoveComponent.mapper]!!.currentAngle)
         //overhead

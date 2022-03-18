@@ -4,20 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 
-class LookTask : LeafTask<KoboldCharacter>() {
+class LookTask : ExecLeafTask() {
 
-//    @JvmField
-//    @TaskAttribute
-//    var doing : String? = null
-
-    override fun execute(): Status {
-
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) looks..")
-
-        return Status.SUCCEEDED
-    }
-
-    override fun copyTo(task: Task<KoboldCharacter>?): Task<KoboldCharacter> {
-        return task!!
+    override fun executeTask() {
+        `object`.mIntAnxiety += 0.03f
+        `object`.mExtAnxiety -= 0.03f
+        Gdx.app.log("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) looks..")
     }
 }

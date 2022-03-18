@@ -6,7 +6,7 @@ import hasInternalStim?:"org.river.exertion.btree.v0_1.HasInternalStimCondition"
 import hasExternalStim?:"org.river.exertion.btree.v0_1.HasExternalStimCondition"
 import hasRecognition?:"org.river.exertion.btree.v0_1.HasRecognitionCondition"
 
-import continue:"org.river.exertion.btree.v0_1.ContinueTask"
+import abide:"org.river.exertion.btree.v0_1.AbideTask"
 import think:"org.river.exertion.btree.v0_1.ThinkTask"
 import watch:"org.river.exertion.btree.v0_1.WatchTask"
 import look:"org.river.exertion.btree.v0_1.LookTask"
@@ -22,6 +22,7 @@ subtree name:"complementAbsorbed"
         hasInternalStim?
         isDead?
         isAwake? howAwake:0
+        abide
 
 subtree name:"internalAbsorbed"
     selector
@@ -42,14 +43,13 @@ subtree name:"externalAbsorbed"
             hasExternalStim?
         selector
             hasRecognition?
-            repeat times:5
+            sequence
+                approach
+                scan
+                isOther?
                 sequence
-                    approach
-                    scan
-                    isOther?
-                    sequence
-                        assessThreat
-                        assessOpportunity
+                    assessThreat
+                    assessOpportunity
 
 root
     sequence
