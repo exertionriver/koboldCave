@@ -1,0 +1,5 @@
+import resolve:"org.river.exertion.btree.v0_1.task_cond.ResolveTask"
+
+root
+    selector
+        resolve asStatus:"resolved!"

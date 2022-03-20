@@ -1,14 +1,15 @@
-package org.river.exertion.btree.v0_1;
+package org.river.exertion.btree.v0_1.task_cond;
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.btree.LeafTask;
-import com.badlogic.gdx.ai.btree.Task;
+import org.river.exertion.btree.v0_1.ExecLeafTask
+import org.river.exertion.btree.v0_1.TaskEnum
 
 class ThinkTask : ExecLeafTask() {
 
+    override fun taskEnum() = TaskEnum.Think
+
     override fun executeTask() {
-        `object`.mIntAnxiety -= 0.03f
-        `object`.mExtAnxiety += 0.03f
+        TaskEnum.Think.updateObject(this.`object`)
         Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) thinks things over..")
     }
 }

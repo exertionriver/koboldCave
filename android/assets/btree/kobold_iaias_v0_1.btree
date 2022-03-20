@@ -1,0 +1,20 @@
+import isSitting?:"org.river.exertion.btree.v0_1.task_cond.IsSittingCondition"
+import isStandingUp?:"org.river.exertion.btree.v0_1.task_cond.IsStandingUpCondition"
+
+import balter:"org.river.exertion.btree.v0_1.task_cond.BalterTask"
+import mumble:"org.river.exertion.btree.v0_1.task_cond.MumbleTask"
+import screech:"org.river.exertion.btree.v0_1.task_cond.ScreechTask"
+
+import sit:"org.river.exertion.btree.v0_1.task_cond.SitTask"
+import lieDown:"org.river.exertion.btree.v0_1.task_cond.LieDownTask"
+import standUp:"org.river.exertion.btree.v0_1.task_cond.StandUpTask"
+import abide:"org.river.exertion.btree.v0_1.task_cond.AbideTask"
+
+root
+    selector
+        (isStandingUp? minHowLong:10) randomSelector
+            balter
+            mumble
+            screech
+        (isSitting? minHowLong:10) standUp
+        abide
