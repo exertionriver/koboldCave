@@ -10,6 +10,6 @@ class AbideTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Abide.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} abides..")
+        statusUpdate("abides..")
     }
 }

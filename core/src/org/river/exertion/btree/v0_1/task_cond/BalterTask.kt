@@ -10,6 +10,6 @@ class BalterTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Balter.updateObject(this.`object`)
-        Gdx.app.log("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) balters..!")
+        statusUpdate("balters..!")
     }
 }

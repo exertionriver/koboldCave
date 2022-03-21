@@ -1,5 +1,6 @@
 package org.river.exertion.btree.v0_1;
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.LeafTask
 import com.badlogic.gdx.ai.btree.Task
 import org.river.exertion.btree.v0_1.task_cond.*
@@ -11,9 +12,16 @@ abstract class ExecLeafTask : LeafTask<IBTCharacter>() {
         return Status.SUCCEEDED
     }
 
+    abstract fun taskEnum() : TaskEnum
+
     abstract fun executeTask()
 
-    abstract fun taskEnum() : TaskEnum
+    fun statusUpdate(update : String) {
+        if (Gdx.app != null)
+            Gdx.app.debug("${this::class.simpleName}", "${`object`.name} $update")
+        else
+            println("[${this::class.simpleName}] ${`object`.name} $update")
+    }
 
     override fun copyTo(task: Task<IBTCharacter>?): Task<IBTCharacter> {
         return task!!

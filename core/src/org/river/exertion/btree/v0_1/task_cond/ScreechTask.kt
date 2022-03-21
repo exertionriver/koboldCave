@@ -10,6 +10,6 @@ class ScreechTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Screech.updateObject(this.`object`)
-        Gdx.app.log("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) screeches..!")
+        statusUpdate("screeches..!")
     }
 }

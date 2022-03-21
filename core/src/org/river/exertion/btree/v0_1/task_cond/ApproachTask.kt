@@ -10,6 +10,6 @@ class ApproachTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Approach.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} approaches..")
+        statusUpdate("approaches..")
     }
 }

@@ -10,6 +10,6 @@ class LookTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Look.updateObject(this.`object`)
-        Gdx.app.log("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) looks..")
+        statusUpdate("looks..")
     }
 }

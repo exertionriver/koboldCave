@@ -8,7 +8,7 @@ class IsDeadCondition : ExecLeafCondition() {
     fun isDead() = `object`.mLife < 0f
 
     override fun checkCondition() : Status {
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${isDead()}")
+        statusUpdate("${isDead()}")
         return if (isDead()) Status.SUCCEEDED else Status.FAILED
     }
 }

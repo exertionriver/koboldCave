@@ -21,7 +21,7 @@ class SitTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Sit.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} sits ${upOrDown()}..")
+        statusUpdate("sits ${upOrDown()}..")
     }
 
 }

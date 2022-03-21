@@ -8,7 +8,7 @@ class HasInternalStimCondition : ExecLeafCondition() {
     fun hasInternalStim() = `object`.mIntAnxiety > .2
 
     override fun checkCondition(): Status {
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${hasInternalStim()}")
+        statusUpdate("${hasInternalStim()}")
         return if (hasInternalStim()) Status.SUCCEEDED else Status.FAILED
     }
 }

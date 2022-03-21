@@ -10,7 +10,7 @@ class StandUpTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.StandUp.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} stands up..")
+        statusUpdate("stands up..")
     }
 
 }

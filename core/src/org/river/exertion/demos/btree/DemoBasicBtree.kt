@@ -36,38 +36,11 @@ class DemoBasicBtree(private val batch: Batch,
 
     val controlAreaCamera = OrthographicCamera()
 
-    @Suppress("NewApi")
-    fun updateCharacter(delta: Float, character : IBTCharacter) {
-        character.actionTimer += delta
-
-        if (character.actionTimer > character.actionMoment) {
-            Gdx.app.log("kobold measures", "intX:${character.mIntAnxiety}, extX:${character.mExtAnxiety}, awake:${character.mAwake}")
-            character.actionTimer -= character.actionTimer
-            character.tree.step()
-
-            Gdx.app.debug("kobold current decision", "${character.decideSequenceList}")
-
-            character.currentAction = character.decideSequenceList.first()
-            character.decideSequenceList.removeFirst()//remove(character.decideSequenceList.first())
-
-            Gdx.app.log("kobold current action", "${character.name}: ${character.currentAction}")
-
-
-            val execTask = character.currentAction
-            if (execTask is ExecLeafTask) execTask.executeTask()
-
-            character.actionList.add(Pair(character.currentAction.taskEnum(), character.actionMoment))
-
-            character.actionMap(10f).entries.sortedByDescending { it.value }.forEach {
-                Gdx.app.debug("kobold actionMap", "${it.key}: (${it.value})")
-            }
-        }
-    }
     
     override fun render(delta: Float) {
 
-        updateCharacter(delta, koboldCharacter1)
-//        updateCharacter(delta, koboldCharacter2)
+    koboldCharacter1.update(delta)
+//    koboldCharacter2.update(delta)
 
     }
 

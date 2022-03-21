@@ -5,8 +5,10 @@ import org.river.exertion.btree.v0_1.ExecLeafCondition
 
 class IsOtherCondition : ExecLeafCondition() {
 
+    fun isOther() = `object`.isOther
+
     override fun checkCondition(): Status {
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.isOther}")
+        statusUpdate("${isOther()}")
         return if (`object`.isOther) Status.SUCCEEDED else Status.FAILED
     }
 }

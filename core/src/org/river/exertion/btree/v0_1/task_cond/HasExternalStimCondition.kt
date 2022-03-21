@@ -8,7 +8,7 @@ class HasExternalStimCondition : ExecLeafCondition() {
     fun hasExternalStim() = `object`.mExtAnxiety > .3
 
     override fun checkCondition(): Status {
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${hasExternalStim()}")
+        statusUpdate("${hasExternalStim()}")
         return if (hasExternalStim()) Status.SUCCEEDED else Status.FAILED
     }
 }

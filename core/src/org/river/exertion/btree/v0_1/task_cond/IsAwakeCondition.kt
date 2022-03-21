@@ -25,7 +25,7 @@ class IsAwakeCondition : ExecLeafCondition() {
     }
 
     override fun checkCondition(): Status {
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${isAwake()}")
+        statusUpdate("${isAwake()} ($minAwake, $maxAwake)")
         return if (isAwake()) Status.SUCCEEDED else Status.FAILED
     }
 }

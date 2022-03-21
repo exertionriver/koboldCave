@@ -10,7 +10,7 @@ class LieDownTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.LieDown.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} lies down..")
+        statusUpdate("lies down..")
     }
 
 }

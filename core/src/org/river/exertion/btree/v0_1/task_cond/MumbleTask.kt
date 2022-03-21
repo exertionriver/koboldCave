@@ -10,6 +10,6 @@ class MumbleTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Mumble.updateObject(this.`object`)
-        Gdx.app.log("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) mumbles..")
+        statusUpdate("mumbles..")
     }
 }

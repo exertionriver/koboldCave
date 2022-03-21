@@ -10,6 +10,6 @@ class AssessThreatTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.AssessThreat.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} assesses threat..")
+        statusUpdate("assesses threat..")
     }
 }

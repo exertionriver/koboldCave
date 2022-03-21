@@ -10,7 +10,7 @@ class SleepTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Sleep.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} is snoozing..")
+        statusUpdate("is snoozing..")
     }
 
 }

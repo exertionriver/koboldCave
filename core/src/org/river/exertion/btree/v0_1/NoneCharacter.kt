@@ -6,19 +6,10 @@ import com.badlogic.gdx.ai.msg.Telegram
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
 import java.util.*
 
-class KoboldCharacter : IBTCharacter {
+class NoneCharacter : IBTCharacter {
 
-    override var name = "razza" + Random().nextInt()
-    var description = "toothy kobold!"
-
+    override var name = "none" + Random().nextInt()
     override lateinit var tree : BehaviorTree<IBTCharacter>
-
-
-    init { init()
-        addEncounterSubtree("android/assets/btree/kobold/kobold_encounter_v0_1.btree")
-        addInternalAbsorbedInternalActionSubtree("android/assets/btree/kobold/kobold_iaias_v0_1.btree")
-        addInternalAbsorbedExternalActionSubtree("android/assets/btree/kobold/kobold_iaeas_v0_1.btree")
-    }
 
     //noneAbsorbed
     override var mLife = 1f

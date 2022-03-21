@@ -1,0 +1,21 @@
+import hasInternalStim?:"org.river.exertion.btree.v0_1.task_cond.HasInternalStimCondition"
+import hasExternalStim?:"org.river.exertion.btree.v0_1.task_cond.HasExternalStimCondition"
+import hasRecognition?:"org.river.exertion.btree.v0_1.task_cond.HasRecognitionCondition"
+
+import notAbsorbedPlaceholder:"org.river.exertion.btree.v0_1.placeholder.NotAbsorbedPlaceholder"
+import internalAbsorbedPlaceholder:"org.river.exertion.btree.v0_1.placeholder.InternalAbsorbedPlaceholder"
+import externalAbsorbedPlaceholder:"org.river.exertion.btree.v0_1.placeholder.ExternalAbsorbedPlaceholder"
+import encounterAbsorbedPlaceholder:"org.river.exertion.btree.v0_1.placeholder.EncounterAbsorbedPlaceholder"
+
+root
+    sequence
+        alwaysSucceed
+            sequence
+                notAbsorbedPlaceholder
+        (hasInternalStim?) sequence
+            internalAbsorbedPlaceholder
+        (hasExternalStim?) sequence
+            externalAbsorbedPlaceholder
+        (hasRecognition?) sequence
+            encounterAbsorbedPlaceholder
+

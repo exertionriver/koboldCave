@@ -18,9 +18,8 @@ class IsLyingDownCondition : ExecLeafCondition() {
             else if (`object`.actionCountAgo(TaskEnum.LieDown, minHowLong!!) == 0) isLyingDown()
             else false
 
-
     override fun checkCondition() : Status {
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${isLyingDownMinHowLong()}")
+        statusUpdate("${isLyingDownMinHowLong()} ($minHowLong)")
         return if (isLyingDownMinHowLong()) Status.SUCCEEDED else Status.FAILED
     }
 }

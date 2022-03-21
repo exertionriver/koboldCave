@@ -10,6 +10,6 @@ class ThinkTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Think.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) thinks things over..")
+        statusUpdate("thinks things over..")
     }
 }

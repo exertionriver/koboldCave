@@ -8,7 +8,7 @@ class IsExtAnxietyHigherCondition : ExecLeafCondition() {
     fun isExtHigher() = `object`.mExtAnxiety > `object`.mIntAnxiety
 
     override fun checkCondition(): Status {
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${isExtHigher()}")
+        statusUpdate("${isExtHigher()}")
         return if ( isExtHigher() ) Status.SUCCEEDED else Status.FAILED
     }
 }

@@ -10,6 +10,6 @@ class WanderTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Wander.updateObject(this.`object`)
-        Gdx.app.log("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aIntelligence}) wanders around..")
+        statusUpdate("wanders around..")
     }
 }

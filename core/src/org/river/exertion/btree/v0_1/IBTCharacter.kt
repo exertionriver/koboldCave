@@ -1,5 +1,6 @@
 package org.river.exertion.btree.v0_1
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.BehaviorTree
 import com.badlogic.gdx.ai.btree.LeafTask
 import com.badlogic.gdx.ai.btree.decorator.Include
@@ -105,5 +106,46 @@ interface IBTCharacter : Telegraph {
 
     var actionTimer : Float
     val actionMoment : Float
+
+    @Suppress("NewApi")
+    fun update(delta : Float) {
+        this.actionTimer += delta
+
+        if (this.actionTimer > this.actionMoment) {
+
+            if (Gdx.app != null)
+                Gdx.app.log("character measures", "intX:${this.mIntAnxiety}, extX:${this.mExtAnxiety}, awake:${this.mAwake}")
+            else
+                println("(character measures) : intX:${this.mIntAnxiety}, extX:${this.mExtAnxiety}, awake:${this.mAwake}")
+
+            this.actionTimer -= this.actionTimer
+            this.tree.step()
+
+            if (Gdx.app != null)
+                Gdx.app.debug("character current decision", "${this.decideSequenceList}")
+            else
+                println("(character current decision) ${this.decideSequenceList}")
+
+            this.currentAction = this.decideSequenceList.first()
+            this.decideSequenceList.removeFirst()//remove(character.decideSequenceList.first())
+
+            if (Gdx.app != null)
+                Gdx.app.log("character current action", "${this.name}: ${this.currentAction}")
+            else
+                println("(character current action) ${this.name}: ${this.currentAction}")
+
+            val execTask = this.currentAction
+            if (execTask is ExecLeafTask) execTask.executeTask()
+
+            this.actionList.add(Pair(this.currentAction.taskEnum(), this.actionMoment))
+
+            this.actionMap(10f).entries.sortedByDescending { it.value }.forEach {
+                if (Gdx.app != null)
+                    Gdx.app.debug("character actionMap(10f)", "${it.key}: (${it.value})")
+                else
+                    println("(character actionMap 10f) ${it.key}: (${it.value})")
+            }
+        }
+    }
 
 }

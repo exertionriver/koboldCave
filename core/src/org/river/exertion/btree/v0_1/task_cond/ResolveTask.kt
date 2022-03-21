@@ -15,7 +15,6 @@ class ResolveTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Resolve.updateObject(this.`object`)
-        `object`.hasRecognition = false //for testing only
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} resolves as $asStatus..")
+        statusUpdate("resolves as $asStatus..")
     }
 }

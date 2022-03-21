@@ -19,7 +19,7 @@ class IsSittingCondition : ExecLeafCondition() {
         else false
 
     override fun checkCondition() : Status {
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${isSittingMinHowLong()}")
+        statusUpdate("${isSittingMinHowLong()} ($minHowLong)")
         return if (isSittingMinHowLong()) Status.SUCCEEDED else Status.FAILED
     }
 }

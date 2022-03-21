@@ -10,6 +10,6 @@ class AssessOpportunityTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.AssessOpportunity.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} assesses opportunity..")
+        statusUpdate("assesses opportunity..")
     }
 }

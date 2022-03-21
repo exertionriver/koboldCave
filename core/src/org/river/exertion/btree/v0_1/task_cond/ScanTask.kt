@@ -10,6 +10,6 @@ class ScanTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Scan.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name} scans..")
+        statusUpdate("scans..")
     }
 }

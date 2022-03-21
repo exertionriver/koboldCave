@@ -1,0 +1,19 @@
+import isDead?:"org.river.exertion.btree.v0_1.task_cond.IsDeadCondition"
+import isAwake?:"org.river.exertion.btree.v0_1.task_cond.IsAwakeCondition"
+import isLyingDown?:"org.river.exertion.btree.v0_1.task_cond.IsLyingDownCondition"
+import isSitting?:"org.river.exertion.btree.v0_1.task_cond.IsSittingCondition"
+
+import hasInternalStim?:"org.river.exertion.btree.v0_1.task_cond.HasInternalStimCondition"
+
+import abide:"org.river.exertion.btree.v0_1.task_cond.AbideTask"
+import sleep:"org.river.exertion.btree.v0_1.task_cond.SleepTask"
+import lieDown:"org.river.exertion.btree.v0_1.task_cond.LieDownTask"
+
+root
+    selector
+        hasInternalStim?
+        isDead?
+        (isAwake? minAwake:0) abide
+        (isLyingDown? minHowLong:10) sleep
+        (isSitting? minHowLong:10) lieDown
+        abide

@@ -10,6 +10,6 @@ class ReflectTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Reflect.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aWisdom}) reflects..")
+        statusUpdate("reflects upon some things..")
     }
 }

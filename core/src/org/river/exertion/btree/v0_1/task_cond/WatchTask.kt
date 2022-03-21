@@ -10,6 +10,6 @@ class WatchTask : ExecLeafTask() {
 
     override fun executeTask() {
         TaskEnum.Watch.updateObject(this.`object`)
-        Gdx.app.debug("${`object`::class.simpleName}", "${this::class.simpleName} ${`object`.name}(${`object`.aWisdom}) watches..")
+        statusUpdate("watches..")
     }
 }
