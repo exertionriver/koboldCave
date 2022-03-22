@@ -9,7 +9,7 @@ class ScanTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Scan
 
     override fun executeTask() {
-        TaskEnum.Scan.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("scans..")
     }
 }

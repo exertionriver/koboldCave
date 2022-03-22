@@ -10,6 +10,6 @@ import abide:"org.river.exertion.btree.v0_1.task_cond.AbideTask"
 
 root
     randomSelector
-        (isStandingUp? minHowLong:10) wander
-        (isSitting? minHowLong:10) standUp
+        (isStandingUp?) wander
+        (isSitting?) standUp
         abide

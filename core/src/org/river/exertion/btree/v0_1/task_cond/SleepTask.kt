@@ -9,8 +9,8 @@ class SleepTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Sleep
 
     override fun executeTask() {
-        TaskEnum.Sleep.updateObject(this.`object`)
-        statusUpdate("is snoozing..")
+        taskEnum().updateObject(this.`object`)
+        statusUpdate("snoozes..")
     }
 
 }

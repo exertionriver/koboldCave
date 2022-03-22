@@ -9,7 +9,7 @@ class ReflectTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Reflect
 
     override fun executeTask() {
-        TaskEnum.Reflect.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("reflects upon some things..")
     }
 }

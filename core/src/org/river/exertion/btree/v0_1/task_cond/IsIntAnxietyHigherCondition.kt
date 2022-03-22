@@ -2,13 +2,16 @@ package org.river.exertion.btree.v0_1.task_cond;
 
 import com.badlogic.gdx.Gdx
 import org.river.exertion.btree.v0_1.ExecLeafCondition
+import org.river.exertion.btree.v0_1.IBTCharacter
 
 class IsIntAnxietyHigherCondition : ExecLeafCondition() {
 
-    fun isIntHigher() = `object`.mIntAnxiety > `object`.mExtAnxiety
-
     override fun checkCondition(): Status {
-        statusUpdate("${isIntHigher()}")
-        return if ( isIntHigher() ) Status.SUCCEEDED else Status.FAILED
+        statusUpdate("${isIntHigher(`object`)}")
+        return if ( isIntHigher(`object`) ) Status.SUCCEEDED else Status.FAILED
+    }
+
+    companion object {
+        fun isIntHigher(character : IBTCharacter) = character.mIntAnxiety > character.mExtAnxiety
     }
 }

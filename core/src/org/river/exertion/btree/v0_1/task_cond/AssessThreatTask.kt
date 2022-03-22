@@ -9,7 +9,7 @@ class AssessThreatTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.AssessThreat
 
     override fun executeTask() {
-        TaskEnum.AssessThreat.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("assesses threat..")
     }
 }

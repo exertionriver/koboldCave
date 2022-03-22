@@ -9,7 +9,7 @@ class AbideTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Abide
 
     override fun executeTask() {
-        TaskEnum.Abide.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("abides..")
     }
 }

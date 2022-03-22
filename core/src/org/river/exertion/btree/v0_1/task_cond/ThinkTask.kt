@@ -9,7 +9,7 @@ class ThinkTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Think
 
     override fun executeTask() {
-        TaskEnum.Think.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("thinks things over..")
     }
 }

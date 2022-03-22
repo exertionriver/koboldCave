@@ -9,7 +9,7 @@ class WanderTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Wander
 
     override fun executeTask() {
-        TaskEnum.Wander.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("wanders around..")
     }
 }

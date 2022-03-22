@@ -9,7 +9,7 @@ class MumbleTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Mumble
 
     override fun executeTask() {
-        TaskEnum.Mumble.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("mumbles..")
     }
 }

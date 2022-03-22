@@ -13,6 +13,7 @@ interface IBTCharacter : Telegraph {
 
     var name : String
     var tree : BehaviorTree<IBTCharacter>
+    var characterManifest : CharacterManifest
 
     fun init() {
         val reader = FileReader("android/assets/btree/entity_v0_1.btree")
@@ -98,7 +99,7 @@ interface IBTCharacter : Telegraph {
 
     var isLyingDown : Boolean
     var isSitting : Boolean
-    var isStandingUp : Boolean
+    var isStanding : Boolean
 
     var decideSequenceList : MutableList<ExecLeafTask> //sequence of actions
     var currentAction : ExecLeafTask
@@ -106,6 +107,7 @@ interface IBTCharacter : Telegraph {
 
     var actionTimer : Float
     val actionMoment : Float
+    val momentsLongAgo : Float
 
     @Suppress("NewApi")
     fun update(delta : Float) {
@@ -113,11 +115,11 @@ interface IBTCharacter : Telegraph {
 
         if (this.actionTimer > this.actionMoment) {
 
-            if (Gdx.app != null)
+/*            if (Gdx.app != null)
                 Gdx.app.log("character measures", "intX:${this.mIntAnxiety}, extX:${this.mExtAnxiety}, awake:${this.mAwake}")
             else
                 println("(character measures) : intX:${this.mIntAnxiety}, extX:${this.mExtAnxiety}, awake:${this.mAwake}")
-
+*/
             this.actionTimer -= this.actionTimer
             this.tree.step()
 
@@ -139,11 +141,11 @@ interface IBTCharacter : Telegraph {
 
             this.actionList.add(Pair(this.currentAction.taskEnum(), this.actionMoment))
 
-            this.actionMap(10f).entries.sortedByDescending { it.value }.forEach {
+            this.actionMap(momentsLongAgo * actionMoment).entries.sortedByDescending { it.value }.forEach {
                 if (Gdx.app != null)
-                    Gdx.app.debug("character actionMap(10f)", "${it.key}: (${it.value})")
+                    Gdx.app.debug("character actionMap($momentsLongAgo)", "${it.key}: (${it.value})")
                 else
-                    println("(character actionMap 10f) ${it.key}: (${it.value})")
+                    println("(character actionMap $momentsLongAgo) ${it.key}: (${it.value})")
             }
         }
     }

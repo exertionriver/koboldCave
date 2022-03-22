@@ -21,9 +21,9 @@ enum class TaskEnum {
     , Mumble { override fun updateObject(character : IBTCharacter) { character.mIntAnxiety -= 0.03f; character.mExtAnxiety -= 0.01f } }
     , Screech { override fun updateObject(character : IBTCharacter) { character.mIntAnxiety -= 0.05f; character.mExtAnxiety -= 0.03f } }
 
-    , LieDown { override fun updateObject(character : IBTCharacter) { character.isStandingUp = false; character.isSitting = false; character.isLyingDown = true } }
-    , Sit { override fun updateObject(character : IBTCharacter) { character.isStandingUp = false; character.isSitting = true; character.isLyingDown = false } }
-    , StandUp { override fun updateObject(character : IBTCharacter) { character.isStandingUp = true; character.isSitting = false; character.isLyingDown = false } }
+    , LieDown { override fun updateObject(character : IBTCharacter) { character.isStanding = false; character.isSitting = false; character.isLyingDown = true } }
+    , Sit { override fun updateObject(character : IBTCharacter) { character.isStanding = false; character.isSitting = true; character.isLyingDown = false } }
+    , Stand { override fun updateObject(character : IBTCharacter) { character.isStanding = true; character.isSitting = false; character.isLyingDown = false } }
     ;
 
     abstract fun updateObject(character: IBTCharacter)

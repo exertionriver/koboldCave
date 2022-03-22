@@ -9,7 +9,7 @@ class LieDownTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.LieDown
 
     override fun executeTask() {
-        TaskEnum.LieDown.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("lies down..")
     }
 

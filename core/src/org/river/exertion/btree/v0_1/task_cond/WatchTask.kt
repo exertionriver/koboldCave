@@ -9,7 +9,7 @@ class WatchTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Watch
 
     override fun executeTask() {
-        TaskEnum.Watch.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("watches..")
     }
 }

@@ -9,7 +9,7 @@ class ScreechTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Screech
 
     override fun executeTask() {
-        TaskEnum.Screech.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("screeches..!")
     }
 }

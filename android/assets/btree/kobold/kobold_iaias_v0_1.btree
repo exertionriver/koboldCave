@@ -12,9 +12,9 @@ import abide:"org.river.exertion.btree.v0_1.task_cond.AbideTask"
 
 root
     selector
-        (isStandingUp? minHowLong:10) randomSelector
+        (isStandingUp?) randomSelector
             balter
             mumble
             screech
-        (isSitting? minHowLong:10) standUp
+        (isSitting?) standUp
         abide

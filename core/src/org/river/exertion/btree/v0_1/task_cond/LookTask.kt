@@ -9,7 +9,7 @@ class LookTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Look
 
     override fun executeTask() {
-        TaskEnum.Look.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("looks..")
     }
 }

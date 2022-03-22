@@ -194,7 +194,8 @@ enum class MessageIds {
     FEELING_BRIDGE,
     CURNODE_BRIDGE,
     NODEROOMMESH_BRIDGE,
-    LOSMAP_BRIDGE
+    LOSMAP_BRIDGE,
+    PHENOMENA
     ;
 
     fun id() = this.ordinal

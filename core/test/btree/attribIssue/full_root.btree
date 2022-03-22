@@ -1,0 +1,9 @@
+import isAwake?:"btree.attribIssue.IsAwakeAttribCondition"
+
+subtree name:"testSubTree"
+    selector
+        (isAwake? minAwake:0.2 maxAwake:0.7) isAwake? minAwake:0.2 maxAwake:0.3
+
+root
+    sequence
+        $testSubTree

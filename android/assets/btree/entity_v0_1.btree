@@ -2,7 +2,7 @@ import isDead?:"org.river.exertion.btree.v0_1.task_cond.IsDeadCondition"
 import isAwake?:"org.river.exertion.btree.v0_1.task_cond.IsAwakeCondition"
 import isLyingDown?:"org.river.exertion.btree.v0_1.task_cond.IsLyingDownCondition"
 import isSitting?:"org.river.exertion.btree.v0_1.task_cond.IsSittingCondition"
-import isStandingUp?:"org.river.exertion.btree.v0_1.task_cond.IsStandingUpCondition"
+import isStanding?:"org.river.exertion.btree.v0_1.task_cond.IsStandingCondition"
 import isIntAnxietyHigher?:"org.river.exertion.btree.v0_1.task_cond.IsIntAnxietyHigherCondition"
 import isExtAnxietyHigher?:"org.river.exertion.btree.v0_1.task_cond.IsExtAnxietyHigherCondition"
 import isOther?:"org.river.exertion.btree.v0_1.task_cond.IsOtherCondition"
@@ -21,43 +21,42 @@ import approach:"org.river.exertion.btree.v0_1.task_cond.ApproachTask"
 import scan:"org.river.exertion.btree.v0_1.task_cond.ScanTask"
 import assessThreat:"org.river.exertion.btree.v0_1.task_cond.AssessThreatTask"
 import assessOpportunity:"org.river.exertion.btree.v0_1.task_cond.AssessOpportunityTask"
-import resolve:"org.river.exertion.btree.v0_1.task_cond.ResolveTask"
+import resolveDraw:"org.river.exertion.btree.v0_1.task_cond.ResolveDrawTask"
 import sit:"org.river.exertion.btree.v0_1.task_cond.SitTask"
 import lieDown:"org.river.exertion.btree.v0_1.task_cond.LieDownTask"
-import standUp:"org.river.exertion.btree.v0_1.task_cond.StandUpTask"
+import stand:"org.river.exertion.btree.v0_1.task_cond.StandTask"
 
 subtree name:"notAbsorbed"
     selector
         hasInternalStim?
         isDead?
-        (isAwake? minAwake:0) abide
-        (isLyingDown? minHowLong:10) sleep
-        (isSitting? minHowLong:10) lieDown
+        (isLyingDown?) sleep
+        (isSitting?) lieDown
         abide
 
 subtree name:"internalAbsorbed"
     selector
         hasExternalStim?
-        (isAwake? minAwake:.2) dynamicGuardSelector
-            (isLyingDown?) sit up:true
+        (isAwake?) dynamicGuardSelector
+            (isLyingDown?) sit
             dynamicGuardSelector
                 (isIntAnxietyHigher?) randomSelector
                     watch
                     look
-                    (isSitting? minHowLong:10) standUp
+                    (isSitting?) stand
                 (isExtAnxietyHigher?) randomSelector
                     think
                     reflect
-                    (isStandingUp? minHowLong:10) sit down:true
+                    (isStanding?) sit
                 abide
-            (isStandingUp? minHowLong:10) sit down:true
+            (isStanding?) sit
             abide
 
 subtree name:"externalAbsorbed"
     selector
         hasRecognition?
         sequence
-            (isSitting? minHowLong:10) standUp
+            (isSitting?) stand
             approach
             scan
             (isOther?) sequence

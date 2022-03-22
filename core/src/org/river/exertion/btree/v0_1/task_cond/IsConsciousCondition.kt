@@ -5,14 +5,14 @@ import com.badlogic.gdx.ai.btree.annotation.TaskAttribute
 import org.river.exertion.btree.v0_1.ExecLeafCondition
 import org.river.exertion.btree.v0_1.IBTCharacter
 
-class IsAwakeCondition : ExecLeafCondition() {
+class IsConsciousCondition : ExecLeafCondition() {
 
     override fun checkCondition(): Status {
-        statusUpdate("${isAwake(`object`)}")
-        return if (isAwake(`object`)) Status.SUCCEEDED else Status.FAILED
+        statusUpdate("${isConscious(`object`)}")
+        return if (isConscious(`object`)) Status.SUCCEEDED else Status.FAILED
     }
 
     companion object {
-        fun isAwake(character : IBTCharacter) = character.mAwake > 0
+        fun isConscious(character : IBTCharacter) = character.mAwake >= .2f
     }
 }

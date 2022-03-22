@@ -7,21 +7,11 @@ import org.river.exertion.btree.v0_1.TaskEnum
 
 class SitTask : ExecLeafTask() {
 
-    @JvmField
-    @TaskAttribute
-    var down : Boolean? = false
-
-    @JvmField
-    @TaskAttribute
-    var up : Boolean? = false
-
-    fun upOrDown() = if (down != null) "down" else if (up != null) "up" else "null"
-
     override fun taskEnum() = TaskEnum.Sit
 
     override fun executeTask() {
-        TaskEnum.Sit.updateObject(this.`object`)
-        statusUpdate("sits ${upOrDown()}..")
+        taskEnum().updateObject(this.`object`)
+        statusUpdate("sits..")
     }
 
 }

@@ -9,7 +9,7 @@ class BalterTask : ExecLeafTask() {
     override fun taskEnum() = TaskEnum.Balter
 
     override fun executeTask() {
-        TaskEnum.Balter.updateObject(this.`object`)
+        taskEnum().updateObject(this.`object`)
         statusUpdate("balters..!")
     }
 }

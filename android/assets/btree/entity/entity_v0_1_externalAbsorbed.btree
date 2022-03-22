@@ -1,73 +1,23 @@
-import isDead?:"org.river.exertion.btree.v0_1.task_cond.IsDeadCondition"
-import isAwake?:"org.river.exertion.btree.v0_1.task_cond.IsAwakeCondition"
-import isLyingDown?:"org.river.exertion.btree.v0_1.task_cond.IsLyingDownCondition"
-import isSitting?:"org.river.exertion.btree.v0_1.task_cond.IsSittingCondition"
-import isStandingUp?:"org.river.exertion.btree.v0_1.task_cond.IsStandingUpCondition"
-import isIntAnxietyHigher?:"org.river.exertion.btree.v0_1.task_cond.IsIntAnxietyHigherCondition"
-import isExtAnxietyHigher?:"org.river.exertion.btree.v0_1.task_cond.IsExtAnxietyHigherCondition"
+import isStanding?:"org.river.exertion.btree.v0_1.task_cond.IsStandingCondition"
 import isOther?:"org.river.exertion.btree.v0_1.task_cond.IsOtherCondition"
 
-import hasInternalStim?:"org.river.exertion.btree.v0_1.task_cond.HasInternalStimCondition"
-import hasExternalStim?:"org.river.exertion.btree.v0_1.task_cond.HasExternalStimCondition"
 import hasRecognition?:"org.river.exertion.btree.v0_1.task_cond.HasRecognitionCondition"
 
-import abide:"org.river.exertion.btree.v0_1.task_cond.AbideTask"
-import sleep:"org.river.exertion.btree.v0_1.task_cond.SleepTask"
-import think:"org.river.exertion.btree.v0_1.task_cond.ThinkTask"
-import watch:"org.river.exertion.btree.v0_1.task_cond.WatchTask"
-import look:"org.river.exertion.btree.v0_1.task_cond.LookTask"
-import reflect:"org.river.exertion.btree.v0_1.task_cond.ReflectTask"
 import approach:"org.river.exertion.btree.v0_1.task_cond.ApproachTask"
 import scan:"org.river.exertion.btree.v0_1.task_cond.ScanTask"
 import assessThreat:"org.river.exertion.btree.v0_1.task_cond.AssessThreatTask"
 import assessOpportunity:"org.river.exertion.btree.v0_1.task_cond.AssessOpportunityTask"
-import resolve:"org.river.exertion.btree.v0_1.task_cond.ResolveTask"
-import sit:"org.river.exertion.btree.v0_1.task_cond.SitTask"
-import lieDown:"org.river.exertion.btree.v0_1.task_cond.LieDownTask"
-import standUp:"org.river.exertion.btree.v0_1.task_cond.StandUpTask"
+import stand:"org.river.exertion.btree.v0_1.task_cond.StandTask"
+import abide:"org.river.exertion.btree.v0_1.task_cond.AbideTask"
 
-subtree name:"notAbsorbed"
-    selector
-        hasInternalStim?
-        isDead?
-        (isAwake? minAwake:0) abide
-        (isLyingDown? minHowLong:10) sleep
-        (isSitting? minHowLong:10) lieDown
-        abide
-
-subtree name:"internalAbsorbed"
-    selector
-        hasExternalStim?
-        (isAwake? minAwake:.2) dynamicGuardSelector
-            (isLyingDown?) sit up:true
-            dynamicGuardSelector
-                (isIntAnxietyHigher?) randomSelector
-                    watch
-                    look
-                    (isSitting? minHowLong:10) standUp
-                (isExtAnxietyHigher?) randomSelector
-                    think
-                    reflect
-                    (isStandingUp? minHowLong:10) sit down:true
-                abide
-            (isStandingUp? minHowLong:10) sit down:true
-            abide
-
-subtree name:"externalAbsorbed"
+root
     selector
         hasRecognition?
-        sequence
-            (isSitting? minHowLong:10) standUp
-            approach
-            scan
+        (isStanding?) selector
             (isOther?) sequence
                 assessThreat
                 assessOpportunity
-
-root
-    sequence
-        alwaysSucceed
-            $notAbsorbed
-        (hasInternalStim?) $internalAbsorbed
-        (hasExternalStim?) $externalAbsorbed
-
+            sequence
+                approach
+                scan
+        stand
