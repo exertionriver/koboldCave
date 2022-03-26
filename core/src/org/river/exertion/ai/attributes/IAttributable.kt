@@ -5,6 +5,7 @@ import org.river.exertion.ProbabilitySelect
 
 interface IAttributable <T:Any> {
 
+    val tag : String
     var minValue : T
     var maxValue : T
 
@@ -18,6 +19,7 @@ interface IAttributable <T:Any> {
 
     fun getDescriptions() : List<String> = values.filter { it.value!! as Comparable<T> <= maxValue }.filter { it.value!! as Comparable<T> >= minValue }.sortedBy { it.order }.map { it.description }
 
-    fun getValue() : T = ProbabilitySelect( values.map { it.value }.associateWith { Probability(100f / values.size, 0f) } ).getSelectedProbability()!!
+    fun getRandomAttributeValue() : AttributeValue<T> = ProbabilitySelect( values.map { it }.associateWith { Probability(100f / values.size, 0f) } ).getSelectedProbability()!!
 
+    fun getRandomValue() : T = ProbabilitySelect( values.map { it.value }.associateWith { Probability(100f / values.size, 0f) } ).getSelectedProbability()!!
 }

@@ -34,11 +34,20 @@ class TestAttribute {
     }
 
     @Test
-    fun testAttributablesGetValue() {
+    fun testAttributablesGetRandomValue() {
         ka.attributables.forEach { attr ->
-            println ( attr.key.getDescriptionByValue( attr.key.getValue() ) )
-            println ( attr.key.getDescriptionByValue( attr.key.getValue() ) )
-            println ( attr.key.getDescriptionByValue( attr.key.getValue() ) )
+            println ( attr.key.getDescriptionByValue( attr.key.getRandomValue() ) )
+            println ( attr.key.getDescriptionByValue( attr.key.getRandomValue() ) )
+            println ( attr.key.getDescriptionByValue( attr.key.getRandomValue() ) )
+        }
+    }
+
+    @Test
+    fun testAttributablesGetRandomAttribValue() {
+        (0..10).forEach {
+            ka.getRandomAttributes().forEach { attr ->
+                println ( "${attr.key}, ${attr.value}" )
+            }
         }
     }
 
