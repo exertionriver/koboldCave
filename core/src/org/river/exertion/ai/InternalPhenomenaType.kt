@@ -1,4 +1,4 @@
-package org.river.exertion.btree.v0_1
+package org.river.exertion.ai
 
 enum class InternalPhenomenaType {
 

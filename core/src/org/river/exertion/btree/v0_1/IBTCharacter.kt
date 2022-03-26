@@ -2,23 +2,58 @@ package org.river.exertion.btree.v0_1
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.BehaviorTree
-import com.badlogic.gdx.ai.btree.LeafTask
 import com.badlogic.gdx.ai.btree.decorator.Include
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser
+import com.badlogic.gdx.ai.msg.MessageManager
+import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
+import org.river.exertion.MessageIds
+import org.river.exertion.ai.*
 import org.river.exertion.btree.v0_1.task_cond.HasRecognitionCondition
 import java.io.FileReader
 
 interface IBTCharacter : Telegraph {
 
-    var name : String
+    var signature : Signature
     var tree : BehaviorTree<IBTCharacter>
-    var characterManifest : CharacterManifest
 
-    fun init() {
-        val reader = FileReader("android/assets/btree/entity_v0_1.btree")
-        val parser = BehaviorTreeParser<IBTCharacter>(BehaviorTreeParser.DEBUG_NONE)
-        tree = parser.parse(reader, this)
+    var characterManifest : CharacterManifest
+    var characterMemory : CharacterMemory
+
+    fun rootLocation() = "../android/assets/btree/entity/entity_v0_1_root.btree"
+    fun notAbsorbedSubtreePath() = "../android/assets/btree/entity/entity_v0_1_notAbsorbed.btree"
+    fun internalAbsorbedSubtreePath() = "../android/assets/btree/entity/entity_v0_1_internalAbsorbed.btree"
+    fun externalAbsorbedSubtreePath() = "../android/assets/btree/entity/entity_v0_1_externalAbsorbed.btree"
+
+    fun notAbsorbedSubtreeLocation() = this.tree.getChild(0).getChild(0).getChild(0)
+    fun internalAbsorbedSubtreeLocation() = this.tree.getChild(0).getChild(1)
+    fun externalAbsorbedSubtreeLocation() = this.tree.getChild(0).getChild(2)
+
+    fun initRoot() {
+        val reader = FileReader(rootLocation())
+        val parser = BehaviorTreeParser<IBTCharacter>(BehaviorTreeParser.DEBUG_HIGH)
+        this.tree = parser.parse(reader, this)
+
+        MessageManager.getInstance().addListener(this, MessageIds.EXT_PHENOMENA.id())
+        MessageManager.getInstance().addListener(this, MessageIds.INT_PHENOMENA.id())
+    }
+
+    fun initNotAbsorbedSubtree() {
+        notAbsorbedSubtreeLocation().addChild(Include<IBTCharacter?>().apply {
+            this.subtree = notAbsorbedSubtreePath(); this.lazy = true
+        })
+    }
+
+    fun initInternalAbsorbedSubtree() {
+        internalAbsorbedSubtreeLocation().addChild(Include<IBTCharacter?>().apply {
+            this.subtree = internalAbsorbedSubtreePath(); this.lazy = true
+        })
+    }
+
+    fun initExternalAbsorbedSubtree() {
+        externalAbsorbedSubtreeLocation().addChild(Include<IBTCharacter?>().apply {
+            this.subtree = externalAbsorbedSubtreePath(); this.lazy = true
+        })
     }
 
     //after init()
@@ -113,6 +148,9 @@ interface IBTCharacter : Telegraph {
     fun update(delta : Float) {
         this.actionTimer += delta
 
+        characterManifest.perceptionList.forEach { if (it != null) it.countdown -= delta }
+        characterManifest.projectionList.forEach { if (it != null) it.countdown -= delta }
+
         if (this.actionTimer > this.actionMoment) {
 
 /*            if (Gdx.app != null)
@@ -132,9 +170,9 @@ interface IBTCharacter : Telegraph {
             this.decideSequenceList.removeFirst()//remove(character.decideSequenceList.first())
 
             if (Gdx.app != null)
-                Gdx.app.log("character current action", "${this.name}: ${this.currentAction}")
+                Gdx.app.log("character current action", "${this.signature.individual}: ${this.currentAction}")
             else
-                println("(character current action) ${this.name}: ${this.currentAction}")
+                println("(character current action) ${this.signature.individual}: ${this.currentAction}")
 
             val execTask = this.currentAction
             if (execTask is ExecLeafTask) execTask.executeTask()
@@ -148,6 +186,18 @@ interface IBTCharacter : Telegraph {
                     println("(character actionMap $momentsLongAgo) ${it.key}: (${it.value})")
             }
         }
+    }
+
+    override fun handleMessage(msg: Telegram?): Boolean {
+        if ( (msg != null) && (msg.sender != this) ) {
+            if (msg.message == MessageIds.EXT_PHENOMENA.id()) {
+                characterManifest.addImpression((msg.extraInfo as ExternalPhenomenaInstance).impression())
+            }
+            if (msg.message == MessageIds.INT_PHENOMENA.id()) {
+                characterManifest.addImpression((msg.extraInfo as InternalPhenomenaInstance).impression())
+            }
+        }
+        return true
     }
 
 }

@@ -1,25 +1,32 @@
 package org.river.exertion.btree.v0_1
 
 import com.badlogic.gdx.ai.btree.BehaviorTree
-import com.badlogic.gdx.ai.btree.LeafTask
-import com.badlogic.gdx.ai.msg.Telegram
-import org.river.exertion.MessageIds
+import org.river.exertion.ai.*
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
 import java.util.*
 
 class KoboldCharacter : IBTCharacter {
 
-    override var name = "razza" + Random().nextInt()
+    override var signature = Signature("razza" + Random().nextInt(), "red hand", "kobold")
     var description = "toothy kobold!"
+
+    //defining characteristics of a kobold, if you perceive enough of these, you can identify it as a kobold
+    //e.g. characteristic: 'child-sized' : .25 , 'scaley' : .25 , 'upright' : .25, 'has tail', 'dragon-faced' : .25 type-characteristic
+    //other-characteristic: 'humanoid', 'articulate', 'super-animal intelligence', 'eyes in front' other-characteristic
+    //group-characteristic: 'tunic with red hand' : .25
+    //individual-characteristic:
+    // experience adds up all these characteristic values and improves chances of identifying kobold type, etc.
+
     override var characterManifest = CharacterManifest()
+    override var characterMemory = CharacterMemory()
 
     override lateinit var tree : BehaviorTree<IBTCharacter>
 
-
-    init { init()
-        addEncounterSubtree("android/assets/btree/kobold/kobold_encounter_v0_1.btree")
-        addInternalAbsorbedInternalActionSubtree("android/assets/btree/kobold/kobold_iaias_v0_1.btree")
-        addInternalAbsorbedExternalActionSubtree("android/assets/btree/kobold/kobold_iaeas_v0_1.btree")
+    init {
+        initRoot()
+        initNotAbsorbedSubtree()
+        initInternalAbsorbedSubtree()
+        initExternalAbsorbedSubtree()
     }
 
     //noneAbsorbed
@@ -54,14 +61,5 @@ class KoboldCharacter : IBTCharacter {
     override val actionMoment = .6f
     override val momentsLongAgo = 10f
 
-    override fun handleMessage(msg: Telegram?): Boolean {
-        if ( (msg != null) && (msg.sender != this) ) {
-            if (msg.message == MessageIds.PHENOMENA.id()) {
-                characterManifest.addImpression((msg.extraInfo as ExternalPhenomenaInstance).impression())
-            }
-        }
-
-        return true
-    }
 
 }

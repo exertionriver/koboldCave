@@ -1,22 +1,19 @@
 package org.river.exertion.btree.v0_1
 
 import com.badlogic.gdx.ai.btree.BehaviorTree
-import com.badlogic.gdx.ai.btree.LeafTask
-import com.badlogic.gdx.ai.msg.MessageManager
-import com.badlogic.gdx.ai.msg.Telegram
-import org.river.exertion.MessageIds
+import org.river.exertion.ai.CharacterManifest
+import org.river.exertion.ai.CharacterMemory
+import org.river.exertion.ai.Signature
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
 import java.util.*
 
 class NoneCharacter : IBTCharacter {
 
-    override var name = "none" + Random().nextInt()
+    override var signature = Signature("none" + Random().nextInt(), "none", "none")
     override lateinit var tree : BehaviorTree<IBTCharacter>
-    override var characterManifest = CharacterManifest()
 
-    init {
-        MessageManager.getInstance().addListener(this, MessageIds.PHENOMENA.id())
-    }
+    override var characterManifest = CharacterManifest()
+    override var characterMemory = CharacterMemory()
 
     //noneAbsorbed
     override var mLife = 1f
@@ -49,15 +46,5 @@ class NoneCharacter : IBTCharacter {
     override var actionTimer = 0f
     override val actionMoment = .6f
     override val momentsLongAgo = 10f
-
-    override fun handleMessage(msg: Telegram?): Boolean {
-        if ( (msg != null) && ( msg.sender == null || msg.sender != this) ) {
-            if (msg.message == MessageIds.PHENOMENA.id()) {
-                characterManifest.addImpression((msg.extraInfo as ExternalPhenomenaInstance).impression())
-            }
-        }
-
-        return true
-    }
 
 }

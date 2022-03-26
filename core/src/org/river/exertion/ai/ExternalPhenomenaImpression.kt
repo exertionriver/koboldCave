@@ -1,6 +1,4 @@
-package org.river.exertion.btree.v0_1
-
-import org.river.exertion.btree.v0_1.ExternalPhenomenaType
+package org.river.exertion.ai
 
 class ExternalPhenomenaImpression {
 

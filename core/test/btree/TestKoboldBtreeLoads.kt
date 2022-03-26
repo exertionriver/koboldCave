@@ -20,11 +20,11 @@ import java.nio.file.Paths
 
 
 @ExperimentalUnsignedTypes
-class TestBtreeLoads {
+class TestKoboldBtreeLoads {
 
-    var character = NoneCharacter()
+    var character = KoboldCharacter()
 
-    val rootPath = "../android/assets/btree/entity/entity_v0_1_root.btree"
+    val rootLocation = "../android/assets/btree/entity/entity_v0_1_root.btree"
     val notAbsorbedSubtreePath = "../android/assets/btree/entity/entity_v0_1_notAbsorbed.btree"
     val internalAbsorbedSubtreePath = "../android/assets/btree/entity/entity_v0_1_internalAbsorbed.btree"
     val externalAbsorbedSubtreePath = "../android/assets/btree/entity/entity_v0_1_externalAbsorbed.btree"
@@ -33,33 +33,12 @@ class TestBtreeLoads {
     fun internalAbsorbedSubtreeLocation() = character.tree.getChild(0).getChild(1)
     fun externalAbsorbedSubtreeLocation() = character.tree.getChild(0).getChild(2)
 
-    private fun initRoot() {
-        val reader = FileReader(rootPath)
-        val parser = BehaviorTreeParser<IBTCharacter>(BehaviorTreeParser.DEBUG_HIGH)
-        character.tree = parser.parse(reader, character)
-    }
-
-    private fun initNotAbsorbedSubtree() {
-        notAbsorbedSubtreeLocation().addChild(Include<IBTCharacter?>().apply {
-            this.subtree = notAbsorbedSubtreePath; this.lazy = true
-        })
-    }
-
-    private fun initInternalAbsorbedSubtree() {
-        internalAbsorbedSubtreeLocation().addChild(Include<IBTCharacter?>().apply {
-            this.subtree = internalAbsorbedSubtreePath; this.lazy = true
-        })
-    }
-
-    private fun initExternalAbsorbedSubtree() {
-        externalAbsorbedSubtreeLocation().addChild(Include<IBTCharacter?>().apply {
-            this.subtree = externalAbsorbedSubtreePath; this.lazy = true
-        })
-    }
+    //        addEncounterSubtree("android/assets/btree/kobold/kobold_encounter_v0_1.btree")
+//        addInternalAbsorbedInternalActionSubtree("android/assets/btree/kobold/kobold_iaias_v0_1.btree")
+//        addInternalAbsorbedExternalActionSubtree("android/assets/btree/kobold/kobold_iaeas_v0_1.btree")
 
     @Test
     fun testLoadRoot() {
-        initRoot()
         (0..10).forEach { idx ->
             when (idx) {
                 0 -> { character.mIntAnxiety = 0f; character.mExtAnxiety = 0f; character.hasRecognition = false }
@@ -79,7 +58,7 @@ class TestBtreeLoads {
             println("")
         }
     }
-
+/*
     @Test
     fun testLoadNotAbsorbed() {
         initRoot()
@@ -171,5 +150,5 @@ class TestBtreeLoads {
                 character.update(character.actionMoment + 0.01f)
             println("")
         }
-    }
+    }*/
 }

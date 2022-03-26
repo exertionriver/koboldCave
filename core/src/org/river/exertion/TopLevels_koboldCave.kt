@@ -195,7 +195,8 @@ enum class MessageIds {
     CURNODE_BRIDGE,
     NODEROOMMESH_BRIDGE,
     LOSMAP_BRIDGE,
-    PHENOMENA
+    EXT_PHENOMENA,
+    INT_PHENOMENA
     ;
 
     fun id() = this.ordinal

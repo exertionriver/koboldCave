@@ -1,4 +1,4 @@
-package org.river.exertion.btree.v0_1
+package org.river.exertion.ai
 
 import com.badlogic.gdx.math.Vector3
 import org.river.exertion.normalizeDeg
