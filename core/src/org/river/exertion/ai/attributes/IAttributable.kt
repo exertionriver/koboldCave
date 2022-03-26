@@ -17,9 +17,11 @@ interface IAttributable <T:Any> {
 
     fun getDescriptionByOrder(order : Int) = values.first { it.order == order}.description
 
-    fun getDescriptions() : List<String> = values.filter { it.value!! as Comparable<T> <= maxValue }.filter { it.value!! as Comparable<T> >= minValue }.sortedBy { it.order }.map { it.description }
+    fun getMinMaxFilteredValues() : List<AttributeValue<T>> = values.filter { it.value!! as Comparable<T> <= maxValue }.filter { it.value!! as Comparable<T> >= minValue }
 
-    fun getRandomAttributeValue() : AttributeValue<T> = ProbabilitySelect( values.map { it }.associateWith { Probability(100f / values.size, 0f) } ).getSelectedProbability()!!
+    fun getDescriptions() : List<String> = getMinMaxFilteredValues().sortedBy { it.order }.map { it.description }
 
-    fun getRandomValue() : T = ProbabilitySelect( values.map { it.value }.associateWith { Probability(100f / values.size, 0f) } ).getSelectedProbability()!!
+    fun getRandomAttributeValue() : AttributeValue<T> = ProbabilitySelect( getMinMaxFilteredValues().map { it }.associateWith { Probability(100f / values.size, 0f) } ).getSelectedProbability()!!
+
+    fun getRandomValue() : T = getRandomAttributeValue().value!!
 }
