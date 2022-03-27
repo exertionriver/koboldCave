@@ -4,7 +4,7 @@ import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 class IntelligenceAttributable(override var minValue : Int, override var maxValue : Int) : IAttributable<Int> {
 
-    override val tag = "intelligence"
+    override val tag = tag()
 
     override val howPerceived = ExternalPhenomenaType.WISDOM
 
@@ -14,4 +14,7 @@ class IntelligenceAttributable(override var minValue : Int, override var maxValu
         , AttributeValue(8, 2, "smiley Tim")
     )
 
+    companion object {
+        fun tag() = "intelligence"
+    }
 }

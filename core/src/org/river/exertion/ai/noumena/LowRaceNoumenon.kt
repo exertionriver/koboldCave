@@ -6,6 +6,8 @@ import org.river.exertion.ai.attributes.InternalStateAttributable
 
 open class LowRaceNoumenon : INoumenon, HumanoidNoumenon() {
 
+    override val tag = "low race"
+
     //ranges of attributes
     override var attributables: MutableMap<IAttributable<*>, Int> =
         super.attributables.also { it.putAll(mutableMapOf(

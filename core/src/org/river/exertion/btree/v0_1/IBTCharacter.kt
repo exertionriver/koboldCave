@@ -9,8 +9,11 @@ import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.MessageIds
 import org.river.exertion.ai.*
+import org.river.exertion.ai.attributes.AttributeValue
 import org.river.exertion.ai.manifest.CharacterManifest
 import org.river.exertion.ai.memory.CharacterMemory
+import org.river.exertion.ai.noumena.INoumenon
+import org.river.exertion.ai.noumena.KoboldNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.btree.v0_1.task_cond.HasRecognitionCondition
@@ -18,7 +21,10 @@ import java.io.FileReader
 
 interface IBTCharacter : Telegraph {
 
-    var signature : Signature
+    val name : String
+    val noumenon : INoumenon
+    var attributes : MutableMap<String, AttributeValue<*>>
+
     var tree : BehaviorTree<IBTCharacter>
 
     var characterManifest : CharacterManifest
@@ -173,9 +179,9 @@ interface IBTCharacter : Telegraph {
             this.decideSequenceList.removeFirst()//remove(character.decideSequenceList.first())
 
             if (Gdx.app != null)
-                Gdx.app.log("character current action", "${this.signature.individual}: ${this.currentAction}")
+                Gdx.app.log("character current action", "${this.name}: ${this.currentAction}")
             else
-                println("(character current action) ${this.signature.individual}: ${this.currentAction}")
+                println("(character current action) ${this.name}: ${this.currentAction}")
 
             val execTask = this.currentAction
             if (execTask is ExecLeafTask) execTask.executeTask()

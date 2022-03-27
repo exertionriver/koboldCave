@@ -1,8 +1,6 @@
 package ai
 
 import org.junit.jupiter.api.Test
-import org.river.exertion.ai.Knowable
-import org.river.exertion.ai.memory.KoboldMemory
 import org.river.exertion.btree.v0_1.*
 
 
@@ -13,21 +11,22 @@ class TestCharacterMemory {
 
     @Test
     fun testKoboldMemory() {
-        character.characterMemory.associativeMemoryList = KoboldMemory.memories()
+        character.characterMemory.associativePerceptionList = KoboldMemory.memoriesPA()
+        character.characterMemory.associativeNoumenaList = KoboldMemory.memoriesPN()
 
         val opinions1 = "other"
-        character.characterMemory.opinions(Knowable.KnowableGranularity.OTHER, opinions1).forEach {
-            println("opinions on $opinions1: ${it.knowable}, ${it.internalPhenomenaInstance}, ${it.becauseOf}")
+        character.characterMemory.opinions(opinions1).forEach {
+            println("opinions on $opinions1: $it")
         }
 
         val opinions2 = "kobold"
-        character.characterMemory.opinions(Knowable.KnowableGranularity.ENTITY_TYPE, opinions2).forEach {
-            println("opinions on $opinions2: ${it.knowable}, ${it.internalPhenomenaInstance}, ${it.becauseOf}")
+        character.characterMemory.opinions(opinions2).forEach {
+            println("opinions on $opinions2: $it")
         }
 
-        val opinions3 = "red hand"
-        character.characterMemory.opinions(Knowable.KnowableGranularity.ENTITY_GROUP, opinions3).forEach {
-            println("opinions on $opinions3: ${it.knowable}, ${it.internalPhenomenaInstance}, ${it.becauseOf}")
+        val opinions3 = "intelligence"
+        character.characterMemory.opinions(opinions3).forEach {
+            println("opinions on $opinions3: $it")
         }
     }
 }

@@ -4,7 +4,7 @@ import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 class InternalStateAttributable(override var minValue : Float, override var maxValue : Float) : IAttributable<Float> {
 
-    override val tag = "internal state"
+    override val tag = tag()
 
     override val howPerceived = ExternalPhenomenaType.WISDOM
 
@@ -13,4 +13,8 @@ class InternalStateAttributable(override var minValue : Float, override var maxV
         , AttributeValue(0.5f, 1, "hallucinating")
         , AttributeValue(0.6f, 2, "most hallucinating")
     )
+
+    companion object {
+        fun tag() = "internal state"
+    }
 }

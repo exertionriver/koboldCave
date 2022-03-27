@@ -27,4 +27,5 @@ interface IAttributable <T:Any> {
     fun getRandomAttributeValue() : AttributeValue<T> = ProbabilitySelect( getMinMaxFilteredValues().map { it }.associateWith { Probability(100f / values.size, 0f) } ).getSelectedProbability()!!
 
     fun getRandomValue() : T = getRandomAttributeValue().value!!
+
 }

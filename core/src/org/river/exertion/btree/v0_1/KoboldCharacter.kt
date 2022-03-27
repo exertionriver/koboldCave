@@ -4,12 +4,16 @@ import com.badlogic.gdx.ai.btree.BehaviorTree
 import org.river.exertion.ai.*
 import org.river.exertion.ai.manifest.CharacterManifest
 import org.river.exertion.ai.memory.CharacterMemory
+import org.river.exertion.ai.noumena.KoboldNoumenon
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
 import java.util.*
 
 class KoboldCharacter : IBTCharacter {
 
-    override var signature = Signature("razza" + Random().nextInt(), "red hand", "kobold")
+    override val name = "razza" + Random().nextInt()
+    override val noumenon = KoboldNoumenon()
+    override var attributes = noumenon.getRandomAttributes()
+
     var description = "toothy kobold!"
 
     //defining characteristics of a kobold, if you perceive enough of these, you can identify it as a kobold

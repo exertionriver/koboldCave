@@ -1,14 +1,22 @@
 package org.river.exertion.ai.memory
 
-import org.river.exertion.ai.Knowable
+import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 
 class CharacterMemory {
 
     //populated to begin, updated by resolution, other information
-    var associativeMemoryList = mutableListOf<AssociativeMemory>()
+    var associativePerceptionList = mutableListOf<PerceivedAttribute>()
 
-    fun opinions(granularity: Knowable.KnowableGranularity, onSignature : String) : List<AssociativeMemory> {
-        return associativeMemoryList.filter { it.knowable.getSignatureId(granularity) == onSignature }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
+    var associativeNoumenaList = mutableListOf<PerceivedNoumenon>()
+
+    fun opinions(onTopic : String) : List<InternalPhenomenaInstance> {
+
+        val attributePerceptions = associativePerceptionList.filter { it.attributableTag == onTopic }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
+
+        val noumenaPerceptions = associativeNoumenaList.filter { it.noumenonTag == onTopic }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
+
+        return attributePerceptions.map { it.internalPhenomenaInstance }.toMutableList() +
+                noumenaPerceptions.map { it.internalPhenomenaInstance }.toMutableList()
     }
 
 }

@@ -5,6 +5,7 @@ import org.river.exertion.ai.attributes.IAttributable
 
 interface INoumenon {
 
+    val tag : String
     var attributables : MutableMap<IAttributable<*>, Int>
 
     fun mergeOverrideSuper(thisAttributables : MutableMap<IAttributable<*>, Int>, superAttributables : MutableMap<IAttributable<*>, Int>) : MutableMap<IAttributable<*>, Int> {

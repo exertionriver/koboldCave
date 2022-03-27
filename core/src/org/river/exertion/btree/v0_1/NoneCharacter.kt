@@ -3,13 +3,17 @@ package org.river.exertion.btree.v0_1
 import com.badlogic.gdx.ai.btree.BehaviorTree
 import org.river.exertion.ai.manifest.CharacterManifest
 import org.river.exertion.ai.memory.CharacterMemory
-import org.river.exertion.ai.Signature
+import org.river.exertion.ai.noumena.KoboldNoumenon
+import org.river.exertion.ai.noumena.LowRaceNoumenon
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
 import java.util.*
 
 class NoneCharacter : IBTCharacter {
 
-    override var signature = Signature("none" + Random().nextInt(), "none", "none")
+    override val name = "none" + Random().nextInt()
+    override val noumenon = LowRaceNoumenon()
+    override var attributes = noumenon.getRandomAttributes()
+
     override lateinit var tree : BehaviorTree<IBTCharacter>
 
     override var characterManifest = CharacterManifest()

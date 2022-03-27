@@ -14,9 +14,9 @@ abstract class ExecLeafCondition : LeafTask<IBTCharacter>() {
 
     fun statusUpdate(update : String) {
         if (Gdx.app != null)
-            Gdx.app.debug("${this::class.simpleName}", "${`object`.signature.individual} $update")
+            Gdx.app.debug("${this::class.simpleName}", "${`object`.name} $update")
         else
-            println("<${this::class.simpleName}> ${`object`.signature.individual} $update")
+            println("<${this::class.simpleName}> ${`object`.name} $update")
     }
 
     override fun copyTo(task: Task<IBTCharacter>?): Task<IBTCharacter> {
