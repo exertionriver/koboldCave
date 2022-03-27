@@ -2,10 +2,13 @@ package org.river.exertion.ai.attributes
 
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
+import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 interface IAttributable <T:Any> {
 
     val tag : String
+    val howPerceived : ExternalPhenomenaType
+
     var minValue : T
     var maxValue : T
 

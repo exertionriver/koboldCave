@@ -1,4 +1,4 @@
-package org.river.exertion.ai
+package org.river.exertion.ai.phenomena
 
 class ExternalPhenomenaImpression {
 

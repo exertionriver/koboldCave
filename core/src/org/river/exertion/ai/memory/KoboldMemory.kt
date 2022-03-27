@@ -1,7 +1,8 @@
-package org.river.exertion.ai.memories
+package org.river.exertion.ai.memory
 
+import com.badlogic.gdx.math.Vector3
 import org.river.exertion.ai.*
-import org.river.exertion.btree.v0_1.KoboldCharacter
+import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 
 object KoboldMemory {
 
@@ -19,8 +20,8 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
             InternalPhenomenaInstance().apply {
-                this.type = InternalPhenomenaType.FEAR
-                this.magnitude = .3f
+                this.origin = Vector3(.3f, .4f, .5f)
+                this.arising = Vector3(.4f, .4f, .4f)
                 this.loss = 0f
             }
         })
@@ -35,8 +36,8 @@ object KoboldMemory {
                     }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.type = InternalPhenomenaType.AGGRESSION
-                        this.magnitude = .5f
+                        this.origin = Vector3(.3f, .4f, .5f)
+                        this.arising = Vector3(.5f, .4f, .5f)
                         this.loss = 0f
                     }
         })

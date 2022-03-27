@@ -9,6 +9,10 @@ import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.MessageIds
 import org.river.exertion.ai.*
+import org.river.exertion.ai.manifest.CharacterManifest
+import org.river.exertion.ai.memory.CharacterMemory
+import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
+import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.btree.v0_1.task_cond.HasRecognitionCondition
 import java.io.FileReader
 
@@ -148,8 +152,7 @@ interface IBTCharacter : Telegraph {
     fun update(delta : Float) {
         this.actionTimer += delta
 
-        characterManifest.perceptionList.forEach { if (it != null) it.countdown -= delta }
-        characterManifest.projectionList.forEach { if (it != null) it.countdown -= delta }
+        characterManifest.update(delta)
 
         if (this.actionTimer > this.actionMoment) {
 

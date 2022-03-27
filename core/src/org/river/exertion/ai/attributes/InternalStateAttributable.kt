@@ -1,8 +1,12 @@
 package org.river.exertion.ai.attributes
 
+import org.river.exertion.ai.phenomena.ExternalPhenomenaType
+
 class InternalStateAttributable(override var minValue : Float, override var maxValue : Float) : IAttributable<Float> {
 
     override val tag = "internal state"
+
+    override val howPerceived = ExternalPhenomenaType.WISDOM
 
     override var values = mutableListOf(
         AttributeValue(0.4f, 0, "least hallucinating")

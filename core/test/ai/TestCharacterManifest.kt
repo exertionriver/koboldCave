@@ -4,10 +4,9 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.ExternalPhenomenaInstance
-import org.river.exertion.ai.ExternalPhenomenaType
-import org.river.exertion.ai.InternalPhenomenaInstance
-import org.river.exertion.ai.InternalPhenomenaType
+import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
+import org.river.exertion.ai.phenomena.ExternalPhenomenaType
+import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.btree.v0_1.*
 
 
@@ -33,8 +32,8 @@ class TestCharacterManifest {
     }
 
     val scared = InternalPhenomenaInstance().apply {
-        this.type = InternalPhenomenaType.FEAR
-        this.magnitude = 60f
+        this.origin = Vector3(.4f, .4f, .4f)
+        this.arising = Vector3(.4f, .5f, .4f)
     }
 
     @Test
@@ -44,19 +43,19 @@ class TestCharacterManifest {
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
 
         MessageManager.getInstance().dispatchMessage(null, MessageIds.EXT_PHENOMENA.id(), weirdSound)
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
 
         MessageManager.getInstance().dispatchMessage(null, MessageIds.INT_PHENOMENA.id(), scared)
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
 
     }
 }

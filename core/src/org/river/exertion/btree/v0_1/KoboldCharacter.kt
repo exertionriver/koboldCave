@@ -2,6 +2,8 @@ package org.river.exertion.btree.v0_1
 
 import com.badlogic.gdx.ai.btree.BehaviorTree
 import org.river.exertion.ai.*
+import org.river.exertion.ai.manifest.CharacterManifest
+import org.river.exertion.ai.memory.CharacterMemory
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
 import java.util.*
 

@@ -2,7 +2,7 @@ package ai
 
 import org.junit.jupiter.api.Test
 import org.river.exertion.ai.Knowable
-import org.river.exertion.ai.memories.KoboldMemory
+import org.river.exertion.ai.memory.KoboldMemory
 import org.river.exertion.btree.v0_1.*
 
 

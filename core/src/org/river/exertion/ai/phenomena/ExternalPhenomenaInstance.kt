@@ -1,4 +1,4 @@
-package org.river.exertion.ai
+package org.river.exertion.ai.phenomena
 
 import com.badlogic.gdx.math.Vector3
 import org.river.exertion.normalizeDeg

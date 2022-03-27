@@ -1,15 +1,17 @@
-package org.river.exertion.ai
+package org.river.exertion.ai.manifest
 
-class CharacterManifest {
+import org.river.exertion.ai.phenomena.ExternalPhenomenaImpression
+import org.river.exertion.ai.phenomena.ExternalPhenomenaType
+import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 
-    val externalMagnitudeMinTreshold = .3f
-    val externalMagnitudeOtherTreshold = .6f
-    val externalMagnitudeThreatOppTreshold = .8f
+interface IManifest {
 
-    val listMax = 10
+    val listMax : Int
 
-    val perceptionList = MutableList<ExternalPhenomenaImpression?>(listMax) { null }
-    val projectionList = MutableList<InternalPhenomenaImpression?>(listMax) { null }
+    val manifestType : ExternalPhenomenaType
+
+    val perceptionList : MutableList<ExternalPhenomenaImpression?>
+    val projectionList : MutableList<InternalPhenomenaImpression?>
 
     fun joinedList() : MutableList<Pair<ExternalPhenomenaImpression?, InternalPhenomenaImpression?>> {
         val returnList : MutableList<Pair<ExternalPhenomenaImpression?, InternalPhenomenaImpression?>> = mutableListOf()

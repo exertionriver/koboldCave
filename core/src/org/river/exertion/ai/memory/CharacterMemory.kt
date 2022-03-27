@@ -1,4 +1,6 @@
-package org.river.exertion.ai
+package org.river.exertion.ai.memory
+
+import org.river.exertion.ai.Knowable
 
 class CharacterMemory {
 
@@ -6,7 +8,7 @@ class CharacterMemory {
     var associativeMemoryList = mutableListOf<AssociativeMemory>()
 
     fun opinions(granularity: Knowable.KnowableGranularity, onSignature : String) : List<AssociativeMemory> {
-        return associativeMemoryList.filter { it.knowable.getSignatureId(granularity) == onSignature }.sortedByDescending { it.internalPhenomenaInstance.magnitude }
+        return associativeMemoryList.filter { it.knowable.getSignatureId(granularity) == onSignature }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
     }
 
 }

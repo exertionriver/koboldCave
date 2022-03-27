@@ -1,4 +1,4 @@
-package org.river.exertion.ai
+package org.river.exertion.ai.phenomena
 
 enum class ExternalPhenomenaType {
 
@@ -7,6 +7,8 @@ enum class ExternalPhenomenaType {
     TACTILE, //touch
     GUSTATORY, //taste
     OLFACTORY, //smell
+    WISDOM, //ie. introspection / states (empathy)
+    INTELLIGENCE, //ie. discerning motive / situation
     EXTRASENSORY, //esp
     NONE
 }
