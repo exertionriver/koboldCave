@@ -3,6 +3,7 @@ package org.river.exertion.ai.manifest
 import org.river.exertion.ai.phenomena.ExternalPhenomenaImpression
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
+import org.river.exertion.btree.v0_1.IBTCharacter
 
 class CharacterManifest {
 
@@ -18,12 +19,22 @@ class CharacterManifest {
     )
 
     fun update(delta : Float) {
-        manifests.forEach { it.perceptionList.forEach { if (it != null) it.countdown -= delta } }
+        manifests.forEach { it.perceptionList.forEach { if (it != null) it.second.countdown -= delta } }
         manifests.forEach { it.projectionList.forEach { if (it != null) it.countdown -= delta } }
     }
 
-    fun addImpression(externalPhenomenaImpression: ExternalPhenomenaImpression) = manifests.filter { it.manifestType == externalPhenomenaImpression.type }.first().addImpression(externalPhenomenaImpression)
+    fun addImpression(sender : IBTCharacter, externalPhenomenaImpression: ExternalPhenomenaImpression) = manifests.filter { it.manifestType == externalPhenomenaImpression.type }.first().addImpression(sender, externalPhenomenaImpression)
     fun addImpression(internalPhenomenaImpression: InternalPhenomenaImpression) = manifests.forEach { it.addImpression(internalPhenomenaImpression) }
 
     fun getManifest(externalPhenomenaType: ExternalPhenomenaType) = manifests.filter { it.manifestType == externalPhenomenaType }.first()
+
+    fun getExternalPhenomenaList() : MutableList<Pair<IBTCharacter, ExternalPhenomenaImpression>> {
+
+        val returnList = mutableListOf<Pair<IBTCharacter, ExternalPhenomenaImpression>>()
+
+        manifests.forEach { manifest -> manifest.perceptionList.forEach { impression -> if (impression != null) returnList.add(Pair(impression.first, impression.second)) } }
+
+        return returnList
+    }
+
 }

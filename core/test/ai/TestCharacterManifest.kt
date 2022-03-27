@@ -43,19 +43,19 @@ class TestCharacterManifest {
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.second?.countdown},${it.second?.countdown}") }
 
         MessageManager.getInstance().dispatchMessage(null, MessageIds.EXT_PHENOMENA.id(), weirdSound)
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.second?.countdown},${it.second?.countdown}") }
 
         MessageManager.getInstance().dispatchMessage(null, MessageIds.INT_PHENOMENA.id(), scared)
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.second?.countdown},${it.second?.countdown}") }
 
     }
 }

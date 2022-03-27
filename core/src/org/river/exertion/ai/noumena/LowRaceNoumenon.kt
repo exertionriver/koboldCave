@@ -14,7 +14,9 @@ open class LowRaceNoumenon : INoumenon, HumanoidNoumenon() {
     companion object {
         fun tag() = "low race"
 
-        fun attributables() = INoumenon.mergeOverrideSuper(HumanoidNoumenon.attributables(), mutableMapOf(
+        fun tags() = HumanoidNoumenon.tags() + mutableListOf(tag())
+
+        fun attributables() = INoumenon.mergeOverrideSuperAttributes(HumanoidNoumenon.attributables(), mutableMapOf(
             InternalStateAttributable(0.4f, 0.6f) to 3,
             IntelligenceAttributable(6, 8) to 8
         ))

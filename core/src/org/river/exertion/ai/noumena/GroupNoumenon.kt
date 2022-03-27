@@ -12,6 +12,8 @@ open class GroupNoumenon : INoumenon {
     companion object {
         fun tag() = "group"
 
+        fun tags() = mutableListOf(tag())
+
         fun attributables() : MutableMap<IAttributable<*>, Int> = mutableMapOf()
     }
 }

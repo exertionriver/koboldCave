@@ -13,6 +13,7 @@ import org.river.exertion.ai.attributes.AttributeValue
 import org.river.exertion.ai.manifest.CharacterManifest
 import org.river.exertion.ai.memory.CharacterMemory
 import org.river.exertion.ai.noumena.INoumenon
+import org.river.exertion.ai.noumena.IndividualNoumenon
 import org.river.exertion.ai.noumena.KoboldNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
@@ -21,9 +22,7 @@ import java.io.FileReader
 
 interface IBTCharacter : Telegraph {
 
-    val name : String
-    val noumenon : INoumenon
-    var attributes : MutableMap<String, AttributeValue<*>>
+    val noumenon : IndividualNoumenon
 
     var tree : BehaviorTree<IBTCharacter>
 
@@ -158,6 +157,7 @@ interface IBTCharacter : Telegraph {
         this.actionTimer += delta
 
         characterManifest.update(delta)
+        characterMemory.update(delta, this)
 
         if (this.actionTimer > this.actionMoment) {
 
@@ -178,9 +178,9 @@ interface IBTCharacter : Telegraph {
             this.decideSequenceList.removeFirst()//remove(character.decideSequenceList.first())
 
             if (Gdx.app != null)
-                Gdx.app.log("character current action", "${this.name}: ${this.currentAction}")
+                Gdx.app.log("character current action", "${this.noumenon.name}: ${this.currentAction}")
             else
-                println("(character current action) ${this.name}: ${this.currentAction}")
+                println("(character current action) ${this.noumenon.name}: ${this.currentAction}")
 
             val execTask = this.currentAction
             if (execTask is ExecLeafTask) execTask.executeTask()
@@ -199,7 +199,7 @@ interface IBTCharacter : Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender != this) ) {
             if (msg.message == MessageIds.EXT_PHENOMENA.id()) {
-                characterManifest.addImpression((msg.extraInfo as ExternalPhenomenaInstance).impression())
+                characterManifest.addImpression(msg.sender as IBTCharacter, (msg.extraInfo as ExternalPhenomenaInstance).impression())
             }
             if (msg.message == MessageIds.INT_PHENOMENA.id()) {
                 characterManifest.addImpression((msg.extraInfo as InternalPhenomenaInstance).impression())

@@ -17,4 +17,18 @@ class PerceivedAttributable() {
     var knowledgeSource = KnowledgeSource()
     var internalPhenomenaInstance = InternalPhenomenaInstance()
 
+    companion object {
+        fun perceivedAttributable(noumenonTag : String, attributableTag : String, attributeValue : AttributeValue<*>, knowledgeSource : KnowledgeSource, internalPhenomenaInstance : InternalPhenomenaInstance) : PerceivedAttributable {
+
+            val newPA = PerceivedAttributable()
+
+            newPA.attributableTag = attributableTag
+            newPA.attributeValue = attributeValue
+            newPA.perceivedNoumenaTags.add(noumenonTag)
+            newPA.knowledgeSource = knowledgeSource
+            newPA.internalPhenomenaInstance = internalPhenomenaInstance
+
+            return newPA
+        }
+    }
 }

@@ -1,8 +1,12 @@
 package ai
 
 import org.junit.jupiter.api.Test
+import org.river.exertion.ai.noumena.INoumenon.Companion.getRandomAttributes
+import org.river.exertion.ai.noumena.IndividualNoumenon
 import org.river.exertion.ai.noumena.KoboldNoumenon
 import org.river.exertion.ai.noumena.LowRaceNoumenon
+import org.river.exertion.ai.phenomena.ExternalPhenomenaType
+import org.river.exertion.btree.v0_1.KoboldCharacter
 
 @ExperimentalUnsignedTypes
 class TestAttribute {
@@ -38,8 +42,8 @@ class TestAttribute {
     @Test
     fun testAttributablesGetRandomAttribValueK() {
         (0..10).forEach {
-            kn.getRandomAttributes().forEach { attr ->
-                println ( "${attr.key}, ${attr.value.value}" )
+            kn.attributables.getRandomAttributes().forEach { attr ->
+                println ( "${attr.key}, ${attr.value.second.value}" )
             }
         }
     }
@@ -47,9 +51,32 @@ class TestAttribute {
     @Test
     fun testAttributablesGetRandomAttribValueLR() {
         (0..10).forEach {
-            lrn.getRandomAttributes().forEach { attr ->
-                println ( "${attr.key}, ${attr.value.value}" )
+            lrn.attributables.getRandomAttributes().forEach { attr ->
+                println ( "${attr.key}, ${attr.value.second.value}" )
             }
+        }
+    }
+
+    @Test
+    fun testPollRandomAttribute() {
+        val testIndividual = IndividualNoumenon("test123", KoboldNoumenon.tags(), KoboldNoumenon.attributables())
+
+        println("${testIndividual.name} attributes:")
+        testIndividual.attributes.forEach { println ("${it.key}: ${it.value.second.value}")}
+
+        println("${testIndividual.name} attribute random selection:")
+        (0..10).forEach {
+            testIndividual.pollRandomAttribute().run { if (this != null) println ("${this.first}: ${this.second.second.value}") }
+        }
+
+        println("${testIndividual.name} attribute random selection(ExternalPhenomenaType.AUDITORY):")
+        (0..10).forEach {
+            testIndividual.pollRandomAttribute(ExternalPhenomenaType.AUDITORY).run { if (this != null) println ("${this.first}: ${this.second.second.value}") }
+        }
+
+        println("${testIndividual.name} attribute random selection(ExternalPhenomenaType.WISDOM):")
+        (0..10).forEach {
+            testIndividual.pollRandomAttribute(ExternalPhenomenaType.WISDOM).run { if (this != null) println ("${this.first}: ${this.second.second.value}") }
         }
     }
 }

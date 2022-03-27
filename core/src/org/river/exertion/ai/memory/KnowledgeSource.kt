@@ -1,8 +1,8 @@
 package org.river.exertion.ai.memory
 
-class KnowledgeSource {
+class KnowledgeSource(var source : KnowledgeSource.SourceEnum = SourceEnum.NONE) {
 
-    enum class Source {
+    enum class SourceEnum {
         EXPERIENCE
         , LORE
         , LEARNING
@@ -10,6 +10,5 @@ class KnowledgeSource {
         , NONE
     }
 
-    var source = Source.NONE
     var trust = 0.5f
 }

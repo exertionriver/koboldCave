@@ -12,7 +12,9 @@ class RedHandNoumenon : INoumenon, GroupNoumenon() {
     companion object {
         fun tag() = "red hand"
 
-        fun attributables() = INoumenon.mergeOverrideSuper(GroupNoumenon.attributables(), mutableMapOf(
+        fun tags() = GroupNoumenon.tags() + mutableListOf(tag())
+
+        fun attributables() = INoumenon.mergeOverrideSuperAttributes(GroupNoumenon.attributables(), mutableMapOf(
 
         ))
     }

@@ -12,7 +12,9 @@ open class BeingNoumenon : INoumenon, OtherNoumenon() {
     companion object {
         fun tag() = "being"
 
-        fun attributables() = INoumenon.mergeOverrideSuper(OtherNoumenon.attributables(), mutableMapOf(
+        fun tags() = OtherNoumenon.tags() + mutableListOf(tag())
+
+        fun attributables() = INoumenon.mergeOverrideSuperAttributes(OtherNoumenon.attributables(), mutableMapOf(
 
         ))
     }

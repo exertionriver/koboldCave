@@ -12,6 +12,8 @@ open class OtherNoumenon : INoumenon {
     companion object {
         fun tag() = "other"
 
+        fun tags() = mutableListOf(tag())
+
         fun attributables() : MutableMap<IAttributable<*>, Int> = mutableMapOf()
     }
 }

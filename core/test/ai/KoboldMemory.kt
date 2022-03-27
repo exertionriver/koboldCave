@@ -21,8 +21,7 @@ object KoboldMemory {
             this.perceivedNoumenaTags.add(OtherNoumenon.tag())
             this.count++
 
-            this.knowledgeSource = KnowledgeSource().apply {
-                this.source = KnowledgeSource.Source.EXPERIENCE
+            this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE).apply {
                 this.trust = .8f
             }
             this.internalPhenomenaInstance =
@@ -39,8 +38,7 @@ object KoboldMemory {
             this.perceivedNoumenaTags.add(KoboldNoumenon().tag)
             this.count++
 
-            this.knowledgeSource = KnowledgeSource().apply {
-                this.source = KnowledgeSource.Source.LORE
+            this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.LORE).apply {
                 this.trust = .3f
             }
             this.internalPhenomenaInstance =
@@ -60,11 +58,10 @@ object KoboldMemory {
 
         returnList.add(PerceivedNoumenon().apply {
             this.noumenonTag = OtherNoumenon.tag()
-            this.perceivedAttributeTags.add(IntelligenceAttributable.tag())
+            this.perceivedAttributableTags.add(IntelligenceAttributable.tag())
             this.count++
 
-            this.knowledgeSource = KnowledgeSource().apply {
-                this.source = KnowledgeSource.Source.EXPERIENCE
+            this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE).apply {
                 this.trust = .8f
             }
             this.internalPhenomenaInstance =
@@ -77,12 +74,11 @@ object KoboldMemory {
 
         returnList.add(PerceivedNoumenon().apply {
             this.noumenonTag = KoboldNoumenon.tag()
-            this.perceivedAttributeTags.add(IntelligenceAttributable.tag())
+            this.perceivedAttributableTags.add(IntelligenceAttributable.tag())
             this.isNamed = true
             this.count++
 
-            this.knowledgeSource = KnowledgeSource().apply {
-                this.source = KnowledgeSource.Source.LORE
+            this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.LORE).apply {
                 this.trust = .3f
             }
             this.internalPhenomenaInstance =

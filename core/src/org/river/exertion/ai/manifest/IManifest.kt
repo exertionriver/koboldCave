@@ -3,6 +3,7 @@ package org.river.exertion.ai.manifest
 import org.river.exertion.ai.phenomena.ExternalPhenomenaImpression
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
+import org.river.exertion.btree.v0_1.IBTCharacter
 
 interface IManifest {
 
@@ -10,11 +11,11 @@ interface IManifest {
 
     val manifestType : ExternalPhenomenaType
 
-    val perceptionList : MutableList<ExternalPhenomenaImpression?>
+    val perceptionList : MutableList<Pair<IBTCharacter, ExternalPhenomenaImpression>?>
     val projectionList : MutableList<InternalPhenomenaImpression?>
 
-    fun joinedList() : MutableList<Pair<ExternalPhenomenaImpression?, InternalPhenomenaImpression?>> {
-        val returnList : MutableList<Pair<ExternalPhenomenaImpression?, InternalPhenomenaImpression?>> = mutableListOf()
+    fun joinedList() : MutableList<Pair<Pair<IBTCharacter, ExternalPhenomenaImpression>?, InternalPhenomenaImpression?>> {
+        val returnList : MutableList<Pair<Pair<IBTCharacter, ExternalPhenomenaImpression>?, InternalPhenomenaImpression?>> = mutableListOf()
 
         (0 until listMax).forEach { idx ->
             returnList.add(idx, Pair(perceptionList[idx], projectionList[idx]))
@@ -23,7 +24,7 @@ interface IManifest {
         return returnList
     }
 
-    fun addImpression(externalPhenomenaImpression: ExternalPhenomenaImpression) {
+    fun addImpression(sender : IBTCharacter, externalPhenomenaImpression: ExternalPhenomenaImpression) {
         var checkCounter = 0
         var foundSlot = false
         val idxList = List(listMax) {idx -> idx}.shuffled()
@@ -31,7 +32,7 @@ interface IManifest {
 
         while ( (checkCounter < listMax) && !foundSlot ) {
             if (perceptionList[idxList[checkCounter]] == null) {
-                perceptionList[idxList[checkCounter]] = externalPhenomenaImpression
+                perceptionList[idxList[checkCounter]] = Pair(sender, externalPhenomenaImpression)
                 foundSlot = true
             }
 
@@ -39,7 +40,7 @@ interface IManifest {
         }
 
         if (!foundSlot) {
-            perceptionList[perceptionList.indexOf(perceptionList.minByOrNull{ it!!.countdown })] = externalPhenomenaImpression
+            perceptionList[perceptionList.indexOf(perceptionList.minByOrNull{ it!!.second.countdown })] = Pair(sender, externalPhenomenaImpression)
         }
     }
 
