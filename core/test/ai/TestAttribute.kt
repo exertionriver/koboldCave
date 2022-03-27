@@ -39,7 +39,7 @@ class TestAttribute {
     fun testAttributablesGetRandomAttribValueK() {
         (0..10).forEach {
             kn.getRandomAttributes().forEach { attr ->
-                println ( "${attr.key}, ${attr.value}" )
+                println ( "${attr.key}, ${attr.value.value}" )
             }
         }
     }
@@ -48,7 +48,7 @@ class TestAttribute {
     fun testAttributablesGetRandomAttribValueLR() {
         (0..10).forEach {
             lrn.getRandomAttributes().forEach { attr ->
-                println ( "${attr.key}, ${attr.value}" )
+                println ( "${attr.key}, ${attr.value.value}" )
             }
         }
     }

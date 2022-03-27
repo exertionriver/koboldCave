@@ -16,17 +16,20 @@ class TestCharacterMemory {
 
         val opinions1 = "other"
         character.characterMemory.opinions(opinions1).forEach {
-            println("opinions on $opinions1: $it")
+            println("opinions on $opinions1: ${it.change()}")
         }
+        println("opinion on $opinions1: ${character.characterMemory.opinion(opinions1)}")
 
         val opinions2 = "kobold"
         character.characterMemory.opinions(opinions2).forEach {
-            println("opinions on $opinions2: $it")
+            println("opinions on $opinions2: ${it.change()}")
         }
+        println("opinion on $opinions2: ${character.characterMemory.opinion(opinions2)}")
 
         val opinions3 = "intelligence"
         character.characterMemory.opinions(opinions3).forEach {
-            println("opinions on $opinions3: $it")
+            println("opinions on $opinions3: ${it.change()}")
         }
+        println("opinion on $opinions3: ${character.characterMemory.opinion(opinions3)}")
     }
 }

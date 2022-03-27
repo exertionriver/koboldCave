@@ -12,6 +12,6 @@ class IsExtAnxietyHigherCondition : ExecLeafCondition() {
     }
 
     companion object {
-        fun isExtHigher(character : IBTCharacter) = character.mExtAnxiety > character.mIntAnxiety
+        fun isExtHigher(character : IBTCharacter) = false // placeholder for polling external manifest
     }
 }

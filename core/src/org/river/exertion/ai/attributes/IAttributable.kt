@@ -8,11 +8,10 @@ interface IAttributable <T:Any> {
 
     val tag : String
     val howPerceived : ExternalPhenomenaType
+    var values : MutableList<AttributeValue<T>>
 
     var minValue : T
     var maxValue : T
-
-    var values : MutableList<AttributeValue<T>>
 
     fun getValueByOrder(order : Int) : T? = values.first { it.order == order }.value
 

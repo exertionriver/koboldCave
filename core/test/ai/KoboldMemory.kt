@@ -3,7 +3,7 @@ package ai
 import com.badlogic.gdx.math.Vector3
 import org.river.exertion.ai.attributes.IntelligenceAttributable
 import org.river.exertion.ai.memory.KnowledgeSource
-import org.river.exertion.ai.memory.PerceivedAttribute
+import org.river.exertion.ai.memory.PerceivedAttributable
 import org.river.exertion.ai.memory.PerceivedNoumenon
 import org.river.exertion.ai.noumena.KoboldNoumenon
 import org.river.exertion.ai.noumena.OtherNoumenon
@@ -11,14 +11,15 @@ import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 
 object KoboldMemory {
 
-    fun memoriesPA() : MutableList<PerceivedAttribute> {
+    fun memoriesPA() : MutableList<PerceivedAttributable> {
 
-        val returnList = mutableListOf<PerceivedAttribute>()
+        val returnList = mutableListOf<PerceivedAttributable>()
 
-        returnList.add(PerceivedAttribute().apply {
+        returnList.add(PerceivedAttributable().apply {
             this.attributableTag = IntelligenceAttributable.tag()
-            this.attributeValue = 6
+            this.attributeValue = IntelligenceAttributable.values().first()
             this.perceivedNoumenaTags.add(OtherNoumenon.tag())
+            this.count++
 
             this.knowledgeSource = KnowledgeSource().apply {
                 this.source = KnowledgeSource.Source.EXPERIENCE
@@ -32,10 +33,11 @@ object KoboldMemory {
                     }
         })
 
-        returnList.add(PerceivedAttribute().apply {
+        returnList.add(PerceivedAttributable().apply {
             this.attributableTag = IntelligenceAttributable.tag()
-            this.attributeValue = 6
+            this.attributeValue = IntelligenceAttributable.values().first()
             this.perceivedNoumenaTags.add(KoboldNoumenon().tag)
+            this.count++
 
             this.knowledgeSource = KnowledgeSource().apply {
                 this.source = KnowledgeSource.Source.LORE
@@ -59,6 +61,7 @@ object KoboldMemory {
         returnList.add(PerceivedNoumenon().apply {
             this.noumenonTag = OtherNoumenon.tag()
             this.perceivedAttributeTags.add(IntelligenceAttributable.tag())
+            this.count++
 
             this.knowledgeSource = KnowledgeSource().apply {
                 this.source = KnowledgeSource.Source.EXPERIENCE
@@ -75,6 +78,8 @@ object KoboldMemory {
         returnList.add(PerceivedNoumenon().apply {
             this.noumenonTag = KoboldNoumenon.tag()
             this.perceivedAttributeTags.add(IntelligenceAttributable.tag())
+            this.isNamed = true
+            this.count++
 
             this.knowledgeSource = KnowledgeSource().apply {
                 this.source = KnowledgeSource.Source.LORE

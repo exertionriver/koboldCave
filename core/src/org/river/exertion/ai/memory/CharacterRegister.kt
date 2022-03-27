@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector3
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance.Companion.opinion
 
-class CharacterMemory {
+class CharacterRegister {
 
     //populated to begin, updated by resolution, other information
     var associativePerceptionList = mutableListOf<PerceivedAttributable>()

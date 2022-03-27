@@ -51,7 +51,6 @@ class KoboldCharacter : IBTCharacter {
     override var mThirst = .2f
 
     //externalAbsorbed
-    override var mExtAnxiety = .22f
     override var hasRecognition = true
     override var isOther = false //perceives an other
 

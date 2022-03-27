@@ -41,19 +41,19 @@ class TestKoboldBtreeLoads {
     fun testLoadRoot() {
         (0..10).forEach { idx ->
             when (idx) {
-                0 -> { character.mIntAnxiety = 0f; character.mExtAnxiety = 0f; character.hasRecognition = false }
-                1 -> { character.mIntAnxiety = 0.1f; character.mExtAnxiety = 0.1f }
-                2 -> { character.mIntAnxiety = 0.19f; character.mExtAnxiety = 0.2f }
-                3 -> { character.mIntAnxiety = 0.2f; character.mExtAnxiety = 0.2f }
-                4 -> { character.mIntAnxiety = 0.3f; character.mExtAnxiety = 0.29f }
-                5 -> { character.mIntAnxiety = 0.3f; character.mExtAnxiety = 0.3f }
-                6 -> { character.mIntAnxiety = 0.4f; character.mExtAnxiety = 0.4f }
+                0 -> { character.mIntAnxiety = 0f; character.hasRecognition = false }
+                1 -> { character.mIntAnxiety = 0.1f }
+                2 -> { character.mIntAnxiety = 0.19f }
+                3 -> { character.mIntAnxiety = 0.2f }
+                4 -> { character.mIntAnxiety = 0.3f }
+                5 -> { character.mIntAnxiety = 0.3f }
+                6 -> { character.mIntAnxiety = 0.4f }
                 7 -> { character.hasRecognition = true }
-                8 -> { character.mIntAnxiety = 0.3f; character.mExtAnxiety = 0.29f }
-                9 -> { character.mIntAnxiety = 0.19f; character.mExtAnxiety = 0.2f }
-                10 -> { character.mIntAnxiety = 0.1f; character.mExtAnxiety = 0.1f }
+                8 -> { character.mIntAnxiety = 0.3f }
+                9 -> { character.mIntAnxiety = 0.19f }
+                10 -> { character.mIntAnxiety = 0.1f }
             }
-            println("(character measures) : intX:${character.mIntAnxiety}, extX:${character.mExtAnxiety}, awake:${character.mAwake}")
+            println("(character measures) : intX:${character.mIntAnxiety}, awake:${character.mAwake}")
             character.tree.step()
             println("")
         }

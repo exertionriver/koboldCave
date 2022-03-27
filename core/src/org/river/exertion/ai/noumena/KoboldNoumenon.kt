@@ -9,13 +9,14 @@ class KoboldNoumenon : INoumenon, LowRaceNoumenon() {
     override val tag = tag()
 
     //ranges of attributes
-    override var attributables: MutableMap<IAttributable<*>, Int> = mergeOverrideSuper(
-        mutableMapOf(
-            InternalStateAttributable(0.5f, 0.6f) to 3,
-            IntelligenceAttributable(7, 8) to 8
-        ), super.attributables)
+    override var attributables: MutableMap<IAttributable<*>, Int> = attributables()
 
     companion object {
         fun tag() = "kobold"
+
+        fun attributables() = INoumenon.mergeOverrideSuper(HumanoidNoumenon.attributables(), mutableMapOf(
+            InternalStateAttributable(0.5f, 0.6f) to 3,
+            IntelligenceAttributable(7, 8) to 8
+        ))
     }
 }

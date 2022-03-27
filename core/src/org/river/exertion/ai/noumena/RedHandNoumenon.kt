@@ -4,11 +4,16 @@ import org.river.exertion.ai.attributes.IAttributable
 
 class RedHandNoumenon : INoumenon, GroupNoumenon() {
 
-    override val tag = "red hand"
+    override val tag = tag()
 
     //ranges of attributes
-    override var attributables: MutableMap<IAttributable<*>, Int> =
-        super.attributables.also { it.putAll(mutableMapOf(
+    override var attributables: MutableMap<IAttributable<*>, Int> = attributables()
 
-        ) ) }
+    companion object {
+        fun tag() = "red hand"
+
+        fun attributables() = INoumenon.mergeOverrideSuper(GroupNoumenon.attributables(), mutableMapOf(
+
+        ))
+    }
 }

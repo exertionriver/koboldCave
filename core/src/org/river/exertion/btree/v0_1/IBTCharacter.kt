@@ -138,7 +138,6 @@ interface IBTCharacter : Telegraph {
     var mThirst : Float
 
     //externalAbsorbed
-    var mExtAnxiety : Float
     var hasRecognition : Boolean
     var isOther : Boolean
 

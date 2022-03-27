@@ -12,6 +12,6 @@ class HasExternalStimCondition : ExecLeafCondition() {
     }
 
     companion object {
-        fun hasExternalStim(character : IBTCharacter) = character.mExtAnxiety > .3
+        fun hasExternalStim(character : IBTCharacter) = character.mIntAnxiety > .5 //placeholder for polling external manifest
     }
 }
