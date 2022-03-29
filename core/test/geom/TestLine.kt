@@ -80,7 +80,7 @@ class TestLine {
             , centerPoint + Point(-xOffset.x * MathUtils.sin(45F.radians()), yOffset.y * MathUtils.sin(45F.radians()))
         )
 
-        startingList.forEachIndexed { idx, it -> println ("angleBetween ${startingList[idx]} and $centerPoint : ${startingList[idx].angleBetween(centerPoint)}")}
+        startingList.forEachIndexed { idx, _ -> println ("angleBetween ${startingList[idx]} and $centerPoint : ${startingList[idx].angleBetween(centerPoint)}")}
     }
 
     @Test
@@ -101,7 +101,7 @@ class TestLine {
             , centerPoint + Point(-xOffset.x * MathUtils.sin(45F.radians()), yOffset.y * MathUtils.sin(45F.radians()))
         )
 
-        startingList.forEachIndexed { idx, it -> println ("angleBetween ${startingList[idx]} and $centerPoint : ${startingList[idx].angleBetween(centerPoint).radians()}")}
+        startingList.forEachIndexed { idx, _ -> println ("angleBetween ${startingList[idx]} and $centerPoint : ${startingList[idx].angleBetween(centerPoint).radians()}")}
     }
 
 }

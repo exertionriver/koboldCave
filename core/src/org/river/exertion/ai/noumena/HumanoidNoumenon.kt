@@ -2,20 +2,9 @@ package org.river.exertion.ai.noumena
 
 import org.river.exertion.ai.attributes.IAttributable
 
-open class HumanoidNoumenon : INoumenon, BeingNoumenon() {
+object HumanoidNoumenon : INoumenon {
 
-    override val tag = tag()
-
-    //ranges of attributes
-    override var attributables: MutableMap<IAttributable<*>, Int> = attributables()
-
-    companion object {
-        fun tag() = "humanoid"
-
-        fun tags() = BeingNoumenon.tags() + mutableListOf(tag())
-
-        fun attributables() = INoumenon.mergeOverrideSuperAttributes(BeingNoumenon.attributables(), mutableMapOf(
-
-        ))
-    }
+    override fun tag() = "humanoid"
+    override fun tags() = BeingNoumenon.tags().apply { this.addAll(mutableListOf(BeingNoumenon.tag())) }
+    override fun attributables() = INoumenon.mergeOverrideSuperAttributes(BeingNoumenon.attributables(), mutableListOf())
 }

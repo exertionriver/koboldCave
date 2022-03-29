@@ -11,7 +11,7 @@ class ManifestInstance : IManifest {
 
     override var manifestType = ExternalPhenomenaType.NONE
 
-    override val perceptionList = MutableList<Pair<IBTCharacter, ExternalPhenomenaImpression>?>(listMax) { null }
+    override val perceptionList = MutableList<PerceivedPhenomena?>(listMax) { null }
     override val projectionList = MutableList<InternalPhenomenaImpression?>(listMax) { null }
 
 }

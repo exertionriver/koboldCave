@@ -19,20 +19,20 @@ class CharacterManifest {
     )
 
     fun update(delta : Float) {
-        manifests.forEach { it.perceptionList.forEach { if (it != null) it.second.countdown -= delta } }
+        manifests.forEach { it.perceptionList.forEach { if (it != null) it.externalPhenomenaImpression.countdown -= delta } }
         manifests.forEach { it.projectionList.forEach { if (it != null) it.countdown -= delta } }
     }
 
-    fun addImpression(sender : IBTCharacter, externalPhenomenaImpression: ExternalPhenomenaImpression) = manifests.filter { it.manifestType == externalPhenomenaImpression.type }.first().addImpression(sender, externalPhenomenaImpression)
+    fun addImpression(sender : IBTCharacter, externalPhenomenaImpression: ExternalPhenomenaImpression) = manifests.filter { it.manifestType == externalPhenomenaImpression.type }.first().addImpression(PerceivedPhenomena(sender, externalPhenomenaImpression))
     fun addImpression(internalPhenomenaImpression: InternalPhenomenaImpression) = manifests.forEach { it.addImpression(internalPhenomenaImpression) }
 
     fun getManifest(externalPhenomenaType: ExternalPhenomenaType) = manifests.filter { it.manifestType == externalPhenomenaType }.first()
 
-    fun getExternalPhenomenaList() : MutableList<Pair<IBTCharacter, ExternalPhenomenaImpression>> {
+    fun getExternalPhenomenaList() : MutableList<PerceivedPhenomena> {
 
-        val returnList = mutableListOf<Pair<IBTCharacter, ExternalPhenomenaImpression>>()
+        val returnList = mutableListOf<PerceivedPhenomena>()
 
-        manifests.forEach { manifest -> manifest.perceptionList.forEach { impression -> if (impression != null) returnList.add(Pair(impression.first, impression.second)) } }
+        manifests.forEach { manifest -> manifest.perceptionList.forEach { perceivedPhenomena -> if (perceivedPhenomena != null) returnList.add(perceivedPhenomena) } }
 
         return returnList
     }

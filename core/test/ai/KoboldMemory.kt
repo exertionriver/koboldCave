@@ -19,6 +19,7 @@ object KoboldMemory {
             this.attributableTag = IntelligenceAttributable.tag()
             this.attributeValue = IntelligenceAttributable.values().first()
             this.perceivedNoumenaTags.add(OtherNoumenon.tag())
+            this.isNamed = true
             this.count++
 
             this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE).apply {
@@ -35,7 +36,8 @@ object KoboldMemory {
         returnList.add(PerceivedAttributable().apply {
             this.attributableTag = IntelligenceAttributable.tag()
             this.attributeValue = IntelligenceAttributable.values().first()
-            this.perceivedNoumenaTags.add(KoboldNoumenon().tag)
+            this.perceivedNoumenaTags.add(KoboldNoumenon.tag())
+            this.isNamed = true
             this.count++
 
             this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.LORE).apply {
@@ -59,6 +61,7 @@ object KoboldMemory {
         returnList.add(PerceivedNoumenon().apply {
             this.noumenonTag = OtherNoumenon.tag()
             this.perceivedAttributableTags.add(IntelligenceAttributable.tag())
+            this.isNamed = true
             this.count++
 
             this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE).apply {

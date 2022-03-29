@@ -14,6 +14,7 @@ import org.river.exertion.btree.v0_1.*
 class TestCharacterManifest {
 
     var character = KoboldCharacter()
+    var secondCharacter = KoboldCharacter()
 
     val ordinarySound = ExternalPhenomenaInstance().apply {
         this.type = ExternalPhenomenaType.AUDITORY
@@ -39,23 +40,26 @@ class TestCharacterManifest {
     @Test
     fun testRandomPhenomena() {
 
-        MessageManager.getInstance().dispatchMessage(null, MessageIds.EXT_PHENOMENA.id(), ordinarySound)
+        MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), ordinarySound)
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.second?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        MessageManager.getInstance().dispatchMessage(null, MessageIds.EXT_PHENOMENA.id(), weirdSound)
-
-        character.update(character.actionMoment * 2 + 0.01f)
-
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.second?.countdown},${it.second?.countdown}") }
-
-        MessageManager.getInstance().dispatchMessage(null, MessageIds.INT_PHENOMENA.id(), scared)
+        MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), weirdSound)
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.second?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+
+        MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.INT_PHENOMENA.id(), scared)
+
+        character.update(character.actionMoment * 2 + 0.01f)
+
+        println("Auditory Channel")
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        println("Wisdom Channel")
+        character.characterManifest.getManifest(ExternalPhenomenaType.WISDOM).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
     }
 }

@@ -1,26 +1,14 @@
 package org.river.exertion.ai.noumena
 
-import org.river.exertion.ai.attributes.GrowlAttributable
-import org.river.exertion.ai.attributes.IAttributable
-import org.river.exertion.ai.attributes.IntelligenceAttributable
-import org.river.exertion.ai.attributes.InternalStateAttributable
+import org.river.exertion.ai.attributes.*
 
-class KoboldNoumenon : INoumenon, LowRaceNoumenon() {
+object KoboldNoumenon : INoumenon {
 
-    override val tag = tag()
-
-    //ranges of attributes
-    override var attributables: MutableMap<IAttributable<*>, Int> = attributables()
-
-    companion object {
-        fun tag() = "kobold"
-
-        fun tags() = LowRaceNoumenon.tags() + mutableListOf(tag())
-
-        fun attributables() = INoumenon.mergeOverrideSuperAttributes(HumanoidNoumenon.attributables(), mutableMapOf(
-            GrowlAttributable(tag(), tag()) to 2,
-            InternalStateAttributable(0.5f, 0.6f) to 3,
-            IntelligenceAttributable(7, 8) to 8
-        ))
-    }
+    override fun tag() = "kobold"
+    override fun tags() = LowRaceNoumenon.tags().apply { this.addAll(mutableListOf(LowRaceNoumenon.tag())) }
+    override fun attributables() = INoumenon.mergeOverrideSuperAttributes(LowRaceNoumenon.attributables(), mutableListOf(
+        Attributable(GrowlAttributable(tag(), tag()), 2),
+        Attributable(InternalStateAttributable(0.5f, 0.6f), 3),
+        Attributable(IntelligenceAttributable(7, 8), 8)
+    ))
 }

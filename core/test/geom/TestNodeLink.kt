@@ -16,7 +16,7 @@ class TestNodeLink {
     fun testConsolidateNodeLink() {
         val testNodeMesh = Leaf(topHeight = 6, position = Point(512F, 512F)).nodeMesh()
 
-        val consolidatedLinks : MutableList<Pair<Node, Angle>> = mutableListOf()
+//        val consolidatedLinks : MutableList<Pair<Node, Angle>> = mutableListOf()
 
         val angleMinDegrees = 30
 

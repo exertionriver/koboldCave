@@ -4,12 +4,8 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.memory.KnowledgeSource
-import org.river.exertion.ai.memory.PerceivedAttributable
-import org.river.exertion.ai.memory.PerceivedNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
-import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.btree.v0_1.*
 
 
@@ -29,8 +25,8 @@ class TestCharacterMemory {
 
     @Test
     fun testKoboldMemory() {
-        character.characterMemory.associativePerceptionList = KoboldMemory.memoriesPA()
-        character.characterMemory.associativeNoumenaList = KoboldMemory.memoriesPN()
+        character.characterMemory.perceptionRegister = KoboldMemory.memoriesPA()
+        character.characterMemory.noumenaRegister = KoboldMemory.memoriesPN()
 
         val opinions1 = "other"
         character.characterMemory.opinions(opinions1).forEach {
@@ -56,38 +52,10 @@ class TestCharacterMemory {
 
         MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), koboldGrowl)
         character.update(character.actionMoment * 2 + 0.01f)
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.first?.second?.countdown},${it.second?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-/*        character.characterManifest.getExternalPhenomenaList().forEach {
-            val attrib = it.first.noumenon.pollRandomAttribute(it.second.type)
-
-            if (attrib != null) {
-                println("${attrib.first}: ${attrib.second.second.value}")
-                it.first.noumenon.tags().forEach { noumenonTag ->
-                    character.characterMemory.associativeNoumenaList.add(
-                        PerceivedNoumenon.perceivedNoumenon(
-                            noumenonTag,
-                            attrib.first,
-                            KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE),
-                            InternalPhenomenaInstance().apply { arising = Vector3(0.5f, 0.3f, 0.4f) }
-                        ).apply { isNamed = true }
-                    )
-                }
-
-                character.characterMemory.associativePerceptionList.add(
-                    PerceivedAttributable.perceivedAttributable(
-                        it.first.noumenon.name,
-                        attrib.first,
-                        attrib.second.second,
-                        KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE),
-                        InternalPhenomenaInstance().apply { arising = Vector3(0.5f, 0.3f, 0.4f) }
-                    ).apply { isNamed = true }
-                )
-            }
-        }
-*/
-        character.characterMemory.associativePerceptionList.forEach { println("${it.perceivedNoumenaTags.first()}, ${it.attributableTag}, ${it.attributeValue}") }
-        character.characterMemory.associativeNoumenaList.forEach { println("${it.noumenonTag}, ${it.perceivedAttributableTags.first()}") }
+        character.characterMemory.perceptionRegister.forEach { println("${it.perceivedNoumenaTags.first()}, ${it.attributableTag}, ${it.attributeValue}") }
+        character.characterMemory.noumenaRegister.forEach { println("${it.noumenonTag}, ${it.perceivedAttributableTags.first()}") }
 
         val opinions4 = "growl"
         character.characterMemory.opinions(opinions4).forEach {
