@@ -1,6 +1,7 @@
 package org.river.exertion.ai.memory
 
 import com.badlogic.gdx.math.Vector3
+import org.river.exertion.ai.manifest.InternalState
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance.Companion.opinion
 
@@ -19,7 +20,7 @@ class RegisterExecutive {
                 noumenaPerceptions.map { it.internalPhenomenaInstance }.toMutableList()
     }
 
-    fun opinion(onTopic : String) : Vector3 {
+    fun opinion(onTopic : String) : InternalState {
 
         val attributePerceptions = associativePerceptionList.filter { it.attributableTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
         val noumenaPerceptions = associativeNoumenaList.filter { it.noumenonTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }

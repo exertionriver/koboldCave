@@ -1,13 +1,13 @@
 package org.river.exertion.ai.phenomena
 
 import com.badlogic.gdx.math.Vector3
+import org.river.exertion.ai.manifest.InternalStateBiases
 
 class InternalPhenomenaImpression {
 
-    var origin = Vector3(0f, 0f, 0f)
-    var arising = Vector3(0f, 0f, 0f)
-    var change = Vector3(0f, 0f, 0f)
-    var perceivedMagnitude = 0f
+    var origin = InternalStateBiases.none()
+    var arising = InternalStateBiases.none()
+    var change = InternalStateBiases.none()
 
     var countdown = 0f //time left
 

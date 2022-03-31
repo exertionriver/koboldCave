@@ -1,6 +1,8 @@
 package org.river.exertion.ai.memory
 
 import com.badlogic.gdx.math.Vector3
+import org.river.exertion.ai.manifest.InternalState
+import org.river.exertion.ai.manifest.InternalStateBiases
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance.Companion.opinion
 import org.river.exertion.btree.v0_1.IBTCharacter
@@ -14,7 +16,7 @@ class CharacterMemory {
     fun update(delta : Float, character : IBTCharacter) {
 
         character.characterManifest.getExternalPhenomenaList().forEach {
-            val attrib = it.sender.noumenon.pollRandomAttribute(it.externalPhenomenaImpression.type)
+            val attrib = it.sender.noumenon.pollRandomAttribute(it.externalPhenomenaImpression.type) //poll random attribute not yet seen in encounter?
 
             if (attrib != null) {
                 it.sender.noumenon.tags.forEach { noumenonTag ->
@@ -23,7 +25,7 @@ class CharacterMemory {
                                     noumenonTag,
                                     attrib.attributableTag,
                                     KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE),
-                                    InternalPhenomenaInstance().apply { arising = Vector3(0.5f, 0.3f, 0.4f) }
+                                    InternalPhenomenaInstance().apply { arising = InternalStateBiases.fear() } //placeholder for regExec state
                             ).apply { isNamed = true }
                     )
                 }
@@ -34,7 +36,7 @@ class CharacterMemory {
                                 attrib.attributableTag,
                                 attrib.attributeValue,
                                 KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE),
-                                InternalPhenomenaInstance().apply { arising = Vector3(0.5f, 0.3f, 0.4f) }
+                                InternalPhenomenaInstance().apply { arising = InternalStateBiases.fear() } //placeholder for regExec state
                         ).apply { isNamed = true }
                 )
             }
@@ -50,7 +52,7 @@ class CharacterMemory {
                 noumenaPerceptions.map { it.internalPhenomenaInstance }.toMutableList()
     }
 
-    fun opinion(onTopic : String) : Vector3 {
+    fun opinion(onTopic : String) : InternalState {
 
         val attributePerceptions = perceptionRegister.filter { it.attributableTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
         val noumenaPerceptions = noumenaRegister.filter { it.noumenonTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }

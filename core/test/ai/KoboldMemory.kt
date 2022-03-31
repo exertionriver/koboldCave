@@ -2,6 +2,8 @@ package ai
 
 import com.badlogic.gdx.math.Vector3
 import org.river.exertion.ai.attributes.IntelligenceAttributable
+import org.river.exertion.ai.manifest.InternalState.Companion.scaleToMagnitude
+import org.river.exertion.ai.manifest.InternalStateBiases
 import org.river.exertion.ai.memory.KnowledgeSource
 import org.river.exertion.ai.memory.PerceivedAttributable
 import org.river.exertion.ai.memory.PerceivedNoumenon
@@ -27,8 +29,8 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.origin = Vector3(.3f, .4f, .5f)
-                        this.arising = Vector3(.4f, .4f, .4f)
+                        this.origin = InternalStateBiases.none()
+                        this.arising = InternalStateBiases.fear()
                         this.loss = 0f
                     }
         })
@@ -45,8 +47,8 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.origin = Vector3(.3f, .4f, .5f)
-                        this.arising = Vector3(.5f, .4f, .5f)
+                        this.origin = InternalStateBiases.none()
+                        this.arising = InternalStateBiases.anger().apply { this.aGrid.x = 0.8f }.scaleToMagnitude()
                         this.loss = 0f
                     }
         })
@@ -69,8 +71,8 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.origin = Vector3(.3f, .4f, .5f)
-                        this.arising = Vector3(.4f, .4f, .4f)
+                        this.origin = InternalStateBiases.none()
+                        this.arising = InternalStateBiases.fear()
                         this.loss = 0f
                     }
         })
@@ -86,8 +88,8 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.origin = Vector3(.3f, .4f, .5f)
-                        this.arising = Vector3(.5f, .4f, .5f)
+                        this.origin = InternalStateBiases.none()
+                        this.arising = InternalStateBiases.anger()
                         this.loss = 0f
                     }
         })
