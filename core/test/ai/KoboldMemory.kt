@@ -1,9 +1,9 @@
 package ai
 
-import com.badlogic.gdx.math.Vector3
 import org.river.exertion.ai.attributes.IntelligenceAttributable
-import org.river.exertion.ai.manifest.InternalState.Companion.scaleToMagnitude
-import org.river.exertion.ai.manifest.InternalStateBiases
+import org.river.exertion.ai.internalState.AngerState.angerState
+import org.river.exertion.ai.internalState.FearState.fearState
+import org.river.exertion.ai.internalState.NoneState.noneState
 import org.river.exertion.ai.memory.KnowledgeSource
 import org.river.exertion.ai.memory.PerceivedAttributable
 import org.river.exertion.ai.memory.PerceivedNoumenon
@@ -29,8 +29,7 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.origin = InternalStateBiases.none()
-                        this.arising = InternalStateBiases.fear()
+                        this.arising = fearState { 0.3f }
                         this.loss = 0f
                     }
         })
@@ -47,8 +46,7 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.origin = InternalStateBiases.none()
-                        this.arising = InternalStateBiases.anger().apply { this.aGrid.x = 0.8f }.scaleToMagnitude()
+                        this.arising = angerState { 0.4f }
                         this.loss = 0f
                     }
         })
@@ -71,8 +69,7 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.origin = InternalStateBiases.none()
-                        this.arising = InternalStateBiases.fear()
+                        this.arising = fearState { 0.3f }
                         this.loss = 0f
                     }
         })
@@ -88,8 +85,7 @@ object KoboldMemory {
             }
             this.internalPhenomenaInstance =
                     InternalPhenomenaInstance().apply {
-                        this.origin = InternalStateBiases.none()
-                        this.arising = InternalStateBiases.anger()
+                        this.arising = angerState { 0.4f }
                         this.loss = 0f
                     }
         })

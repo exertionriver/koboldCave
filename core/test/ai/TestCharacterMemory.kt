@@ -30,19 +30,19 @@ class TestCharacterMemory {
 
         val opinions1 = "other"
         character.characterMemory.opinions(opinions1).forEach {
-            println("opinions on $opinions1: ${it.change()}")
+            println("opinions on $opinions1: ${it.internalState}: ${it.magnitude}")
         }
         println("opinion on $opinions1: ${character.characterMemory.opinion(opinions1)}")
 
         val opinions2 = "kobold"
         character.characterMemory.opinions(opinions2).forEach {
-            println("opinions on $opinions2: ${it.change()}")
+            println("opinions on $opinions2: ${it.internalState}: ${it.magnitude}")
         }
         println("opinion on $opinions2: ${character.characterMemory.opinion(opinions2)}")
 
         val opinions3 = "intelligence"
         character.characterMemory.opinions(opinions3).forEach {
-            println("opinions on $opinions3: ${it.change()}")
+            println("opinions on $opinions3: ${it.internalState}: ${it.magnitude}")
         }
         println("opinion on $opinions3: ${character.characterMemory.opinion(opinions3)}")
     }
@@ -59,19 +59,19 @@ class TestCharacterMemory {
 
         val opinions4 = "growl"
         character.characterMemory.opinions(opinions4).forEach {
-            println("opinions on $opinions4: ${it.change()}")
+            println("opinions on $opinions4: ${it.internalState}: ${it.magnitude}")
         }
         println("opinion on $opinions4: ${character.characterMemory.opinion(opinions4)}")
 
         val opinions5 = "kobold"
         character.characterMemory.opinions(opinions5).forEach {
-            println("opinions on $opinions5: ${it.change()}")
+            println("opinions on $opinions5: ${it.internalState}: ${it.magnitude}")
         }
         println("opinion on $opinions5: ${character.characterMemory.opinion(opinions5)}")
 
         val opinions6 = secondCharacter.noumenon.name
         character.characterMemory.opinions(opinions6).forEach {
-            println("opinions on $opinions6: ${it.change()}")
+            println("opinions on $opinions6: ${it.internalState}: ${it.magnitude}")
         }
         println("opinion on $opinions6: ${character.characterMemory.opinion(opinions6)}")
 

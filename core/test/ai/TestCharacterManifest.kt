@@ -4,7 +4,8 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.manifest.InternalStateBiases
+import org.river.exertion.ai.internalState.FearState.fearState
+import org.river.exertion.ai.internalState.NoneState.noneState
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
@@ -34,8 +35,7 @@ class TestCharacterManifest {
     }
 
     val scared = InternalPhenomenaInstance().apply {
-        this.origin = InternalStateBiases.none()
-        this.arising = InternalStateBiases.desire()
+        this.arising = fearState { 0.6f }
     }
 
     @Test

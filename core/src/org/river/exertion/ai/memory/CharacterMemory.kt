@@ -1,10 +1,10 @@
 package org.river.exertion.ai.memory
 
-import com.badlogic.gdx.math.Vector3
-import org.river.exertion.ai.manifest.InternalState
-import org.river.exertion.ai.manifest.InternalStateBiases
+import org.river.exertion.ai.internalState.FearState.fearState
+import org.river.exertion.ai.internalState.InternalStateInstance
+import org.river.exertion.ai.internalState.InternalStateInstance.Companion.magnitudeOpinion
+import org.river.exertion.ai.internalState.InternalStateInstance.Companion.mergePlus
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
-import org.river.exertion.ai.phenomena.InternalPhenomenaInstance.Companion.opinion
 import org.river.exertion.btree.v0_1.IBTCharacter
 
 class CharacterMemory {
@@ -25,7 +25,7 @@ class CharacterMemory {
                                     noumenonTag,
                                     attrib.attributableTag,
                                     KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE),
-                                    InternalPhenomenaInstance().apply { arising = InternalStateBiases.fear() } //placeholder for regExec state
+                                    InternalPhenomenaInstance().apply { arising = fearState { 0.3f } } //placeholder for regExec state
                             ).apply { isNamed = true }
                     )
                 }
@@ -36,30 +36,24 @@ class CharacterMemory {
                                 attrib.attributableTag,
                                 attrib.attributeValue,
                                 KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE),
-                                InternalPhenomenaInstance().apply { arising = InternalStateBiases.fear() } //placeholder for regExec state
+                                InternalPhenomenaInstance().apply { arising = fearState { 0.5f } } //placeholder for regExec state
                         ).apply { isNamed = true }
                 )
             }
         }
     }
 
-    fun opinions(onTopic : String) : List<InternalPhenomenaInstance> {
+    fun opinions(onTopic : String) : Set<InternalStateInstance> {
 
-        val attributePerceptions = perceptionRegister.filter { it.attributableTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
-        val noumenaPerceptions = noumenaRegister.filter { it.noumenonTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
+        val attributePerceptions = perceptionRegister.filter { it.attributableTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.arising.magnitude }
+        val noumenaPerceptions = noumenaRegister.filter { it.noumenonTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.arising.magnitude }
 
-        return attributePerceptions.map { it.internalPhenomenaInstance }.toMutableList() +
-                noumenaPerceptions.map { it.internalPhenomenaInstance }.toMutableList()
+        val opinions = attributePerceptions.map { it.internalPhenomenaInstance.arising }.toSet().mergePlus(
+                noumenaPerceptions.map { it.internalPhenomenaInstance.arising }.toSet() )
+
+        return opinions
     }
 
-    fun opinion(onTopic : String) : InternalState {
-
-        val attributePerceptions = perceptionRegister.filter { it.attributableTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
-        val noumenaPerceptions = noumenaRegister.filter { it.noumenonTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.magnitude() }
-
-        return (attributePerceptions.map { it.internalPhenomenaInstance }.toMutableList() +
-                noumenaPerceptions.map { it.internalPhenomenaInstance }.toMutableList() ).opinion()
-    }
-
+    fun opinion(onTopic : String) : InternalStateInstance = opinions(onTopic).magnitudeOpinion()
 
 }
