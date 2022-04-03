@@ -3,6 +3,7 @@ package org.river.exertion.ai.memory
 import org.river.exertion.ai.internalState.FearState.fearState
 import org.river.exertion.ai.internalState.InternalStateInstance
 import org.river.exertion.ai.internalState.InternalStateInstance.Companion.magnitudeOpinion
+import org.river.exertion.ai.internalState.InternalStateInstance.Companion.mergeAvg
 import org.river.exertion.ai.internalState.InternalStateInstance.Companion.mergePlus
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.btree.v0_1.IBTCharacter
@@ -45,13 +46,25 @@ class CharacterMemory {
 
     fun opinions(onTopic : String) : Set<InternalStateInstance> {
 
-        val attributePerceptions = perceptionRegister.filter { it.attributableTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.arising.magnitude }
-        val noumenaPerceptions = noumenaRegister.filter { it.noumenonTag == onTopic && it.isNamed }.sortedByDescending { it.internalPhenomenaInstance.arising.magnitude }
+        var avgBy = 0
 
-        val opinions = attributePerceptions.map { it.internalPhenomenaInstance.arising }.toSet().mergePlus(
-                noumenaPerceptions.map { it.internalPhenomenaInstance.arising }.toSet() )
+        val directAttributePerceptions = perceptionRegister.filter { it.attributableTag == onTopic && it.isNamed }
+        val directNoumenaPerceptions = noumenaRegister.filter { it.noumenonTag == onTopic && it.isNamed }
 
-        return opinions
+        val indirectAttributePerceptions = perceptionRegister.filter { it.perceivedNoumenaTags.contains(onTopic) }
+        val indirectNoumenaPerceptions = noumenaRegister.filter { it.perceivedAttributableTags.contains(onTopic) }
+
+        avgBy = directAttributePerceptions.size + directNoumenaPerceptions.size + indirectAttributePerceptions.size + indirectNoumenaPerceptions.size
+
+        val directOpinions = directAttributePerceptions.map { it.internalPhenomenaInstance.arising }.toSet().mergeAvg(
+                directNoumenaPerceptions.map { it.internalPhenomenaInstance.arising }.toSet(), avgBy )
+
+        val inDirectOpinions = indirectAttributePerceptions.map { it.internalPhenomenaInstance.arising }.toSet().mergeAvg(
+                indirectNoumenaPerceptions.map { it.internalPhenomenaInstance.arising }.toSet(), avgBy )
+
+        avgBy = directOpinions.size + inDirectOpinions.size
+
+        return directOpinions.mergeAvg(inDirectOpinions, avgBy)
     }
 
     fun opinion(onTopic : String) : InternalStateInstance = opinions(onTopic).magnitudeOpinion()

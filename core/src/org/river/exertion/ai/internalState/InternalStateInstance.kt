@@ -50,6 +50,32 @@ data class InternalStateInstance(val internalState: InternalState, var magnitude
             return returnList
         }
 
+        fun Set<InternalStateInstance>.mergeAvg(other: Set<InternalStateInstance>, avgBy : Int): Set<InternalStateInstance> {
+            val returnList = mutableSetOf<InternalStateInstance>()
+
+            val thisStates = this.map { it.internalState.tag }
+            val otherStates = other.map { it.internalState.tag }
+
+            this.forEach { thisStateInstance ->
+                //intersection
+                if (otherStates.contains(thisStateInstance.internalState.tag)) {
+                    val sharedOther = other.filter { it.internalState.tag == thisStateInstance.internalState.tag }.first()
+                    returnList.add(Pair(thisStateInstance, sharedOther).avgBy(avgBy))
+                } else { //rest of this
+                    returnList.add(thisStateInstance)
+                }
+            }
+
+            other.forEach { otherStateInstance ->
+                //rest of other
+                if (!thisStates.contains(otherStateInstance.internalState.tag)) {
+                    returnList.add(otherStateInstance)
+                }
+            }
+
+            return returnList
+        }
+
         fun Set<InternalStateInstance>.mergeMinus(other: Set<InternalStateInstance>): Set<InternalStateInstance> {
             val returnList = mutableSetOf<InternalStateInstance>()
 
@@ -75,6 +101,9 @@ data class InternalStateInstance(val internalState: InternalState, var magnitude
 
             return returnList
         }
+
+        fun Pair<InternalStateInstance, InternalStateInstance>.avgBy(denom : Int) : InternalStateInstance =
+            InternalStateInstance(this.first.internalState, (this@avgBy.first.magnitude + this@avgBy.second.magnitude) / denom)
 
         fun Set<InternalStateInstance>.magnitudeOpinion() : InternalStateInstance = if (this.isEmpty()) noneState {} else this.maxByOrNull { it.magnitude }!!
     }

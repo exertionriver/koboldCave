@@ -5,6 +5,6 @@ import org.river.exertion.ai.attributes.IAttributable
 class RedHandNoumenon : INoumenon {
 
     override fun tag() = "red hand"
-    override fun tags() = GroupNoumenon.tags().apply { this.addAll( mutableListOf(BeingNoumenon.tag()) ) }
+    override fun tags() = GroupNoumenon.tags().apply { this.add( tag() ) }
     override fun attributables() = INoumenon.mergeOverrideSuperAttributes(GroupNoumenon.attributables(), mutableListOf())
 }

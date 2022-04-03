@@ -8,7 +8,7 @@ import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 class IndividualNoumenon(val name : String, typeTags : MutableList<String>, typeAttributables : MutableList<Attributable> ) {
 
-    val tags = typeTags + mutableListOf(name)
+    val tags : MutableList<String> = typeTags.apply { this.add(name) }
     var attributes = typeAttributables.getRandomAttributes()
 
     private fun filteredAttributes(externalPhenomenaType: ExternalPhenomenaType?) =
