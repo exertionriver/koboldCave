@@ -10,7 +10,7 @@ object LowRaceNoumenon : INoumenon {
     override fun tag() = "low race"
     override fun tags() = HumanoidNoumenon.tags().toMutableList().apply { this.add( tag() ) }.toList()
     override fun attributeRange() = HumanoidNoumenon.attributeRange().mergeOverrideAttributeRanges(listOf(
-        AttributeRange(InternalStateAttribute::class.java, 3, 0.4f, 0.6f),
-        AttributeRange(IntelligenceAttribute::class.java, 8, 6, 8)
+        AttributeRange(InternalStateAttribute.javaClass, 3, 0.4f, 0.6f),
+        AttributeRange(IntelligenceAttribute.javaClass, 8, 6, 8)
     ))
 }

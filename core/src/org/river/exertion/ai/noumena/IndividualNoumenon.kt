@@ -7,9 +7,9 @@ import org.river.exertion.ai.attributes.AttributeRange.Companion.getRandomAttrib
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import java.lang.reflect.Type
 
-class IndividualNoumenon(val name : String, sourceNoumenonType : Type) {
+class IndividualNoumenon(val name : String, sourceNoumenonType : Class<INoumenon>) {
 
-    val sourceNoumenon: INoumenon = sourceNoumenonType as INoumenon
+    val sourceNoumenon: INoumenon = sourceNoumenonType.kotlin.objectInstance!!
 
     val tags : List<String> = sourceNoumenon.tags().toMutableList().apply { this.add(name) }
     var attributeInstances = sourceNoumenon.attributeRange().getRandomAttributes()

@@ -11,7 +11,7 @@ import java.util.*
 
 class NoneCharacter : IBTCharacter {
 
-    override val noumenon = IndividualNoumenon("none" + Random().nextInt(), LowRaceNoumenon::class.java)
+    override val noumenon = IndividualNoumenon("none" + Random().nextInt(), LowRaceNoumenon.javaClass)
 
     override lateinit var tree : BehaviorTree<IBTCharacter>
 

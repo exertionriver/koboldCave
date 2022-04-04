@@ -1,8 +1,6 @@
 package org.river.exertion.ai.attributes
 
-import java.lang.reflect.Type
+data class AttributeInstance<T:Any>(private val attributeType: Class<IAttribute<T>>, val attributeValue: AttributeValue<out Any>, val noumenonOrder: Int = 0) {
 
-data class AttributeInstance<T:Any>(private val attributeType : Type, val attributeValue : AttributeValue<T>, val noumenonOrder : Int = 0) {
-
-    val attribute: IAttribute<T> = attributeType as IAttribute<T>
+    val attribute: IAttribute<T> = attributeType.kotlin.objectInstance!!
 }

@@ -58,7 +58,7 @@ class TestAttribute {
 
     @Test
     fun testPollRandomAttribute() {
-        val testIndividual = IndividualNoumenon("test123", KoboldNoumenon::class.java)
+        val testIndividual = IndividualNoumenon("test123", KoboldNoumenon.javaClass)
 
         println("${testIndividual.name} attributes:")
         testIndividual.attributeInstances.forEach { println ( "${it.attribute.tag()}, ${it.attributeValue.value}" ) }

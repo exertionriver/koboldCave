@@ -2,11 +2,10 @@ package org.river.exertion.ai.attributes
 
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
-import java.lang.reflect.Type
 
-data class AttributeRange <T:Any>(private val attributeType : Type, val noumenonOrder : Int = 0, val minValue: T?, val maxValue: T?) {
+data class AttributeRange <T:Any>(private val attributeType : Class<IAttribute<T>>, val noumenonOrder : Int = 0, val minValue: T?, val maxValue: T?) {
 
-    val attribute: IAttribute<T> = attributeType as IAttribute<T>
+    val attribute: IAttribute<T> = attributeType.kotlin.objectInstance!!
 
     fun getRangeValues() : List<AttributeValue<T>> {
         val rangeValues = attribute.values().toMutableList()
@@ -32,7 +31,7 @@ data class AttributeRange <T:Any>(private val attributeType : Type, val noumenon
         fun List<AttributeRange<*>>.getRandomAttributes() : List<AttributeInstance<*>> {
             val returnList = mutableListOf<AttributeInstance<*>>()
 
-            this.forEach { returnList.add(AttributeInstance(it.attributeType, it.getRandomRangeAttributeValue(), it.noumenonOrder)) }
+            this.forEach { returnList.add(AttributeInstance(it.attribute.javaClass, it.getRandomRangeAttributeValue(), it.noumenonOrder)) }
 
             return returnList.sortedBy { it.noumenonOrder }
         }

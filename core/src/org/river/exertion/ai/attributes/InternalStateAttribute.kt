@@ -2,7 +2,7 @@ package org.river.exertion.ai.attributes
 
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
-class InternalStateAttribute : IAttribute<Float> {
+object InternalStateAttribute : IAttribute<Float> {
 
     override fun tag() = "internal state"
     override fun howPerceived() = ExternalPhenomenaType.WISDOM

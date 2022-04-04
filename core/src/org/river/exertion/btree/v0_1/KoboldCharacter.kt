@@ -10,7 +10,7 @@ import java.util.*
 
 class KoboldCharacter : IBTCharacter {
 
-    override val noumenon = IndividualNoumenon("razza" + Random().nextInt(), KoboldNoumenon::class.java)
+    override val noumenon = IndividualNoumenon("razza" + Random().nextInt(), KoboldNoumenon.javaClass)
 
     var description = "toothy kobold!"
 
