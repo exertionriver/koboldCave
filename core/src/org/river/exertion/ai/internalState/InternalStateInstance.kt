@@ -2,7 +2,7 @@ package org.river.exertion.ai.internalState
 
 import org.river.exertion.ai.internalState.NoneState.noneState
 
-data class InternalStateInstance(val internalState: InternalState, var magnitude : Float) {
+data class InternalStateInstance(val internalState: IInternalState, var magnitude : Float) {
 
     operator fun plus(other : InternalStateInstance) : Set<InternalStateInstance> =
         if (this.internalState == other.internalState)

@@ -2,39 +2,39 @@ package org.river.exertion.ai.internalState
 
 import org.river.exertion.ai.activities.ContendActivity
 
-object FearState : InternalState, ContendActivity {
+object FearState : IInternalState, ContendActivity {
 
     override val tag = "fear"
 
-    override fun strengthIncreases(): InternalState {
+    override fun strengthIncreases(): IInternalState {
         TODO("Not yet implemented")
     }
 
-    override fun strengthDescreases(): InternalState {
+    override fun strengthDescreases(): IInternalState {
         TODO("Not yet implemented")
     }
 
-    override fun weaknessIncreases(): InternalState {
+    override fun weaknessIncreases(): IInternalState {
         TODO("Not yet implemented")
     }
 
-    override fun weaknessDecreases(): InternalState {
+    override fun weaknessDecreases(): IInternalState {
         TODO("Not yet implemented")
     }
 
-    override fun threatIncreases(): InternalState {
+    override fun threatIncreases(): IInternalState {
         TODO("Not yet implemented")
     }
 
-    override fun threatDescreases(): InternalState {
+    override fun threatDescreases(): IInternalState {
         TODO("Not yet implemented")
     }
 
-    override fun opportunityIncreases(): InternalState {
+    override fun opportunityIncreases(): IInternalState {
         TODO("Not yet implemented")
     }
 
-    override fun opportunityDecreases(): InternalState {
+    override fun opportunityDecreases(): IInternalState {
         TODO("Not yet implemented")
     }
 

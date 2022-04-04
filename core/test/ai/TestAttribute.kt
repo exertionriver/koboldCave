@@ -1,12 +1,11 @@
 package ai
 
 import org.junit.jupiter.api.Test
-import org.river.exertion.ai.noumena.INoumenon.Companion.getRandomAttributes
+import org.river.exertion.ai.attributes.AttributeRange.Companion.getRandomAttributes
 import org.river.exertion.ai.noumena.IndividualNoumenon
 import org.river.exertion.ai.noumena.KoboldNoumenon
 import org.river.exertion.ai.noumena.LowRaceNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
-import org.river.exertion.btree.v0_1.KoboldCharacter
 
 @ExperimentalUnsignedTypes
 class TestAttribute {
@@ -16,34 +15,34 @@ class TestAttribute {
 
     @Test
     fun testAttributableLists() {
-        kn.attributables().forEach { attr ->
-            attr.attributable.getDescriptions().forEach { println(it) }
+        kn.attributeRange().forEach { attr ->
+            attr.attribute.getDescriptions().forEach { println(it) }
         }
     }
 
     @Test
     fun testAttributablesDescription() {
-        kn.attributables().forEach { attr ->
-            println ( attr.attributable.getDescriptionByOrder(0) )
-            println ( attr.attributable.getValueByOrder(0) )
-            println ( attr.attributable.getDescriptionByValue( attr.attributable.getValueByOrder(0)!! ) )
+        kn.attributeRange().forEach { attr ->
+            println ( attr.attribute.getAttributeValueByOrder(0)!!.description )
+            println ( attr.attribute.getAttributeValueByOrder(0)!!.value )
+            println ( attr.attribute.getDescriptionByValue( attr.attribute.getAttributeValueByOrder(0)!! ) )
         }
     }
 
     @Test
     fun testAttributablesGetRandomValue() {
-        kn.attributables().forEach { attr ->
-            println ( attr.attributable.getDescriptionByValue( attr.attributable.getRandomValue() ) )
-            println ( attr.attributable.getDescriptionByValue( attr.attributable.getRandomValue() ) )
-            println ( attr.attributable.getDescriptionByValue( attr.attributable.getRandomValue() ) )
+        kn.attributeRange().forEach { attr ->
+            println ( attr.attribute.getDescriptionByValue( attr.getRandomRangeAttributeValue() ) )
+            println ( attr.attribute.getDescriptionByValue( attr.getRandomRangeAttributeValue() ) )
+            println ( attr.attribute.getDescriptionByValue( attr.getRandomRangeAttributeValue() ) )
         }
     }
 
     @Test
     fun testAttributablesGetRandomAttribValueK() {
         (0..10).forEach {
-            kn.attributables().getRandomAttributes().forEach { attr ->
-                println ( "${attr.attributableTag}, ${attr.attributeValue.value}" )
+            kn.attributeRange().getRandomAttributes().forEach { attr ->
+                println ( "${attr.attribute.tag()}, ${attr.attributeValue.value}" )
             }
         }
     }
@@ -51,32 +50,32 @@ class TestAttribute {
     @Test
     fun testAttributablesGetRandomAttribValueLR() {
         (0..10).forEach {
-            lrn.attributables().getRandomAttributes().forEach { attr ->
-                println ( "${attr.attributableTag}, ${attr.attributeValue.value}" )
+            lrn.attributeRange().getRandomAttributes().forEach { attr ->
+                println ( "${attr.attribute.tag()}, ${attr.attributeValue.value}" )
             }
         }
     }
 
     @Test
     fun testPollRandomAttribute() {
-        val testIndividual = IndividualNoumenon("test123", KoboldNoumenon.tags(), KoboldNoumenon.attributables())
+        val testIndividual = IndividualNoumenon("test123", KoboldNoumenon::class.java)
 
         println("${testIndividual.name} attributes:")
-        testIndividual.attributes.forEach { println ( "${it.attributableTag}, ${it.attributeValue.value}" ) }
+        testIndividual.attributeInstances.forEach { println ( "${it.attribute.tag()}, ${it.attributeValue.value}" ) }
 
         println("${testIndividual.name} attribute random selection:")
         (0..10).forEach {
-            testIndividual.pollRandomAttribute().run { if (this != null) println ("${this.attributableTag}: ${this.attributeValue.value}") }
+            testIndividual.pollRandomAttribute().run { if (this != null) println ("${this.attribute.tag()}: ${this.attributeValue.value}") }
         }
 
         println("${testIndividual.name} attribute random selection(ExternalPhenomenaType.AUDITORY):")
         (0..10).forEach {
-            testIndividual.pollRandomAttribute(ExternalPhenomenaType.AUDITORY).run { if (this != null) println ("${this.attributableTag}: ${this.attributeValue.value}") }
+            testIndividual.pollRandomAttribute(ExternalPhenomenaType.AUDITORY).run { if (this != null) println ("${this.attribute.tag()}: ${this.attributeValue.value}") }
         }
 
         println("${testIndividual.name} attribute random selection(ExternalPhenomenaType.WISDOM):")
         (0..10).forEach {
-            testIndividual.pollRandomAttribute(ExternalPhenomenaType.WISDOM).run { if (this != null) println ("${this.attributableTag}: ${this.attributeValue.value}") }
+            testIndividual.pollRandomAttribute(ExternalPhenomenaType.WISDOM).run { if (this != null) println ("${this.attribute.tag()}: ${this.attributeValue.value}") }
         }
     }
 }

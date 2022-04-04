@@ -1,7 +1,6 @@
 package org.river.exertion.btree.v0_1
 
 import com.badlogic.gdx.ai.btree.BehaviorTree
-import org.river.exertion.ai.*
 import org.river.exertion.ai.manifest.CharacterManifest
 import org.river.exertion.ai.memory.CharacterMemory
 import org.river.exertion.ai.noumena.IndividualNoumenon
@@ -11,7 +10,7 @@ import java.util.*
 
 class KoboldCharacter : IBTCharacter {
 
-    override val noumenon = IndividualNoumenon("razza" + Random().nextInt(), KoboldNoumenon.tags(), KoboldNoumenon.attributables())
+    override val noumenon = IndividualNoumenon("razza" + Random().nextInt(), KoboldNoumenon::class.java)
 
     var description = "toothy kobold!"
 

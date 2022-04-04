@@ -1,12 +1,12 @@
 package org.river.exertion.ai.memory
 
 import org.river.exertion.ai.attributes.AttributeValue
-import org.river.exertion.ai.attributes.NoneAttributable
+import org.river.exertion.ai.attributes.NoneAttribute
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 
 class PerceivedAttributable() {
 
-    var attributableTag : String = NoneAttributable.tag()
+    var attributableTag : String = NoneAttribute.tag()
     lateinit var attributeValue : AttributeValue<*>
 
     var isNamed = false

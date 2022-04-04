@@ -1,6 +1,6 @@
 package org.river.exertion.ai.internalState
 
-object NoneState : InternalState {
+object NoneState : IInternalState {
 
     override val tag = "none"
 

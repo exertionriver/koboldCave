@@ -10,7 +10,9 @@ class ExternalPhenomenaInstance {
     var magnitude = 0f
     var direction = 0f //angle
     var effectArc = 0f //from directionAngle
+
     var loss = 0f //% per distance unit
+    var fade = 0f //% per time unit
 
     fun impression() : ExternalPhenomenaImpression {
         return ExternalPhenomenaImpression().apply {

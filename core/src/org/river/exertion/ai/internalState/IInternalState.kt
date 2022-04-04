@@ -1,6 +1,6 @@
 package org.river.exertion.ai.internalState
 
-interface InternalState {
+interface IInternalState {
 
     val tag : String
 

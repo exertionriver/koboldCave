@@ -1,16 +1,16 @@
 package org.river.exertion.ai.activities
 
-import org.river.exertion.ai.internalState.InternalState
+import org.river.exertion.ai.internalState.IInternalState
 
 interface ContendActivity {
 
-    fun strengthIncreases() : InternalState
-    fun strengthDescreases() : InternalState
-    fun weaknessIncreases() : InternalState
-    fun weaknessDecreases() : InternalState
-    fun threatIncreases() : InternalState
-    fun threatDescreases() : InternalState
-    fun opportunityIncreases() : InternalState
-    fun opportunityDecreases() : InternalState
+    fun strengthIncreases() : IInternalState
+    fun strengthDescreases() : IInternalState
+    fun weaknessIncreases() : IInternalState
+    fun weaknessDecreases() : IInternalState
+    fun threatIncreases() : IInternalState
+    fun threatDescreases() : IInternalState
+    fun opportunityIncreases() : IInternalState
+    fun opportunityDecreases() : IInternalState
 
 }

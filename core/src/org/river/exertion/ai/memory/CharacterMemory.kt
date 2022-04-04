@@ -4,7 +4,6 @@ import org.river.exertion.ai.internalState.FearState.fearState
 import org.river.exertion.ai.internalState.InternalStateInstance
 import org.river.exertion.ai.internalState.InternalStateInstance.Companion.magnitudeOpinion
 import org.river.exertion.ai.internalState.InternalStateInstance.Companion.mergeAvg
-import org.river.exertion.ai.internalState.InternalStateInstance.Companion.mergePlus
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.btree.v0_1.IBTCharacter
 
@@ -24,7 +23,7 @@ class CharacterMemory {
                     character.characterMemory.noumenaRegister.add(
                             PerceivedNoumenon.perceivedNoumenon(
                                     noumenonTag,
-                                    attrib.attributableTag,
+                                    attrib.attribute.tag(),
                                     KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE),
                                     InternalPhenomenaInstance().apply { arising = fearState { 0.3f } } //placeholder for regExec state
                             ).apply { isNamed = true }
@@ -34,7 +33,7 @@ class CharacterMemory {
                 character.characterMemory.perceptionRegister.add(
                         PerceivedAttributable.perceivedAttributable(
                                 it.sender.noumenon.name,
-                                attrib.attributableTag,
+                                attrib.attribute.tag(),
                                 attrib.attributeValue,
                                 KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE),
                                 InternalPhenomenaInstance().apply { arising = fearState { 0.5f } } //placeholder for regExec state

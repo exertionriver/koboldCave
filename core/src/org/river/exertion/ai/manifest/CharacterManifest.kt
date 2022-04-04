@@ -37,4 +37,10 @@ class CharacterManifest {
         return returnList
     }
 
+    fun pollRandomExternalPhenomena(excludeList : MutableList<PerceivedPhenomena>) : PerceivedPhenomena {
+        val fullList = getExternalPhenomenaList()
+        fullList.removeAll(excludeList)
+        return fullList.apply { this.shuffle() }.first()
+    }
+
 }
