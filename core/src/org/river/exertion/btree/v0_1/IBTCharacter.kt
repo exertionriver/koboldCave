@@ -74,11 +74,11 @@ interface IBTCharacter : Telegraph {
         tree.getChild(0).getChild(1).getChild(1).getChild(1).getChild(1).addChild(Include<IBTCharacter?>().apply { this.subtree = subTreeLocation; this.lazy = true })
     }
 
-    fun actionMap(ago : Float) : MutableMap<TaskEnum, Int> {
+    fun actionMap(ago : Float) : MutableMap<TaskType, Int> {
 
         var agoCounter = 0f
         var agoIdx = 0
-        val returnMap = mutableMapOf<TaskEnum, Int>()
+        val returnMap = mutableMapOf<TaskType, Int>()
 
         if ( actionList.isNotEmpty() ) {
             val agoActionList = actionList.reversed()
@@ -98,7 +98,7 @@ interface IBTCharacter : Telegraph {
         return returnMap
     }
 
-    fun actionCountAgo(taskEnum: TaskEnum, ago: Float) : Int {
+    fun actionCountAgo(taskEnum: TaskType, ago: Float) : Int {
 
         var agoCounter = 0f
         var agoIdx = 0
@@ -142,7 +142,7 @@ interface IBTCharacter : Telegraph {
 
     var decideSequenceList : MutableList<ExecLeafTask> //sequence of actions
     var currentAction : ExecLeafTask
-    var actionList : MutableList<Pair<TaskEnum, Float>> //actions already taken
+    var actionList : MutableList<Pair<TaskType, Float>> //actions already taken
 
     var actionTimer : Float
     val actionMoment : Float
@@ -181,7 +181,7 @@ interface IBTCharacter : Telegraph {
             val execTask = this.currentAction
             if (execTask is ExecLeafTask) execTask.executeTask()
 
-            this.actionList.add(Pair(this.currentAction.taskEnum(), this.actionMoment))
+            this.actionList.add(Pair(this.currentAction.taskType(), this.actionMoment))
 
             this.actionMap(momentsLongAgo * actionMoment).entries.sortedByDescending { it.value }.forEach {
                 if (Gdx.app != null)

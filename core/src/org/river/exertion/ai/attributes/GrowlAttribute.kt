@@ -10,9 +10,9 @@ object GrowlAttribute : IAttribute<String> {
     override fun howPerceived() = ExternalPhenomenaType.AUDITORY
 
     override fun values() = listOf(
-            AttributeValue(KoboldNoumenon.type().tag(),"a gravellish growl", 0)
-            , AttributeValue(KoboldNoumenon.type().tag(), "a husky growl", 1)
-            , AttributeValue(KoboldNoumenon.type().tag(),"a low growl", 2)
+            AttributeValue(KoboldNoumenon.type().tag(),"gravellish growl", 0)
+            , AttributeValue(KoboldNoumenon.type().tag(), "husky growl", 1)
+            , AttributeValue(KoboldNoumenon.type().tag(),"low growl", 2)
     )
 
     fun growlRange(lambda : AttributeRange<String>.() -> Unit) = AttributeRange(attributeObj = this@GrowlAttribute.javaClass).apply(lambda)

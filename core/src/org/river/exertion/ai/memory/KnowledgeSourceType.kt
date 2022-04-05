@@ -7,5 +7,4 @@ enum class KnowledgeSourceType {
     , LEARNING
     , INTUITION
     , NONE
-
 }

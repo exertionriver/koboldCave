@@ -1,17 +1,15 @@
 package org.river.exertion.btree.v0_1.task_cond;
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.btree.annotation.TaskAttribute
 import org.river.exertion.btree.v0_1.ExecLeafTask
-import org.river.exertion.btree.v0_1.TaskEnum
+import org.river.exertion.btree.v0_1.TaskType
 
 class SitTask : ExecLeafTask() {
 
-    override fun taskEnum() = TaskEnum.Sit
+    override fun taskType() = TaskType.SIT
 
     override fun executeTask() {
-        taskEnum().updateObject(this.`object`)
-        statusUpdate("sits..")
+        taskType().updateObject(this.`object`)
+        statusUpdate(taskType().description())
     }
 
 }

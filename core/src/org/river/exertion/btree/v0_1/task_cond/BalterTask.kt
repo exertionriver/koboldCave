@@ -1,18 +1,14 @@
 package org.river.exertion.btree.v0_1.task_cond;
 
 import org.river.exertion.btree.v0_1.ExecLeafTask
-import org.river.exertion.btree.v0_1.TaskEnum
+import org.river.exertion.btree.v0_1.TaskType
 
 class BalterTask : ExecLeafTask() {
 
-    override fun taskEnum() = TaskEnum.Balter
+    override fun taskType() = TaskType.BALTER
 
     override fun executeTask() {
-        taskEnum().updateObject(this.`object`)
-        statusUpdate(description())
-    }
-
-    companion object {
-        fun description() : String = "dances clumsily"
+        taskType().updateObject(this.`object`)
+        statusUpdate(taskType().description())
     }
 }

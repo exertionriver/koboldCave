@@ -1,15 +1,14 @@
 package org.river.exertion.btree.v0_1.task_cond;
 
-import com.badlogic.gdx.Gdx
 import org.river.exertion.btree.v0_1.ExecLeafTask
-import org.river.exertion.btree.v0_1.TaskEnum
+import org.river.exertion.btree.v0_1.TaskType
 
 class LookTask : ExecLeafTask() {
 
-    override fun taskEnum() = TaskEnum.Look
+    override fun taskType() = TaskType.LOOK
 
     override fun executeTask() {
-        taskEnum().updateObject(this.`object`)
-        statusUpdate("looks..")
+        taskType().updateObject(this.`object`)
+        statusUpdate(taskType().description())
     }
 }

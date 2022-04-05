@@ -1,14 +1,14 @@
 package org.river.exertion.btree.v0_1.task_cond;
 
 import org.river.exertion.btree.v0_1.ExecLeafTask
-import org.river.exertion.btree.v0_1.TaskEnum
+import org.river.exertion.btree.v0_1.TaskType
 
 class ResolveDrawTask : ExecLeafTask() {
 
-    override fun taskEnum() = TaskEnum.Resolve
+    override fun taskType() = TaskType.RESOLVE
 
     override fun executeTask() {
-        taskEnum().updateObject(this.`object`)
-        statusUpdate("resolves as draw..")
+        taskType().updateObject(this.`object`)
+        statusUpdate("${taskType().description()} as draw..")
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
+import org.river.exertion.ai.internalState.AngerFacet.angerFacet
 import org.river.exertion.ai.internalState.FearFacet
 import org.river.exertion.ai.internalState.InternalStateInstance
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
@@ -23,6 +24,7 @@ class TestCharacterMemory {
 
     val koboldGrowl = ExternalPhenomenaInstance().apply {
         this.type = ExternalPhenomenaType.AUDITORY
+        this.taskType = TaskType.BALTER
         this.direction = 120f
         this.magnitude = 120f
         this.location = Vector3(30f, 30f, 30f)
@@ -61,6 +63,7 @@ class TestCharacterMemory {
     @Test
     fun testAddingKoboldMemoryFromManifest() {
 
+        character.characterMemory.internalState.internalState.add( angerFacet { magnitude = 0.7f } )
         MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), koboldGrowl)
         character.update(character.actionMoment * 2 + 0.01f)
         character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
@@ -83,6 +86,28 @@ class TestCharacterMemory {
         character.characterMemory.registerExecutive.opinions(opinions6).forEach {
             println("opinions on $opinions6: ${it.internalState}: ${it.magnitudeOpinion()}")
         }
+        println("opinion on $opinions6: ${character.characterMemory.registerExecutive.opinion(opinions6)}")
+
+    }
+
+    @Test
+    fun testPollKoboldFacts() {
+
+        character.characterMemory.internalState.internalState.add( angerFacet { magnitude = 0.7f } )
+        MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), koboldGrowl)
+        character.update(character.actionMoment * 2 + 0.01f)
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+
+        character.characterMemory.registerExecutive.noumenaRegister.forEach { println("${it.noumenonType.tag()}, ${it.perceivedAttributes.first()}") }
+
+        val opinions5 = "kobold"
+        println("facts on $opinions5")
+        character.characterMemory.registerExecutive.facts(opinions5).forEach { fact -> println(fact) }
+        println("opinion on $opinions5: ${character.characterMemory.registerExecutive.opinion(opinions5)}")
+
+        val opinions6 = "low race"
+        println("facts on $opinions6")
+        character.characterMemory.registerExecutive.facts(opinions6).forEach { fact -> println(fact) }
         println("opinion on $opinions6: ${character.characterMemory.registerExecutive.opinion(opinions6)}")
 
     }

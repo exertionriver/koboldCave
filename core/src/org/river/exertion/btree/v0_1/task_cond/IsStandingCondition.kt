@@ -1,9 +1,8 @@
 package org.river.exertion.btree.v0_1.task_cond;
 
-import com.badlogic.gdx.ai.btree.annotation.TaskAttribute
 import org.river.exertion.btree.v0_1.ExecLeafCondition
 import org.river.exertion.btree.v0_1.IBTCharacter
-import org.river.exertion.btree.v0_1.TaskEnum
+import org.river.exertion.btree.v0_1.TaskType
 
 class IsStandingCondition : ExecLeafCondition() {
 
@@ -16,7 +15,7 @@ class IsStandingCondition : ExecLeafCondition() {
         fun isStanding(character : IBTCharacter) : Boolean = character.isStanding
 
         fun isStandingSince(character : IBTCharacter) : Boolean =
-                if (character.actionCountAgo(TaskEnum.Stand, character.momentsLongAgo * character.actionMoment) == 0) character.isStanding
+                if (character.actionCountAgo(TaskType.STAND, character.momentsLongAgo * character.actionMoment) == 0) character.isStanding
                 else false
     }
 }

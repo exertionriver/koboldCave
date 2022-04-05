@@ -4,25 +4,25 @@ data class InternalFacetInstance(var facetObj: Class<IInternalFacet> = (NoneFace
 
     fun facet() : IInternalFacet = facetObj.kotlin.objectInstance!!
 
-    operator fun plus(other : InternalFacetInstance) : Set<InternalFacetInstance> =
+    operator fun plus(other : InternalFacetInstance) : InternalFacetInstance =
             if (this.facetObj == other.facetObj)
-                setOf(this.apply { this.magnitude += other.magnitude } )
-            else
-                setOf(this, other)
+                InternalFacetInstance(this.facetObj, this.magnitude + other.magnitude)
+            else this
 
-    operator fun minus(other : InternalFacetInstance) : Set<InternalFacetInstance> =
+    operator fun minus(other : InternalFacetInstance) : InternalFacetInstance =
             if (this.facetObj == other.facetObj) {
                 val minVal = this.magnitude - other.magnitude
                 if
-                    (minVal > 0) setOf(this.apply { magnitude = minVal } )
+                    (minVal > 0) InternalFacetInstance(this.facetObj, magnitude = minVal)
                 else
-                    setOf(this.apply { magnitude = 0f } )
+                    InternalFacetInstance(this.facetObj, magnitude = 0f)
             }
-            else
-                setOf(this, other)
+            else this
 
-    companion object {
-        fun Pair<InternalFacetInstance, InternalFacetInstance>.avgBy(denom : Int) : InternalFacetInstance =
-                InternalFacetInstance(this.first.facetObj, (this@avgBy.first.magnitude + this@avgBy.second.magnitude) / denom)
-    }
+    operator fun div(scalar : Float) : InternalFacetInstance = InternalFacetInstance(this.facetObj, this.magnitude / scalar)
+
+    operator fun times(scalar : Float) : InternalFacetInstance = InternalFacetInstance(this.facetObj, this.magnitude * scalar)
+
+    fun description() = "${FacetMagnitudeType.byMagnitude(magnitude).description()} ${facet().type.description()}"
+
 }

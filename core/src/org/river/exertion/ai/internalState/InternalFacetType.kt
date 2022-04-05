@@ -2,9 +2,10 @@ package org.river.exertion.ai.internalState
 
 enum class InternalFacetType {
 
-    ANGER { override fun tag() = "anger" },
-    FEAR { override fun tag() = "fear" },
-    NONE { override fun tag() = "none" }
+    ANGER { override fun tag() = "anger"; override fun description() = "angry" },
+    FEAR { override fun tag() = "fear"; override fun description() = "fearful" },
+    NONE
     ;
-    abstract fun tag() : String
+    open fun tag() : String = "none"
+    open fun description() : String = "nothing much"
 }

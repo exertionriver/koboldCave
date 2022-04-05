@@ -20,6 +20,7 @@ class CharacterMemory {
 //merge regExec memory into encounterMemory, 'perfumed' with internal State
 
 //clear regExit memory
+        registerExecutive.noumenaRegister.clear()
 
 //poll attributes from external phenomena, store in regExec
         character.characterManifest.getExternalPhenomenaList().forEach {

@@ -1,15 +1,14 @@
 package org.river.exertion.btree.v0_1.task_cond;
 
-import com.badlogic.gdx.Gdx
 import org.river.exertion.btree.v0_1.ExecLeafTask
-import org.river.exertion.btree.v0_1.TaskEnum
+import org.river.exertion.btree.v0_1.TaskType
 
 class ThinkTask : ExecLeafTask() {
 
-    override fun taskEnum() = TaskEnum.Think
+    override fun taskType() = TaskType.THINK
 
     override fun executeTask() {
-        taskEnum().updateObject(this.`object`)
-        statusUpdate("thinks things over..")
+        taskType().updateObject(this.`object`)
+        statusUpdate(taskType().description())
     }
 }

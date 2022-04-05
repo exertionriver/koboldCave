@@ -4,10 +4,7 @@ import com.badlogic.gdx.ai.btree.BehaviorTree
 import org.river.exertion.ai.manifest.CharacterManifest
 import org.river.exertion.ai.memory.CharacterMemory
 import org.river.exertion.ai.noumena.KoboldNoumenon.kobold
-import org.river.exertion.ai.noumena.NoumenonInstance
-import org.river.exertion.ai.noumena.LowRaceNoumenon
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
-import java.util.*
 
 class NoneCharacter : IBTCharacter {
 
@@ -43,7 +40,7 @@ class NoneCharacter : IBTCharacter {
 
     override var decideSequenceList = mutableListOf<ExecLeafTask>()
     override var currentAction : ExecLeafTask = AbideTask()
-    override var actionList = mutableListOf<Pair<TaskEnum, Float>>()
+    override var actionList = mutableListOf<Pair<TaskType, Float>>()
 
     override var actionTimer = 0f
     override val actionMoment = .6f

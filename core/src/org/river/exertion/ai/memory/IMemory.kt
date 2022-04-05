@@ -2,6 +2,7 @@ package org.river.exertion.ai.memory
 
 import org.river.exertion.ai.internalState.InternalFacetInstance
 import org.river.exertion.ai.internalState.InternalStateInstance
+import org.river.exertion.ai.internalState.InternalStateInstance.Companion.merge
 import org.river.exertion.ai.perception.PerceivedNoumenon
 
 interface IMemory {
@@ -9,19 +10,24 @@ interface IMemory {
     //populated to begin, updated by resolution, other information
     var noumenaRegister : MutableList<PerceivedNoumenon>
 
-    fun opinions(onTopic : String) : List<InternalStateInstance> {
-
-        val test123 = noumenaRegister
-
-        var avgBy = 0
+    fun opinions(onTopic : String) : Set<InternalStateInstance> {
 
         val directNoumenaPerceptions = noumenaRegister.filter { it.noumenonType.tag() == onTopic && it.isNamed }
 
-        avgBy = directNoumenaPerceptions.size
-
-        return directNoumenaPerceptions.map { it.internalStateInstance }
+        return directNoumenaPerceptions.map { it.internalStateInstance }.toSet()
     }
 
-    fun opinion(onTopic : String) : InternalFacetInstance? = opinions(onTopic).firstOrNull()?.magnitudeOpinion()
+    fun facts(onTopic : String) : List<String> {
+
+        val returnFacts = mutableListOf<String>()
+
+        val directNoumenaPerceptions = noumenaRegister.filter { it.noumenonType.tag() == onTopic && it.isNamed }
+
+        directNoumenaPerceptions.forEach { returnFacts.addAll(it.facts()) }
+
+        return returnFacts
+    }
+
+    fun opinion(onTopic : String) : InternalFacetInstance? = opinions(onTopic).merge().magnitudeOpinion()
 
 }

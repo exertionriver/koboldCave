@@ -3,7 +3,6 @@ package org.river.exertion.btree.v0_1;
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.btree.LeafTask
 import com.badlogic.gdx.ai.btree.Task
-import org.river.exertion.btree.v0_1.task_cond.*
 
 abstract class ExecLeafTask : LeafTask<IBTCharacter>() {
 
@@ -12,7 +11,7 @@ abstract class ExecLeafTask : LeafTask<IBTCharacter>() {
         return Status.SUCCEEDED
     }
 
-    abstract fun taskEnum() : TaskEnum
+    abstract fun taskType() : TaskType
 
     abstract fun executeTask()
 
