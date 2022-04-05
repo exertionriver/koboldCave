@@ -5,8 +5,8 @@ import org.river.exertion.ai.attributes.AttributeRange
 
 interface INoumenon {
 
-    fun tag() : String
-    fun tags() : List<String>
+    fun type() : NoumenonType
+    fun types() : List<NoumenonType>
     fun attributeRange() : List<AttributeRange<*>>
 
 }

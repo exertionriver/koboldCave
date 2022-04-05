@@ -6,13 +6,13 @@ import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 interface IAttribute <T:Any> {
 
-    fun tag() : String
+    fun type() : AttributeType
     fun howPerceived() : ExternalPhenomenaType
     fun values() : List<AttributeValue<T>>
 
     fun getAttributeValueByOrder(order : Int) : AttributeValue<T>? = values().first { it.attributeOrder == order }
 
-    fun <T:Any>getDescriptionByValue(value : T) : String? = values().firstOrNull { it.value!! as Comparable<T> == value}?.description
+    fun getDescriptionByValue(value : Any) : String? = values().firstOrNull { it.value!! == value }?.description
 
     fun getDescriptions() : List<String> = values().sortedBy { it.attributeOrder }.map { it.description }
 

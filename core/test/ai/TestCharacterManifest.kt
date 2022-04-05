@@ -4,8 +4,7 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.internalState.FearState.fearState
-import org.river.exertion.ai.internalState.NoneState.noneState
+import org.river.exertion.ai.internalState.FearFacet.fearFacet
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
@@ -35,7 +34,7 @@ class TestCharacterManifest {
     }
 
     val scared = InternalPhenomenaInstance().apply {
-        this.arising = fearState { 0.6f }
+        this.arising = fearFacet { 0.6f }
     }
 
     @Test
@@ -45,22 +44,22 @@ class TestCharacterManifest {
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
         MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), weirdSound)
 
         character.update(character.actionMoment * 2 + 0.01f)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
         MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.INT_PHENOMENA.id(), scared)
 
         character.update(character.actionMoment * 2 + 0.01f)
 
         println("Auditory Channel")
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
         println("Wisdom Channel")
-        character.characterManifest.getManifest(ExternalPhenomenaType.WISDOM).joinedList().forEach { println("$it : ${it.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        character.characterManifest.getManifest(ExternalPhenomenaType.WISDOM).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
     }
 }

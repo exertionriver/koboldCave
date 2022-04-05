@@ -1,54 +1,24 @@
 package ai
 
-import org.river.exertion.ai.attributes.IntelligenceAttribute
-import org.river.exertion.ai.internalState.AngerState.angerState
-import org.river.exertion.ai.internalState.FearState.fearState
-import org.river.exertion.ai.memory.KnowledgeSource
-import org.river.exertion.ai.memory.PerceivedAttributable
-import org.river.exertion.ai.memory.PerceivedNoumenon
-import org.river.exertion.ai.noumena.KoboldNoumenon
-import org.river.exertion.ai.noumena.OtherNoumenon
-import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
+import org.river.exertion.ai.internalState.AngerFacet.angerFacet
+import org.river.exertion.ai.internalState.FearFacet.fearFacet
+import org.river.exertion.ai.memory.KnowledgeSourceInstance
+import org.river.exertion.ai.memory.KnowledgeSourceType
+import org.river.exertion.ai.noumena.KoboldNoumenon.kobold
+import org.river.exertion.ai.noumena.NoumenonType
+import org.river.exertion.ai.perception.PerceivedAttribute
+import org.river.exertion.ai.perception.PerceivedNoumenon
 
 object KoboldMemory {
 
-    fun memoriesPA() : MutableList<PerceivedAttributable> {
+    fun memoriesPA() : MutableList<PerceivedAttribute> {
 
-        val returnList = mutableListOf<PerceivedAttributable>()
+        val returnList = mutableListOf<PerceivedAttribute>()
+        val kobold = kobold { }
 
-        returnList.add(PerceivedAttributable().apply {
-            this.attributableTag = IntelligenceAttribute.tag()
-            this.attributeValue = IntelligenceAttribute.values().first()
-            this.perceivedNoumenaTags.add(OtherNoumenon.tag())
-            this.isNamed = true
-            this.count++
-
-            this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE).apply {
-                this.trust = .8f
-            }
-            this.internalPhenomenaInstance =
-                    InternalPhenomenaInstance().apply {
-                        this.arising = fearState { 0.3f }
-                        this.loss = 0f
-                    }
-        })
-
-        returnList.add(PerceivedAttributable().apply {
-            this.attributableTag = IntelligenceAttribute.tag()
-            this.attributeValue = IntelligenceAttribute.values().first()
-            this.perceivedNoumenaTags.add(KoboldNoumenon.tag())
-            this.isNamed = true
-            this.count++
-
-            this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.LORE).apply {
-                this.trust = .3f
-            }
-            this.internalPhenomenaInstance =
-                    InternalPhenomenaInstance().apply {
-                        this.arising = angerState { 0.4f }
-                        this.loss = 0f
-                    }
-        })
+        returnList.add(PerceivedAttribute(kobold.pollRandomAttribute()))
+        returnList.add(PerceivedAttribute(kobold.pollRandomAttribute()))
+        returnList.add(PerceivedAttribute(kobold.pollRandomAttribute()))
 
         return returnList
     }
@@ -56,37 +26,22 @@ object KoboldMemory {
     fun memoriesPN() : MutableList<PerceivedNoumenon> {
 
         val returnList = mutableListOf<PerceivedNoumenon>()
+        val kobold = kobold { }
 
         returnList.add(PerceivedNoumenon().apply {
-            this.noumenonTag = OtherNoumenon.tag()
-            this.perceivedAttributableTags.add(IntelligenceAttribute.tag())
+            this.perceivedAttributes.add(PerceivedAttribute(kobold.pollRandomAttribute()))
+            this.internalStateInstance.internalState.add(fearFacet { magnitude = 0.3f })
+            this.knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)
+            this.noumenonType = NoumenonType.KOBOLD
             this.isNamed = true
-            this.count++
-
-            this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.EXPERIENCE).apply {
-                this.trust = .8f
-            }
-            this.internalPhenomenaInstance =
-                    InternalPhenomenaInstance().apply {
-                        this.arising = fearState { 0.3f }
-                        this.loss = 0f
-                    }
         })
 
         returnList.add(PerceivedNoumenon().apply {
-            this.noumenonTag = KoboldNoumenon.tag()
-            this.perceivedAttributableTags.add(IntelligenceAttribute.tag())
+            this.perceivedAttributes.add(PerceivedAttribute(kobold.pollRandomAttribute()))
+            this.internalStateInstance.internalState.add(angerFacet { magnitude = 0.5f })
+            this.knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)
+            this.noumenonType = NoumenonType.KOBOLD
             this.isNamed = true
-            this.count++
-
-            this.knowledgeSource = KnowledgeSource(KnowledgeSource.SourceEnum.LORE).apply {
-                this.trust = .3f
-            }
-            this.internalPhenomenaInstance =
-                    InternalPhenomenaInstance().apply {
-                        this.arising = angerState { 0.4f }
-                        this.loss = 0f
-                    }
         })
 
         return returnList

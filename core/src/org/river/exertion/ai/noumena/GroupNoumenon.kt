@@ -4,7 +4,7 @@ import org.river.exertion.ai.attributes.AttributeRange
 
 object GroupNoumenon : INoumenon {
 
-    override fun tag() = "group"
-    override fun tags() = listOf(tag())
+    override fun type() = NoumenonType.GROUP
+    override fun types() = listOf(type())
     override fun attributeRange() : List<AttributeRange<*>> = listOf()
 }

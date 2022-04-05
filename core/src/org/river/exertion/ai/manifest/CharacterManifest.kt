@@ -1,5 +1,6 @@
 package org.river.exertion.ai.manifest
 
+import org.river.exertion.ai.perception.PerceivedExternalPhenomena
 import org.river.exertion.ai.phenomena.ExternalPhenomenaImpression
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
@@ -19,25 +20,25 @@ class CharacterManifest {
     )
 
     fun update(delta : Float) {
-        manifests.forEach { it.perceptionList.forEach { if (it != null) it.externalPhenomenaImpression.countdown -= delta } }
+        manifests.forEach { it.perceptionList.forEach { if (it != null) it.externalPhenomenaImpression!!.countdown -= delta } }
         manifests.forEach { it.projectionList.forEach { if (it != null) it.countdown -= delta } }
     }
 
-    fun addImpression(sender : IBTCharacter, externalPhenomenaImpression: ExternalPhenomenaImpression) = manifests.filter { it.manifestType == externalPhenomenaImpression.type }.first().addImpression(PerceivedPhenomena(sender, externalPhenomenaImpression))
+    fun addImpression(sender : IBTCharacter, externalPhenomenaImpression: ExternalPhenomenaImpression) = manifests.filter { it.manifestType == externalPhenomenaImpression.type }.first().addImpression(PerceivedExternalPhenomena(sender, externalPhenomenaImpression))
     fun addImpression(internalPhenomenaImpression: InternalPhenomenaImpression) = manifests.forEach { it.addImpression(internalPhenomenaImpression) }
 
     fun getManifest(externalPhenomenaType: ExternalPhenomenaType) = manifests.filter { it.manifestType == externalPhenomenaType }.first()
 
-    fun getExternalPhenomenaList() : MutableList<PerceivedPhenomena> {
+    fun getExternalPhenomenaList() : MutableList<PerceivedExternalPhenomena> {
 
-        val returnList = mutableListOf<PerceivedPhenomena>()
+        val returnList = mutableListOf<PerceivedExternalPhenomena>()
 
         manifests.forEach { manifest -> manifest.perceptionList.forEach { perceivedPhenomena -> if (perceivedPhenomena != null) returnList.add(perceivedPhenomena) } }
 
         return returnList
     }
 
-    fun pollRandomExternalPhenomena(excludeList : MutableList<PerceivedPhenomena>) : PerceivedPhenomena {
+    fun pollRandomExternalPhenomena(excludeList : MutableList<PerceivedExternalPhenomena>) : PerceivedExternalPhenomena {
         val fullList = getExternalPhenomenaList()
         fullList.removeAll(excludeList)
         return fullList.apply { this.shuffle() }.first()

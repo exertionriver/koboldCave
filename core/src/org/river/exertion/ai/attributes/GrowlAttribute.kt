@@ -1,19 +1,23 @@
 package org.river.exertion.ai.attributes
 
+import org.river.exertion.ai.noumena.KoboldNoumenon
+import org.river.exertion.ai.noumena.NoumenonType
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 object GrowlAttribute : IAttribute<String> {
 
-    override fun tag() = "growl"
+    override fun type() = AttributeType.GROWL
     override fun howPerceived() = ExternalPhenomenaType.AUDITORY
 
     override fun values() = listOf(
-            AttributeValue("kobold","a gravellish growl", 0)
-            , AttributeValue("orc", "a husky growl", 1)
-            , AttributeValue("goblin","a low growl", 2)
+            AttributeValue(KoboldNoumenon.type().tag(),"a gravellish growl", 0)
+            , AttributeValue(KoboldNoumenon.type().tag(), "a husky growl", 1)
+            , AttributeValue(KoboldNoumenon.type().tag(),"a low growl", 2)
     )
 
-    override fun equals(other: Any?): Boolean = this.tag() == (other as IAttribute<*>).tag()
+    fun growlRange(lambda : AttributeRange<String>.() -> Unit) = AttributeRange(attributeObj = this@GrowlAttribute.javaClass).apply(lambda)
+
+    override fun equals(other: Any?): Boolean = this.type() == (other as IAttribute<*>).type()
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }

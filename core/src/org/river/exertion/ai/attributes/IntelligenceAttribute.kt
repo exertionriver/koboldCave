@@ -4,7 +4,7 @@ import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 object IntelligenceAttribute : IAttribute<Int> {
 
-    override fun tag() = "intelligence"
+    override fun type() = AttributeType.INTELLIGENCE
     override fun howPerceived() = ExternalPhenomenaType.WISDOM
 
     override fun values() = listOf(
@@ -13,7 +13,9 @@ object IntelligenceAttribute : IAttribute<Int> {
             , AttributeValue(8, "smiley Tim", 2)
     )
 
-    override fun equals(other: Any?): Boolean = this.tag() == (other as IAttribute<*>).tag()
+    fun intelligenceRange(lambda : AttributeRange<Int>.() -> Unit) = AttributeRange(attributeObj = this@IntelligenceAttribute.javaClass).apply(lambda)
+
+    override fun equals(other: Any?): Boolean = this.type() == (other as IAttribute<*>).type()
     override fun hashCode(): Int {
         return javaClass.hashCode()
     }

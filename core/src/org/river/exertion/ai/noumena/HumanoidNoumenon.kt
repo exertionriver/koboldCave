@@ -4,7 +4,7 @@ import org.river.exertion.ai.attributes.AttributeRange.Companion.mergeOverrideAt
 
 object HumanoidNoumenon : INoumenon {
 
-    override fun tag() = "humanoid"
-    override fun tags() = BeingNoumenon.tags().toMutableList().apply { this.add(tag()) }.toList()
+    override fun type() = NoumenonType.HUMANOID
+    override fun types() = BeingNoumenon.types().toMutableList().apply { this.add(type()) }.toList()
     override fun attributeRange() = BeingNoumenon.attributeRange().mergeOverrideAttributeRanges(listOf())
 }

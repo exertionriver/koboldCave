@@ -4,7 +4,7 @@ import org.river.exertion.ai.attributes.AttributeRange.Companion.mergeOverrideAt
 
 class RedHandNoumenon : INoumenon {
 
-    override fun tag() = "red hand"
-    override fun tags() = GroupNoumenon.tags().toMutableList().apply { this.add( tag() ) }.toList()
+    override fun type() = NoumenonType.RED_HAND
+    override fun types() = GroupNoumenon.types().toMutableList().apply { this.add( type() ) }.toList()
     override fun attributeRange() = GroupNoumenon.attributeRange().mergeOverrideAttributeRanges(listOf())
 }

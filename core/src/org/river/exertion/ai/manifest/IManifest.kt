@@ -1,5 +1,7 @@
 package org.river.exertion.ai.manifest
 
+import org.river.exertion.ai.perception.PerceivedPhenomena
+import org.river.exertion.ai.perception.PerceivedExternalPhenomena
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 
@@ -9,20 +11,20 @@ interface IManifest {
 
     val manifestType : ExternalPhenomenaType
 
-    val perceptionList : MutableList<PerceivedPhenomena?>
+    val perceptionList : MutableList<PerceivedExternalPhenomena?>
     val projectionList : MutableList<InternalPhenomenaImpression?>
 
-    fun joinedList() : MutableList<PerceivedJoinedPhenomena> {
-        val returnList : MutableList<PerceivedJoinedPhenomena> = mutableListOf()
+    fun joinedList() : MutableList<PerceivedPhenomena> {
+        val returnList : MutableList<PerceivedPhenomena> = mutableListOf()
 
         (0 until listMax).forEach { idx ->
-            returnList.add(PerceivedJoinedPhenomena(perceptionList[idx]?.sender, perceptionList[idx]?.externalPhenomenaImpression, projectionList[idx]))
+            returnList.add(PerceivedPhenomena(PerceivedExternalPhenomena(perceptionList[idx]?.sender, perceptionList[idx]?.externalPhenomenaImpression), projectionList[idx]))
         }
 
         return returnList
     }
 
-    fun addImpression(perceivedPhenomena: PerceivedPhenomena) {
+    fun addImpression(perceivedPhenomena: PerceivedExternalPhenomena) {
         var checkCounter = 0
         var foundSlot = false
         val idxList = List(listMax) {idx -> idx}.shuffled()
@@ -38,7 +40,7 @@ interface IManifest {
         }
 
         if (!foundSlot) {
-            perceptionList[perceptionList.indexOf(perceptionList.minByOrNull{ it!!.externalPhenomenaImpression.countdown })] = perceivedPhenomena
+            perceptionList[perceptionList.indexOf(perceptionList.minByOrNull{ it!!.externalPhenomenaImpression!!.countdown })] = perceivedPhenomena
         }
     }
 

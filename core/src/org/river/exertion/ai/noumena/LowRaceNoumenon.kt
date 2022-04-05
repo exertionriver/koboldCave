@@ -1,16 +1,15 @@
 package org.river.exertion.ai.noumena
 
-import org.river.exertion.ai.attributes.AttributeRange
 import org.river.exertion.ai.attributes.AttributeRange.Companion.mergeOverrideAttributeRanges
-import org.river.exertion.ai.attributes.IntelligenceAttribute
-import org.river.exertion.ai.attributes.InternalStateAttribute
+import org.river.exertion.ai.attributes.IntelligenceAttribute.intelligenceRange
+import org.river.exertion.ai.attributes.InternalStateAttribute.internalStateRange
 
 object LowRaceNoumenon : INoumenon {
 
-    override fun tag() = "low race"
-    override fun tags() = HumanoidNoumenon.tags().toMutableList().apply { this.add( tag() ) }.toList()
+    override fun type() = NoumenonType.LOW_RACE
+    override fun types() = HumanoidNoumenon.types().toMutableList().apply { this.add( type() ) }.toList()
     override fun attributeRange() = HumanoidNoumenon.attributeRange().mergeOverrideAttributeRanges(listOf(
-        AttributeRange(InternalStateAttribute.javaClass, 3, 0.4f, 0.6f),
-        AttributeRange(IntelligenceAttribute.javaClass, 8, 6, 8)
+        internalStateRange { noumenonObj = this@LowRaceNoumenon.javaClass; noumenonOrder = 3; minValue = 0.4f; maxValue = 0.6f },
+        intelligenceRange { noumenonObj = this@LowRaceNoumenon.javaClass; noumenonOrder = 8; minValue = 6; maxValue = 8 }
     ))
 }

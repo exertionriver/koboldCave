@@ -1,22 +1,19 @@
 package org.river.exertion.ai.memory
 
-import org.river.exertion.ai.attributes.AttributeInstance
-import org.river.exertion.ai.attributes.AttributeValue
-import org.river.exertion.ai.attributes.IntelligenceAttribute
 import org.river.exertion.ai.manifest.CharacterManifest
-import org.river.exertion.ai.manifest.PerceivedPhenomena
+import org.river.exertion.ai.perception.PerceivedAttribute
+import org.river.exertion.ai.perception.PerceivedNoumenon
+import org.river.exertion.ai.perception.PerceivedExternalPhenomena
 
-class RegisterExecutive {
+class RegisterExecutive : IMemory {
 
-    var presentAttributeRegister = mutableListOf<PerceivedAttributable>()
-    var presentNoumenaRegister = mutableListOf<PerceivedNoumenon>()
+    override var noumenaRegister = mutableListOf<PerceivedNoumenon>()
 
     //scans manifest for phenomena, adds max-intelligence attibutes / noumena to register
     fun think(characterManifest : CharacterManifest, intelligenceValue : Int ) {
-        presentAttributeRegister.clear()
-        presentNoumenaRegister.clear()
+        noumenaRegister.clear()
 
-        val presentPhenomenaList = mutableListOf<PerceivedPhenomena>()
+        val presentPhenomenaList = mutableListOf<PerceivedExternalPhenomena>()
 
         (0 until intelligenceValue).forEach { idx ->
             presentPhenomenaList.add(characterManifest.pollRandomExternalPhenomena(presentPhenomenaList))

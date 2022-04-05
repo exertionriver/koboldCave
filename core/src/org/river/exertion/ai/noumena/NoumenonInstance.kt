@@ -5,17 +5,14 @@ import org.river.exertion.ProbabilitySelect
 import org.river.exertion.ai.attributes.*
 import org.river.exertion.ai.attributes.AttributeRange.Companion.getRandomAttributes
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
-import java.lang.reflect.Type
 
-class IndividualNoumenon(val name : String, sourceNoumenonType : Class<INoumenon>) {
+class NoumenonInstance(sourceNoumenonType : Class<InstantiatableNoumenon>, var instanceName : String) {
 
-    val sourceNoumenon: INoumenon = sourceNoumenonType.kotlin.objectInstance!!
-
-    val tags : List<String> = sourceNoumenon.tags().toMutableList().apply { this.add(name) }
+    val sourceNoumenon: InstantiatableNoumenon = sourceNoumenonType.kotlin.objectInstance!!
     var attributeInstances = sourceNoumenon.attributeRange().getRandomAttributes()
 
     private fun filteredAttributes(externalPhenomenaType: ExternalPhenomenaType?) =
-        if (externalPhenomenaType == null) attributeInstances else attributeInstances.filter { attrInst -> attrInst.attribute.howPerceived() == externalPhenomenaType }
+        if (externalPhenomenaType == null) attributeInstances else attributeInstances.filter { attrInst -> attrInst.attribute().howPerceived() == externalPhenomenaType }
 
     fun pollRandomAttribute(externalPhenomenaType: ExternalPhenomenaType? = null) : AttributeInstance<*>? {
         val filteredAttributes = filteredAttributes(externalPhenomenaType)
