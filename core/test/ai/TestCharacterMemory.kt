@@ -62,15 +62,22 @@ class TestCharacterMemory {
 
     @Test
     fun testAddingKoboldMemoryFromManifest() {
+        KoboldMemory.memoriesPA().forEach {
+            val isi = InternalStateInstance().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
+            val perceivedNoumenon = PerceivedNoumenon(internalStateInstance = isi, knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE) ).apply { this.perceivedAttributes.add(it); this.noumenonType = NoumenonType.OTHER; this.isNamed = true}
+            character.characterMemory.longtermMemory.noumenaRegister.add(perceivedNoumenon)
+        }
+
+        character.characterMemory.longtermMemory.noumenaRegister.addAll(KoboldMemory.memoriesPN())
 
         character.characterMemory.internalState.internalState.add( angerFacet { magnitude = 0.7f } )
         MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), koboldGrowl)
         character.update(character.actionMoment * 2 + 0.01f)
         character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        character.characterMemory.registerExecutive.noumenaRegister.forEach { println("${it.noumenonType.tag()}, ${it.perceivedAttributes.first()}") }
+        character.characterMemory.registerExecutive.noumenaRegister.forEach { println("${it.noumenonType.tag()}, ${it.instanceName}, ${it.perceivedAttributes.first()}") }
 
-        val opinions4 = "growl"
+        val opinions4 = "low race"
         character.characterMemory.registerExecutive.opinions(opinions4).forEach {
             println("opinions on $opinions4: ${it.internalState}: ${it.magnitudeOpinion()}")
         }
@@ -98,7 +105,7 @@ class TestCharacterMemory {
         character.update(character.actionMoment * 2 + 0.01f)
         character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        character.characterMemory.registerExecutive.noumenaRegister.forEach { println("${it.noumenonType.tag()}, ${it.perceivedAttributes.first()}") }
+        character.characterMemory.registerExecutive.noumenaRegister.forEach { println("${it.noumenonType.tag()}, ${it.instanceName}, ${it.perceivedAttributes.first()}") }
 
         val opinions5 = "kobold"
         println("facts on $opinions5")

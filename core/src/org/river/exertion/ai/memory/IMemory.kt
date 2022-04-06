@@ -12,7 +12,7 @@ interface IMemory {
 
     fun opinions(onTopic : String) : Set<InternalStateInstance> {
 
-        val directNoumenaPerceptions = noumenaRegister.filter { it.noumenonType.tag() == onTopic && it.isNamed }
+        val directNoumenaPerceptions = noumenaRegister.filter { (it.instanceName == onTopic || it.noumenonType.tag() == onTopic) && it.isNamed }
 
         return directNoumenaPerceptions.map { it.internalStateInstance }.toSet()
     }
@@ -21,7 +21,7 @@ interface IMemory {
 
         val returnFacts = mutableListOf<String>()
 
-        val directNoumenaPerceptions = noumenaRegister.filter { it.noumenonType.tag() == onTopic && it.isNamed }
+        val directNoumenaPerceptions = noumenaRegister.filter { (it.instanceName == onTopic || it.noumenonType.tag() == onTopic) && it.isNamed }
 
         directNoumenaPerceptions.forEach { returnFacts.addAll(it.facts()) }
 

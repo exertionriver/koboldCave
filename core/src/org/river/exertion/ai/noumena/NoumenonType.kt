@@ -11,6 +11,7 @@ enum class NoumenonType {
     GROUP { override fun tag() = "group" },
     RED_HAND { override fun tag() = "red hand" },
 
+    INDIVIDUAL { override fun tag() = "individual" },
     NONE { override fun tag() = "none" }
     ;
     abstract fun tag() : String

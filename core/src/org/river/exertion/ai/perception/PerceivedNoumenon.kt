@@ -9,6 +9,9 @@ import org.river.exertion.btree.v0_1.TaskType
 data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttribute> = mutableSetOf(), var internalStateInstance: InternalStateInstance = InternalStateInstance(), var knowledgeSourceInstance: KnowledgeSourceInstance = KnowledgeSourceInstance()) {
 
     var noumenonType : NoumenonType = NoumenonType.NONE
+    var instanceName : String? = null
+    var threat : Float = 0f
+    var opportunity : Float = 0f
     var isNamed : Boolean = false
 
     fun facts() : MutableList<String> {

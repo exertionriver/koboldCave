@@ -6,6 +6,10 @@ data class InternalStateInstance(var internalState: MutableSet<InternalFacetInst
 
     fun magnitudeOpinion() : InternalFacetInstance = if (internalState.isEmpty()) noneFacet {} else internalState.maxByOrNull { it.magnitude }!!
 
+    fun add(facet: InternalFacetInstance) {
+        this.internalState = (InternalStateInstance(this.internalState) + InternalStateInstance(internalState = mutableSetOf(facet))).internalState
+    }
+
     operator fun plus(other: InternalStateInstance) : InternalStateInstance {
 
         val mergeState: MutableSet<InternalFacetInstance> = mutableSetOf()
