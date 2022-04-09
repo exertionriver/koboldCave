@@ -1,6 +1,6 @@
 package org.river.exertion.ai.activities
 
-import org.river.exertion.ai.internalState.IInternalFacet
+import org.river.exertion.ai.internalFacet.IInternalFacet
 
 interface ContendActivity {
 

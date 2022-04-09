@@ -1,8 +1,8 @@
 package org.river.exertion.ai.memory
 
-import org.river.exertion.ai.internalState.InternalFacetInstance
-import org.river.exertion.ai.internalState.InternalStateInstance
-import org.river.exertion.ai.internalState.InternalStateInstance.Companion.merge
+import org.river.exertion.ai.internalFacet.InternalFacetInstance
+import org.river.exertion.ai.internalState.InternalFacetInstancesState
+import org.river.exertion.ai.internalState.InternalFacetInstancesState.Companion.merge
 import org.river.exertion.ai.perception.PerceivedNoumenon
 
 interface IMemory {
@@ -10,7 +10,7 @@ interface IMemory {
     //populated to begin, updated by resolution, other information
     var noumenaRegister : MutableList<PerceivedNoumenon>
 
-    fun opinions(onTopic : String) : Set<InternalStateInstance> {
+    fun opinions(onTopic : String) : Set<InternalFacetInstancesState> {
 
         val directNoumenaPerceptions = noumenaRegister.filter { (it.instanceName == onTopic || it.noumenonType.tag() == onTopic) && it.isNamed }
 

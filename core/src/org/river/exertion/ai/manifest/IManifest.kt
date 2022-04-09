@@ -7,7 +7,7 @@ import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 
 interface IManifest {
 
-    val listMax : Int
+    fun listMax() = listMax
 
     val manifestType : ExternalPhenomenaType
 
@@ -17,7 +17,7 @@ interface IManifest {
     fun joinedList() : MutableList<PerceivedPhenomena> {
         val returnList : MutableList<PerceivedPhenomena> = mutableListOf()
 
-        (0 until listMax).forEach { idx ->
+        (0 until listMax()).forEach { idx ->
             returnList.add(PerceivedPhenomena(PerceivedExternalPhenomena(perceptionList[idx]?.sender, perceptionList[idx]?.externalPhenomenaImpression), projectionList[idx]))
         }
 
@@ -27,10 +27,10 @@ interface IManifest {
     fun addImpression(perceivedPhenomena: PerceivedExternalPhenomena) {
         var checkCounter = 0
         var foundSlot = false
-        val idxList = List(listMax) {idx -> idx}.shuffled()
+        val idxList = List(listMax()) {idx -> idx}.shuffled()
 
 
-        while ( (checkCounter < listMax) && !foundSlot ) {
+        while ( (checkCounter < listMax()) && !foundSlot ) {
             if (perceptionList[idxList[checkCounter]] == null) {
                 perceptionList[idxList[checkCounter]] = perceivedPhenomena
                 foundSlot = true
@@ -47,10 +47,10 @@ interface IManifest {
     fun addImpression(internalPhenomenaImpression: InternalPhenomenaImpression) {
         var checkCounter = 0
         var foundSlot = false
-        val idxList = List(listMax) {idx -> idx}.shuffled()
+        val idxList = List(listMax()) {idx -> idx}.shuffled()
 
 
-        while ( (checkCounter < listMax) && !foundSlot ) {
+        while ( (checkCounter < listMax()) && !foundSlot ) {
             if (projectionList[idxList[checkCounter]] == null) {
                 projectionList[idxList[checkCounter]] = internalPhenomenaImpression
                 foundSlot = true
@@ -62,5 +62,9 @@ interface IManifest {
         if (!foundSlot) {
             projectionList[projectionList.indexOf(projectionList.minByOrNull{ it!!.countdown })] = internalPhenomenaImpression
         }
+    }
+
+    companion object {
+        val listMax = 10
     }
 }

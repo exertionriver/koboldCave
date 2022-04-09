@@ -4,7 +4,15 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.internalState.FearFacet.fearFacet
+import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
+import org.river.exertion.ai.internalFacet.ConfusionFacet.confusionFacet
+import org.river.exertion.ai.internalFacet.DoubtFacet.doubtFacet
+import org.river.exertion.ai.internalFacet.FearFacet.fearFacet
+import org.river.exertion.ai.internalFacet.InternalFacetAttribute
+import org.river.exertion.ai.internalFacet.InternalFacetAttribute.Companion.internalFacetAttribute
+import org.river.exertion.ai.internalFacet.InternalFacetInstance
+import org.river.exertion.ai.internalFacet.NoneFacet
+import org.river.exertion.ai.internalState.InternalFacetAttributesState
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
@@ -34,7 +42,7 @@ class TestCharacterManifest {
     }
 
     val scared = InternalPhenomenaInstance().apply {
-        this.arising = fearFacet { 0.6f }
+        this.arisenFacet = fearFacet { 0.6f }
     }
 
     @Test
@@ -61,5 +69,20 @@ class TestCharacterManifest {
         println("Wisdom Channel")
         character.characterManifest.getManifest(ExternalPhenomenaType.WISDOM).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
+    }
+
+    @Test
+    fun testOriginArisingProjections() {
+        val testState = InternalFacetAttributesState().apply { this.internalState = mutableSetOf(
+            internalFacetAttribute { internalFacetInstance = confusionFacet {}; origin = 0.2f; arising = 0.5f },
+            internalFacetAttribute { internalFacetInstance = angerFacet {}; origin = 0.3f; arising = 0.7f },
+            internalFacetAttribute { internalFacetInstance = fearFacet {}; origin = 0.4f; arising = 0.8f },
+            internalFacetAttribute { internalFacetInstance = doubtFacet {}; origin = 0f; arising = 0.1f }
+        ) }
+
+        (0..10).forEach { mAnxiety ->
+            println("mAnxiety : ${mAnxiety / 10f}")
+            testState.projections(mAnxiety / 10f).forEachIndexed { idx, it -> println("slot($idx) : ${it?.arisenFacet?.facet()?.type?.tag()}, ${it?.arisenFacet?.magnitude}") }
+        }
     }
 }

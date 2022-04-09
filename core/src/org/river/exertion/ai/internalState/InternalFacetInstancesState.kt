@@ -1,16 +1,18 @@
 package org.river.exertion.ai.internalState
 
-import org.river.exertion.ai.internalState.NoneFacet.noneFacet
+import org.river.exertion.ai.internalFacet.InternalFacetInstance
+import org.river.exertion.ai.internalFacet.InternalFacetType
+import org.river.exertion.ai.internalFacet.NoneFacet.noneFacet
 
-data class InternalStateInstance(var internalState: MutableSet<InternalFacetInstance> = mutableSetOf()) {
+data class InternalFacetInstancesState(var internalState: MutableSet<InternalFacetInstance> = mutableSetOf()) {
 
     fun magnitudeOpinion() : InternalFacetInstance = if (internalState.isEmpty()) noneFacet {} else internalState.maxByOrNull { it.magnitude }!!
 
     fun add(facet: InternalFacetInstance) {
-        this.internalState = (InternalStateInstance(this.internalState) + InternalStateInstance(internalState = mutableSetOf(facet))).internalState
+        this.internalState = (InternalFacetInstancesState(this.internalState) + InternalFacetInstancesState(internalState = mutableSetOf(facet))).internalState
     }
 
-    operator fun plus(other: InternalStateInstance) : InternalStateInstance {
+    operator fun plus(other: InternalFacetInstancesState) : InternalFacetInstancesState {
 
         val mergeState: MutableSet<InternalFacetInstance> = mutableSetOf()
 
@@ -27,10 +29,10 @@ data class InternalStateInstance(var internalState: MutableSet<InternalFacetInst
         mergeState.addAll( this.internalState.filter { !otherFacets.contains(it.facetObj) } )
         mergeState.addAll( other.internalState.filter { !thisFacets.contains(it.facetObj) } )
 
-        return InternalStateInstance(mergeState)
+        return InternalFacetInstancesState(mergeState)
     }
 
-    operator fun minus(other: InternalStateInstance) : InternalStateInstance {
+    operator fun minus(other: InternalFacetInstancesState) : InternalFacetInstancesState {
 
         val mergeState: MutableSet<InternalFacetInstance> = mutableSetOf()
 
@@ -47,20 +49,20 @@ data class InternalStateInstance(var internalState: MutableSet<InternalFacetInst
         mergeState.addAll( this.internalState.filter { !otherFacets.contains(it.facetObj) } )
         mergeState.addAll( other.internalState.filter { !thisFacets.contains(it.facetObj) } )
 
-        return InternalStateInstance(mergeState)
+        return InternalFacetInstancesState(mergeState)
     }
 
-    operator fun div(scalar: Float) : InternalStateInstance {
+    operator fun div(scalar: Float) : InternalFacetInstancesState {
 
-        val returnInstance = InternalStateInstance(this.internalState)
+        val returnInstance = InternalFacetInstancesState(this.internalState)
         returnInstance.internalState.forEach { it / scalar }
 
         return returnInstance
     }
 
-    operator fun times(scalar: Float) : InternalStateInstance {
+    operator fun times(scalar: Float) : InternalFacetInstancesState {
 
-        val returnInstance = InternalStateInstance(this.internalState)
+        val returnInstance = InternalFacetInstancesState(this.internalState)
         returnInstance.internalState.forEach { it * scalar }
 
         return returnInstance
@@ -70,15 +72,19 @@ data class InternalStateInstance(var internalState: MutableSet<InternalFacetInst
         when (internalState.size) {
             0 -> InternalFacetType.NONE.description()
             1 -> internalState.first().description()
-            else -> "a few things:" + internalState.forEach { " ${it.description()}" }
+            else -> {
+                var returnString = "a few things:"
+                internalState.forEach { returnString += " ${it.description()}" }
+                returnString
+            }
         }
 
     companion object {
 
-        fun Set<InternalStateInstance>.merge() : InternalStateInstance {
+        fun Set<InternalFacetInstancesState>.merge() : InternalFacetInstancesState {
 
             val divSize = this.size.toFloat()
-            var returnInstance = InternalStateInstance()
+            var returnInstance = InternalFacetInstancesState()
 
             this.forEach { returnInstance += it }
 

@@ -44,4 +44,6 @@ class CharacterManifest {
         return fullList.apply { this.shuffle() }.first()
     }
 
+
+
 }

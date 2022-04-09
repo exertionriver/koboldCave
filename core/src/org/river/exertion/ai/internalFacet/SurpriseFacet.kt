@@ -1,6 +1,4 @@
-package org.river.exertion.ai.internalState
-
-import org.river.exertion.ai.activities.ContendActivity
+package org.river.exertion.ai.internalFacet
 
 object SurpriseFacet : IInternalFacet {
 

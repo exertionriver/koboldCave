@@ -1,7 +1,7 @@
 package ai
 
-import org.river.exertion.ai.internalState.AngerFacet.angerFacet
-import org.river.exertion.ai.internalState.FearFacet.fearFacet
+import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
+import org.river.exertion.ai.internalFacet.FearFacet.fearFacet
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.noumena.KoboldNoumenon.kobold

@@ -5,6 +5,7 @@ import org.river.exertion.ProbabilitySelect
 import org.river.exertion.ai.noumena.INoumenon
 import org.river.exertion.ai.noumena.NoneNoumenon
 
+//characteristic of a noumenon
 data class AttributeRange <T:Any>(var attributeObj: Class<IAttribute<T>> = (NoneAttribute as IAttribute<T>).javaClass, var noumenonObj: Class<INoumenon> = (NoneNoumenon as INoumenon).javaClass, var noumenonOrder : Int = 0, var minValue: T? = null, var maxValue: T? = null) {
 
     fun attribute() : IAttribute<T> = attributeObj.kotlin.objectInstance!!

@@ -4,9 +4,9 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.internalState.AngerFacet.angerFacet
-import org.river.exertion.ai.internalState.FearFacet
-import org.river.exertion.ai.internalState.InternalStateInstance
+import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
+import org.river.exertion.ai.internalFacet.FearFacet
+import org.river.exertion.ai.internalState.InternalFacetInstancesState
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.noumena.NoumenonType
@@ -34,7 +34,7 @@ class TestCharacterMemory {
     @Test
     fun testKoboldMemory() {
         KoboldMemory.memoriesPA().forEach {
-            val isi = InternalStateInstance().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
+            val isi = InternalFacetInstancesState().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
             val perceivedNoumenon = PerceivedNoumenon(internalStateInstance = isi, knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE) ).apply { this.perceivedAttributes.add(it); this.noumenonType = NoumenonType.OTHER; this.isNamed = true}
             character.characterMemory.registerExecutive.noumenaRegister.add(perceivedNoumenon)
         }
@@ -63,7 +63,7 @@ class TestCharacterMemory {
     @Test
     fun testAddingKoboldMemoryFromManifest() {
         KoboldMemory.memoriesPA().forEach {
-            val isi = InternalStateInstance().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
+            val isi = InternalFacetInstancesState().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
             val perceivedNoumenon = PerceivedNoumenon(internalStateInstance = isi, knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE) ).apply { this.perceivedAttributes.add(it); this.noumenonType = NoumenonType.OTHER; this.isNamed = true}
             character.characterMemory.longtermMemory.noumenaRegister.add(perceivedNoumenon)
         }

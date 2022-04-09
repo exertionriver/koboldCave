@@ -1,7 +1,7 @@
 package org.river.exertion.ai.memory
 
-import org.river.exertion.ai.internalState.InternalStateInstance
-import org.river.exertion.ai.internalState.SurpriseFacet.surpriseFacet
+import org.river.exertion.ai.internalState.InternalFacetInstancesState
+import org.river.exertion.ai.internalFacet.SurpriseFacet.surpriseFacet
 import org.river.exertion.ai.noumena.NoumenonType
 import org.river.exertion.ai.perception.PerceivedAttribute
 import org.river.exertion.ai.perception.PerceivedNoumenon
@@ -13,9 +13,7 @@ class CharacterMemory {
     val encounterMemory = EncounterMemory()
     val longtermMemory = LongtermMemory()
 
-    val internalState = InternalStateInstance()
-
-
+    val internalState = InternalFacetInstancesState()
 
     fun update(delta : Float, character : IBTCharacter) {
 
@@ -35,7 +33,7 @@ class CharacterMemory {
                     if (longtermMemory.noumenaRegister.none { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }) { //not found in longterm memory, add
                         perceivedNoumenon = PerceivedNoumenon(internalStateInstance = internalState, knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)).apply { this.perceivedAttributes.add(perceivedAttribute); this.instanceName = instanceName; this.noumenonType = noumenonType; isNamed = true }
                         registerExecutive.noumenaRegister.add(perceivedNoumenon)
-                        this.internalState.add(surpriseFacet { magnitude = 0.3f }) //novel noumenon
+                        if (noumenonType != NoumenonType.INDIVIDUAL) this.internalState.add(surpriseFacet { magnitude = 0.3f }) //novel noumenon
                     } else { //noumenon found in longterm memory, pull over
                         perceivedNoumenon = longtermMemory.noumenaRegister.filter { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }.first()
                         registerExecutive.noumenaRegister.add(perceivedNoumenon)

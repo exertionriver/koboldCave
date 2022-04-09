@@ -1,4 +1,4 @@
-package org.river.exertion.ai.internalState
+package org.river.exertion.ai.internalFacet
 
 data class InternalFacetInstance(var facetObj: Class<IInternalFacet> = (NoneFacet as IInternalFacet).javaClass, var magnitude : Float = 0f) {
 

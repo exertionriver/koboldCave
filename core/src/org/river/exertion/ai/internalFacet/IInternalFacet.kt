@@ -1,4 +1,4 @@
-package org.river.exertion.ai.internalState
+package org.river.exertion.ai.internalFacet
 
 interface IInternalFacet {
 

@@ -1,6 +1,4 @@
-package org.river.exertion.ai.internalState
-
-import org.river.exertion.ai.perception.PerceptionThresholdType
+package org.river.exertion.ai.internalFacet
 
 enum class FacetMagnitudeType {
 
@@ -17,7 +15,7 @@ enum class FacetMagnitudeType {
     ;
 
     open val minMagnitude : Float = 0.0f
-    open val maxMagnitude : Float = 1.0f
+    open val maxMagnitude : Float = 100.0f
     open fun description() : String = "not sure"
 
     companion object {
