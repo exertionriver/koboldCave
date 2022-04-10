@@ -1,4 +1,4 @@
-package org.river.exertion.ai.activities
+package org.river.exertion.ai.activity
 
 import org.river.exertion.ai.internalFacet.IInternalFacet
 

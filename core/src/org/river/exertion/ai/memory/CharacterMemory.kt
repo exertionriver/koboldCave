@@ -17,17 +17,20 @@ class CharacterMemory {
 
     fun update(delta : Float, character : IBTCharacter) {
 
-//poll attributes from external phenomena, store in regExec
-        character.characterManifest.getExternalPhenomenaList().forEach { perceivedExternalPhenomenon ->
-            val attributeInstance = perceivedExternalPhenomenon.sender!!.noumenonInstance.pollRandomAttribute(perceivedExternalPhenomenon.externalPhenomenaImpression!!.type)!! //poll random attribute not yet seen in encounter?
-            val perceivedAttribute = PerceivedAttribute(attributeInstance, perceivedExternalPhenomenon)
+//update internal state, from internal anxiety
+//update internal state, from regExec
 
-            val noumenonTypes = perceivedExternalPhenomenon.sender.noumenonInstance.sourceNoumenon.types().plus(NoumenonType.INDIVIDUAL)
+//poll attributes from external phenomena, store in regExec
+        character.characterManifest.getPerceivedPhenomenaList().forEach { perceivedPhenomenon ->
+            val attributeInstance = perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.pollRandomAttributeInstance(perceivedPhenomenon.perceivedExternalPhenomena.externalPhenomenaImpression!!.type)!! //poll random attribute not yet seen in encounter?
+            val perceivedAttribute = PerceivedAttribute(attributeInstance, perceivedPhenomenon.perceivedExternalPhenomena)
+
+            val noumenonTypes = perceivedPhenomenon.perceivedExternalPhenomena.sender!!.noumenonInstance.sourceNoumenon.types().plus(NoumenonType.INDIVIDUAL)
             var instanceName : String?
 
             noumenonTypes.forEach { noumenonType ->
                 lateinit var perceivedNoumenon: PerceivedNoumenon
-                instanceName = if (noumenonType == NoumenonType.INDIVIDUAL) perceivedExternalPhenomenon.sender.noumenonInstance.instanceName else null
+                instanceName = if (noumenonType == NoumenonType.INDIVIDUAL) perceivedPhenomenon.perceivedExternalPhenomena.sender.noumenonInstance.instanceName else null
 
                 if (registerExecutive.noumenaRegister.none { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }) { //check longterm memory
                     if (longtermMemory.noumenaRegister.none { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }) { //not found in longterm memory, add

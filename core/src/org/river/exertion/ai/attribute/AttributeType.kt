@@ -1,4 +1,4 @@
-package org.river.exertion.ai.attributes
+package org.river.exertion.ai.attribute
 
 enum class AttributeType {
 

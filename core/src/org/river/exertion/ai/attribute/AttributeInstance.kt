@@ -1,4 +1,4 @@
-package org.river.exertion.ai.attributes
+package org.river.exertion.ai.attribute
 
 import org.river.exertion.ai.noumena.INoumenon
 import org.river.exertion.ai.noumena.NoneNoumenon

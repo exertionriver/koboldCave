@@ -1,6 +1,7 @@
 package org.river.exertion.ai.manifest
 
 import org.river.exertion.ai.perception.PerceivedExternalPhenomena
+import org.river.exertion.ai.perception.PerceivedPhenomena
 import org.river.exertion.ai.phenomena.ExternalPhenomenaImpression
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
@@ -33,7 +34,16 @@ class CharacterManifest {
 
         val returnList = mutableListOf<PerceivedExternalPhenomena>()
 
-        manifests.forEach { manifest -> manifest.perceptionList.forEach { perceivedPhenomena -> if (perceivedPhenomena != null) returnList.add(perceivedPhenomena) } }
+        manifests.forEach { manifest -> manifest.perceptionList.forEach { perceivedExternalPhenomena -> if (perceivedExternalPhenomena != null) returnList.add(perceivedExternalPhenomena) } }
+
+        return returnList
+    }
+
+    fun getPerceivedPhenomenaList() : MutableList<PerceivedPhenomena> {
+
+        val returnList = mutableListOf<PerceivedPhenomena>()
+
+        manifests.forEach { manifest -> manifest.joinedList().forEach { perceivedPhenomena -> if (perceivedPhenomena.perceivedExternalPhenomena != null) returnList.add(perceivedPhenomena) } }
 
         return returnList
     }

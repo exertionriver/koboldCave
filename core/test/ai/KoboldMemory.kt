@@ -16,9 +16,9 @@ object KoboldMemory {
         val returnList = mutableListOf<PerceivedAttribute>()
         val kobold = kobold { }
 
-        returnList.add(PerceivedAttribute(kobold.pollRandomAttribute()))
-        returnList.add(PerceivedAttribute(kobold.pollRandomAttribute()))
-        returnList.add(PerceivedAttribute(kobold.pollRandomAttribute()))
+        returnList.add(PerceivedAttribute(kobold.pollRandomAttributeInstance()))
+        returnList.add(PerceivedAttribute(kobold.pollRandomAttributeInstance()))
+        returnList.add(PerceivedAttribute(kobold.pollRandomAttributeInstance()))
 
         return returnList
     }
@@ -29,7 +29,7 @@ object KoboldMemory {
         val kobold = kobold { }
 
         returnList.add(PerceivedNoumenon().apply {
-            this.perceivedAttributes.add(PerceivedAttribute(kobold.pollRandomAttribute()))
+            this.perceivedAttributes.add(PerceivedAttribute(kobold.pollRandomAttributeInstance()))
             this.internalStateInstance.internalState.add(fearFacet { magnitude = 0.3f })
             this.knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)
             this.noumenonType = NoumenonType.KOBOLD
@@ -37,7 +37,7 @@ object KoboldMemory {
         })
 
         returnList.add(PerceivedNoumenon().apply {
-            this.perceivedAttributes.add(PerceivedAttribute(kobold.pollRandomAttribute()))
+            this.perceivedAttributes.add(PerceivedAttribute(kobold.pollRandomAttributeInstance()))
             this.internalStateInstance.internalState.add(angerFacet { magnitude = 0.5f })
             this.knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)
             this.noumenonType = NoumenonType.KOBOLD
