@@ -1,11 +1,11 @@
 package org.river.exertion.btree.v0_1.task_cond;
 
 import org.river.exertion.btree.v0_1.ExecLeafTask
-import org.river.exertion.btree.v0_1.TaskType
+import org.river.exertion.btree.v0_1.Behavior
 
 class ApproachTask : ExecLeafTask() {
 
-    override fun taskType() = TaskType.APPROACH
+    override fun taskType() = Behavior.APPROACH
 
     override fun executeTask() {
         taskType().updateObject(this.`object`)

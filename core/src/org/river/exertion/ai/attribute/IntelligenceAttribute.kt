@@ -13,7 +13,7 @@ object IntelligenceAttribute : IAttribute<Int> {
             , AttributeValue(8, "smiley Tim", 2)
     )
 
-    fun intelligenceRange(lambda : Characteristic<Int>.() -> Unit) = Characteristic(attributeObj = this@IntelligenceAttribute.javaClass).apply(lambda)
+    fun intelligenceRange(lambda : Trait<Int>.() -> Unit) = Trait(attributeObj = this@IntelligenceAttribute.javaClass).apply(lambda)
 
     override fun equals(other: Any?): Boolean = this.type() == (other as IAttribute<*>).type()
     override fun hashCode(): Int {

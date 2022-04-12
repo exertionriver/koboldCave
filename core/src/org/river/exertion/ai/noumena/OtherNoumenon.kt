@@ -1,11 +1,10 @@
 package org.river.exertion.ai.noumena
 
-import org.river.exertion.ai.attribute.Characteristic
-import org.river.exertion.ai.property.Quality
+import org.river.exertion.ai.attribute.Trait
 
-object OtherNoumenon : INoumenon {
+object OtherNoumenon : INoumenon, IAttributeable {
 
     override fun type() = NoumenonType.OTHER
     override fun types() = listOf(type())
-    override fun characteristics() : List<Characteristic<*>> = listOf()
+    override fun traits() : List<Trait<*>> = listOf()
 }

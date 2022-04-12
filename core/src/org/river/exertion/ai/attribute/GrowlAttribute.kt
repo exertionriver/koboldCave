@@ -14,7 +14,7 @@ object GrowlAttribute : IAttribute<String> {
             , AttributeValue(KoboldNoumenon.type().tag(),"low growl", 2)
     )
 
-    fun growlRange(lambda : Characteristic<String>.() -> Unit) = Characteristic(attributeObj = this@GrowlAttribute.javaClass).apply(lambda)
+    fun growlRange(lambda : Trait<String>.() -> Unit) = Trait(attributeObj = this@GrowlAttribute.javaClass).apply(lambda)
 
     override fun equals(other: Any?): Boolean = this.type() == (other as IAttribute<*>).type()
     override fun hashCode(): Int {

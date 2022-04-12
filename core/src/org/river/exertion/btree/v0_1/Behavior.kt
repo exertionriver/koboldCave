@@ -1,6 +1,6 @@
 package org.river.exertion.btree.v0_1
 
-enum class TaskType {
+enum class Behavior {
 
     ABIDE { override fun updateObject(character : IBTCharacter) { character.mIntAnxiety += 0.01f }
         override fun description() = "abiding" }

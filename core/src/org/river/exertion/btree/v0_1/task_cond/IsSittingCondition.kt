@@ -2,7 +2,7 @@ package org.river.exertion.btree.v0_1.task_cond;
 
 import org.river.exertion.btree.v0_1.ExecLeafCondition
 import org.river.exertion.btree.v0_1.IBTCharacter
-import org.river.exertion.btree.v0_1.TaskType
+import org.river.exertion.btree.v0_1.Behavior
 
 class IsSittingCondition : ExecLeafCondition() {
 
@@ -15,7 +15,7 @@ class IsSittingCondition : ExecLeafCondition() {
         fun isSitting(character : IBTCharacter) : Boolean = character.isSitting
 
         fun isSittingSince(character : IBTCharacter) : Boolean =
-                if (character.actionCountAgo(TaskType.SIT, character.momentsLongAgo * character.actionMoment) == 0) character.isSitting
+                if (character.actionCountAgo(Behavior.SIT, character.momentsLongAgo * character.actionMoment) == 0) character.isSitting
                 else false
     }
 }

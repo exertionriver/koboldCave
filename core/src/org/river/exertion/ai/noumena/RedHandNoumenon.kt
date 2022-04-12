@@ -1,11 +1,10 @@
 package org.river.exertion.ai.noumena
 
-import org.river.exertion.ai.attribute.Characteristic.Companion.mergeOverrideCharacteristics
-import org.river.exertion.ai.property.Quality
+import org.river.exertion.ai.attribute.Trait.Companion.mergeOverrideTraits
 
-class RedHandNoumenon : INoumenon {
+class RedHandNoumenon : INoumenon, IAttributeable {
 
     override fun type() = NoumenonType.RED_HAND
     override fun types() = GroupNoumenon.types().toMutableList().apply { this.add( type() ) }.toList()
-    override fun characteristics() = GroupNoumenon.characteristics().mergeOverrideCharacteristics(listOf())
+    override fun traits() = GroupNoumenon.traits().mergeOverrideTraits(listOf())
 }

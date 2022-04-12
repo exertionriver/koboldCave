@@ -1,10 +1,10 @@
 package org.river.exertion.ai.noumena
 
-import org.river.exertion.ai.attribute.Characteristic.Companion.mergeOverrideCharacteristics
+import org.river.exertion.ai.attribute.Trait.Companion.mergeOverrideTraits
 
-object HumanoidNoumenon : INoumenon {
+object HumanoidNoumenon : INoumenon, IAttributeable {
 
     override fun type() = NoumenonType.HUMANOID
     override fun types() = BeingNoumenon.types().toMutableList().apply { this.add(type()) }.toList()
-    override fun characteristics() = BeingNoumenon.characteristics().mergeOverrideCharacteristics(listOf())
+    override fun traits() = BeingNoumenon.traits().mergeOverrideTraits(listOf())
 }

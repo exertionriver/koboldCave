@@ -13,7 +13,7 @@ object InternalStateAttribute : IAttribute<Float> {
             , AttributeValue(0.6f, "most hallucinating", 2)
     )
 
-    fun internalStateRange(lambda : Characteristic<Float>.() -> Unit) = Characteristic(attributeObj = this@InternalStateAttribute.javaClass).apply(lambda)
+    fun internalStateRange(lambda : Trait<Float>.() -> Unit) = Trait(attributeObj = this@InternalStateAttribute.javaClass).apply(lambda)
 
     override fun equals(other: Any?): Boolean = this.type() == (other as IAttribute<*>).type()
     override fun hashCode(): Int {

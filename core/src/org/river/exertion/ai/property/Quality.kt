@@ -10,7 +10,7 @@ data class Quality <T:Any>(var propertyObj: Class<IProperty<T>> = (NoneProperty 
     fun property() : IProperty<T> = propertyObj.kotlin.objectInstance!!
     fun noumenon() : INoumenon = noumenonObj.kotlin.objectInstance!!
 
-    fun getQualityPropertyValues() : List<PropertyValue<T>> {
+    fun getPropertyValues() : List<PropertyValue<T>> {
         val rangeValues = property().propertyValues().toMutableList()
 
         if (maxValue != null) rangeValues.removeAll( property().propertyValues().filter { (it.value as Comparable<T>) > maxValue!! } )
@@ -19,7 +19,7 @@ data class Quality <T:Any>(var propertyObj: Class<IProperty<T>> = (NoneProperty 
         return rangeValues
     }
 
-    fun getRandomQualityPropertyValue() : PropertyValue<T> = ProbabilitySelect( getQualityPropertyValues().map { it }.associateWith { Probability(100f / getQualityPropertyValues().size, 0f) } ).getSelectedProbability()!!
+    fun getRandomPropertyValue() : PropertyValue<T> = ProbabilitySelect( getPropertyValues().map { it }.associateWith { Probability(100f / getPropertyValues().size, 0f) } ).getSelectedProbability()!!
 
     companion object {
         fun List<Quality<*>>.mergeOverrideQualities(thisQualities : List<Quality<*>>) : List<Quality<*>> {
@@ -31,10 +31,10 @@ data class Quality <T:Any>(var propertyObj: Class<IProperty<T>> = (NoneProperty 
             return returnList
         }
 
-        fun List<Quality<*>>.getRandomQualityPropertyInstances() : List<PropertyInstance<*>> {
+        fun List<Quality<*>>.getRandomFeatures() : List<PropertyInstance<*>> {
             val returnList = mutableListOf<PropertyInstance<*>>()
 
-            this.forEach { returnList.add(PropertyInstance(it.property().javaClass, it.noumenon().javaClass, it.getRandomQualityPropertyValue(), it.noumenonOrder)) }
+            this.forEach { returnList.add(PropertyInstance(it.property().javaClass, it.noumenon().javaClass, it.getRandomPropertyValue(), it.noumenonOrder)) }
 
             return returnList.sortedBy { it.noumenonOrder }
         }

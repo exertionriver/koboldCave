@@ -24,7 +24,7 @@ class TestCharacterMemory {
 
     val koboldGrowl = ExternalPhenomenaInstance().apply {
         this.type = ExternalPhenomenaType.AUDITORY
-        this.taskType = TaskType.BALTER
+        this.taskType = Behavior.BALTER
         this.direction = 120f
         this.magnitude = 120f
         this.location = Vector3(30f, 30f, 30f)

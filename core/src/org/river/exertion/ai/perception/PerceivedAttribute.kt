@@ -1,5 +1,5 @@
 package org.river.exertion.ai.perception
 
-import org.river.exertion.ai.attribute.AttributeInstance
+import org.river.exertion.ai.attribute.Characteristic
 
-data class PerceivedAttribute(var attributeInstance : AttributeInstance<*>? = null, var perceivedExternalPhenomena: PerceivedExternalPhenomena? = null)
+data class PerceivedAttribute(var attributeInstance : Characteristic<*>? = null, var perceivedExternalPhenomena: PerceivedExternalPhenomena? = null)

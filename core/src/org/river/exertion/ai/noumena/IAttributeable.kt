@@ -1,8 +1,8 @@
 package org.river.exertion.ai.noumena
 
-import org.river.exertion.ai.attribute.Characteristic
+import org.river.exertion.ai.attribute.Trait
 
 interface IAttributeable {
 
-    fun characteristics() : List<Characteristic<*>>
+    fun traits() : List<Trait<*>>
 }

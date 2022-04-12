@@ -56,7 +56,7 @@ class KoboldCharacter : IBTCharacter {
 
     override var decideSequenceList = mutableListOf<ExecLeafTask>()
     override var currentAction : ExecLeafTask = AbideTask()
-    override var actionList = mutableListOf<Pair<TaskType, Float>>()
+    override var actionList = mutableListOf<Pair<Behavior, Float>>()
 
     override var actionTimer = 0f
     override val actionMoment = .6f

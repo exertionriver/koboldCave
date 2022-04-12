@@ -74,11 +74,11 @@ interface IBTCharacter : Telegraph {
         tree.getChild(0).getChild(1).getChild(1).getChild(1).getChild(1).addChild(Include<IBTCharacter?>().apply { this.subtree = subTreeLocation; this.lazy = true })
     }
 
-    fun actionMap(ago : Float) : MutableMap<TaskType, Int> {
+    fun actionMap(ago : Float) : MutableMap<Behavior, Int> {
 
         var agoCounter = 0f
         var agoIdx = 0
-        val returnMap = mutableMapOf<TaskType, Int>()
+        val returnMap = mutableMapOf<Behavior, Int>()
 
         if ( actionList.isNotEmpty() ) {
             val agoActionList = actionList.reversed()
@@ -98,7 +98,7 @@ interface IBTCharacter : Telegraph {
         return returnMap
     }
 
-    fun actionCountAgo(taskEnum: TaskType, ago: Float) : Int {
+    fun actionCountAgo(taskEnum: Behavior, ago: Float) : Int {
 
         var agoCounter = 0f
         var agoIdx = 0
@@ -142,7 +142,7 @@ interface IBTCharacter : Telegraph {
 
     var decideSequenceList : MutableList<ExecLeafTask> //sequence of actions
     var currentAction : ExecLeafTask
-    var actionList : MutableList<Pair<TaskType, Float>> //actions already taken
+    var actionList : MutableList<Pair<Behavior, Float>> //actions already taken
 
     var actionTimer : Float
     val actionMoment : Float

@@ -11,7 +11,7 @@ abstract class ExecLeafTask : LeafTask<IBTCharacter>() {
         return Status.SUCCEEDED
     }
 
-    abstract fun taskType() : TaskType
+    abstract fun taskType() : Behavior
 
     abstract fun executeTask()
 
