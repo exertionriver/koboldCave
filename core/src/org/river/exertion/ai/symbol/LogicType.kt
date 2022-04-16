@@ -1,8 +1,7 @@
 package org.river.exertion.ai.symbol
 
-enum class MarkType {
-
-    HARMFUL { override fun tag() = "harmful" },
+enum class LogicType {
+    AND { override fun tag() = "and" },
     NONE { override fun tag() = "none" }
     ;
     abstract fun tag() : String
