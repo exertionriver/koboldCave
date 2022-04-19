@@ -7,6 +7,7 @@ import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 interface ISymbol {
 
     var type : SymbolType
-    var referent : Any
+    var referent : ReferentType
+    var presence : Float
 
 }

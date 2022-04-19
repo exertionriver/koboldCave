@@ -4,10 +4,7 @@ import org.river.exertion.ai.condition.ConditionInstance
 import org.river.exertion.ai.condition.ConditionInstance.Companion.symbolType
 import java.util.concurrent.locks.Condition
 
-enum class SymbolType {
-    NEED { override fun tag() = "need" },
-    WANT { override fun tag() = "want" },
-    OBJECTIVE { override fun tag() = "objective" },
+enum class SymbolType : ReferentType {
 
     MY_LIFE { override fun tag() = "my life"},
     GOOD_HEALTH { override fun tag() = "good health"; fun resolveTo(conditionInstance: ConditionInstance) = conditionInstance.symbolType()},
@@ -22,6 +19,9 @@ enum class SymbolType {
     CONTINUED_FAILURE { override fun tag() = "continued success" },
 
     SHINY_THING { override fun tag() = "shiny thing" },
+    SHINY_THING_OBTAINED { override fun tag() = "shiny thing obtained" },
+
+    HUNGER { override fun tag() = "hunger" },
     FOOD { override fun tag() = "food" },
     FOOD_CONSUMED { override fun tag() = "food consumed" },
 

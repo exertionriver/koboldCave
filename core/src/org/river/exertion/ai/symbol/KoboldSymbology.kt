@@ -1,55 +1,41 @@
 package org.river.exertion.ai.symbol
 
-import org.river.exertion.ai.internalFocus.InternalFocus
-import org.river.exertion.ai.internalFocus.InternalFocusImpactor
-import org.river.exertion.ai.internalFocus.InternalFocusType
-import org.river.exertion.ai.noumena.KoboldNoumenon
-import org.river.exertion.ai.symbol.Vision.Companion.vision
-import org.river.exertion.ai.symbol.VisionImpactor.Companion.visionImpactor
+import org.river.exertion.ai.internalFocus.*
+import org.river.exertion.ai.noumena.other.being.fungus.lichen.LichenNoumenon
+import org.river.exertion.ai.noumena.other.being.fungus.mushroom.MushroomNoumenon
 
-object KoboldSymbology : ISymbology {
+object KoboldSymbology : ISymbology  {
 
-    override var beliefs = mutableSetOf<Belief>().apply { this.addAll(mutableSetOf(
-        Belief(SymbolType.BEST_THING, Logic(SymbolType.BEST_THING, LogicType.AND, SymbolType.GOOD_HEALTH, SymbolType.KINSHIP), 0.7f),
-        Belief(SymbolType.KINSHIP, KoboldNoumenon, 0.8f),
-        Belief(SymbolType.MY_LIFE, SymbolType.GOOD_HEALTH, 0.9f),
+    override var symbols = mutableSetOf<SymbolType>().apply { this.addAll(SymbolType.values()) }
 
-        Belief(SymbolType.FOOD, "MushroomNoumenon", 0.3f),
-        Belief(SymbolType.FOOD, "DeliciousBugNoumenon", 0.5f),
-        Belief(SymbolType.FOOD, "TastiestLichenNoumenon", 0.9f)
-    ) ) }
+    override var internalFocuses = mutableSetOf(
+        belief { symbolInstance { type = SymbolType.FOOD; referent = MushroomNoumenon }; conviction = 0.3f },
+        belief { symbolInstance { type = SymbolType.FOOD; referent = LichenNoumenon }; conviction = 0.5f },
+        logic { resultSymbolType = SymbolType.BEST_THING; ILogic.LogicType.AND; SymbolType.GOOD_HEALTH; SymbolType.KINSHIP },
+        need { targetSymbolType = SymbolType.FOOD; triggerSymbolType = SymbolType.HUNGER; satisfactionSymbolType = SymbolType.FOOD_CONSUMED },
+        want { targetSymbolType = SymbolType.SHINY_THING; triggerSymbolType = SymbolType.SHINY_THING; satisfactionSymbolType = SymbolType.SHINY_THING_OBTAINED },
+    )
 
-    override var beliefImpactors = mutableSetOf<BeliefImpactor>().apply { this.addAll(mutableSetOf(
-        BeliefImpactor(SymbolType.KINSHIP, SymbolType.NOUMENON_BETRAYAL, -0.2f),
-    ) ) }
-
-    var logics = mutableSetOf<Logic>().apply {
-        Logic(SymbolType.BEST_THING, LogicType.AND, SymbolType.GOOD_HEALTH, SymbolType.KINSHIP)
+    fun MutableSet<InternalFocusInstance>.updateNeed(internalFocusInstance : InternalFocusInstance) {
+        this.filter { it.type == InternalFocusType.NEED && (it.instance as NeedInstance).targetSymbolType == (internalFocusInstance.instance as NeedInstance).targetSymbolType }.forEach {
+            (it.instance as NeedInstance).urgency = (internalFocusInstance.instance as NeedInstance).urgency
+        }
     }
 
-    override var visions = mutableSetOf<Vision>().apply { this.addAll(mutableSetOf(
-            Belief(SymbolType.WANT, SymbolType.SHINY_THING, 0.7f).vision(0.3f),
-            Belief(SymbolType.NEED, SymbolType.FOOD, 0.7f).vision(0.3f)
-    ) ) }
+    fun MutableSet<InternalFocusInstance>.generateNeedTargets(symbols : MutableSet<SymbolType>, symbolDisplay : MutableSet<SymbolInstance> ) {
 
-    override var visionImpactors = mutableSetOf<VisionImpactor>().apply { this.addAll(mutableSetOf(
-        BeliefImpactor(SymbolType.FOOD, SymbolType.FOOD_CONSUMED, 0.0f).visionImpactor(1.0f)
-    ) ) }
+        val targetsToAdd = mutableSetOf<InternalFocusInstance>()
 
-    override var internalFocuses = mutableSetOf<InternalFocus>().apply { this.addAll(mutableSetOf(
-            InternalFocus(InternalFocusType.STRATEGY, SymbolType.FOOD, 0.2f, 0f)
-    ) ) }
+        val symbolTypesToProcess = symbolDisplay.filter { symbols.contains(it.type) && it.presence > 0.3f }.map { it.type }
 
-    override var internalFocusImpactors = mutableSetOf<InternalFocusImpactor>().apply { this.addAll(mutableSetOf(
-            InternalFocusImpactor(InternalFocusType.QUEST, SymbolType.KINSHIP, SymbolType.CONTINUED_FAILURE, -0.05f, 0f)
-    ) ) }
+        val targets = this.filter { it.type == InternalFocusType.TARGET }.map { it.instance }.toSet() as Set<TargetInstance>
 
-    fun generateInternalFocuses() {
-        val visionSymbols = visions.map { it.referent as SymbolType }
-        val currentInternalFocusSymbols = internalFocuses.map { it.targetSymbolType }
+        val needs = this.filter { it.type == InternalFocusType.NEED }.map { it.instance }.toSet() as Set<NeedInstance>
+        val needsToTrigger = needs.filter { needInstance -> symbolTypesToProcess.contains( needInstance.triggerSymbolType) }
 
-        val symbolsToGenerateFor = visionSymbols.filterNot { currentInternalFocusSymbols.contains(it) }
-        symbolsToGenerateFor.forEach { internalFocuses.add(InternalFocus(InternalFocusType.STRATEGY, it, 0.5f, 0.0f)) }
+        needsToTrigger.filterNot { it.expressedIn(targets) }.forEach {
+            this.add( target { }.apply { this.instance = it.expressedAsTargetInstance() } )
+        }
     }
 
 }

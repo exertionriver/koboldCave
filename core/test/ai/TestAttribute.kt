@@ -2,9 +2,9 @@ package ai
 
 import org.junit.jupiter.api.Test
 import org.river.exertion.ai.attribute.Trait.Companion.getRandomCharacteristics
-import org.river.exertion.ai.noumena.KoboldNoumenon
-import org.river.exertion.ai.noumena.KoboldNoumenon.kobold
-import org.river.exertion.ai.noumena.LowRaceNoumenon
+import org.river.exertion.ai.noumena.other.being.humanoid.low_race.KoboldNoumenon
+import org.river.exertion.ai.noumena.other.being.humanoid.low_race.KoboldNoumenon.kobold
+import org.river.exertion.ai.noumena.other.being.humanoid.LowRaceNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 @ExperimentalUnsignedTypes

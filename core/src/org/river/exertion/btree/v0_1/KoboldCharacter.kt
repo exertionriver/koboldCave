@@ -3,7 +3,7 @@ package org.river.exertion.btree.v0_1
 import com.badlogic.gdx.ai.btree.BehaviorTree
 import org.river.exertion.ai.manifest.CharacterManifest
 import org.river.exertion.ai.memory.CharacterMemory
-import org.river.exertion.ai.noumena.KoboldNoumenon.kobold
+import org.river.exertion.ai.noumena.other.being.humanoid.low_race.KoboldNoumenon.kobold
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
 
 class KoboldCharacter : IBTCharacter {

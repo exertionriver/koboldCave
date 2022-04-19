@@ -6,3 +6,8 @@ sourceSets.test.java.srcDirs = [ "test/" ]
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
 }
+compileKotlin {
+    kotlinOptions {
+        languageVersion = "1.4"
+    }
+}

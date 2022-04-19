@@ -4,7 +4,7 @@ import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
 import org.river.exertion.ai.internalFacet.FearFacet.fearFacet
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
-import org.river.exertion.ai.noumena.KoboldNoumenon.kobold
+import org.river.exertion.ai.noumena.other.being.humanoid.low_race.KoboldNoumenon.kobold
 import org.river.exertion.ai.noumena.NoumenonType
 import org.river.exertion.ai.perception.PerceivedAttribute
 import org.river.exertion.ai.perception.PerceivedNoumenon

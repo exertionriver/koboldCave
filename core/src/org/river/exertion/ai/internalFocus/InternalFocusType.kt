@@ -1,16 +1,45 @@
 package org.river.exertion.ai.internalFocus
 
+import org.river.exertion.ai.symbol.*
+
 enum class InternalFocusType {
 
-        QUEST { override fun tag() = "quest" }, //ongoing set of objectives, no resolution found
-            // Symbol Instance (Belief) + Set of Symbol Instances (Vision)
+//ground for resolving targets
+    //symbol + conviction (ordered by desc are values
+    BELIEF { override fun tag() = "belief" },
 
-        MISSION { override fun tag() = "mission" }, //sequence of objectives, resolution found
-            //sequence of symbols / conditions (symbol instance + list of symbol instances)
-        STRATEGY { override fun tag() = "strategy" }, //approach to achieving an objective or respond to a symbol, proposed approach to realize objective, posture
-            //e.g. BEFRIEND (symbol instance + set of symbol instances)
-        TACTIC { override fun tag() = "tactic" }, //action or device for accomplishing a strategy, impact-improver for realizing objective
-            //e.g. OFFER_SOMETHING (symbol instance + set of symbol instances)
+    //conditions generate targets from these
+    NEED { override fun tag() = "need" },
+
+    //appearance of noumena generate targets from these
+    WANT { override fun tag() = "want" },
+
+    // relating symbols to symbols
+    LOGIC { override fun tag() = "logic" },
+
+//methods for getting to targets
+    //ongoing generator of targets
+    QUEST { override fun tag() = "quest" },
+
+    //sequence of objectives, generates one target after another
+    MISSION { override fun tag() = "mission" },
+
+    //step towards accomplish mission
+    OBJECTIVE { override fun tag() = "objective" },
+
+    //approach to accomplish objective or respond to a symbol
+    STRATEGY { override fun tag() = "strategy" },
+
+    //practical step, action or device for accomplishing a strategy, impact-improver for realizing objective
+    TACTIC { override fun tag() = "tactic" },
+
+//targets
+    //target without an associated belief
+    VISION { override fun tag() = "vision" },
+
+    //target with an associated belief
+    TARGET { override fun tag() = "target" },
+
     NONE
     ;
     open fun tag() : String = "none"

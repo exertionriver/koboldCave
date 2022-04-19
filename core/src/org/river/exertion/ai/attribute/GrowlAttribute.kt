@@ -1,6 +1,6 @@
 package org.river.exertion.ai.attribute
 
-import org.river.exertion.ai.noumena.KoboldNoumenon
+import org.river.exertion.ai.noumena.other.being.humanoid.low_race.KoboldNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 object GrowlAttribute : IAttribute<String> {
