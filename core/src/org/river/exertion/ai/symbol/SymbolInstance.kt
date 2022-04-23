@@ -1,3 +1,7 @@
 package org.river.exertion.ai.symbol
 
-data class SymbolInstance(override var type : SymbolType = SymbolType.NONE, override var referent: ReferentType = SymbolType.NONE, override var presence: Float = 0f) : ISymbol
+import org.river.exertion.ai.symbol.symbols.NoneSymbol
+
+data class SymbolInstance (var symbolObj : ISymbol = NoneSymbol, var position : Float = 0f) {
+
+}

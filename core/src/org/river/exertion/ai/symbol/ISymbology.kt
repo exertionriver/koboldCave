@@ -4,8 +4,10 @@ import org.river.exertion.ai.internalFocus.*
 
 interface ISymbology {
 
-    var symbols : MutableSet<SymbolType>
-    var internalFocuses : MutableSet<InternalFocusInstance>
+    var lexicon : MutableSet<SymbolType>
+    var sourceInternalFocuses : MutableSet<InternalFocusInstance> //child AI uses these to formulate response
+//    var callInternalFocuses : MutableSet<InternalFocusInstance> //mother AI plays these based on conditions
+//    var responseInternalFocuses : MutableSet<InternalFocusInstance> //child AI (character) plays these based upon mother AI play
 
 //    fun belief(lambda : InternalFocusInstance.() -> Unit) = InternalFocusInstance(tag = "belief", type = InternalFocusType.BELIEF, instance = ).apply(lambda)
 
@@ -23,5 +25,5 @@ interface ISymbology {
 
     fun targetInstance(lambda : TargetInstance.() -> Unit) = TargetInstance().apply(lambda)
 
-    fun symbolInstance(lambda : SymbolInstance.() -> Unit) = SymbolInstance().apply(lambda)
+    fun symbolInstance(lambda : SymbolInstance.() -> Unit) = SymbolInstance(position = 0f).apply(lambda)
 }

@@ -21,6 +21,6 @@ object LowRaceNoumenon : INoumenon, IAttributeable, ISymbology {
         intelligenceRange { noumenonObj = this@LowRaceNoumenon.javaClass; noumenonOrder = 8; minValue = 6; maxValue = 8 }
     ))
 
-    override var symbols = mutableSetOf<SymbolType>()
-    override var internalFocuses = mutableSetOf<InternalFocusInstance>()
+    override var lexicon = mutableSetOf<SymbolType>()
+    override var sourceInternalFocuses = mutableSetOf<InternalFocusInstance>()
 }

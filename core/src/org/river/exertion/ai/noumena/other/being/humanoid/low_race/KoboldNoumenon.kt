@@ -22,8 +22,8 @@ object KoboldNoumenon : INoumenon, InstantiatableNoumenon, IAttributeable, ISymb
         intelligenceRange { noumenonObj = this@KoboldNoumenon.javaClass; noumenonOrder = 8; minValue = 7; maxValue = 8 }
     ))
 
-    override var symbols = mutableSetOf<SymbolType>()
-    override var internalFocuses = mutableSetOf<InternalFocusInstance>()
+    override var lexicon = mutableSetOf<SymbolType>()
+    override var sourceInternalFocuses = mutableSetOf<InternalFocusInstance>()
 
     fun kobold(lambda : NoumenonInstance.() -> Unit) = NoumenonInstance(sourceNoumenonType = KoboldNoumenon.javaClass, instanceName = "razza" + Random().nextInt()).apply(lambda)
 

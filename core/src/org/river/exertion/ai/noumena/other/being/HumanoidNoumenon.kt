@@ -19,6 +19,6 @@ object HumanoidNoumenon : INoumenon, IAttributeable, ISymbology {
     override fun types() = BeingNoumenon.types().toMutableList().apply { this.add(type()) }.toList()
     override fun traits() = BeingNoumenon.traits().mergeOverrideTraits(listOf())
 
-    override var symbols = mutableSetOf<SymbolType>()
-    override var internalFocuses = mutableSetOf<InternalFocusInstance>()
+    override var lexicon = mutableSetOf<SymbolType>()
+    override var sourceInternalFocuses = mutableSetOf<InternalFocusInstance>()
 }

@@ -1,13 +1,12 @@
 package org.river.exertion.ai.symbol
 
-import org.river.exertion.Probability
-import org.river.exertion.ProbabilitySelect
-import org.river.exertion.ai.phenomena.ExternalPhenomenaType
-
 interface ISymbol {
 
-    var type : SymbolType
-    var referent : ReferentType
-    var presence : Float
+    var tag : String
+    var targetMagnetism : SymbolMagnetism
+    var cycle : SymbolCycle
+
+    var modifiers : MutableSet<SymbolModifier>
+    var spawns : MutableSet<SymbolSpawn>
 
 }
