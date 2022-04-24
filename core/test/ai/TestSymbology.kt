@@ -34,7 +34,7 @@ class TestSymbology {
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
 
         val updateSymbols2 = mutableSetOf(
-                SymbolInstance(TimeElapseSymbol, .2f)
+                SymbolInstance(TimeElapseSymbol, -5000.2f)
         )
 
         symbolDisplay.update(updateSymbols2)

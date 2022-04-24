@@ -10,5 +10,7 @@ object TimeElapseSymbol : ISymbol {
 
     override var modifiers = mutableSetOf<SymbolModifier>()
     override var spawns = mutableSetOf<SymbolSpawn>()
+    override var despawns = mutableSetOf<SymbolSpawn>()
 
+    override fun spawn() = SymbolInstance(TimeElapseSymbol, 1f)
 }
