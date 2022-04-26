@@ -7,8 +7,9 @@ interface ISymbol {
     var cycle : SymbolCycle
 
     var modifiers : MutableSet<SymbolModifier>
-    var spawns : MutableSet<SymbolSpawn>
-    var despawns : MutableSet<SymbolSpawn>
+    var spawnsPresent : MutableSet<SymbolSpawn>
+    var despawnsPresent : MutableSet<SymbolSpawn>
 
-    fun spawn() : SymbolInstance
+    fun spawnPresent() : MutableSet<SymbolInstance>
+    fun spawnAbsent() : MutableSet<SymbolInstance>
 }

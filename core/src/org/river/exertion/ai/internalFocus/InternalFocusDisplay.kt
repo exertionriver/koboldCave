@@ -1,10 +1,9 @@
-package org.river.exertion.ai.symbol
+package org.river.exertion.ai.internalFocus
 
-class SymbolDisplay {
+class InternalFocusDisplay {
 
-    var symbolsPresent = mutableSetOf<SymbolInstance>()
-    var symbolsAbsent = mutableSetOf<SymbolInstance>()
-
+    var symbolsPresent = mutableSetOf<IInternalFocus>()
+/*
     fun addUpdate(addUpdateSymbols : MutableSet<SymbolInstance>) {
 
         addUpdateSymbols.forEach { symbolInstance ->
@@ -52,17 +51,6 @@ class SymbolDisplay {
 
         val (deltaCycle, deltaPosition) = symbolsPresent.first { it.symbolObj == updateSymbolInstance.symbolObj }.normalizeCyclePosition( updateSymbolInstance.position )
 
-        //if these modified and update symbols are magnetism-aligned, spawn 'absent' symbolinstance if not already spawned
-        updateSymbolInstance.symbolObj.spawnAbsent().map { it.symbolObj }.forEach { absentSymbol ->
-            val modifierRatio = updateSymbolInstance.symbolObj.modifiers.first { it.modifyingSymbol == absentSymbol }.modifierRatio
-            symbolsAbsent.first { it.symbolObj == absentSymbol }.position =
-                    if (absentSymbol.targetMagnetism == SymbolMagnetism.ATTRACT)
-                        (updateSymbolInstance.symbolObj.targetMagnetism.targetPosition() - updateSymbolInstance.position) / modifierRatio
-                    else
-                        -(updateSymbolInstance.symbolObj.targetMagnetism.targetPosition() - updateSymbolInstance.position) / modifierRatio
-        }
-
-
         val modifiedSymbolInstances = mutableSetOf<SymbolInstance>()
 
         //get symbol modifiers, modify accordingly
@@ -72,37 +60,34 @@ class SymbolDisplay {
         }
 
         //get symbol spawns for updated symbol, spawn accordingly
-        updateSymbolInstance.symbolObj.spawnsPresent.forEach {
+        updateSymbolInstance.symbolObj.spawns.forEach {
             spawnSymbolInstance -> spawnSymbolInstance.spawnSymbol(updateSymbolInstance)
         }
 
         //get symbol for modified symbols, spawn accordingly
         modifiedSymbolInstances.forEach {
-                modifiedSymbolInstance -> modifiedSymbolInstance.symbolObj.spawnsPresent.forEach { modifiedSymbolSpawn ->
-                modifiedSymbolSpawn.spawnSymbol(modifiedSymbolInstance)
+            modifiedSymbolInstance -> modifiedSymbolInstance.symbolObj.spawns.forEach { modifiedSymbolSpawn ->
+               modifiedSymbolSpawn.spawnSymbol(modifiedSymbolInstance)
             }
         }
 
         //get symbol despawns, despawn accordingly
-        updateSymbolInstance.symbolObj.despawnsPresent.forEach {
+        updateSymbolInstance.symbolObj.despawns.forEach {
             despawnSymbolInstance -> despawnSymbolInstance.despawnSymbol(updateSymbolInstance)
         }
 
         //get symbol for modified symbols, despawn accordingly
         modifiedSymbolInstances.forEach {
-                modifiedSymbolInstance -> modifiedSymbolInstance.symbolObj.despawnsPresent.forEach { modifiedSymbolDespawn ->
+            modifiedSymbolInstance -> modifiedSymbolInstance.symbolObj.despawns.forEach { modifiedSymbolDespawn ->
                 modifiedSymbolDespawn.despawnSymbol(modifiedSymbolInstance)
             }
         }
-
     }
 
-    //e.g. SymbolInstance == Hunger, updateSymbolInstance == Food
     private fun SymbolInstance.updateModifiedSymbol(updateSymbolInstance : SymbolInstance, deltaCycle : Float, deltaPosition : Float) {
 
         val modifierEntry = this.symbolObj.modifiers.first { it.modifyingSymbol == updateSymbolInstance.symbolObj }
 
-        //modify e.g. hunger with food count
         val modifier = if (modifierEntry.modifyingType == SymbolModifierType.CYCLE_COUNT) {
             if (updateSymbolInstance.symbolObj.targetMagnetism == modifierEntry.modifyingMagnetism) {
                 modifierEntry.modifierRatio * deltaCycle
@@ -118,25 +103,14 @@ class SymbolDisplay {
         }
 
         this.normalizeCyclePosition(this.position + modifier)
-
-        //if these modified and update symbols are magnetism-aligned, spawn 'absent' symbolinstance if not already spawned
-        this.symbolObj.spawnAbsent().map { it.symbolObj }.forEach { absentSymbol ->
-            val modifierRatio = this.symbolObj.modifiers.first { it.modifyingSymbol == absentSymbol }.modifierRatio
-            symbolsAbsent.first { it.symbolObj == absentSymbol }.position =
-                    if (absentSymbol.targetMagnetism == SymbolMagnetism.ATTRACT)
-                        (this.symbolObj.targetMagnetism.targetPosition() - this.position) / modifierRatio
-                    else
-                        -(this.symbolObj.targetMagnetism.targetPosition() - this.position) / modifierRatio
-        }
-
     }
 
     private fun SymbolSpawn.spawnSymbol(updateSymbolInstance : SymbolInstance) {
 
         if (this.thresholdType == SymbolThresholdType.LESS_THAN) {
-            if (updateSymbolInstance.position < this.position) symbolsPresent.addAll(this.spawnSymbol.spawnPresent())
+            if (updateSymbolInstance.position < this.position) symbolsPresent.add(this.spawnSymbol.spawn())
         } else {
-            if (updateSymbolInstance.position > this.position) symbolsPresent.addAll(this.spawnSymbol.spawnPresent())
+            if (updateSymbolInstance.position > this.position) symbolsPresent.add(this.spawnSymbol.spawn())
         }
     }
 
@@ -148,4 +122,5 @@ class SymbolDisplay {
             if (updateSymbolInstance.position > this.position) symbolsPresent.removeAll(symbolsPresent.filter { it.symbolObj == this.spawnSymbol}.toSet())
         }
     }
+*/
 }

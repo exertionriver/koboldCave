@@ -19,10 +19,15 @@ class TestSymbology {
                 SymbolInstance(FoodSymbol, .6f),
                 SymbolInstance(TimeElapseSymbol, .4f)
             )
+            this.symbolsAbsent.add(SymbolInstance(FoodSymbol, 2.0f))
+
         }
 
         println("initial values")
+        println("present:")
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
+        println("absent:")
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}") }
 
         val updateSymbols1 = mutableSetOf(
                 SymbolInstance(HungerSymbol, .7f),
@@ -31,7 +36,10 @@ class TestSymbology {
         symbolDisplay.update(updateSymbols1)
 
         println("after first update")
+        println("present:")
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
+        println("absent:")
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}") }
 
         val updateSymbols2 = mutableSetOf(
                 SymbolInstance(TimeElapseSymbol, -5000.2f)
@@ -40,7 +48,10 @@ class TestSymbology {
         symbolDisplay.update(updateSymbols2)
 
         println("after second update")
+        println("present:")
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
+        println("absent:")
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}") }
 
         val updateSymbols3 = mutableSetOf(
                 SymbolInstance(FoodSymbol,-2.4f)
@@ -49,7 +60,10 @@ class TestSymbology {
         symbolDisplay.update(updateSymbols3)
 
         println("after third update")
+        println("present:")
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
+        println("absent:")
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}") }
 
     }
 }

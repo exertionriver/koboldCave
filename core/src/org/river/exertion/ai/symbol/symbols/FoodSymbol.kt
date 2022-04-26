@@ -9,9 +9,10 @@ object FoodSymbol : ISymbol {
     override var cycle = SymbolCycle.MULTIPLE
 
     override var modifiers = mutableSetOf<SymbolModifier>()
-    override var spawns = mutableSetOf<SymbolSpawn>()
-    override var despawns = mutableSetOf<SymbolSpawn>()
+    override var spawnsPresent = mutableSetOf<SymbolSpawn>()
+    override var despawnsPresent = mutableSetOf<SymbolSpawn>()
 
-    override fun spawn() = SymbolInstance(FoodSymbol, 1f)
+    override fun spawnPresent() = mutableSetOf(SymbolInstance(FoodSymbol, 1f))
+    override fun spawnAbsent() = mutableSetOf<SymbolInstance>()
 
 }

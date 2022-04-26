@@ -11,8 +11,9 @@ object StarveSymbol : ISymbol {
     override var modifiers = mutableSetOf(
         SymbolModifier(TimeElapseSymbol, SymbolMagnetism.ATTRACT, SymbolModifierType.CYCLE_POSITION, .001f)
     )
-    override var spawns = mutableSetOf<SymbolSpawn>()
-    override var despawns = mutableSetOf<SymbolSpawn>()
+    override var spawnsPresent = mutableSetOf<SymbolSpawn>()
+    override var despawnsPresent = mutableSetOf<SymbolSpawn>()
 
-    override fun spawn() = SymbolInstance(StarveSymbol, 1f)
+    override fun spawnPresent() = mutableSetOf(SymbolInstance(StarveSymbol, 1f))
+    override fun spawnAbsent() = mutableSetOf<SymbolInstance>()
 }

@@ -9,9 +9,9 @@ object NoneSymbol : ISymbol {
     override var cycle = SymbolCycle.NONE
 
     override var modifiers = mutableSetOf<SymbolModifier>()
-    override var spawns = mutableSetOf<SymbolSpawn>()
-    override var despawns = mutableSetOf<SymbolSpawn>()
+    override var spawnsPresent = mutableSetOf<SymbolSpawn>()
+    override var despawnsPresent = mutableSetOf<SymbolSpawn>()
 
-    override fun spawn() = SymbolInstance(NoneSymbol, 0f)
-
+    override fun spawnPresent() = mutableSetOf(SymbolInstance(NoneSymbol, 0f))
+    override fun spawnAbsent() = mutableSetOf<SymbolInstance>()
 }

@@ -6,21 +6,28 @@ import org.river.exertion.ai.noumena.other.being.fungus.mushroom.MushroomNoumeno
 
 object KoboldSymbology : ISymbology  {
 
+    override var symbolLexicon = mutableSetOf<ISymbol>()
+    override var internalFocusesLexicon = mutableSetOf<IInternalFocus>()
+
+    override var symbolDisplay = SymbolDisplay()
+    override var internalFocusDisplay = InternalFocusDisplay()
+}
+/*
     override var lexicon = mutableSetOf<SymbolType>().apply { this.addAll(SymbolType.values()) }
 
     override var sourceInternalFocuses = mutableSetOf(
 //        belief { symbolInstance { type = SymbolType.FOOD; referent = MushroomNoumenon }; conviction = 0.3f },
 //        belief { symbolInstance { type = SymbolType.FOOD; referent = LichenNoumenon }; conviction = 0.5f },
-        logic { resultSymbolType = SymbolType.BEST_THING; ILogic.LogicType.AND; SymbolType.GOOD_HEALTH; SymbolType.KINSHIP },
-        need { targetSymbolType = SymbolType.FOOD; triggerSymbolType = SymbolType.HUNGER; satisfactionSymbolType = SymbolType.FOOD_CONSUMED },
-        want { targetSymbolType = SymbolType.SHINY_THING; triggerSymbolType = SymbolType.SHINY_THING; satisfactionSymbolType = SymbolType.SHINY_THING_OBTAINED },
+//        logic { resultSymbolType = SymbolType.BEST_THING; ILogic.LogicType.AND; SymbolType.GOOD_HEALTH; SymbolType.KINSHIP },
+//        need { targetSymbolType = SymbolType.FOOD; triggerSymbolType = SymbolType.HUNGER; satisfactionSymbolType = SymbolType.FOOD_CONSUMED },
+//        want { targetSymbolType = SymbolType.SHINY_THING; triggerSymbolType = SymbolType.SHINY_THING; satisfactionSymbolType = SymbolType.SHINY_THING_OBTAINED },
     )
-
+*/
 //    override var callInternalFocuses: MutableSet<InternalFocusInstance> = mutableSetOf(
  //   )
 
 //    override var responseInternalFocuses: MutableSet<InternalFocusInstance> = mutableSetOf()
-
+/*
     fun MutableSet<InternalFocusInstance>.updateNeed(internalFocusInstance : InternalFocusInstance) {
         this.filter { it.type == InternalFocusType.NEED && (it.instance as NeedInstance).targetSymbolType == (internalFocusInstance.instance as NeedInstance).targetSymbolType }.forEach {
             (it.instance as NeedInstance).urgency = (internalFocusInstance.instance as NeedInstance).urgency
@@ -45,7 +52,7 @@ object KoboldSymbology : ISymbology  {
 
 }
 
-
+*/
 
 //if belief is not fulfilled, copy to vision
 

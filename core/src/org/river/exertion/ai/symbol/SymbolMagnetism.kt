@@ -1,15 +1,14 @@
 package org.river.exertion.ai.symbol
 
-import org.river.exertion.ai.condition.ConditionInstance
-import org.river.exertion.ai.condition.ConditionInstance.Companion.symbolType
-import java.util.concurrent.locks.Condition
 
 enum class SymbolMagnetism {
 
     ATTRACT,
-    REPEL,
-    STABILIZE_NEAR,
-    STABILIZE_MID,
-    STABILIZE_FAR,
+    REPEL {override fun targetPosition() = 1f},
+    STABILIZE_NEAR {override fun targetPosition() = .25f},
+    STABILIZE_MID {override fun targetPosition() = .5f},
+    STABILIZE_FAR {override fun targetPosition() = .75f},
     NONE
+    ;
+    open fun targetPosition() = 0f
 }
