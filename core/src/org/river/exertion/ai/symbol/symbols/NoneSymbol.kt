@@ -8,10 +8,11 @@ object NoneSymbol : ISymbol {
     override var targetMagnetism = SymbolMagnetism.NONE
     override var cycle = SymbolCycle.NONE
 
-    override var modifiers = mutableSetOf<SymbolModifier>()
+    override var presentModifiers = mutableSetOf<SymbolModifier>()
     override var spawnsPresent = mutableSetOf<SymbolSpawn>()
     override var despawnsPresent = mutableSetOf<SymbolSpawn>()
+    override var absentImpactors = mutableSetOf<SymbolImpactor>()
 
-    override fun spawnPresent() = mutableSetOf(SymbolInstance(NoneSymbol, 0f))
-    override fun spawnAbsent() = mutableSetOf<SymbolInstance>()
+    override fun spawnPresent() = mutableSetOf(PresentSymbolInstance(NoneSymbol, 0f))
+    override fun spawnAbsent() = mutableSetOf<AbsentSymbolInstance>()
 }

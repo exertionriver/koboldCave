@@ -8,12 +8,13 @@ object StarveSymbol : ISymbol {
     override var targetMagnetism = SymbolMagnetism.REPEL
     override var cycle = SymbolCycle.SINGLE
 
-    override var modifiers = mutableSetOf(
-        SymbolModifier(TimeElapseSymbol, SymbolMagnetism.ATTRACT, SymbolModifierType.CYCLE_POSITION, .001f)
+    override var presentModifiers = mutableSetOf(
+        SymbolModifier(TimeElapseSymbol, SymbolMagnetism.ATTRACT, SymbolModifierType.CYCLE_POSITION, .0005f)
     )
     override var spawnsPresent = mutableSetOf<SymbolSpawn>()
     override var despawnsPresent = mutableSetOf<SymbolSpawn>()
+    override var absentImpactors = mutableSetOf<SymbolImpactor>()
 
-    override fun spawnPresent() = mutableSetOf(SymbolInstance(StarveSymbol, 1f))
-    override fun spawnAbsent() = mutableSetOf<SymbolInstance>()
+    override fun spawnPresent() = mutableSetOf(PresentSymbolInstance(StarveSymbol, 1f))
+    override fun spawnAbsent() = mutableSetOf<AbsentSymbolInstance>()
 }

@@ -15,11 +15,11 @@ class TestSymbology {
 
         val symbolDisplay = SymbolDisplay().apply {
             this.symbolsPresent = mutableSetOf(
-                SymbolInstance(HungerSymbol, .8f),
-                SymbolInstance(FoodSymbol, .6f),
-                SymbolInstance(TimeElapseSymbol, .4f)
+                PresentSymbolInstance(HungerSymbol, .8f),
+                PresentSymbolInstance(FoodSymbol, .6f),
+                PresentSymbolInstance(TimeElapseSymbol, .4f)
             )
-            this.symbolsAbsent.add(SymbolInstance(FoodSymbol, 2.0f))
+            this.symbolsAbsent.add(AbsentSymbolInstance(FoodSymbol, 2.0f))
 
         }
 
@@ -27,10 +27,10 @@ class TestSymbology {
         println("present:")
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
         println("absent:")
-        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}") }
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}, ${it.impact}") }
 
         val updateSymbols1 = mutableSetOf(
-                SymbolInstance(HungerSymbol, .7f),
+                PresentSymbolInstance(HungerSymbol, .7f),
         )
 
         symbolDisplay.update(updateSymbols1)
@@ -39,10 +39,10 @@ class TestSymbology {
         println("present:")
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
         println("absent:")
-        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}") }
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}, ${it.impact}") }
 
         val updateSymbols2 = mutableSetOf(
-                SymbolInstance(TimeElapseSymbol, -5000.2f)
+                PresentSymbolInstance(TimeElapseSymbol, -5000.2f)
         )
 
         symbolDisplay.update(updateSymbols2)
@@ -51,10 +51,10 @@ class TestSymbology {
         println("present:")
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
         println("absent:")
-        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}") }
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}, ${it.impact}") }
 
         val updateSymbols3 = mutableSetOf(
-                SymbolInstance(FoodSymbol,-2.4f)
+                PresentSymbolInstance(TimeElapseSymbol, -900.2f)
         )
 
         symbolDisplay.update(updateSymbols3)
@@ -63,7 +63,19 @@ class TestSymbology {
         println("present:")
         symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
         println("absent:")
-        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}") }
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}, ${it.impact}") }
+
+        val updateSymbols4 = mutableSetOf(
+                PresentSymbolInstance(FoodSymbol,-2.4f)
+        )
+
+        symbolDisplay.update(updateSymbols4)
+
+        println("after four update")
+        println("present:")
+        symbolDisplay.symbolsPresent.forEach { println("${it.symbolObj} : ${it.position}") }
+        println("absent:")
+        symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}, ${it.impact}") }
 
     }
 }

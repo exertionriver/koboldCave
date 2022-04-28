@@ -8,7 +8,7 @@ object HungerSymbol : ISymbol {
     override var targetMagnetism = SymbolMagnetism.REPEL
     override var cycle = SymbolCycle.SINGLE
 
-    override var modifiers = mutableSetOf(
+    override var presentModifiers = mutableSetOf(
         SymbolModifier(FoodSymbol, SymbolMagnetism.REPEL, SymbolModifierType.CYCLE_COUNT, .1f),
         SymbolModifier(TimeElapseSymbol, SymbolMagnetism.ATTRACT, SymbolModifierType.CYCLE_POSITION, .0001f)
     )
@@ -18,7 +18,8 @@ object HungerSymbol : ISymbol {
     override var despawnsPresent = mutableSetOf(
         SymbolSpawn(StarveSymbol, SymbolThresholdType.GREATER_THAN, .3f),
     )
+    override var absentImpactors = mutableSetOf<SymbolImpactor>()
 
-    override fun spawnPresent() = mutableSetOf(SymbolInstance(HungerSymbol, 1f))
-    override fun spawnAbsent() = mutableSetOf(SymbolInstance(FoodSymbol, 0f))
+    override fun spawnPresent() = mutableSetOf(PresentSymbolInstance(HungerSymbol, 1f))
+    override fun spawnAbsent() = mutableSetOf(AbsentSymbolInstance(FoodSymbol, 0f))
 }

@@ -6,10 +6,11 @@ interface ISymbol {
     var targetMagnetism : SymbolMagnetism
     var cycle : SymbolCycle
 
-    var modifiers : MutableSet<SymbolModifier>
+    var presentModifiers : MutableSet<SymbolModifier>
     var spawnsPresent : MutableSet<SymbolSpawn>
     var despawnsPresent : MutableSet<SymbolSpawn>
+    var absentImpactors : MutableSet<SymbolImpactor>
 
-    fun spawnPresent() : MutableSet<SymbolInstance>
-    fun spawnAbsent() : MutableSet<SymbolInstance>
+    fun spawnPresent() : MutableSet<PresentSymbolInstance>
+    fun spawnAbsent() : MutableSet<AbsentSymbolInstance>
 }

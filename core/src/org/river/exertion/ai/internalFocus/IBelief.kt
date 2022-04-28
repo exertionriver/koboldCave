@@ -1,9 +1,9 @@
 package org.river.exertion.ai.internalFocus
 
-import org.river.exertion.ai.symbol.SymbolInstance
+import org.river.exertion.ai.symbol.PresentSymbolInstance
 
 interface IBelief : IInternalFocusTypeInstance {
 
-    var symbol : SymbolInstance
+    var symbol : PresentSymbolInstance
     var conviction : Float
 }
