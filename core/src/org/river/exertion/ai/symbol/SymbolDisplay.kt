@@ -109,9 +109,9 @@ class SymbolDisplay {
                             -(presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) / modifierRatio
                 impact += if (impactorRatio == 0f) 0f else
                         if (this.symbolObj.targetMagnetism == SymbolMagnetism.ATTRACT)
-                            (presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) / impactorRatio
+                            (presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) * impactorRatio
                         else
-                            -(presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) / impactorRatio
+                            -(presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) * impactorRatio
 
             }
         }
