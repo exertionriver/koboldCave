@@ -2,9 +2,9 @@ package ai
 
 import org.junit.jupiter.api.Test
 import org.river.exertion.ai.symbol.*
-import org.river.exertion.ai.symbol.symbols.FoodSymbol
-import org.river.exertion.ai.symbol.symbols.HungerSymbol
-import org.river.exertion.ai.symbol.symbols.TimeElapseSymbol
+import org.river.exertion.ai.symbol.perceivedSymbols.FoodSymbol
+import org.river.exertion.ai.symbol.perceivedSymbols.HungerSymbol
+import org.river.exertion.ai.symbol.perceivedSymbols.MomentElapseSymbol
 
 
 @ExperimentalUnsignedTypes
@@ -15,11 +15,11 @@ class TestSymbology {
 
         val symbolDisplay = SymbolDisplay().apply {
             this.symbolsPresent = mutableSetOf(
-                PresentSymbolInstance(HungerSymbol, .8f),
+                PresentSymbolInstance(HungerSymbol, .55f),
                 PresentSymbolInstance(FoodSymbol, .6f),
-                PresentSymbolInstance(TimeElapseSymbol, .4f)
+                PresentSymbolInstance(MomentElapseSymbol, .4f)
             )
-            this.symbolsAbsent.add(AbsentSymbolInstance(FoodSymbol, 2.0f))
+            this.symbolsAbsent.add(AbsentSymbolInstance(FoodSymbol, 4.5f, 0.45f))
 
         }
 
@@ -30,7 +30,7 @@ class TestSymbology {
         symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}, ${it.impact}") }
 
         val updateSymbols1 = mutableSetOf(
-                PresentSymbolInstance(HungerSymbol, .7f),
+                PresentSymbolInstance(HungerSymbol, .5f),
         )
 
         symbolDisplay.update(updateSymbols1)
@@ -42,7 +42,7 @@ class TestSymbology {
         symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}, ${it.impact}") }
 
         val updateSymbols2 = mutableSetOf(
-                PresentSymbolInstance(TimeElapseSymbol, -5000.2f)
+                PresentSymbolInstance(MomentElapseSymbol, -5000.2f)
         )
 
         symbolDisplay.update(updateSymbols2)
@@ -54,7 +54,7 @@ class TestSymbology {
         symbolDisplay.symbolsAbsent.forEach { println("${it.symbolObj} : ${it.position}, ${it.impact}") }
 
         val updateSymbols3 = mutableSetOf(
-                PresentSymbolInstance(TimeElapseSymbol, -900.2f)
+                PresentSymbolInstance(MomentElapseSymbol, -900.2f)
         )
 
         symbolDisplay.update(updateSymbols3)

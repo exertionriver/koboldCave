@@ -8,12 +8,6 @@ enum class InternalFocusType {
     //symbol + conviction (ordered by desc are values
     BELIEF { override fun tag() = "belief" },
 
-    //conditions generate targets from these
-    NEED { override fun tag() = "need" },
-
-    //appearance of noumena generate targets from these
-    WANT { override fun tag() = "want" },
-
     // relating symbols to symbols
     LOGIC { override fun tag() = "logic" },
 
@@ -32,13 +26,6 @@ enum class InternalFocusType {
 
     //practical step, action or device for accomplishing a strategy, impact-improver for realizing objective
     TACTIC { override fun tag() = "tactic" },
-
-//targets
-    //target without an associated belief
-    VISION { override fun tag() = "vision" },
-
-    //target with an associated belief
-    TARGET { override fun tag() = "target" },
 
     NONE
     ;

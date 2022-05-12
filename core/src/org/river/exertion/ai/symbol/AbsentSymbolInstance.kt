@@ -1,7 +1,8 @@
 package org.river.exertion.ai.symbol
 
-import org.river.exertion.ai.symbol.symbols.NoneSymbol
+import org.river.exertion.ai.symbol.perceivedSymbols.NonePerceivedSymbol
 
-data class AbsentSymbolInstance (var symbolObj : ISymbol = NoneSymbol, var position : Float = 0f, var impact : Float = 0f) {
+data class AbsentSymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbol, var position : Float = 0f, var impact : Float = 0f) {
 
+    var ornaments = mutableSetOf<AbsentSymbolInstance>()
 }

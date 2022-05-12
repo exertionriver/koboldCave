@@ -1,5 +1,8 @@
 package org.river.exertion.ai.symbol
 
+import org.river.exertion.ai.symbol.controlSymbols.DespawnSymbol
+import org.river.exertion.ai.symbol.controlSymbols.SpawnSymbol
+
 class SymbolDisplay {
 
     var symbolsPresent = mutableSetOf<PresentSymbolInstance>()
@@ -14,7 +17,15 @@ class SymbolDisplay {
         }
     }
 
+    @Suppress("NewApi")
     fun update(updateSymbols : MutableSet<PresentSymbolInstance>) {
+
+        //spawn if spawn ornament is present
+        symbolsPresent.flatMap { it.ornaments }.filter { it.symbolObj == SpawnSymbol }.forEach {
+            symbolsPresent.add(PresentSymbolInstance(it.target, it.units, it.position).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f})
+        }
+        //remove spawn ornaments
+        symbolsPresent.filter { it.ornaments.map { it.symbolObj }.contains(SpawnSymbol)}.forEach { it.ornaments.removeIf { it.symbolObj == SpawnSymbol } }
 
         updateSymbols.forEach { presentSymbolInstance ->
             if ( symbolsPresent.map { it.symbolObj }.contains(presentSymbolInstance.symbolObj) ) {
@@ -24,6 +35,10 @@ class SymbolDisplay {
         symbolsAbsent.forEach { absentSymbolInstance ->
             absentSymbolInstance.updateSymbolAbsent()
         }
+
+        //despawn if despawn ornament is present
+        symbolsPresent.removeIf { symbolPresent -> symbolPresent.ornaments.any { ornament -> ornament.symbolObj == DespawnSymbol } }
+
     }
 
     private fun PresentSymbolInstance.normalizeCyclePosition(updatePosition : Float) : Pair<Float, Float> {
@@ -53,7 +68,7 @@ class SymbolDisplay {
 
     private fun updateSymbolPresent(updateSymbolInstance : PresentSymbolInstance) {
 
-        val (deltaCycle, deltaPosition) = symbolsPresent.first { it.symbolObj == updateSymbolInstance.symbolObj }.normalizeCyclePosition( updateSymbolInstance.position )
+        val (deltaCycle, deltaPosition) = symbolsPresent.first {it == updateSymbolInstance}.normalizeCyclePosition( updateSymbolInstance.position )
 
         val modifiedSymbolInstances = mutableSetOf<PresentSymbolInstance>()
 
@@ -63,30 +78,45 @@ class SymbolDisplay {
             modifiedSymbolInstances.add(modifiedSymbolInstance)
         }
 
-        //get symbol spawns for updated symbol, spawn accordingly
+        //get present symbol spawns for updated symbol, spawn accordingly
         updateSymbolInstance.symbolObj.spawnsPresent.forEach {
-            spawnSymbolInstance -> spawnSymbolInstance.spawnSymbol(updateSymbolInstance)
+            spawnSymbolInstance -> spawnSymbolInstance.spawnSymbolPresent(updateSymbolInstance)
+        }
+
+        //get absent symbol spawns for updated symbol, spawn accordingly
+        updateSymbolInstance.symbolObj.spawnsAbsent.forEach {
+            spawnSymbolInstance -> spawnSymbolInstance.spawnSymbolAbsent(updateSymbolInstance)
         }
 
         //get symbol for modified symbols, spawn accordingly
-        modifiedSymbolInstances.forEach {
-                modifiedSymbolInstance -> modifiedSymbolInstance.symbolObj.spawnsPresent.forEach { modifiedSymbolSpawn ->
-                modifiedSymbolSpawn.spawnSymbol(modifiedSymbolInstance)
+        modifiedSymbolInstances.forEach { modifiedSymbolInstance ->
+            modifiedSymbolInstance.symbolObj.spawnsPresent.forEach { modifiedSymbolSpawn ->
+                modifiedSymbolSpawn.spawnSymbolPresent(modifiedSymbolInstance)
+            }
+            modifiedSymbolInstance.symbolObj.spawnsAbsent.forEach { modifiedSymbolSpawn ->
+                modifiedSymbolSpawn.spawnSymbolAbsent(modifiedSymbolInstance)
             }
         }
 
-        //get symbol despawns, despawn accordingly
+        //get present symbol despawns, despawn accordingly
         updateSymbolInstance.symbolObj.despawnsPresent.forEach {
-            despawnSymbolInstance -> despawnSymbolInstance.despawnSymbol(updateSymbolInstance)
+            despawnSymbolInstance -> despawnSymbolInstance.despawnSymbolPresent(updateSymbolInstance)
+        }
+
+        //get absent symbol despawns, despawn accordingly
+        updateSymbolInstance.symbolObj.despawnsAbsent.forEach {
+            despawnSymbolInstance -> despawnSymbolInstance.despawnSymbolAbsent(updateSymbolInstance)
         }
 
         //get symbol for modified symbols, despawn accordingly
-        modifiedSymbolInstances.forEach {
-                modifiedSymbolInstance -> modifiedSymbolInstance.symbolObj.despawnsPresent.forEach { modifiedSymbolDespawn ->
-                modifiedSymbolDespawn.despawnSymbol(modifiedSymbolInstance)
+        modifiedSymbolInstances.forEach { modifiedSymbolInstance ->
+            modifiedSymbolInstance.symbolObj.despawnsPresent.forEach { modifiedSymbolDespawn ->
+                modifiedSymbolDespawn.despawnSymbolPresent(modifiedSymbolInstance)
+            }
+            modifiedSymbolInstance.symbolObj.despawnsAbsent.forEach { modifiedSymbolDespawn ->
+                modifiedSymbolDespawn.despawnSymbolAbsent(modifiedSymbolInstance)
             }
         }
-
     }
 
     private fun AbsentSymbolInstance.updateSymbolAbsent() {
@@ -103,12 +133,12 @@ class SymbolDisplay {
 
             if (presentSymbolInstance != null) {
                 position += if (modifierRatio == 0f) 0f else
-                        if (this.symbolObj.targetMagnetism == SymbolMagnetism.ATTRACT)
+                        if (this.symbolObj.targetMagnetism == SymbolMagnetism.ATTRACT_CONSUME)
                             (presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) / modifierRatio
                         else
                             -(presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) / modifierRatio
                 impact += if (impactorRatio == 0f) 0f else
-                        if (this.symbolObj.targetMagnetism == SymbolMagnetism.ATTRACT)
+                        if (this.symbolObj.targetMagnetism == SymbolMagnetism.ATTRACT_CONSUME)
                             (presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) * impactorRatio
                         else
                             -(presentSymbolInstance.symbolObj.targetMagnetism.targetPosition() - presentSymbolInstance.position) * impactorRatio
@@ -143,7 +173,7 @@ class SymbolDisplay {
         this.normalizeCyclePosition(this.position + modifier)
     }
 
-    private fun SymbolSpawn.spawnSymbol(updateSymbolInstance : PresentSymbolInstance) {
+    private fun SymbolSpawn.spawnSymbolPresent(updateSymbolInstance : PresentSymbolInstance) {
 
         if (this.thresholdType == SymbolThresholdType.LESS_THAN) {
             if (updateSymbolInstance.position < this.position && !symbolsPresent.map { it.symbolObj }.contains(this.spawnSymbol)) symbolsPresent.addAll(this.spawnSymbol.spawnPresent())
@@ -153,12 +183,31 @@ class SymbolDisplay {
     }
 
     @Suppress("NewApi")
-    private fun SymbolSpawn.despawnSymbol(updateSymbolInstance : PresentSymbolInstance) {
+    private fun SymbolSpawn.despawnSymbolPresent(updateSymbolInstance : PresentSymbolInstance) {
 
         if (this.thresholdType == SymbolThresholdType.LESS_THAN) {
             if (updateSymbolInstance.position < this.position) symbolsPresent.removeIf { it.symbolObj == this.spawnSymbol}
         } else {
             if (updateSymbolInstance.position > this.position) symbolsPresent.removeIf { it.symbolObj == this.spawnSymbol}
+        }
+    }
+
+    private fun SymbolSpawn.spawnSymbolAbsent(updateSymbolInstance : PresentSymbolInstance) {
+
+        if (this.thresholdType == SymbolThresholdType.LESS_THAN) {
+            if (updateSymbolInstance.position < this.position && !symbolsAbsent.map { it.symbolObj }.contains(this.spawnSymbol)) symbolsAbsent.addAll(this.spawnSymbol.spawnAbsent())
+        } else {
+            if (updateSymbolInstance.position > this.position && !symbolsAbsent.map { it.symbolObj }.contains(this.spawnSymbol)) symbolsAbsent.addAll(this.spawnSymbol.spawnAbsent())
+        }
+    }
+
+    @Suppress("NewApi")
+    private fun SymbolSpawn.despawnSymbolAbsent(updateSymbolInstance : PresentSymbolInstance) {
+
+        if (this.thresholdType == SymbolThresholdType.LESS_THAN) {
+            if (updateSymbolInstance.position < this.position) symbolsAbsent.removeIf { it.symbolObj == this.spawnSymbol}
+        } else {
+            if (updateSymbolInstance.position > this.position) symbolsAbsent.removeIf { it.symbolObj == this.spawnSymbol}
         }
     }
 }

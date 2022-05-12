@@ -2,5 +2,5 @@ package org.river.exertion.ai.internalFocus
 
 interface IInternalFocusTypeInstance {
 
-    var impactors : MutableSet<InternalFocusImpactor>
+    var impactors : MutableSet<InternalFocusPlan>
 }

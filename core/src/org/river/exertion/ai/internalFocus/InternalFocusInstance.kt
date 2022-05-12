@@ -1,3 +1,6 @@
 package org.river.exertion.ai.internalFocus
 
-data class InternalFocusInstance(override var tag : String, override var type : InternalFocusType, override var instance : IInternalFocusTypeInstance? = null) : IInternalFocus_
+import org.river.exertion.ai.internalFocus.internalFocuses.NoneFocus
+import org.river.exertion.ai.symbol.AbsentSymbolInstance
+
+data class InternalFocusInstance (var internalFocusObj : IInternalFocus = NoneFocus, var targetSymbol : AbsentSymbolInstance, var position : Float = 0f)

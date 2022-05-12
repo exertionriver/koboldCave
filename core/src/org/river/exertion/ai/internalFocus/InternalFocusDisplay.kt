@@ -1,126 +1,43 @@
 package org.river.exertion.ai.internalFocus
 
+import org.river.exertion.ai.symbol.SymbolDisplay
+
 class InternalFocusDisplay {
 
-    var symbolsPresent = mutableSetOf<IInternalFocus>()
-/*
-    fun addUpdate(addUpdateSymbols : MutableSet<SymbolInstance>) {
+    var focusPlansPresent = mutableSetOf<InternalFocusPlan>()
 
-        addUpdateSymbols.forEach { symbolInstance ->
-            if ( symbolsPresent.map { it.symbolObj }.contains(symbolInstance.symbolObj) ) {
-                updateSymbolPresent(symbolInstance)
-            } else symbolsPresent.add(symbolInstance)
-        }
-    }
+    fun update(symbolDisplay: SymbolDisplay) : SymbolDisplay {
 
-    fun update(updateSymbols : MutableSet<SymbolInstance>) {
+        //add new plan
+        symbolDisplay.symbolsAbsent.filter { it.symbolObj.satisfiers.isNotEmpty() }.forEach { absentSymbolInstance ->
+            val satisfier = absentSymbolInstance.symbolObj.satisfiers.firstOrNull()
 
-        updateSymbols.forEach { symbolInstance ->
-            if ( symbolsPresent.map { it.symbolObj }.contains(symbolInstance.symbolObj) ) {
-                updateSymbolPresent(symbolInstance)
-            }
-        }
-    }
-
-    private fun SymbolInstance.normalizeCyclePosition(updatePosition : Float) : Pair<Float, Float> {
-
-        var deltaCycle = 0f
-        val deltaPosition = updatePosition - this.position
-
-        this.position = updatePosition
-
-        //first update position wrt symbol cycle style
-        if (this.symbolObj.cycle == SymbolCycle.MULTIPLE) {
-            while (this.position < 0) {
-                deltaCycle -= 1
-                this.position += 1
-            }
-            while (this.position > 1) {
-                deltaCycle += 1
-                this.position -= 1
-            }
-        } else { //single or none
-            if (this.position < 0) this.position = 0f
-            if (this.position > 1) this.position = 1f
+            //add absentSymbolInstance satisfier chain to focusesPresent if not already added
+            if ( (satisfier != null) && (!focusPlansPresent.map { it.absentSymbolInstance }.contains(absentSymbolInstance) ) )
+                focusPlansPresent.add(InternalFocusPlan(absentSymbolInstance).apply { this.init(symbolDisplay.symbolsPresent) } )
         }
 
-        return Pair(deltaCycle, deltaPosition - deltaCycle)
-    }
+        //execute plans
+        focusPlansPresent.sortedByDescending { it.absentSymbolInstance.impact }.forEach { focusPlan ->
+            val satisfySymbol = symbolDisplay.symbolsPresent.sortedBy { it.position }.firstOrNull { it.symbolObj == focusPlan.absentSymbolInstance.symbolObj }
 
-    private fun updateSymbolPresent(updateSymbolInstance : SymbolInstance) {
-
-        val (deltaCycle, deltaPosition) = symbolsPresent.first { it.symbolObj == updateSymbolInstance.symbolObj }.normalizeCyclePosition( updateSymbolInstance.position )
-
-        val modifiedSymbolInstances = mutableSetOf<SymbolInstance>()
-
-        //get symbol modifiers, modify accordingly
-        symbolsPresent.filter {it.symbolObj != updateSymbolInstance.symbolObj}.filter { symbolInstance -> symbolInstance.symbolObj.modifiers.map { it.modifyingSymbol }.contains (updateSymbolInstance.symbolObj) }.forEach {
-            modifiedSymbolInstance -> modifiedSymbolInstance.updateModifiedSymbol(updateSymbolInstance, deltaCycle, deltaPosition)
-            modifiedSymbolInstances.add(modifiedSymbolInstance)
-        }
-
-        //get symbol spawns for updated symbol, spawn accordingly
-        updateSymbolInstance.symbolObj.spawns.forEach {
-            spawnSymbolInstance -> spawnSymbolInstance.spawnSymbol(updateSymbolInstance)
-        }
-
-        //get symbol for modified symbols, spawn accordingly
-        modifiedSymbolInstances.forEach {
-            modifiedSymbolInstance -> modifiedSymbolInstance.symbolObj.spawns.forEach { modifiedSymbolSpawn ->
-               modifiedSymbolSpawn.spawnSymbol(modifiedSymbolInstance)
+            if ( (satisfySymbol != null) && focusPlan.instancesChain.isNotEmpty() ) {
+                focusPlan.instancesChain.asReversed().forEach { internalFocusInstance ->
+                    if (internalFocusInstance.internalFocusObj.satisfyingCondition(satisfySymbol) ) {
+                        //update symbol
+//                        symbolDisplay.symbolsPresent.remove(satisfySymbol)
+                        symbolDisplay.update(mutableSetOf(internalFocusInstance.internalFocusObj.satisfyingResult(satisfySymbol) ) )
+                    }
+                }
+                if (!symbolDisplay.symbolsAbsent.map { it.symbolObj }.contains(focusPlan.absentSymbolInstance.symbolObj) )
+                    focusPlansPresent.remove(focusPlan)
+                else
+                    focusPlan.update(symbolDisplay.symbolsPresent)
             }
         }
 
-        //get symbol despawns, despawn accordingly
-        updateSymbolInstance.symbolObj.despawns.forEach {
-            despawnSymbolInstance -> despawnSymbolInstance.despawnSymbol(updateSymbolInstance)
-        }
+//        prevSymbolDisplay.update(updateDisplay.symbolsPresent)
 
-        //get symbol for modified symbols, despawn accordingly
-        modifiedSymbolInstances.forEach {
-            modifiedSymbolInstance -> modifiedSymbolInstance.symbolObj.despawns.forEach { modifiedSymbolDespawn ->
-                modifiedSymbolDespawn.despawnSymbol(modifiedSymbolInstance)
-            }
-        }
+        return symbolDisplay
     }
-
-    private fun SymbolInstance.updateModifiedSymbol(updateSymbolInstance : SymbolInstance, deltaCycle : Float, deltaPosition : Float) {
-
-        val modifierEntry = this.symbolObj.modifiers.first { it.modifyingSymbol == updateSymbolInstance.symbolObj }
-
-        val modifier = if (modifierEntry.modifyingType == SymbolModifierType.CYCLE_COUNT) {
-            if (updateSymbolInstance.symbolObj.targetMagnetism == modifierEntry.modifyingMagnetism) {
-                modifierEntry.modifierRatio * deltaCycle
-            } else {
-                -modifierEntry.modifierRatio * deltaCycle
-            }
-        } else { //CYCLE_POSITION
-            if (updateSymbolInstance.symbolObj.targetMagnetism == modifierEntry.modifyingMagnetism) {
-                modifierEntry.modifierRatio * (deltaCycle + deltaPosition)
-            } else {
-                -modifierEntry.modifierRatio * (deltaCycle + deltaPosition)
-            }
-        }
-
-        this.normalizeCyclePosition(this.position + modifier)
-    }
-
-    private fun SymbolSpawn.spawnSymbol(updateSymbolInstance : SymbolInstance) {
-
-        if (this.thresholdType == SymbolThresholdType.LESS_THAN) {
-            if (updateSymbolInstance.position < this.position) symbolsPresent.add(this.spawnSymbol.spawn())
-        } else {
-            if (updateSymbolInstance.position > this.position) symbolsPresent.add(this.spawnSymbol.spawn())
-        }
-    }
-
-    private fun SymbolSpawn.despawnSymbol(updateSymbolInstance : SymbolInstance) {
-
-        if (this.thresholdType == SymbolThresholdType.LESS_THAN) {
-            if (updateSymbolInstance.position < this.position) symbolsPresent.removeAll(symbolsPresent.filter { it.symbolObj == this.spawnSymbol}.toSet())
-        } else {
-            if (updateSymbolInstance.position > this.position) symbolsPresent.removeAll(symbolsPresent.filter { it.symbolObj == this.spawnSymbol}.toSet())
-        }
-    }
-*/
 }
