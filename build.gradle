@@ -1,12 +1,12 @@
 buildscript {
-    ext.kotlinVersion = '1.6.20'
+    ext.kotlinVersion = '1.6.21'
 
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0'
+        classpath 'com.android.tools.build:gradle:7.0.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
@@ -20,12 +20,12 @@ allprojects {
     ext {
         appName = "koboldCave"
         ashleyVersion = '1.7.4'
-        gdxVersion = '1.10.0'
+        gdxVersion = '1.11.0'
         roboVMVersion = '2.3.12'
         box2DLightsVersion = '1.5'
         aiVersion = '1.8.2'
-        ktxVersion = '1.10.0-rc1'
-        kotlinxVersion = '1.5.2'
+        ktxVersion = '1.10.0-rc2'
+        kotlinxVersion = '1.6.1'
         shapedrawerVersion = '2.5.0' //https://github.com/earlygrey/shapedrawer
     }
 
