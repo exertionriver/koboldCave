@@ -2,11 +2,11 @@ package org.river.exertion.ai.internalFocus.internalFocuses
 
 import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalFocus.internalFocuses.proximity.CloseIntimateFocus
-import org.river.exertion.ai.symbol.PresentSymbolInstance
-import org.river.exertion.ai.symbol.ControlSymbolInstance
-import org.river.exertion.ai.symbol.SymbolMagnetism
-import org.river.exertion.ai.symbol.controlSymbols.SpawnSymbol
-import org.river.exertion.ai.symbol.perceivedSymbols.PossessSymbol
+import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
+import org.river.exertion.ai.internalSymbol.core.ControlSymbolInstance
+import org.river.exertion.ai.internalSymbol.core.SymbolMagnetism
+import org.river.exertion.ai.internalSymbol.controlSymbols.SpawnSymbol
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.PossessSymbol
 
 object PickUpFocus : IInternalFocus {
 

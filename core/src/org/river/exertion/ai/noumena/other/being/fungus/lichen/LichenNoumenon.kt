@@ -1,10 +1,10 @@
 package org.river.exertion.ai.noumena.other.being.fungus.lichen
 
 import org.river.exertion.ai.attribute.Trait.Companion.mergeOverrideTraits
-import org.river.exertion.ai.noumena.IAttributeable
-import org.river.exertion.ai.noumena.INoumenon
-import org.river.exertion.ai.noumena.InstantiatableNoumenon
-import org.river.exertion.ai.noumena.NoumenonType
+import org.river.exertion.ai.noumena.core.IAttributeable
+import org.river.exertion.ai.noumena.core.INoumenon
+import org.river.exertion.ai.noumena.core.InstantiatableNoumenon
+import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ai.noumena.other.BeingNoumenon
 import org.river.exertion.ai.noumena.other.being.FungusNoumenon
 

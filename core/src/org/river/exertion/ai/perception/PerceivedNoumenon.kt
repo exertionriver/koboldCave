@@ -3,7 +3,7 @@ package org.river.exertion.ai.perception
 import org.river.exertion.ai.internalState.InternalFacetInstancesState
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
-import org.river.exertion.ai.noumena.NoumenonType
+import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.btree.v0_1.Behavior
 
 data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttribute> = mutableSetOf(), var internalStateInstance: InternalFacetInstancesState = InternalFacetInstancesState(), var knowledgeSourceInstance: KnowledgeSourceInstance = KnowledgeSourceInstance()) {

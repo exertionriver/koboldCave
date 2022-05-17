@@ -1,6 +1,6 @@
 package org.river.exertion.ai.attribute
 
-import org.river.exertion.ai.noumena.INoumenon
+import org.river.exertion.ai.noumena.core.INoumenon
 import org.river.exertion.ai.noumena.NoneNoumenon
 
 data class Characteristic<T:Any>(var attributeObj: Class<IAttribute<T>> = (NoneAttribute as IAttribute<T>).javaClass, var noumenonObj: Class<INoumenon> = (NoneNoumenon as INoumenon).javaClass, var characteristicValue: AttributeValue<out Any> = AttributeValue(), var noumenonOrder: Int = 0) {

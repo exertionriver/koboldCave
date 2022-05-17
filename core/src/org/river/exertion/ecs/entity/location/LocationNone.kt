@@ -5,7 +5,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.action.core.IComponent
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 
 object LocationNone : ILocation {
@@ -22,7 +22,7 @@ object LocationNone : ILocation {
         }
     }
 
-    override var actions = mutableListOf<IActionComponent>(
+    override var actions = mutableListOf<IComponent>(
         ActionInstantiateComponent(), ActionDestantiateComponent()
     )
 

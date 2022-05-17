@@ -9,7 +9,7 @@ import org.river.exertion.ai.internalFacet.FearFacet
 import org.river.exertion.ai.internalState.InternalFacetInstancesState
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
-import org.river.exertion.ai.noumena.NoumenonType
+import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ai.perception.PerceivedNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType

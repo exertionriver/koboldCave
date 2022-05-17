@@ -2,7 +2,7 @@ package org.river.exertion.ai.property
 
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
-import org.river.exertion.ai.noumena.INoumenon
+import org.river.exertion.ai.noumena.core.INoumenon
 import org.river.exertion.ai.noumena.NoneNoumenon
 
 data class Quality <T:Any>(var propertyObj: Class<IProperty<T>> = (NoneProperty as IProperty<T>).javaClass, var noumenonObj: Class<INoumenon> = (NoneNoumenon as INoumenon).javaClass, var noumenonOrder : Int = 0, var minValue: T? = null, var maxValue: T? = null) {

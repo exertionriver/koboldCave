@@ -5,7 +5,7 @@ import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.allOf
 import ktx.ashley.get
 import org.river.exertion.ecs.component.action.ActionReflectComponent
-import org.river.exertion.ecs.component.action.MomentComponent
+import org.river.exertion.ecs.component.MomentComponent
 
 class ActionReflectSystem : IteratingSystem(allOf(ActionReflectComponent::class).get()) {
 

@@ -4,11 +4,11 @@ import com.badlogic.ashley.core.Component
 import ktx.ashley.mapperFor
 import org.river.exertion.Angle
 import org.river.exertion.Point
-import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.action.core.IComponent
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 
-class ActionSimpleMoveComponent : IActionComponent, Component {
+class ActionSimpleMoveComponent : IComponent, Component {
 
     override val componentName = "SimpleMove"
 

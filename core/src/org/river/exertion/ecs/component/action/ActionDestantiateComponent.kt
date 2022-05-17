@@ -2,9 +2,9 @@ package org.river.exertion.ecs.component.action
 
 import com.badlogic.ashley.core.Component
 import ktx.ashley.mapperFor
-import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.action.core.IComponent
 
-class ActionDestantiateComponent : IActionComponent, Component {
+class ActionDestantiateComponent : IComponent, Component {
 
     override val componentName = "Destantiate"
 

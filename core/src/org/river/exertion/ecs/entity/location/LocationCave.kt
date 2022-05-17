@@ -14,9 +14,9 @@ import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.ActionInstantiateComponent
-import org.river.exertion.ecs.component.action.MomentComponent
+import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.action.core.IComponent
 import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
@@ -44,7 +44,7 @@ class LocationCave : ILocation, Component {
 
     override var moment = 30f
 
-    override var actions = mutableListOf<IActionComponent>(
+    override var actions = mutableListOf<IComponent>(
             MomentComponent(moment)
     ).apply { this.addAll(LocationNone.actions) }
 

@@ -1,6 +1,6 @@
 package org.river.exertion.ai.internalFocus
 
-import org.river.exertion.ai.symbol.PresentSymbolInstance
+import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
 
 interface IInternalFocus {
 

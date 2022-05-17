@@ -8,10 +8,7 @@ import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
 import org.river.exertion.ai.internalFacet.ConfusionFacet.confusionFacet
 import org.river.exertion.ai.internalFacet.DoubtFacet.doubtFacet
 import org.river.exertion.ai.internalFacet.FearFacet.fearFacet
-import org.river.exertion.ai.internalFacet.InternalFacetAttribute
 import org.river.exertion.ai.internalFacet.InternalFacetAttribute.Companion.internalFacetAttribute
-import org.river.exertion.ai.internalFacet.InternalFacetInstance
-import org.river.exertion.ai.internalFacet.NoneFacet
 import org.river.exertion.ai.internalState.InternalFacetAttributesState
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
@@ -73,7 +70,7 @@ class TestCharacterManifest {
 
     @Test
     fun testOriginArisingProjections() {
-        val testState = InternalFacetAttributesState().apply { this.internalState = mutableSetOf(
+        val testState = InternalFacetAttributesState().apply { this.internalFacetAttributes = mutableSetOf(
             internalFacetAttribute { internalFacetInstance = confusionFacet {}; origin = 0.2f; arising = 0.5f },
             internalFacetAttribute { internalFacetInstance = angerFacet {}; origin = 0.3f; arising = 0.7f },
             internalFacetAttribute { internalFacetInstance = fearFacet {}; origin = 0.4f; arising = 0.8f },

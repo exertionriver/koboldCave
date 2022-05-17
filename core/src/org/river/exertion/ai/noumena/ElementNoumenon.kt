@@ -1,5 +1,8 @@
 package org.river.exertion.ai.noumena
 
+import org.river.exertion.ai.noumena.core.INoumenon
+import org.river.exertion.ai.noumena.core.IPropertyable
+import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ai.property.Quality
 
 object ElementNoumenon : INoumenon, IPropertyable {

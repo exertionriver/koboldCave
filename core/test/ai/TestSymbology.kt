@@ -1,10 +1,12 @@
 package ai
 
 import org.junit.jupiter.api.Test
-import org.river.exertion.ai.symbol.*
-import org.river.exertion.ai.symbol.perceivedSymbols.FoodSymbol
-import org.river.exertion.ai.symbol.perceivedSymbols.HungerSymbol
-import org.river.exertion.ai.symbol.perceivedSymbols.MomentElapseSymbol
+import org.river.exertion.ai.internalSymbol.core.AbsentSymbolInstance
+import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
+import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.HungerSymbol
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
 
 
 @ExperimentalUnsignedTypes
@@ -13,7 +15,7 @@ class TestSymbology {
     @Test
     fun testDisplayUpdate() {
 
-        val symbolDisplay = SymbolDisplay().apply {
+        val symbolDisplay = InternalSymbolDisplay().apply {
             this.symbolsPresent = mutableSetOf(
                 PresentSymbolInstance(HungerSymbol, .55f),
                 PresentSymbolInstance(FoodSymbol, .6f),

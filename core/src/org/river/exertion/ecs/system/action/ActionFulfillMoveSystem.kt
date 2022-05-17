@@ -8,10 +8,10 @@ import ktx.ashley.allOf
 import ktx.ashley.contains
 import ktx.ashley.get
 import org.river.exertion.*
+import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.CharacterPlayerCharacter
-import org.river.exertion.ecs.entity.location.LocationCave
 import org.river.exertion.geom.node.Node.Companion.angleBetween
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath

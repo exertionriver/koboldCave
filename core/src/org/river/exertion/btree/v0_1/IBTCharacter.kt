@@ -8,9 +8,9 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.manifest.CharacterManifest
-import org.river.exertion.ai.memory.CharacterMemory
-import org.river.exertion.ai.noumena.NoumenonInstance
+import org.river.exertion.ai.manifest.InternalManifest
+import org.river.exertion.ai.memory.InternalMemory
+import org.river.exertion.ai.noumena.core.NoumenonInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.btree.v0_1.task_cond.HasRecognitionCondition
@@ -22,8 +22,8 @@ interface IBTCharacter : Telegraph {
 
     var tree : BehaviorTree<IBTCharacter>
 
-    var characterManifest : CharacterManifest
-    var characterMemory : CharacterMemory
+    var characterManifest : InternalManifest
+    var characterMemory : InternalMemory
 
     fun rootLocation() = "../android/assets/btree/entity/entity_v0_1_root.btree"
     fun notAbsorbedSubtreePath() = "../android/assets/btree/entity/entity_v0_1_notAbsorbed.btree"

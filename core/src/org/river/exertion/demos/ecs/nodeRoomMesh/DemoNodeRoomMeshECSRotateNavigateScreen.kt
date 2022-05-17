@@ -19,7 +19,7 @@ import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.entity.character.CharacterKobold
 import org.river.exertion.ecs.entity.character.CharacterPlayerCharacter
 import org.river.exertion.ecs.entity.location.LocationCave
-import org.river.exertion.ecs.system.action.SystemManager
+import org.river.exertion.ecs.system.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath

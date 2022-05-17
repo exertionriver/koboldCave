@@ -3,24 +3,23 @@ package org.river.exertion.ai.noumena.other
 import org.river.exertion.ai.attribute.Trait.Companion.mergeOverrideTraits
 import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalFocus.InternalFocusDisplay
-import org.river.exertion.ai.internalFocus.InternalFocusInstance
-import org.river.exertion.ai.noumena.IAttributeable
-import org.river.exertion.ai.noumena.INoumenon
-import org.river.exertion.ai.noumena.NoumenonType
+import org.river.exertion.ai.noumena.core.IAttributeable
+import org.river.exertion.ai.noumena.core.INoumenon
+import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ai.noumena.OtherNoumenon
-import org.river.exertion.ai.symbol.ISymbol
-import org.river.exertion.ai.symbol.ISymbology
-import org.river.exertion.ai.symbol.SymbolDisplay
+import org.river.exertion.ai.internalSymbol.core.IInternalSymbol
+import org.river.exertion.ai.internalSymbol.core.IInternalSymbology
+import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
 
-object BeingNoumenon : INoumenon, IAttributeable, ISymbology {
+object BeingNoumenon : INoumenon, IAttributeable, IInternalSymbology {
 
     override fun type() = NoumenonType.BEING
     override fun types() = OtherNoumenon.types().toMutableList().apply { this.add(type()) }.toList()
     override fun traits() = OtherNoumenon.traits().mergeOverrideTraits(listOf())
 
-    override var symbolLexicon = mutableSetOf<ISymbol>()
+    override var internalSymbolLexicon = mutableSetOf<IInternalSymbol>()
     override var internalFocusesLexicon = mutableSetOf<IInternalFocus>()
 
-    override var symbolDisplay = SymbolDisplay()
+    override var internalSymbolDisplay = InternalSymbolDisplay()
     override var internalFocusDisplay = InternalFocusDisplay()
 }

@@ -9,6 +9,7 @@ import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
+import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.entity.IEntity
 
 class ActionSimpleDecideMoveSystem : IteratingSystem(allOf(ActionSimpleDecideMoveComponent::class).get()) {

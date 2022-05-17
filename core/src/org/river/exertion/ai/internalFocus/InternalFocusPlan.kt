@@ -1,8 +1,7 @@
 package org.river.exertion.ai.internalFocus
 
-import org.river.exertion.ai.symbol.AbsentSymbolInstance
-import org.river.exertion.ai.symbol.PresentSymbolInstance
-import org.river.exertion.ai.symbol.SymbolDisplay
+import org.river.exertion.ai.internalSymbol.core.AbsentSymbolInstance
+import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
 
 class InternalFocusPlan(var absentSymbolInstance: AbsentSymbolInstance) {
 

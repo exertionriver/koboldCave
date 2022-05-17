@@ -2,23 +2,22 @@ package org.river.exertion.ai.internalState
 
 import org.river.exertion.ai.internalFacet.InternalFacetAttribute
 import org.river.exertion.ai.manifest.IManifest
-import org.river.exertion.ai.manifest.ManifestInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import kotlin.math.roundToInt
 
-data class InternalFacetAttributesState(var internalState: MutableSet<InternalFacetAttribute> = mutableSetOf()) {
+data class InternalFacetAttributesState(var internalFacetAttributes: MutableSet<InternalFacetAttribute> = mutableSetOf()) {
 
     fun projections(mInternalAnxiety : Float) : MutableList<InternalPhenomenaImpression?> {
 
         val returnProjectionList = MutableList<InternalPhenomenaImpression?>(IManifest.listMax) { null }
 
-        val magnitudeSum = internalState.map { it.magnitude(mInternalAnxiety) }.reduce { acc, mag -> acc + mag }
+        val magnitudeSum = internalFacetAttributes.map { it.magnitude(mInternalAnxiety) }.reduce { acc, mag -> acc + mag }
         val slots = mInternalAnxiety * 10
         val spread = if (slots > 0f) magnitudeSum / slots else 1f
 
         //facet to slots to fill
-        val facetSlots = internalState.mapIndexed { index, internalFacetAttribute ->
+        val facetSlots = internalFacetAttributes.mapIndexed { index, internalFacetAttribute ->
             internalFacetAttribute.arisenFacetInstance(mInternalAnxiety) to (internalFacetAttribute.magnitude(mInternalAnxiety) / spread).roundToInt()
         }.filter { it.second > 0 }.sortedBy { it.second }
 

@@ -1,7 +1,5 @@
 package org.river.exertion.ai.internalFocus
 
-import org.river.exertion.ai.symbol.*
-
 enum class InternalFocusType {
 
 //ground for resolving targets

@@ -2,9 +2,9 @@ package org.river.exertion.ecs.component.action
 
 import com.badlogic.ashley.core.Component
 import ktx.ashley.mapperFor
-import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.action.core.IComponent
 
-class ActionSimpleDecideMoveComponent : IActionComponent, Component {
+class ActionSimpleDecideMoveComponent : IComponent, Component {
 
     override val componentName = "SimpleDecideMove"
 

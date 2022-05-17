@@ -2,7 +2,7 @@ package org.river.exertion.ai.attribute
 
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
-import org.river.exertion.ai.noumena.INoumenon
+import org.river.exertion.ai.noumena.core.INoumenon
 import org.river.exertion.ai.noumena.NoneNoumenon
 
 //ranged set of attribute values

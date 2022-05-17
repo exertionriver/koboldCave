@@ -17,7 +17,7 @@ import org.river.exertion.assets.*
 import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.entity.character.CharacterPlayerCharacter
 import org.river.exertion.ecs.entity.location.LocationCave
-import org.river.exertion.ecs.system.action.SystemManager
+import org.river.exertion.ecs.system.SystemManager
 import org.river.exertion.geom.node.nodeMesh.NodeRoom
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.Render
@@ -81,7 +81,6 @@ class DemoNodeRoomS2DNavigateScreen(private val batch: Batch,
                     "nodeRoom:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeRoom.uuid}\nlength:${playerCharacter[ActionMoveComponent.mapper]!!.currentNodeLink.getDistance(nodeRoomMesh.nodesMap.keys)}\n" +
                     "occupiedNodes:${cave[LocationCave.mapper]!!.nodeRoomMesh.numOccupiedNodes()}/${cave[LocationCave.mapper]!!.nodeRoomMesh.nodesMap.size}", RenderPalette.ForeColors[1])
         }
-
 
         engine.update(delta)
 

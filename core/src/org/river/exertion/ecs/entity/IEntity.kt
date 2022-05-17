@@ -5,8 +5,11 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.MessageIds
+import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
+import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
+import org.river.exertion.btree.v0_1.IBTCharacter
 import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.action.core.IComponent
 import org.river.exertion.s2d.actor.IBaseActor
 
 interface IEntity : Telegraph {
@@ -30,7 +33,7 @@ interface IEntity : Telegraph {
 
     fun initialize(initName : String, entity: Entity)
 
-    var actions : MutableList<IActionComponent>
+    var actions : MutableList<IComponent>
 
     //tenths of a second
     var moment : Float

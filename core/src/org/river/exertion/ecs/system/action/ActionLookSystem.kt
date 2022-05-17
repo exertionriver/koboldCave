@@ -4,10 +4,9 @@ import com.badlogic.ashley.core.*
 import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
-import ktx.ashley.get
 import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.ActionLookComponent
-import org.river.exertion.ecs.component.action.MomentComponent
+import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.entity.IEntity
 
 class ActionLookSystem : IteratingSystem(allOf(ActionLookComponent::class).get()) {

@@ -1,8 +1,8 @@
 package org.river.exertion.btree.v0_1
 
 import com.badlogic.gdx.ai.btree.BehaviorTree
-import org.river.exertion.ai.manifest.CharacterManifest
-import org.river.exertion.ai.memory.CharacterMemory
+import org.river.exertion.ai.manifest.InternalManifest
+import org.river.exertion.ai.memory.InternalMemory
 import org.river.exertion.ai.noumena.other.being.humanoid.low_race.KoboldNoumenon.kobold
 import org.river.exertion.btree.v0_1.task_cond.AbideTask
 
@@ -12,8 +12,8 @@ class NoneCharacter : IBTCharacter {
 
     override lateinit var tree : BehaviorTree<IBTCharacter>
 
-    override var characterManifest = CharacterManifest()
-    override var characterMemory = CharacterMemory()
+    override var characterManifest = InternalManifest()
+    override var characterMemory = InternalMemory()
 
     //noneAbsorbed
     override var mLife = 1f

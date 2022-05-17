@@ -5,8 +5,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.action.core.IActionComponent
-import org.river.exertion.ecs.entity.IEntity
+import org.river.exertion.ecs.component.action.core.IComponent
 
 object CharacterNone : ICharacter {
 
@@ -24,7 +23,7 @@ object CharacterNone : ICharacter {
 
     override var moment = 1f
 
-    override var actions = mutableListOf<IActionComponent>(
+    override var actions = mutableListOf<IComponent>(
         ActionLookComponent()
         , ActionReflectComponent()
         , ActionIdleComponent()

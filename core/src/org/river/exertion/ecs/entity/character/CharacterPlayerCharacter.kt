@@ -14,9 +14,10 @@ import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.MessageIds
 import org.river.exertion.NextDistancePx
+import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
-import org.river.exertion.ecs.component.action.core.IActionComponent
+import org.river.exertion.ecs.component.action.core.IComponent
 import org.river.exertion.ecs.entity.location.ILocation
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPathLos
@@ -42,7 +43,7 @@ class CharacterPlayerCharacter : ICharacter, Component {
     }
 
     override var moment = 10f
-    override var actions = mutableListOf<IActionComponent>(
+    override var actions = mutableListOf<IComponent>(
             MomentComponent(moment),
             ActionMoveComponent()
     ).apply { this.addAll(CharacterNone.actions) }

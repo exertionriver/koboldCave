@@ -1,7 +1,7 @@
 package org.river.exertion.ai.internalFocus.internalFocuses
 
 import org.river.exertion.ai.internalFocus.IInternalFocus
-import org.river.exertion.ai.symbol.PresentSymbolInstance
+import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
 
 object NoneFocus : IInternalFocus {
 

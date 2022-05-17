@@ -1,12 +1,12 @@
 package org.river.exertion.ai.internalFocus
 
-import org.river.exertion.ai.symbol.SymbolDisplay
+import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
 
 class InternalFocusDisplay {
 
     var focusPlansPresent = mutableSetOf<InternalFocusPlan>()
 
-    fun update(symbolDisplay: SymbolDisplay) : SymbolDisplay {
+    fun update(symbolDisplay: InternalSymbolDisplay) : InternalSymbolDisplay {
 
         //add new plan
         symbolDisplay.symbolsAbsent.filter { it.symbolObj.satisfiers.isNotEmpty() }.forEach { absentSymbolInstance ->

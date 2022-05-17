@@ -1,10 +1,10 @@
 package org.river.exertion.ai.internalFocus.internalFocuses
 
 import org.river.exertion.ai.internalFocus.IInternalFocus
-import org.river.exertion.ai.symbol.PresentSymbolInstance
-import org.river.exertion.ai.symbol.ControlSymbolInstance
-import org.river.exertion.ai.symbol.controlSymbols.DespawnSymbol
-import org.river.exertion.ai.symbol.controlSymbols.SpawnSymbol
+import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
+import org.river.exertion.ai.internalSymbol.core.ControlSymbolInstance
+import org.river.exertion.ai.internalSymbol.controlSymbols.DespawnSymbol
+import org.river.exertion.ai.internalSymbol.controlSymbols.SpawnSymbol
 
 object ConsumeFocus : IInternalFocus {
 

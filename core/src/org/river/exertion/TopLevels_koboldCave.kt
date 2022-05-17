@@ -201,3 +201,10 @@ enum class MessageIds {
 
     fun id() = this.ordinal
 }
+
+fun logDebug(tag : String, message : String) {
+    if (Gdx.app != null)
+        Gdx.app.debug(tag, message)
+    else
+        println("$tag: $message")
+}

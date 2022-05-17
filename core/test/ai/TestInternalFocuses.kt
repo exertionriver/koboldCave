@@ -2,10 +2,12 @@ package ai
 
 import org.junit.jupiter.api.Test
 import org.river.exertion.ai.internalFocus.InternalFocusDisplay
-import org.river.exertion.ai.symbol.*
-import org.river.exertion.ai.symbol.perceivedSymbols.FoodSymbol
-import org.river.exertion.ai.symbol.perceivedSymbols.HungerSymbol
-import org.river.exertion.ai.symbol.perceivedSymbols.MomentElapseSymbol
+import org.river.exertion.ai.internalSymbol.core.AbsentSymbolInstance
+import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
+import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.HungerSymbol
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
 
 
 @ExperimentalUnsignedTypes
@@ -14,7 +16,7 @@ class TestInternalFocuses {
     @Test
     fun testDisplayUpdate() {
 
-        var symbolDisplay = SymbolDisplay().apply {
+        var symbolDisplay = InternalSymbolDisplay().apply {
             this.symbolsPresent = mutableSetOf(
                 PresentSymbolInstance(HungerSymbol, position = .55f),
                 PresentSymbolInstance(FoodSymbol, units = 12f, position = .6f).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f},
