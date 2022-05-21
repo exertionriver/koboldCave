@@ -9,8 +9,8 @@ import org.river.exertion.MessageIds
 import org.river.exertion.ai.manifest.InternalManifest
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
-import org.river.exertion.btree.v0_1.IBTCharacter
 import org.river.exertion.ecs.component.action.core.IComponent
+import org.river.exertion.ecs.entity.IEntity
 
 class ManifestComponent(var entity : Telegraph) : IComponent, Component, Telegraph {
 
@@ -21,7 +21,7 @@ class ManifestComponent(var entity : Telegraph) : IComponent, Component, Telegra
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender != entity) ) {
             if (msg.message == MessageIds.EXT_PHENOMENA.id()) {
-                internalManifest.addImpression(msg.sender as IBTCharacter, (msg.extraInfo as ExternalPhenomenaInstance).impression())
+                internalManifest.addImpression(msg.sender as IEntity, (msg.extraInfo as ExternalPhenomenaInstance).impression())
             }
             if (msg.message == MessageIds.INT_PHENOMENA.id()) {
                 internalManifest.addImpression((msg.extraInfo as InternalPhenomenaInstance).impression())

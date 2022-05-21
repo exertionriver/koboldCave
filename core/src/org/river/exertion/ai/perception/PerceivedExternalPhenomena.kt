@@ -1,6 +1,6 @@
 package org.river.exertion.ai.perception
 
 import org.river.exertion.ai.phenomena.ExternalPhenomenaImpression
-import org.river.exertion.btree.v0_1.IBTCharacter
+import org.river.exertion.ecs.entity.IEntity
 
-data class PerceivedExternalPhenomena(val sender : IBTCharacter?, val externalPhenomenaImpression: ExternalPhenomenaImpression?)
+data class PerceivedExternalPhenomena(val sender : IEntity?, val externalPhenomenaImpression: ExternalPhenomenaImpression?)

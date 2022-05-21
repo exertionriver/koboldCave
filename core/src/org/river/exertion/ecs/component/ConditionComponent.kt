@@ -2,10 +2,13 @@ package org.river.exertion.ecs.component
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.ai.msg.Telegraph
 import ktx.ashley.mapperFor
+import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.core.IComponent
 
-class ConditionComponent() : IComponent, Component {
+class ConditionComponent(var entity : Telegraph) : IComponent, Component, Telegraph {
 
     override val componentName = "Condition"
 
@@ -28,6 +31,15 @@ class ConditionComponent() : IComponent, Component {
 //    var isLyingDown : Boolean
 //    var isSitting : Boolean
 //    var isStanding : Boolean
+
+    override fun handleMessage(msg: Telegram?): Boolean {
+        if ( (msg != null) && (msg.receiver == entity) ) {
+            if (msg.message == MessageIds.INT_CONDITION.id()) {
+                this.mIntAnxiety = msg.extraInfo as Float
+            }
+        }
+        return true
+    }
 
     companion object {
         val mapper = mapperFor<ConditionComponent>()

@@ -5,9 +5,7 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
-import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
-import org.river.exertion.btree.v0_1.IBTCharacter
+import org.river.exertion.ai.noumena.core.NoumenonInstance
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IComponent
 import org.river.exertion.s2d.actor.IBaseActor
@@ -15,7 +13,7 @@ import org.river.exertion.s2d.actor.IBaseActor
 interface IEntity : Telegraph {
 
     var entityName : String
-    var description : String
+    var noumenonInstance : NoumenonInstance
 
     val stateMachine : DefaultStateMachine<IEntity, ActionState>
 

@@ -4,7 +4,7 @@ import org.river.exertion.ai.internalState.InternalFacetInstancesState
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.noumena.core.NoumenonType
-import org.river.exertion.btree.v0_1.Behavior
+import org.river.exertion.ecs.component.action.core.ActionType
 
 data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttribute> = mutableSetOf(), var internalStateInstance: InternalFacetInstancesState = InternalFacetInstancesState(), var knowledgeSourceInstance: KnowledgeSourceInstance = KnowledgeSourceInstance()) {
 
@@ -32,7 +32,7 @@ data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttri
 
             perceptionStatement += " with a ${perceivedAttribute.attributeInstance!!.characteristicValue.description}"
 
-            perceptionStatement += " while ${perceivedAttribute.perceivedExternalPhenomena?.externalPhenomenaImpression?.taskType?.description() ?: Behavior.NONE.description() }"
+            perceptionStatement += " while ${perceivedAttribute.perceivedExternalPhenomena?.externalPhenomenaImpression?.actionType?.tag() ?: ActionType.NONE.tag() }"
 
             perceptionStatement += " and it made me feel ${internalStateInstance.description()}"
 

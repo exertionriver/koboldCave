@@ -1,5 +1,0 @@
-import subTreePlaceholder:"btree.attribIssue.SubtreePlaceholder"
-
-root
-    sequence
-        subTreePlaceholder

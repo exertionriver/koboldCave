@@ -14,6 +14,7 @@ import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.MessageIds
 import org.river.exertion.NextDistancePx
+import org.river.exertion.ai.noumena.core.NoumenonInstance
 import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
@@ -26,8 +27,7 @@ import org.river.exertion.s2d.actor.ActorPlayerCharacter
 class CharacterPlayerCharacter : ICharacter, Component {
 
     override lateinit var entityName : String
-
-    override var description = "PlayerCharacter"
+    override lateinit var noumenonInstance: NoumenonInstance
 
     override val stateMachine = DefaultStateMachine(this, ActionState.NONE)
 

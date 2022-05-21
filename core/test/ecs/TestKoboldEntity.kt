@@ -8,9 +8,10 @@ import org.river.exertion.ecs.system.SystemManager
 @ExperimentalUnsignedTypes
 class TestKoboldEntity {
 
+    val engine = PooledEngine().apply { SystemManager.init(this) }
+
     @Test
     fun testKoboldEntity() {
-        val engine = PooledEngine().apply { SystemManager.init(this) }
         val koboldCharacter = CharacterKobold.ecsInstantiate(engine)
     }
 }

@@ -13,7 +13,9 @@ import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.with
 import org.river.exertion.MessageIds
-import org.river.exertion.ecs.component.action.ActionInstantiateComponent
+import org.river.exertion.ai.noumena.NoneNoumenon
+import org.river.exertion.ai.noumena.NoneNoumenon.none
+import org.river.exertion.ecs.component.action.InstantiateActionComponent
 import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IComponent
@@ -26,7 +28,7 @@ import java.util.*
 class LocationCave : ILocation, Component {
 
     override var entityName = "Cave"
-    override var description = "Spooky Cave"
+    override var noumenonInstance = none {}
 
     override val stateMachine = DefaultStateMachine(this, ActionState.NONE)
 
@@ -71,7 +73,7 @@ class LocationCave : ILocation, Component {
                 this[mapper]!!.nodeRoomMesh.buildWallsAndPath()
                 //this[mapper]!!.nodeRoomMesh.renderWallsAndPath()
             }
-            newCave[ActionInstantiateComponent.mapper]!!.stage = stage
+            newCave[InstantiateActionComponent.mapper]!!.stage = stage
 
             stage.addActor(ActorCave(initName, nodeRoomMesh))
 

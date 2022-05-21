@@ -1,4 +1,4 @@
-package ai
+package ecs
 
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
@@ -80,5 +80,6 @@ class TestCharacterManifest {
             println("mAnxiety : ${mAnxiety / 10f}")
             testState.projections(mAnxiety / 10f).forEachIndexed { idx, it -> println("slot($idx) : ${it?.arisenFacet?.facet()?.type?.tag()}, ${it?.arisenFacet?.magnitude}") }
         }
-    }*/
+    }
+*/
 }

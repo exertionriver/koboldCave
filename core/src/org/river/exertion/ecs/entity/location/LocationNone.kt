@@ -3,6 +3,8 @@ package org.river.exertion.ecs.entity.location
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
+import org.river.exertion.ai.noumena.NoneNoumenon.none
+import org.river.exertion.ai.noumena.core.NoumenonInstance
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IComponent
@@ -11,7 +13,7 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 object LocationNone : ILocation {
 
     override var entityName = "None"
-    override var description = "None"
+    override var noumenonInstance = none {}
 
     override val stateMachine = DefaultStateMachine(this, ActionState.NONE)
 
@@ -23,7 +25,7 @@ object LocationNone : ILocation {
     }
 
     override var actions = mutableListOf<IComponent>(
-        ActionInstantiateComponent(), ActionDestantiateComponent()
+        InstantiateActionComponent(), DestantiateActionComponent()
     )
 
     override var moment = 50f

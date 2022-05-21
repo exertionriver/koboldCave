@@ -1,4 +1,4 @@
-package ai
+package ecs
 
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3

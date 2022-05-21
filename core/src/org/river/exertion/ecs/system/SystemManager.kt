@@ -6,17 +6,17 @@ import org.river.exertion.ecs.system.action.*
 object SystemManager {
 
     fun init(pooledEngine: PooledEngine) {
-        pooledEngine.addSystem(ActionDestantiateSystem())
-        pooledEngine.addSystem(ActionIdleSystem())
-        pooledEngine.addSystem(ActionInstantiateSystem())
-        pooledEngine.addSystem(ActionLookSystem())
+        pooledEngine.addSystem(DestantiateActionSystem())
+        pooledEngine.addSystem(IdleActionSystem())
+        pooledEngine.addSystem(InstantiateActionSystem())
+        pooledEngine.addSystem(LookActionSystem())
         pooledEngine.addSystem(ActionSimpleMoveSystem())
         pooledEngine.addSystem(ActionSimpleDecideMoveSystem())
         pooledEngine.addSystem(ActionMoveSystem())
         pooledEngine.addSystem(ActionFulfillMoveSystem())
-        pooledEngine.addSystem(ActionReflectSystem())
-        pooledEngine.addSystem(ActionScreechSystem())
-        pooledEngine.addSystem(ActionWatchSystem())
+        pooledEngine.addSystem(ReflectActionSystem())
+        pooledEngine.addSystem(ScreechActionSystem())
+        pooledEngine.addSystem(WatchActionSystem())
         pooledEngine.addSystem(MomentSystem())
     }
 }

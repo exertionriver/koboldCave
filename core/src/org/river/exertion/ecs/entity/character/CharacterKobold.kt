@@ -3,7 +3,6 @@ package org.river.exertion.ecs.entity.character
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -14,6 +13,7 @@ import ktx.ashley.with
 import org.river.exertion.MessageIds
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
+import org.river.exertion.ai.noumena.core.NoumenonInstance
 import org.river.exertion.ai.noumena.other.being.humanoid.low_race.KoboldNoumenon.kobold
 import org.river.exertion.ecs.component.*
 import org.river.exertion.ecs.component.action.*
@@ -27,20 +27,19 @@ import java.util.*
 class CharacterKobold : ICharacter, Component {
 
     override lateinit var entityName : String
-
-    //TODO: move description into describable component
-    override var description = getDesc()
+    override lateinit var noumenonInstance: NoumenonInstance
 
     override val stateMachine = DefaultStateMachine(this, ActionState.NONE)
 
-    fun getDesc(): String = ProbabilitySelect(mapOf(
+/*    fun getDesc(): String = ProbabilitySelect(mapOf(
             "ugly Kobold!" to Probability(40f, 0)
             ,"toothy Kobold!" to Probability(30f, 0)
             ,"scaly Kobold!" to Probability(30f, 0)
     )).getSelectedProbability()!!
-
+*/
     override fun initialize(initName : String, entity: Entity) {
         entityName = initName
+        noumenonInstance = kobold {}
 
 //        actions.add(MessageComponent(entityName))
         actions.forEach {
@@ -55,15 +54,14 @@ class CharacterKobold : ICharacter, Component {
     override var moment = 6f
     override var actions = mutableListOf<IComponent>(
         MomentComponent(moment),
-        ConditionComponent(),
-        IdentityComponent(kobold {}),
+        ConditionComponent(this),
         FacetComponent(),
         ManifestComponent(this),
         MemoryComponent(),
         SymbologyComponent(),
         ActionMoveComponent(),
         ActionSimpleDecideMoveComponent(),
-        ActionScreechComponent(),
+        ScreechActionComponent(),
 
     ).apply { this.addAll(CharacterNone.actions) }
 

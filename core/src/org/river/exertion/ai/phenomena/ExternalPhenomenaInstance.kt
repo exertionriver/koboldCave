@@ -1,13 +1,13 @@
 package org.river.exertion.ai.phenomena
 
 import com.badlogic.gdx.math.Vector3
-import org.river.exertion.btree.v0_1.Behavior
+import org.river.exertion.ecs.component.action.core.ActionType
 import org.river.exertion.normalizeDeg
 
 class ExternalPhenomenaInstance {
 
     var type = ExternalPhenomenaType.NONE
-    var taskType = Behavior.NONE
+    var actionType = ActionType.NONE
     var location = Vector3(0f, 0f, 0f)
     var magnitude = 0f
     var direction = 0f //angle
@@ -19,7 +19,7 @@ class ExternalPhenomenaInstance {
     fun impression() : ExternalPhenomenaImpression {
         return ExternalPhenomenaImpression().apply {
             type = this@ExternalPhenomenaInstance.type
-            taskType = this@ExternalPhenomenaInstance.taskType
+            actionType = this@ExternalPhenomenaInstance.actionType
             perceivedDistance = 10f
             perceivedMagnitude = this@ExternalPhenomenaInstance.magnitude / 2f
             perceivedDirection = (this@ExternalPhenomenaInstance.direction + 180f).normalizeDeg()
