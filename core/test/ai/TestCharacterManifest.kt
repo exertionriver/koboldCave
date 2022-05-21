@@ -1,5 +1,6 @@
 package ai
 
+import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
@@ -13,13 +14,19 @@ import org.river.exertion.ai.internalState.InternalFacetAttributesState
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
+import org.river.exertion.ecs.component.ManifestComponent
+import org.river.exertion.ecs.component.action.ActionMoveComponent
+import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
+import org.river.exertion.ecs.entity.character.CharacterKobold
+import org.river.exertion.ecs.system.SystemManager
 
 
 @ExperimentalUnsignedTypes
 class TestCharacterManifest {
-/*
-    var character = KoboldCharacter()
-    var secondCharacter = KoboldCharacter()
+
+    val engine = PooledEngine().apply { SystemManager.init(this) }
+    val character = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }
+    val secondCharacter = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }
 
     val ordinarySound = ExternalPhenomenaInstance().apply {
         this.type = ExternalPhenomenaType.AUDITORY
@@ -44,26 +51,36 @@ class TestCharacterManifest {
     @Test
     fun testRandomPhenomena() {
 
-        MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), ordinarySound)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.EXT_PHENOMENA.id(), ordinarySound)
 
-        character.update(character.actionMoment * 2 + 0.01f)
+        engine.update(CharacterKobold.getFor(character)!!.moment * 2 + 0.01f)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        println("Auditory Channel after ordinary, character:")
+        ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.EXT_PHENOMENA.id(), weirdSound)
+        println("Auditory Channel after ordinary, second character:")
+        ManifestComponent.getFor(secondCharacter)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        character.update(character.actionMoment * 2 + 0.01f)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.EXT_PHENOMENA.id(), weirdSound)
 
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        engine.update(CharacterKobold.getFor(character)!!.moment * 2 + 0.01f)
 
-        MessageManager.getInstance().dispatchMessage(secondCharacter, MessageIds.INT_PHENOMENA.id(), scared)
+        println("Auditory Channel after weird sound, character:")
+        ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        character.update(character.actionMoment * 2 + 0.01f)
+        println("Auditory Channel after weird sound, second character:")
+        ManifestComponent.getFor(secondCharacter)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        println("Auditory Channel")
-        character.characterManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
-        println("Wisdom Channel")
-        character.characterManifest.getManifest(ExternalPhenomenaType.WISDOM).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.INT_PHENOMENA.id(), scared)
+
+        engine.update(CharacterKobold.getFor(character)!!.moment * 2 + 0.01f)
+
+        println("final Auditory Channel, character")
+        ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+        println("final Auditory Channel, second character")
+        ManifestComponent.getFor(secondCharacter)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
+
+    //        ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.WISDOM).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
     }
 
@@ -80,5 +97,5 @@ class TestCharacterManifest {
             println("mAnxiety : ${mAnxiety / 10f}")
             testState.projections(mAnxiety / 10f).forEachIndexed { idx, it -> println("slot($idx) : ${it?.arisenFacet?.facet()?.type?.tag()}, ${it?.arisenFacet?.magnitude}") }
         }
-    }*/
+    }
 }

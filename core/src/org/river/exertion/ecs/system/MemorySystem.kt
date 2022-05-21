@@ -24,7 +24,7 @@ class MemorySystem : IntervalIteratingSystem(allOf(MemoryComponent::class).get()
 
 //poll attributes from external phenomena, store in regExec
 
-            ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().forEach { perceivedPhenomenon ->
+            ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.perceivedExternalPhenomena?.externalPhenomenaImpression != null }.forEach { perceivedPhenomenon ->
                 val attributeInstance = perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.pollRandomAttributeInstance(perceivedPhenomenon.perceivedExternalPhenomena.externalPhenomenaImpression!!.type)!! //poll random attribute not yet seen in encounter?
                 val perceivedAttribute = PerceivedAttribute(attributeInstance, perceivedPhenomenon.perceivedExternalPhenomena)
 

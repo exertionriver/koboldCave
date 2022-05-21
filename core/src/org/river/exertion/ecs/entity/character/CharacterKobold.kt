@@ -39,7 +39,7 @@ class CharacterKobold : ICharacter, Component {
 */
     override fun initialize(initName : String, entity: Entity) {
         entityName = initName
-        noumenonInstance = kobold {}
+        noumenonInstance = kobold { instanceName = initName }
 
 //        actions.add(MessageComponent(entityName))
         actions.forEach {
@@ -69,6 +69,7 @@ class CharacterKobold : ICharacter, Component {
         val mapper = mapperFor<CharacterKobold>()
 
         fun has(entity : Entity) : Boolean { return entity.components.firstOrNull{ it is CharacterKobold } != null }
+        fun getFor(entity : Entity) : CharacterKobold? = if (has(entity)) entity.components.first { it is CharacterKobold } as CharacterKobold else null
 
         fun ecsInstantiate(engine: PooledEngine, initName : String = "krazza" + Random().nextInt()) : Entity {
             return engine.entity {

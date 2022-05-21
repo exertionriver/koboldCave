@@ -2,6 +2,7 @@ package org.river.exertion.ecs.component
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
+import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import ktx.ashley.mapperFor
@@ -14,8 +15,12 @@ import org.river.exertion.ecs.entity.IEntity
 
 class ManifestComponent(var entity : Telegraph) : IComponent, Component, Telegraph {
 
-    override val componentName = "Manifest"
+    init {
+        MessageManager.getInstance().addListener(this, MessageIds.EXT_PHENOMENA.id())
+        MessageManager.getInstance().addListener(this, MessageIds.INT_PHENOMENA.id())
+    }
 
+    override val componentName = "Manifest"
     var internalManifest = InternalManifest()
 
     override fun handleMessage(msg: Telegram?): Boolean {
