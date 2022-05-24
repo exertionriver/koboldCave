@@ -55,10 +55,10 @@ class CharacterKobold : ICharacter, Component {
     override var actions = mutableListOf<IComponent>(
         MomentComponent(moment),
         ConditionComponent(this),
-        FacetComponent(),
+        FacetComponent(this),
         ManifestComponent(this),
-        MemoryComponent(),
-        SymbologyComponent(),
+        MemoryComponent(this),
+        SymbologyComponent(this),
         ActionMoveComponent(),
         ActionSimpleDecideMoveComponent(),
         ScreechActionComponent(),

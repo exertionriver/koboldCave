@@ -45,7 +45,7 @@ class TestCharacterManifest {
     }
 
     val scared = InternalPhenomenaInstance().apply {
-        this.arisenFacet = fearFacet { 0.6f }
+        this.arisenFacet = fearFacet { magnitude = 0.6f }
     }
 
     @Test
@@ -53,7 +53,7 @@ class TestCharacterManifest {
 
         MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.EXT_PHENOMENA.id(), ordinarySound)
 
-        engine.update(CharacterKobold.getFor(character)!!.moment * 2 + 0.01f)
+        engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 
         println("Auditory Channel after ordinary, character:")
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
@@ -63,7 +63,7 @@ class TestCharacterManifest {
 
         MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.EXT_PHENOMENA.id(), weirdSound)
 
-        engine.update(CharacterKobold.getFor(character)!!.moment * 2 + 0.01f)
+        engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 
         println("Auditory Channel after weird sound, character:")
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
@@ -73,7 +73,7 @@ class TestCharacterManifest {
 
         MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.INT_PHENOMENA.id(), scared)
 
-        engine.update(CharacterKobold.getFor(character)!!.moment * 2 + 0.01f)
+        engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 
         println("final Auditory Channel, character")
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }

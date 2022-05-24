@@ -4,7 +4,7 @@ import org.river.exertion.ai.manifest.InternalManifest
 import org.river.exertion.ai.perception.PerceivedNoumenon
 import org.river.exertion.ai.perception.PerceivedExternalPhenomena
 
-class RegisterExecutive : IMemory {
+class ActiveMemory : IMemory {
 
     override var noumenaRegister = mutableListOf<PerceivedNoumenon>()
 

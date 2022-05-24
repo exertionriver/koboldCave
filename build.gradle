@@ -24,7 +24,7 @@ allprojects {
         roboVMVersion = '2.3.12'
         box2DLightsVersion = '1.5'
         aiVersion = '1.8.2'
-        ktxVersion = '1.10.0-rc2'
+        ktxVersion = '1.11.0-rc1'
         kotlinxVersion = '1.6.1'
         shapedrawerVersion = '2.5.0' //https://github.com/earlygrey/shapedrawer
     }

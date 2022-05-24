@@ -197,7 +197,11 @@ enum class MessageIds {
     LOSMAP_BRIDGE,
     EXT_PHENOMENA,
     INT_PHENOMENA,
-    INT_CONDITION
+    INT_CONDITION,
+    INT_FACET,
+    INT_MEMORY,
+    INT_SYMBOL,
+    INT_FOCUS
     ;
 
     fun id() = this.ordinal

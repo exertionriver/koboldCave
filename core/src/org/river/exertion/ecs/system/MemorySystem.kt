@@ -24,33 +24,33 @@ class MemorySystem : IntervalIteratingSystem(allOf(MemoryComponent::class).get()
 
 //poll attributes from external phenomena, store in regExec
 
-            ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.perceivedExternalPhenomena?.externalPhenomenaImpression != null }.forEach { perceivedPhenomenon ->
-                val attributeInstance = perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.pollRandomAttributeInstance(perceivedPhenomenon.perceivedExternalPhenomena.externalPhenomenaImpression!!.type)!! //poll random attribute not yet seen in encounter?
+            MemoryComponent.getFor(entity)!!.perceivedPhenomena.forEach { perceivedPhenomenon ->
+                val attributeInstance = perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.pollRandomAttributeInstance(perceivedPhenomenon.perceivedExternalPhenomena!!.externalPhenomenaImpression!!.type)!! //poll random attribute not yet seen in encounter?
                 val perceivedAttribute = PerceivedAttribute(attributeInstance, perceivedPhenomenon.perceivedExternalPhenomena)
 
-                val noumenonTypes = perceivedPhenomenon.perceivedExternalPhenomena.sender!!.noumenonInstance.sourceNoumenon.types().plus(NoumenonType.INDIVIDUAL)
+                val noumenonTypes = perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.sourceNoumenon.types().plus(NoumenonType.INDIVIDUAL)
                 var instanceName : String?
 
                 noumenonTypes.forEach { noumenonType ->
                     lateinit var perceivedNoumenon: PerceivedNoumenon
-                    instanceName = if (noumenonType == NoumenonType.INDIVIDUAL) perceivedPhenomenon.perceivedExternalPhenomena.sender.noumenonInstance.instanceName else null
+                    instanceName = if (noumenonType == NoumenonType.INDIVIDUAL) perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.instanceName else null
 
-                    if (MemoryComponent.getFor(entity)!!.internalMemory.registerExecutive.noumenaRegister.none { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }) { //check longterm memory
+                    if (MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.none { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }) { //check longterm memory
                         if (MemoryComponent.getFor(entity)!!.internalMemory.longtermMemory.noumenaRegister.none { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }) { //not found in longterm memory, add
-                            perceivedNoumenon = PerceivedNoumenon(internalStateInstance = MemoryComponent.getFor(entity)!!.internalMemory.internalState, knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)).apply { this.perceivedAttributes.add(perceivedAttribute); this.instanceName = instanceName; this.noumenonType = noumenonType; isNamed = true }
-                            MemoryComponent.getFor(entity)!!.internalMemory.registerExecutive.noumenaRegister.add(perceivedNoumenon)
-                            if (noumenonType != NoumenonType.INDIVIDUAL) MemoryComponent.getFor(entity)!!.internalMemory.internalState.add(SurpriseFacet.surpriseFacet { magnitude = 0.3f }) //novel noumenon
+                            perceivedNoumenon = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)).apply { this.perceivedAttributes.add(perceivedAttribute); this.instanceName = instanceName; this.noumenonType = noumenonType; isNamed = true }
+                            MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.add(perceivedNoumenon)
+                      //      if (noumenonType != NoumenonType.INDIVIDUAL) MemoryComponent.getFor(entity)!!.internalMemory.internalState.add(SurpriseFacet.surpriseFacet { magnitude = 0.3f }) //novel noumenon
                         } else { //noumenon found in longterm memory, pull over
                             perceivedNoumenon = MemoryComponent.getFor(entity)!!.internalMemory.longtermMemory.noumenaRegister.filter { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }.first()
-                            MemoryComponent.getFor(entity)!!.internalMemory.registerExecutive.noumenaRegister.add(perceivedNoumenon)
+                            MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.add(perceivedNoumenon)
                         }
                     } else { //noumenon already in regExec
-                        perceivedNoumenon = MemoryComponent.getFor(entity)!!.internalMemory.registerExecutive.noumenaRegister.filter { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }.first()
+                        perceivedNoumenon = MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.filter { it.noumenonType == noumenonType && (instanceName == null || (it.instanceName == instanceName) ) }.first()
                     }
 
                     if (!perceivedNoumenon.perceivedAttributes.contains(perceivedAttribute)) { //if perceived attribute is new
                         perceivedNoumenon.perceivedAttributes.add(perceivedAttribute)
-                        MemoryComponent.getFor(entity)!!.internalMemory.internalState.add(SurpriseFacet.surpriseFacet { magnitude = 0.1f }) //novelty
+//                        MemoryComponent.getFor(entity)!!.internalMemory.internalState.add(SurpriseFacet.surpriseFacet { magnitude = 0.1f }) //novelty
                     }
                 }
             }

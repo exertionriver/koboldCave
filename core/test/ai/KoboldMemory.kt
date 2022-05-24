@@ -30,7 +30,7 @@ object KoboldMemory {
 
         returnList.add(PerceivedNoumenon().apply {
             this.perceivedAttributes.add(PerceivedAttribute(kobold.pollRandomAttributeInstance()))
-            this.internalStateInstance.internalState.add(fearFacet { magnitude = 0.3f })
+//            this.internalStateInstance.internalState.add(fearFacet { magnitude = 0.3f })
             this.knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)
             this.noumenonType = NoumenonType.KOBOLD
             this.isNamed = true
@@ -38,7 +38,7 @@ object KoboldMemory {
 
         returnList.add(PerceivedNoumenon().apply {
             this.perceivedAttributes.add(PerceivedAttribute(kobold.pollRandomAttributeInstance()))
-            this.internalStateInstance.internalState.add(angerFacet { magnitude = 0.5f })
+//            this.internalStateInstance.internalState.add(angerFacet { magnitude = 0.5f })
             this.knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)
             this.noumenonType = NoumenonType.KOBOLD
             this.isNamed = true

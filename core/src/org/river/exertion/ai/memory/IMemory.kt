@@ -9,14 +9,14 @@ interface IMemory {
 
     //populated to begin, updated by resolution, other information
     var noumenaRegister : MutableList<PerceivedNoumenon>
-
+/*
     fun opinions(onTopic : String) : Set<InternalFacetInstancesState> {
 
         val directNoumenaPerceptions = noumenaRegister.filter { (it.instanceName == onTopic || it.noumenonType.tag() == onTopic) && it.isNamed }
 
         return directNoumenaPerceptions.map { it.internalStateInstance }.toSet()
     }
-
+*/
     fun facts(onTopic : String) : List<String> {
 
         val returnFacts = mutableListOf<String>()
@@ -28,6 +28,6 @@ interface IMemory {
         return returnFacts
     }
 
-    fun opinion(onTopic : String) : InternalFacetInstance? = opinions(onTopic).merge().magnitudeOpinion()
+//    fun opinion(onTopic : String) : InternalFacetInstance? = opinions(onTopic).merge().magnitudeOpinion()
 
 }

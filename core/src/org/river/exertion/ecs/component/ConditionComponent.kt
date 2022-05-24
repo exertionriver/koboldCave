@@ -2,6 +2,7 @@ package org.river.exertion.ecs.component
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
+import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import ktx.ashley.mapperFor
@@ -9,6 +10,10 @@ import org.river.exertion.MessageIds
 import org.river.exertion.ecs.component.action.core.IComponent
 
 class ConditionComponent(var entity : Telegraph) : IComponent, Component, Telegraph {
+
+    init {
+        MessageManager.getInstance().addListener(this, MessageIds.INT_CONDITION.id())
+    }
 
     override val componentName = "Condition"
 

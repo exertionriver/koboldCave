@@ -2,4 +2,4 @@ package org.river.exertion.ai.perception
 
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 
-data class PerceivedPhenomena(val perceivedExternalPhenomena: PerceivedExternalPhenomena? = null, val internalPhenomenaImpression: InternalPhenomenaImpression? = null)
+data class PerceivedPhenomena(var perceivedExternalPhenomena: PerceivedExternalPhenomena? = null, var internalPhenomenaImpression: InternalPhenomenaImpression? = null)

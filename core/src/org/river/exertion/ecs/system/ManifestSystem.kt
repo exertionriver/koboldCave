@@ -3,26 +3,44 @@ package org.river.exertion.ecs.system
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
 import com.badlogic.gdx.ai.GdxAI
+import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
+import org.river.exertion.MessageIds
+import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 import org.river.exertion.ecs.component.ManifestComponent
 import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.entity.IEntity
+import org.river.exertion.ecs.entity.character.CharacterKobold
 
 class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).get(), 1/10f) {
 
     override fun processEntity(entity: Entity) {
         val delta = 1/10f
 
-        ManifestComponent.getFor(entity)!!.internalManifest.manifests.forEach {
-            manifest -> manifest.perceptionList.forEach {
-                manifestEntry -> if (manifestEntry != null) manifestEntry.externalPhenomenaImpression!!.countdown -= delta
-            }
+        ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.perceivedExternalPhenomena?.externalPhenomenaImpression != null }.forEach {
+            manifestPhenomenonEntry ->
+                manifestPhenomenonEntry.perceivedExternalPhenomena?.externalPhenomenaImpression!!.countdown -= delta
+                if (manifestPhenomenonEntry.perceivedExternalPhenomena?.externalPhenomenaImpression!!.countdown < 0)
+                    manifestPhenomenonEntry.perceivedExternalPhenomena = null
         }
 
-        ManifestComponent.getFor(entity)!!.internalManifest.manifests.forEach {
-            manifest -> manifest.projectionList.forEach {
-                manifestEntry -> if (manifestEntry != null) manifestEntry.countdown -= delta
-            }
+        val processedProjections = mutableSetOf<InternalPhenomenaImpression>()
+
+        ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.internalPhenomenaImpression != null }.forEach {
+            manifestProjectionEntry ->
+                if (!processedProjections.contains(manifestProjectionEntry.internalPhenomenaImpression!!)) {
+                    manifestProjectionEntry.internalPhenomenaImpression!!.countdown -= delta
+                    if (manifestProjectionEntry.internalPhenomenaImpression!!.countdown < 0)
+                        manifestProjectionEntry.internalPhenomenaImpression = null
+
+                    processedProjections.add(manifestProjectionEntry.internalPhenomenaImpression!!)
+                }
         }
+
+        val perceivedPhenomena = ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.perceivedExternalPhenomena?.externalPhenomenaImpression != null }
+
+        if ( perceivedPhenomena.isNotEmpty() )
+            MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageIds.INT_MEMORY.id(), perceivedPhenomena)
+
     }
 }
