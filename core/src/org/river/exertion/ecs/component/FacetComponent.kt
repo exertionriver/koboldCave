@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import ktx.ashley.mapperFor
 import org.river.exertion.MessageIds
+import org.river.exertion.ai.internalState.InternalFacetAttributesState
 import org.river.exertion.ai.internalState.InternalFacetInstancesState
 import org.river.exertion.ecs.component.action.core.IComponent
 
@@ -18,12 +19,15 @@ class FacetComponent(var entity : Telegraph) : IComponent, Component, Telegraph 
 
     override val componentName = "Facet"
 
-    var internalState = InternalFacetInstancesState()
+    var responsiveInternalState = InternalFacetInstancesState()
+    var arisingInternalState = InternalFacetAttributesState()
+
+    var mInternalAnxiety = 0f
 
     override fun handleMessage(msg: Telegram?): Boolean {
-        if ( (msg != null) && (msg.receiver == entity) ) {
+        if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageIds.INT_FACET.id()) {
-
+                mInternalAnxiety = msg.extraInfo as Float
             }
         }
         return true

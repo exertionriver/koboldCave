@@ -5,7 +5,6 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
 import org.river.exertion.ai.internalFacet.FearFacet
 import org.river.exertion.ai.internalState.InternalFacetInstancesState
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
@@ -24,7 +23,7 @@ import org.river.exertion.ecs.system.SystemManager
 
 
 @ExperimentalUnsignedTypes
-class TestCharacterMemory {
+class TestMemory {
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
     val character = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }

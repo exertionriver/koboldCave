@@ -20,6 +20,8 @@ object SystemManager {
         pooledEngine.addSystem(WatchActionSystem())
 
         pooledEngine.addSystem(ActionSystem())
+        pooledEngine.addSystem(ConditionSystem())
+        pooledEngine.addSystem(FacetSystem())
         pooledEngine.addSystem(ManifestSystem())
         pooledEngine.addSystem(MemorySystem())
         pooledEngine.addSystem(MomentSystem())

@@ -12,31 +12,33 @@ data class InternalFacetAttributesState(var internalFacetAttributes: MutableSet<
 
         val returnProjectionList = MutableList<InternalPhenomenaImpression?>(IManifest.listMax) { null }
 
-        val magnitudeSum = internalFacetAttributes.map { it.magnitude(mInternalAnxiety) }.reduce { acc, mag -> acc + mag }
-        val slots = mInternalAnxiety * 10
-        val spread = if (slots > 0f) magnitudeSum / slots else 1f
+        if (internalFacetAttributes.isNotEmpty() ) {
 
-        //facet to slots to fill
-        val facetSlots = internalFacetAttributes.mapIndexed { index, internalFacetAttribute ->
-            internalFacetAttribute.arisenFacetInstance(mInternalAnxiety) to (internalFacetAttribute.magnitude(mInternalAnxiety) / spread).roundToInt()
-        }.filter { it.second > 0 }.sortedBy { it.second }
+            val magnitudeSum = internalFacetAttributes.map { it.magnitude(mInternalAnxiety) }.reduce { acc, mag -> acc + mag }
+            val slots = mInternalAnxiety * 10
+            val spread = if (slots > 0f) magnitudeSum / slots else 1f
 
-        var slotIdx = 0
-        var facetIdx = 0
-        var facetSlotCount = 0
+            //facet to slots to fill
+            val facetSlots = internalFacetAttributes.mapIndexed { index, internalFacetAttribute ->
+                internalFacetAttribute.arisenFacetInstance(mInternalAnxiety) to (internalFacetAttribute.magnitude(mInternalAnxiety) / spread).roundToInt()
+            }.filter { it.second > 0 }.sortedBy { it.second }
 
-        while ( (slotIdx < IManifest.listMax) && (facetIdx < facetSlots.size) ) {
-            facetSlotCount = 0
+            var slotIdx = 0
+            var facetIdx = 0
+            var facetSlotCount = 0
 
-            while (facetSlotCount < facetSlots[facetIdx].second) {
-                returnProjectionList[slotIdx] = InternalPhenomenaInstance().apply { this.arisenFacet = facetSlots[facetIdx].first }.impression()
-                facetSlotCount++
-                slotIdx++
+            while ((slotIdx < IManifest.listMax) && (facetIdx < facetSlots.size)) {
+                facetSlotCount = 0
+
+                while (facetSlotCount < facetSlots[facetIdx].second) {
+                    returnProjectionList[slotIdx] = InternalPhenomenaInstance().apply { this.arisenFacet = facetSlots[facetIdx].first }.impression()
+                    facetSlotCount++
+                    slotIdx++
+                }
+
+                facetIdx++
             }
-
-            facetIdx++
         }
-
         return returnProjectionList
     }
 }

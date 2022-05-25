@@ -23,6 +23,8 @@ class InternalManifest {
     fun addImpression(sender : IEntity, externalPhenomenaImpression: ExternalPhenomenaImpression) = manifests.filter { it.manifestType == externalPhenomenaImpression.type }.first().addImpression(PerceivedExternalPhenomena(sender, externalPhenomenaImpression))
     fun addImpression(internalPhenomenaImpression: InternalPhenomenaImpression) = manifests.forEach { it.addImpression(internalPhenomenaImpression) }
 
+    fun addFacetImpressions(facetImpressions : MutableList<InternalPhenomenaImpression?>) = manifests.forEach {manifest -> manifest.projectionList = facetImpressions}
+
     fun getManifest(externalPhenomenaType: ExternalPhenomenaType) = manifests.filter { it.manifestType == externalPhenomenaType }.first()
 
     fun getExternalPhenomenaList() : MutableList<PerceivedExternalPhenomena> {

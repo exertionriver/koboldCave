@@ -22,7 +22,7 @@ import org.river.exertion.ecs.system.SystemManager
 
 
 @ExperimentalUnsignedTypes
-class TestCharacterManifest {
+class TestManifest {
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
     val character = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }
@@ -84,18 +84,4 @@ class TestCharacterManifest {
 
     }
 
-    @Test
-    fun testOriginArisingProjections() {
-        val testState = InternalFacetAttributesState().apply { this.internalFacetAttributes = mutableSetOf(
-            internalFacetAttribute { internalFacetInstance = confusionFacet {}; origin = 0.2f; arising = 0.5f },
-            internalFacetAttribute { internalFacetInstance = angerFacet {}; origin = 0.3f; arising = 0.7f },
-            internalFacetAttribute { internalFacetInstance = fearFacet {}; origin = 0.4f; arising = 0.8f },
-            internalFacetAttribute { internalFacetInstance = doubtFacet {}; origin = 0f; arising = 0.1f }
-        ) }
-
-        (0..10).forEach { mAnxiety ->
-            println("mAnxiety : ${mAnxiety / 10f}")
-            testState.projections(mAnxiety / 10f).forEachIndexed { idx, it -> println("slot($idx) : ${it?.arisenFacet?.facet()?.type?.tag()}, ${it?.arisenFacet?.magnitude}") }
-        }
-    }
 }
