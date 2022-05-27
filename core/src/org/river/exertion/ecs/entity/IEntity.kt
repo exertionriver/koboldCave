@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
-import org.river.exertion.MessageIds
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.noumena.core.NoumenonInstance
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IComponent
@@ -19,10 +19,10 @@ interface IEntity : Telegraph {
 
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( msg != null ) {
-            if (msg.message == MessageIds.S2D_ECS_BRIDGE.id() && (msg.sender as IBaseActor).actorName == entityName) {
+            if (msg.message == MessageChannel.S2D_ECS_BRIDGE.id() && (msg.sender as IBaseActor).actorName == entityName) {
 //            Gdx.app.log("message","entity $entityName received telegram:${msg.message}, ${(msg.sender as IBaseActor).actorName}, ${msg.extraInfo}")
                 return true
-            } else if (msg.message == MessageIds.ECS_FSM_BRIDGE.id()) {
+            } else if (msg.message == MessageChannel.ECS_FSM_BRIDGE.id()) {
                 stateMachine.handleMessage(msg)
             }
         }

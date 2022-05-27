@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.fsm.State
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
-import ktx.ashley.get
-import org.river.exertion.MessageIds
-import org.river.exertion.ecs.component.action.ActionMoveComponent
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.entity.IEntity
 
 enum class ActionState : State<IEntity> {
@@ -15,7 +13,7 @@ enum class ActionState : State<IEntity> {
         override fun update(entity : IEntity) {
 //            Gdx.app.log(this.javaClass.name, "${entity.entityName}: status none")
             entity.stateMachine.changeState(SOME)
-            MessageManager.getInstance().dispatchMessage(entity, MessageIds.FEELING_BRIDGE.id(), "feeling very ${entity.stateMachine.currentState}")
+            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.FEELING_BRIDGE.id(), "feeling very ${entity.stateMachine.currentState}")
 
         }
     },
@@ -23,7 +21,7 @@ enum class ActionState : State<IEntity> {
         override fun update(entity : IEntity) {
 //            Gdx.app.log(this.javaClass.name, "${entity.entityName}: status some")
             entity.stateMachine.changeState(NONE)
-            MessageManager.getInstance().dispatchMessage(entity, MessageIds.FEELING_BRIDGE.id(), "feeling very ${entity.stateMachine.currentState}")
+            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.FEELING_BRIDGE.id(), "feeling very ${entity.stateMachine.currentState}")
         }
     }
     ;
@@ -38,7 +36,7 @@ enum class ActionState : State<IEntity> {
 
     override fun onMessage(entity: IEntity?, telegram: Telegram?): Boolean {
 
-        if (telegram != null && telegram.message == MessageIds.ECS_FSM_BRIDGE.id() ) {
+        if (telegram != null && telegram.message == MessageChannel.ECS_FSM_BRIDGE.id() ) {
 
             Gdx.app.log(this.javaClass.name, "received telegram from ${entity!!.entityName}: ${telegram.sender}, ${telegram.message}, ${telegram.extraInfo}")
 

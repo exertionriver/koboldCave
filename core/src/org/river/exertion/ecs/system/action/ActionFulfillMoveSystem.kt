@@ -8,6 +8,7 @@ import ktx.ashley.allOf
 import ktx.ashley.contains
 import ktx.ashley.get
 import org.river.exertion.*
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.entity.IEntity
@@ -157,21 +158,21 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                         ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPath()
                     }
 
-                    MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageIds.NODEROOMMESH_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!.nodeRoomMesh)
+                    MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageChannel.NODEROOMMESH_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!.nodeRoomMesh)
                 }
 
-                MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageIds.CURNODE_BRIDGE.id(), ActionMoveComponent.getFor(entity)!!.currentNode)
+                MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageChannel.CURNODE_BRIDGE.id(), ActionMoveComponent.getFor(entity)!!.currentNode)
 
             }
 
             if (ActionMoveComponent.getFor(entity)!!.camera != null) {
                 val losMap = ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPathLos(ActionMoveComponent.getFor(entity)!!.currentPosition, ActionMoveComponent.getFor(entity)!!.currentAngle, NextDistancePx * 1.5f)
 
-                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.LOSMAP_BRIDGE.id(), losMap)
+                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageChannel.LOSMAP_BRIDGE.id(), losMap)
             }
 
         if ((currentPosition != entity[ActionMoveComponent.mapper]!!.currentPosition) || (currentAngle != entity[ActionMoveComponent.mapper]!!.currentAngle) )
-                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
+                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageChannel.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
         }
     }
 

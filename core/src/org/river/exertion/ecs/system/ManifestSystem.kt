@@ -2,15 +2,12 @@ package org.river.exertion.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
-import com.badlogic.gdx.ai.GdxAI
 import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
-import org.river.exertion.MessageIds
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 import org.river.exertion.ecs.component.ManifestComponent
-import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.entity.IEntity
-import org.river.exertion.ecs.entity.character.CharacterKobold
 
 class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).get(), 1/10f) {
 
@@ -40,7 +37,7 @@ class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).g
         val perceivedPhenomena = ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.perceivedExternalPhenomena?.externalPhenomenaImpression != null }
 
         if ( perceivedPhenomena.isNotEmpty() )
-            MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageIds.INT_MEMORY.id(), perceivedPhenomena)
+            MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_MEMORY.id(), perceivedPhenomena)
 
     }
 }

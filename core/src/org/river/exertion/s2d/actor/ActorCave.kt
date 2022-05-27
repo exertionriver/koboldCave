@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
 import org.river.exertion.*
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 
@@ -20,8 +21,8 @@ class ActorCave(initName : String = "Cave", initNodeRoomMesh : NodeRoomMesh) : A
 
     init {
         name = initName
-        MessageManager.getInstance().addListener(this, MessageIds.CURNODE_BRIDGE.id())
-        MessageManager.getInstance().addListener(this, MessageIds.NODEROOMMESH_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.CURNODE_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.NODEROOMMESH_BRIDGE.id())
     }
 
     override fun draw(batch : Batch, parentAlpha : Float) {
@@ -41,7 +42,7 @@ class ActorCave(initName : String = "Cave", initNodeRoomMesh : NodeRoomMesh) : A
             //           Gdx.app.log("message","actor $actorName received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
 
             //receive currentNode
-            if (msg.extraInfo != null && msg.message == MessageIds.CURNODE_BRIDGE.id() ) {
+            if (msg.extraInfo != null && msg.message == MessageChannel.CURNODE_BRIDGE.id() ) {
                                Gdx.app.log("message","update currentPosition to: ${(msg.extraInfo as Node).position}, currentNode to: ${(msg.extraInfo as Node)}")
 
                 currentNode = msg.extraInfo as Node
@@ -49,13 +50,13 @@ class ActorCave(initName : String = "Cave", initNodeRoomMesh : NodeRoomMesh) : A
             }
 
             //receive nodeMesh
-            if (msg.extraInfo != null && msg.message == MessageIds.NODEROOMMESH_BRIDGE.id() ) {
+            if (msg.extraInfo != null && msg.message == MessageChannel.NODEROOMMESH_BRIDGE.id() ) {
                                Gdx.app.log("message","update nodeRoomMesh to: ${(msg.extraInfo as NodeRoomMesh)}")
 
                 nodeRoomMesh = msg.extraInfo as NodeRoomMesh
             }
 
-            MessageManager.getInstance().dispatchMessage(this, MessageIds.S2D_ECS_BRIDGE.id())
+            MessageManager.getInstance().dispatchMessage(this, MessageChannel.S2D_ECS_BRIDGE.id())
 
             return true
         }

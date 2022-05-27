@@ -7,7 +7,7 @@ import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import org.river.exertion.MessageIds
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.entity.IEntity
 
 class UIPerceptionTable(initSkin : Skin) : Table(), Telegraph {
@@ -17,7 +17,7 @@ class UIPerceptionTable(initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, String>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageIds.PERCEPTION_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.PERCEPTION_BRIDGE.id())
 
         skin = initSkin
         x = Gdx.graphics.width / 8f

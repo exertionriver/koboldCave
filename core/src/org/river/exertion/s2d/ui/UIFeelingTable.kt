@@ -7,7 +7,7 @@ import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import org.river.exertion.MessageIds
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.entity.IEntity
 
 class UIFeelingTable(initSkin : Skin) : Table(), Telegraph {
@@ -17,7 +17,7 @@ class UIFeelingTable(initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, String>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageIds.FEELING_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.FEELING_BRIDGE.id())
 
         skin = initSkin
         x = Gdx.graphics.width / 8f

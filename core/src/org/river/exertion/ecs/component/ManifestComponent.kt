@@ -6,8 +6,8 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import ktx.ashley.mapperFor
-import org.river.exertion.MessageIds
 import org.river.exertion.ai.manifest.InternalManifest
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
@@ -17,9 +17,9 @@ import org.river.exertion.ecs.entity.IEntity
 class ManifestComponent(var entity : Telegraph) : IComponent, Component, Telegraph {
 
     init {
-        MessageManager.getInstance().addListener(this, MessageIds.EXT_PHENOMENA.id())
-        MessageManager.getInstance().addListener(this, MessageIds.INT_PHENOMENA.id())
-        MessageManager.getInstance().addListener(this, MessageIds.INT_PHENOMENA_FACETS.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.EXT_PHENOMENA.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_PHENOMENA.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_PHENOMENA_FACETS.id())
     }
 
     override val componentName = "Manifest"
@@ -27,15 +27,15 @@ class ManifestComponent(var entity : Telegraph) : IComponent, Component, Telegra
 
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender != entity) ) {
-            if (msg.message == MessageIds.EXT_PHENOMENA.id()) {
+            if (msg.message == MessageChannel.EXT_PHENOMENA.id()) {
                 internalManifest.addImpression(msg.sender as IEntity, (msg.extraInfo as ExternalPhenomenaInstance).impression())
             }
-            if (msg.message == MessageIds.INT_PHENOMENA.id()) {
+            if (msg.message == MessageChannel.INT_PHENOMENA.id()) {
                 internalManifest.addImpression((msg.extraInfo as InternalPhenomenaInstance).impression())
             }
         }
         if ( (msg != null) && (msg.sender == entity) ) {
-            if (msg.message == MessageIds.INT_PHENOMENA_FACETS.id()) {
+            if (msg.message == MessageChannel.INT_PHENOMENA_FACETS.id()) {
                 internalManifest.addFacetImpressions(msg.extraInfo as MutableList<InternalPhenomenaImpression?>)
             }
         }

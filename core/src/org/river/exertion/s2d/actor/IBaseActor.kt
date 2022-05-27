@@ -1,11 +1,10 @@
 package org.river.exertion.s2d.actor
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
-import org.river.exertion.MessageIds
 import org.river.exertion.Point
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.entity.IEntity
 
@@ -31,7 +30,7 @@ interface IBaseActor : Telegraph {
                 currentAngle = (msg.extraInfo as ActionMoveComponent).currentAngle
             }
 
-            MessageManager.getInstance().dispatchMessage(this, MessageIds.S2D_ECS_BRIDGE.id())
+            MessageManager.getInstance().dispatchMessage(this, MessageChannel.S2D_ECS_BRIDGE.id())
 
             return true
         }

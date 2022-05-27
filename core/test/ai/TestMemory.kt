@@ -4,13 +4,13 @@ import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
-import org.river.exertion.MessageIds
 import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
 import org.river.exertion.ai.internalFacet.FearFacet
 import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.memory.MemoryInstance
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ai.perception.PerceivedNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
@@ -77,7 +77,7 @@ class TestMemory {
 
         MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageIds.EXT_PHENOMENA.id(), koboldBalter)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageChannel.EXT_PHENOMENA.id(), koboldBalter)
         engine.update(CharacterKobold.getFor(character)!!.moment)
 
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
@@ -116,7 +116,7 @@ class TestMemory {
 
         MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageIds.EXT_PHENOMENA.id(), koboldBalter)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageChannel.EXT_PHENOMENA.id(), koboldBalter)
         engine.update(CharacterKobold.getFor(character)!!.moment)
 
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }

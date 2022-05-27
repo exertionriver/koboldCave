@@ -10,13 +10,13 @@ import ktx.ashley.entity
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.with
-import org.river.exertion.MessageIds
-import org.river.exertion.Probability
-import org.river.exertion.ProbabilitySelect
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.noumena.core.NoumenonInstance
 import org.river.exertion.ai.noumena.other.being.humanoid.low_race.KoboldNoumenon.kobold
 import org.river.exertion.ecs.component.*
-import org.river.exertion.ecs.component.action.*
+import org.river.exertion.ecs.component.action.ActionMoveComponent
+import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
+import org.river.exertion.ecs.component.action.ScreechActionComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IComponent
 import org.river.exertion.ecs.entity.location.ILocation
@@ -48,7 +48,7 @@ class CharacterKobold : ICharacter, Component {
         entity.add(FacetComponent(this, noumenonInstance.facetAttributes!!))
 
 
-        MessageManager.getInstance().addListener(this, MessageIds.S2D_ECS_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.S2D_ECS_BRIDGE.id())
 
         logDebug (this.javaClass.name, "$initName initialized!")
     }

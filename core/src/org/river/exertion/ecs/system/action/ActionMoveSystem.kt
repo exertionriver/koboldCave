@@ -5,7 +5,7 @@ import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
 import ktx.ashley.get
-import org.river.exertion.MessageIds
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.action.*
 import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.geom.node.Node
@@ -152,7 +152,7 @@ class ActionMoveSystem : IteratingSystem(allOf(ActionMoveComponent::class).get()
                 }
             }
 //            if (entity[ActionMoveComponent.mapper]!!.direction != ActionMoveComponent.Direction.NONE)
-                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageIds.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
+                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageChannel.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
 
             entity[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.NONE
             entity[ActionMoveComponent.mapper]!!.currentNodeRoom = nodeRoomMesh.getNodeRoom(currentNode)

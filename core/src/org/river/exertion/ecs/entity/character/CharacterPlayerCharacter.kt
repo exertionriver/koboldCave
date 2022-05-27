@@ -12,8 +12,8 @@ import ktx.ashley.entity
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.with
-import org.river.exertion.MessageIds
 import org.river.exertion.NextDistancePx
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.noumena.core.NoumenonInstance
 import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.action.*
@@ -37,7 +37,7 @@ class CharacterPlayerCharacter : ICharacter, Component {
         actions.forEach {
             if (!entity.components.contains(it as Component) ) entity.add(it as Component)
         }
-        MessageManager.getInstance().addListener(this, MessageIds.S2D_ECS_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.S2D_ECS_BRIDGE.id())
 
         Gdx.app.log (this.javaClass.name, "$initName initialized!")
     }
@@ -65,7 +65,7 @@ class CharacterPlayerCharacter : ICharacter, Component {
                 ActionMoveComponent.getFor(newPC)!!.nodeRoomMesh.renderWallsAndPath()
             } else {
                 val losMap = ActionMoveComponent.getFor(newPC)!!.nodeRoomMesh.renderWallsAndPathLos(ActionMoveComponent.getFor(newPC)!!.currentPosition, ActionMoveComponent.getFor(newPC)!!.currentAngle, NextDistancePx * 1.5f)
-                MessageManager.getInstance().dispatchMessage(MessageIds.LOSMAP_BRIDGE.id(), losMap)
+                MessageManager.getInstance().dispatchMessage(MessageChannel.LOSMAP_BRIDGE.id(), losMap)
             }
 
             stage.addActor(ActorPlayerCharacter(initName, newPC[ActionMoveComponent.mapper]!!.currentPosition, newPC[ActionMoveComponent.mapper]!!.currentAngle ) )

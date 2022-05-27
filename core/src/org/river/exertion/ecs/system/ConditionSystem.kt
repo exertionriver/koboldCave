@@ -4,10 +4,8 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
 import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
-import org.river.exertion.MessageIds
-import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.ConditionComponent
-import org.river.exertion.ecs.component.ManifestComponent
 import org.river.exertion.ecs.entity.IEntity
 import kotlin.random.Random
 
@@ -27,7 +25,7 @@ class ConditionSystem : IntervalIteratingSystem(allOf(ConditionComponent::class)
 
         val mIntAnxiety = ConditionComponent.getFor(entity)!!.mIntAnxiety
 
-        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageIds.INT_FACET.id(), mIntAnxiety)
+        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_FACET.id(), mIntAnxiety)
 
     }
 }

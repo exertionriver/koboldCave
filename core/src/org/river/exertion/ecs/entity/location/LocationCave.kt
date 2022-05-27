@@ -12,11 +12,10 @@ import ktx.ashley.entity
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.with
-import org.river.exertion.MessageIds
-import org.river.exertion.ai.noumena.NoneNoumenon
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.noumena.NoneNoumenon.none
-import org.river.exertion.ecs.component.action.InstantiateActionComponent
 import org.river.exertion.ecs.component.MomentComponent
+import org.river.exertion.ecs.component.action.InstantiateActionComponent
 import org.river.exertion.ecs.component.action.core.ActionState
 import org.river.exertion.ecs.component.action.core.IComponent
 import org.river.exertion.ecs.entity.IEntity
@@ -38,8 +37,8 @@ class LocationCave : ILocation, Component {
             if (!entity.components.contains(it as Component) ) entity.add(it as Component)
         }
 
-        MessageManager.getInstance().addListener(this, MessageIds.S2D_ECS_BRIDGE.id())
-        MessageManager.getInstance().addListener(this, MessageIds.NODEROOMMESH_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.S2D_ECS_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.NODEROOMMESH_BRIDGE.id())
 
         Gdx.app.log (this.javaClass.name, "$initName initialized!")
     }
@@ -53,7 +52,7 @@ class LocationCave : ILocation, Component {
     override var nodeRoomMesh = LocationNone.nodeRoomMesh
 
     override fun handleMessage(msg: Telegram?): Boolean {
-        if ( msg != null && msg.message == MessageIds.NODEROOMMESH_BRIDGE.id() ) {
+        if ( msg != null && msg.message == MessageChannel.NODEROOMMESH_BRIDGE.id() ) {
             Gdx.app.log("message","entity $entityName received telegram:${msg.message}, ${(msg.sender as IEntity).entityName}, ${msg.extraInfo}")
             this.nodeRoomMesh = msg.extraInfo as NodeRoomMesh
         }

@@ -4,8 +4,8 @@ import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
-import org.river.exertion.MessageIds
 import org.river.exertion.ai.internalFacet.FearFacet.fearFacet
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
@@ -46,7 +46,7 @@ class TestManifest {
     @Test
     fun testRandomPhenomena() {
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.EXT_PHENOMENA.id(), ordinarySound)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.EXT_PHENOMENA.id(), ordinarySound)
 
         engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 
@@ -56,7 +56,7 @@ class TestManifest {
         println("Auditory Channel after ordinary, second character:")
         ManifestComponent.getFor(secondCharacter)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.EXT_PHENOMENA.id(), weirdSound)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.EXT_PHENOMENA.id(), weirdSound)
 
         engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 
@@ -66,7 +66,7 @@ class TestManifest {
         println("Auditory Channel after weird sound, second character:")
         ManifestComponent.getFor(secondCharacter)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageIds.INT_PHENOMENA.id(), scared)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.INT_PHENOMENA.id(), scared)
 
         engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 

@@ -25,6 +25,7 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.entity.IEntity
 
 class DemoFSM(private val menuBatch: Batch,
@@ -59,7 +60,7 @@ class DemoFSM(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.BACKWARD }
             Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.LEFT }
             Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.RIGHT }
-            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { MessageManager.getInstance().dispatchMessage(IEntity.getFor(playerCharacter)!!, IEntity.getFor(playerCharacter)!!, MessageIds.ECS_FSM_BRIDGE.id(), "hello from ${IEntity.getFor(playerCharacter)!!.entityName}") }
+            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { MessageManager.getInstance().dispatchMessage(IEntity.getFor(playerCharacter)!!, IEntity.getFor(playerCharacter)!!, MessageChannel.ECS_FSM_BRIDGE.id(), "hello from ${IEntity.getFor(playerCharacter)!!.entityName}") }
         }
 
         menuCamera.update()

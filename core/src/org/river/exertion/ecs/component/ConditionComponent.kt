@@ -6,13 +6,13 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import ktx.ashley.mapperFor
-import org.river.exertion.MessageIds
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.action.core.IComponent
 
 class ConditionComponent(var entity : Telegraph) : IComponent, Component, Telegraph {
 
     init {
-        MessageManager.getInstance().addListener(this, MessageIds.INT_CONDITION.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_CONDITION.id())
     }
 
     override val componentName = "Condition"
@@ -35,7 +35,7 @@ class ConditionComponent(var entity : Telegraph) : IComponent, Component, Telegr
 
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.receiver == entity) ) {
-            if (msg.message == MessageIds.INT_CONDITION.id()) {
+            if (msg.message == MessageChannel.INT_CONDITION.id()) {
                 this.mIntAnxiety = msg.extraInfo as Float
             }
         }

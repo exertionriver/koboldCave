@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import org.river.exertion.*
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.geom.Line.Companion.onSegment
-import org.river.exertion.RenderPalette
 import space.earlygrey.shapedrawer.JoinType
 
 class ActorKobold(initName : String, initPosition : Point, initAngle : Angle) : Actor(), IBaseActor {
@@ -23,13 +23,13 @@ class ActorKobold(initName : String, initPosition : Point, initAngle : Angle) : 
         x = initPosition.x
         y = initPosition.y
         rotation = initAngle
-        MessageManager.getInstance().addListener(this, MessageIds.ECS_S2D_BRIDGE.id())
-        MessageManager.getInstance().addListener(this, MessageIds.LOSMAP_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.ECS_S2D_BRIDGE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.LOSMAP_BRIDGE.id())
     }
 
     override fun handleMessage(msg: Telegram?): Boolean {
 
-        if (msg != null && msg.message == MessageIds.LOSMAP_BRIDGE.id() ) {
+        if (msg != null && msg.message == MessageChannel.LOSMAP_BRIDGE.id() ) {
             losMap = (msg.extraInfo as MutableMap<Int, Point>)
         }
 
