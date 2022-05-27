@@ -1,18 +1,14 @@
 package org.river.exertion.ai.perception
 
-import org.river.exertion.ai.internalState.InternalFacetInstancesState
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ecs.component.action.core.ActionType
 
-data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttribute> = mutableSetOf()//, var internalStateInstance: InternalFacetInstancesState = InternalFacetInstancesState()
-        , var knowledgeSourceInstance: KnowledgeSourceInstance = KnowledgeSourceInstance()) {
+data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttribute> = mutableSetOf(), var knowledgeSourceInstance: KnowledgeSourceInstance = KnowledgeSourceInstance()) {
 
     var noumenonType : NoumenonType = NoumenonType.NONE
     var instanceName : String? = null
-    var threat : Float = 0f
-    var opportunity : Float = 0f
     var isNamed : Boolean = false
 
     fun facts() : MutableList<String> {
@@ -41,6 +37,28 @@ data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttri
         }
 
         return returnFacts
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as PerceivedNoumenon
+
+        if (perceivedAttributes != other.perceivedAttributes) return false
+        if (knowledgeSourceInstance != other.knowledgeSourceInstance) return false
+        if (noumenonType != other.noumenonType) return false
+        if (instanceName != other.instanceName) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = perceivedAttributes.hashCode()
+        result = 31 * result + knowledgeSourceInstance.hashCode()
+        result = 31 * result + noumenonType.hashCode()
+        result = 31 * result + (instanceName?.hashCode() ?: 0)
+        return result
     }
 }
 

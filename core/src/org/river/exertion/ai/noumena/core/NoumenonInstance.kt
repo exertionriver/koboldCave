@@ -12,6 +12,8 @@ class NoumenonInstance(sourceNoumenonType : Class<InstantiatableNoumenon>, var i
 
     val sourceNoumenon: InstantiatableNoumenon = sourceNoumenonType.kotlin.objectInstance!!
     var characteristics = if (sourceNoumenon is IAttributeable) sourceNoumenon.traits().getRandomCharacteristics() else null
+    var facetAttributes = if (sourceNoumenon is IAttributeable) sourceNoumenon.facetAttributes() else null
+
     var features = if (sourceNoumenon is IPropertyable) sourceNoumenon.qualities().getRandomFeatures() else null
 
     private fun filteredAttributes(externalPhenomenaType: ExternalPhenomenaType?) =

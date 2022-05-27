@@ -5,10 +5,12 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
+import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
 import org.river.exertion.ai.internalFacet.FearFacet
-import org.river.exertion.ai.internalState.InternalFacetInstancesState
+import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
+import org.river.exertion.ai.memory.MemoryInstance
 import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ai.perception.PerceivedNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
@@ -29,7 +31,7 @@ class TestMemory {
     val character = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }
     val secondCharacter = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }
 
-    val koboldGrowl = ExternalPhenomenaInstance().apply {
+    val koboldBalter = ExternalPhenomenaInstance().apply {
         this.type = ExternalPhenomenaType.AUDITORY
         this.actionType = ActionType.BALTER
         this.direction = 120f
@@ -40,14 +42,16 @@ class TestMemory {
 
     @Test
     fun testKoboldMemory() {
+        val isi = InternalFacetInstancesState().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
+
         KoboldMemory.memoriesPA().forEach {
-//            val isi = InternalFacetInstancesState().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
             val perceivedNoumenon = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE) ).apply { this.perceivedAttributes.add(it); this.noumenonType = NoumenonType.OTHER; this.isNamed = true}
-            MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.add(perceivedNoumenon)
+            MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.add(MemoryInstance(perceivedNoumenon, isi))
+        }
+        KoboldMemory.memoriesPN().forEach {
+            MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.add(MemoryInstance(it, isi))
         }
 
-        MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.addAll(KoboldMemory.memoriesPN())
-/*
         val opinions1 = "other"
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions1).forEach {
             println("opinions on $opinions1: ${it.internalState}: ${it.magnitudeOpinion()}")
@@ -64,28 +68,29 @@ class TestMemory {
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions3).forEach {
             println("opinions on $opinions3: ${it.internalState}: ${it.magnitudeOpinion()}")
         }
-        println("opinion on $opinions3: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions3)}")*/
+        println("opinion on $opinions3: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions3)}")
     }
 
     @Test
     fun testAddingKoboldMemoryFromManifest() {
-        KoboldMemory.memoriesPA().forEach {
-            val isi = InternalFacetInstancesState().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
-            val perceivedNoumenon = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE) ).apply { this.perceivedAttributes.add(it); this.noumenonType = NoumenonType.OTHER; this.isNamed = true}
-            MemoryComponent.getFor(character)!!.internalMemory.longtermMemory.noumenaRegister.add(perceivedNoumenon)
-        }
+        val isi = InternalFacetInstancesState().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
 
-        MemoryComponent.getFor(character)!!.internalMemory.longtermMemory.noumenaRegister.addAll(KoboldMemory.memoriesPN())
+        MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 
-//        MemoryComponent.getFor(character)!!.internalMemory.internalState.internalState.add( angerFacet { magnitude = 0.7f } )
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageIds.EXT_PHENOMENA.id(), koboldGrowl)
-        engine.update(CharacterKobold.getFor(character)!!.moment / 10)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageIds.EXT_PHENOMENA.id(), koboldBalter)
+        engine.update(CharacterKobold.getFor(character)!!.moment)
 
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.forEach { println("${it.noumenonType.tag()}, ${it.instanceName}, ${it.perceivedAttributes.first()}") }
-/*
-        val opinions4 = "low race"
+        MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.forEach { println("${it.perceivedNoumenon.noumenonType.tag()}, ${it.perceivedNoumenon.instanceName}, ${it.perceivedNoumenon.perceivedAttributes.first()}") }
+
+        val opinions1 = "other"
+        MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions1).forEach {
+            println("opinions on $opinions1: ${it.internalState}: ${it.magnitudeOpinion()}")
+        }
+        println("opinion on $opinions1: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions1)}")
+
+        val opinions4 = "low-race"
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions4).forEach {
             println("opinions on $opinions4: ${it.internalState}: ${it.magnitudeOpinion()}")
         }
@@ -102,29 +107,31 @@ class TestMemory {
             println("opinions on $opinions6: ${it.internalState}: ${it.magnitudeOpinion()}")
         }
         println("opinion on $opinions6: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions6)}")
-*/
+
     }
 
     @Test
     fun testPollKoboldFacts() {
+        val isi = InternalFacetInstancesState().apply { this.internalState.add(angerFacet { magnitude = 0.7f }) }
 
-//        MemoryComponent.getFor(character)!!.internalMemory.internalState.internalState.add( angerFacet { magnitude = 0.7f } )
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageIds.EXT_PHENOMENA.id(), koboldGrowl)
-        engine.update(CharacterKobold.getFor(character)!!.moment * 2 + 0.01f)
+        MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
+
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageIds.EXT_PHENOMENA.id(), koboldBalter)
+        engine.update(CharacterKobold.getFor(character)!!.moment)
 
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.forEach { println("${it.noumenonType.tag()}, ${it.instanceName}, ${it.perceivedAttributes.first()}") }
+        MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.forEach { println("${it.perceivedNoumenon.noumenonType.tag()}, ${it.perceivedNoumenon.instanceName}, ${it.perceivedNoumenon.perceivedAttributes.first()}") }
 
         val opinions5 = "kobold"
         println("facts on $opinions5")
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.facts(opinions5).forEach { fact -> println(fact) }
-//        println("opinion on $opinions5: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions5)}")
+        println("opinion on $opinions5: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions5)}")
 
-        val opinions6 = "low race"
+        val opinions6 = "low-race"
         println("facts on $opinions6")
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.facts(opinions6).forEach { fact -> println(fact) }
-  //      println("opinion on $opinions6: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions6)}")
+        println("opinion on $opinions6: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions6)}")
 
     }
 }

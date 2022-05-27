@@ -2,8 +2,8 @@ package org.river.exertion.ai.noumena.other.being.humanoid.low_race
 
 import org.river.exertion.ai.attribute.GrowlAttribute.growlRange
 import org.river.exertion.ai.attribute.IntelligenceAttribute.intelligenceRange
-import org.river.exertion.ai.attribute.InternalStateAttribute.internalStateRange
 import org.river.exertion.ai.attribute.Trait.Companion.mergeOverrideTraits
+import org.river.exertion.ai.internalFacet.*
 import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalFocus.InternalFocusDisplay
 import org.river.exertion.ai.noumena.other.being.humanoid.LowRaceNoumenon
@@ -19,9 +19,14 @@ object KoboldNoumenon : INoumenon, InstantiatableNoumenon, IAttributeable, IInte
     override fun types() = LowRaceNoumenon.types().toMutableList().apply { this.add(type()) }.toList()
     override fun traits() = LowRaceNoumenon.traits().mergeOverrideTraits( listOf(
         growlRange { noumenonObj = this@KoboldNoumenon.javaClass; noumenonOrder = 2; minValue = type().tag(); maxValue = type().tag() },
-        internalStateRange { noumenonObj = this@KoboldNoumenon.javaClass; noumenonOrder = 3; minValue = 0.5f; maxValue = 0.6f },
         intelligenceRange { noumenonObj = this@KoboldNoumenon.javaClass; noumenonOrder = 8; minValue = 7; maxValue = 8 }
     ))
+    override fun facetAttributes() = mutableSetOf(
+            InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = ConfusionFacet.confusionFacet {}; origin = 0.2f; arising = 0.5f },
+            InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = AngerFacet.angerFacet {}; origin = 0.3f; arising = 0.7f },
+            InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = FearFacet.fearFacet {}; origin = 0.4f; arising = 0.8f },
+            InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = DoubtFacet.doubtFacet {}; origin = 0f; arising = 0.1f }
+    )
 
     override var internalSymbolLexicon = mutableSetOf<IInternalSymbol>()
     override var internalFocusesLexicon = mutableSetOf<IInternalFocus>()

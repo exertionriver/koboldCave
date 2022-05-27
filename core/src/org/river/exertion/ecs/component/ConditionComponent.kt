@@ -28,10 +28,6 @@ class ConditionComponent(var entity : Telegraph) : IComponent, Component, Telegr
     var mHunger = .2f
     var mThirst = .2f
 
-    //out of 20
-    var aIntelligence : Float = 10f
-    var aWisdom : Float = 10f
-
     // posture enum
 //    var isLyingDown : Boolean
 //    var isSitting : Boolean

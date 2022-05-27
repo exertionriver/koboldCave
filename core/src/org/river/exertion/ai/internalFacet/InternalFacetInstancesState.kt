@@ -1,7 +1,5 @@
-package org.river.exertion.ai.internalState
+package org.river.exertion.ai.internalFacet
 
-import org.river.exertion.ai.internalFacet.InternalFacetInstance
-import org.river.exertion.ai.internalFacet.InternalFacetType
 import org.river.exertion.ai.internalFacet.NoneFacet.noneFacet
 
 data class InternalFacetInstancesState(var internalState: MutableSet<InternalFacetInstance> = mutableSetOf()) {
@@ -78,6 +76,21 @@ data class InternalFacetInstancesState(var internalState: MutableSet<InternalFac
                 returnString
             }
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as InternalFacetInstancesState
+
+        if (internalState != other.internalState) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return internalState.hashCode()
+    }
 
     companion object {
 

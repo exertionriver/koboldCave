@@ -1,12 +1,11 @@
 package org.river.exertion.ai.memory
 
 import org.river.exertion.ai.manifest.InternalManifest
-import org.river.exertion.ai.perception.PerceivedNoumenon
 import org.river.exertion.ai.perception.PerceivedExternalPhenomena
 
 class ActiveMemory : IMemory {
 
-    override var noumenaRegister = mutableListOf<PerceivedNoumenon>()
+    override var noumenaRegister = mutableSetOf<MemoryInstance>()
 
     //scans manifest for phenomena, adds max-intelligence attibutes / noumena to register
     fun think(characterManifest : InternalManifest, intelligenceValue : Int ) {

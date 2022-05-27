@@ -5,12 +5,7 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.MessageIds
-import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
-import org.river.exertion.ai.internalFacet.ConfusionFacet.confusionFacet
-import org.river.exertion.ai.internalFacet.DoubtFacet.doubtFacet
 import org.river.exertion.ai.internalFacet.FearFacet.fearFacet
-import org.river.exertion.ai.internalFacet.InternalFacetAttribute.Companion.internalFacetAttribute
-import org.river.exertion.ai.internalState.InternalFacetAttributesState
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance

@@ -1,12 +1,11 @@
-package org.river.exertion.ai.internalState
+package org.river.exertion.ai.internalFacet
 
-import org.river.exertion.ai.internalFacet.InternalFacetAttribute
 import org.river.exertion.ai.manifest.IManifest
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import kotlin.math.roundToInt
 
-data class InternalFacetAttributesState(var internalFacetAttributes: MutableSet<InternalFacetAttribute> = mutableSetOf()) {
+data class InternalFacetAttributesState(var internalFacetAttributes: Set<InternalFacetAttribute> = mutableSetOf()) {
 
     fun projections(mInternalAnxiety : Float) : MutableList<InternalPhenomenaImpression?> {
 

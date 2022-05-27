@@ -202,7 +202,8 @@ enum class MessageIds {
     INT_MEMORY,
     INT_SYMBOL,
     INT_FOCUS,
-    INT_PHENOMENA_FACETS
+    INT_PHENOMENA_FACETS,
+    INT_MEMORY_FACETS
     ;
 
     fun id() = this.ordinal

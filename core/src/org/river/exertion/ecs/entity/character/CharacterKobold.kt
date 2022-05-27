@@ -45,6 +45,8 @@ class CharacterKobold : ICharacter, Component {
         actions.forEach {
             if (!entity.components.contains(it as Component) ) entity.add(it as Component)
         }
+        entity.add(FacetComponent(this, noumenonInstance.facetAttributes!!))
+
 
         MessageManager.getInstance().addListener(this, MessageIds.S2D_ECS_BRIDGE.id())
 
@@ -55,7 +57,6 @@ class CharacterKobold : ICharacter, Component {
     override var actions = mutableListOf<IComponent>(
         MomentComponent(moment),
         ConditionComponent(this),
-        FacetComponent(this),
         ManifestComponent(this),
         MemoryComponent(this),
         SymbologyComponent(this),

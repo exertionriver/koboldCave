@@ -1,33 +1,33 @@
 package org.river.exertion.ai.memory
 
 import org.river.exertion.ai.internalFacet.InternalFacetInstance
-import org.river.exertion.ai.internalState.InternalFacetInstancesState
-import org.river.exertion.ai.internalState.InternalFacetInstancesState.Companion.merge
+import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
+import org.river.exertion.ai.internalFacet.InternalFacetInstancesState.Companion.merge
 import org.river.exertion.ai.perception.PerceivedNoumenon
 
 interface IMemory {
 
     //populated to begin, updated by resolution, other information
-    var noumenaRegister : MutableList<PerceivedNoumenon>
-/*
+    var noumenaRegister : MutableSet<MemoryInstance>
+
     fun opinions(onTopic : String) : Set<InternalFacetInstancesState> {
 
-        val directNoumenaPerceptions = noumenaRegister.filter { (it.instanceName == onTopic || it.noumenonType.tag() == onTopic) && it.isNamed }
+        val directNoumenaPerceptions = noumenaRegister.filter { (it.perceivedNoumenon.instanceName == onTopic || it.perceivedNoumenon.noumenonType.tag() == onTopic) && it.perceivedNoumenon.isNamed }
 
-        return directNoumenaPerceptions.map { it.internalStateInstance }.toSet()
+        return directNoumenaPerceptions.map { it.internalFacetInstancesState }.toSet()
     }
-*/
+
     fun facts(onTopic : String) : List<String> {
 
         val returnFacts = mutableListOf<String>()
 
-        val directNoumenaPerceptions = noumenaRegister.filter { (it.instanceName == onTopic || it.noumenonType.tag() == onTopic) && it.isNamed }
+        val directNoumenaPerceptions = noumenaRegister.filter { (it.perceivedNoumenon.instanceName == onTopic || it.perceivedNoumenon.noumenonType.tag() == onTopic) && it.perceivedNoumenon.isNamed }
 
-        directNoumenaPerceptions.forEach { returnFacts.addAll(it.facts()) }
+        directNoumenaPerceptions.forEach { returnFacts.addAll(it.perceivedNoumenon.facts()) }
 
         return returnFacts
     }
 
-//    fun opinion(onTopic : String) : InternalFacetInstance? = opinions(onTopic).merge().magnitudeOpinion()
+    fun opinion(onTopic : String) : InternalFacetInstance? = opinions(onTopic).merge().magnitudeOpinion()
 
 }
