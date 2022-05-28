@@ -29,8 +29,8 @@ class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).g
                     manifestProjectionEntry.internalPhenomenaImpression!!.countdown -= delta
                     if (manifestProjectionEntry.internalPhenomenaImpression!!.countdown < 0)
                         manifestProjectionEntry.internalPhenomenaImpression = null
-
-                    processedProjections.add(manifestProjectionEntry.internalPhenomenaImpression!!)
+                    else
+                        processedProjections.add(manifestProjectionEntry.internalPhenomenaImpression!!)
                 }
         }
 

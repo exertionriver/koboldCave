@@ -11,16 +11,17 @@ object PossessSymbol : IPerceivedSymbol {
     override var targetMagnetism = SymbolMagnetism.NONE
     override var cycle = SymbolCycle.NONE
 
-    override var presentModifiers = mutableSetOf<SymbolModifier>()
+    override var presentModifiers = mutableSetOf<PresentSymbolModifier>()
+    override var absentModifiers = mutableSetOf<AbsentSymbolModifier>()
+
     override var spawnsPresent = mutableSetOf<SymbolSpawn>()
     override var despawnsPresent = mutableSetOf<SymbolSpawn>()
     override var spawnsAbsent = mutableSetOf<SymbolSpawn>()
     override var despawnsAbsent = mutableSetOf<SymbolSpawn>()
-    override var absentImpactors = mutableSetOf<SymbolImpactor>()
 
     override var satisfiers : MutableSet<IInternalFocus> = mutableSetOf(ConsumeFocus)
 
-    override fun spawnPresent() = mutableSetOf<PresentSymbolInstance>()
-    override fun spawnAbsent() = mutableSetOf<AbsentSymbolInstance>()
+    override fun spawnPresent() = PresentSymbolInstance()
+    override fun spawnAbsent() = AbsentSymbolInstance()
 
 }

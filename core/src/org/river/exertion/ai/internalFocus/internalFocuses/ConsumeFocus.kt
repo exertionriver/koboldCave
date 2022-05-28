@@ -20,13 +20,13 @@ object ConsumeFocus : IInternalFocus {
     override fun satisfyingResult(targetSymbol : PresentSymbolInstance) = targetSymbol.apply {
         var unitsToConsume = 0f
 
-        if (this.units > targetSymbol.consumeCapacity) {
+        if (this.cycles > targetSymbol.consumeCapacity) {
             unitsToConsume = targetSymbol.consumeCapacity
-            this.ornaments.add(ControlSymbolInstance(SpawnSymbol, units = this.units - targetSymbol.consumeCapacity, position = this.position).apply { this.target = targetSymbol.symbolObj } )
+            this.ornaments.add(ControlSymbolInstance(SpawnSymbol, units = this.cycles - targetSymbol.consumeCapacity, position = this.position).apply { this.target = targetSymbol.symbolObj } )
         } else
-            unitsToConsume = this.units
+            unitsToConsume = this.cycles
 
-        this.units = unitsToConsume
+        this.cycles = unitsToConsume
         this.position = -unitsToConsume
         this.ornaments.add(ControlSymbolInstance(DespawnSymbol))
     }

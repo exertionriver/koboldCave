@@ -11,9 +11,11 @@ object HungerSymbol : IPerceivedSymbol {
     override var cycle = SymbolCycle.SINGLE
 
     override var presentModifiers = mutableSetOf(
-        SymbolModifier(FoodSymbol, SymbolMagnetism.REPEL_LIMINAL, SymbolModifierType.CYCLE_COUNT, .1f),
-        SymbolModifier(MomentElapseSymbol, SymbolMagnetism.ATTRACT_CONSUME, SymbolModifierType.CYCLE_POSITION, .0001f)
+        PresentSymbolModifier(FoodSymbol,.1f),
+        PresentSymbolModifier(MomentElapseSymbol, -.001f)
     )
+    override var absentModifiers = mutableSetOf<AbsentSymbolModifier>()
+
     override var spawnsPresent = mutableSetOf(
         SymbolSpawn(StarveSymbol, SymbolThresholdType.LESS_THAN, .2f),
     )
@@ -27,10 +29,8 @@ object HungerSymbol : IPerceivedSymbol {
         SymbolSpawn(FoodSymbol, SymbolThresholdType.GREATER_THAN, .8f),
     )
 
-    override var absentImpactors = mutableSetOf<SymbolImpactor>()
-
     override var satisfiers = mutableSetOf<IInternalFocus>()
 
-    override fun spawnPresent() = mutableSetOf(PresentSymbolInstance(HungerSymbol, position = 1f))
-    override fun spawnAbsent() = mutableSetOf(AbsentSymbolInstance(FoodSymbol, position = 0f))
+    override fun spawnPresent() = PresentSymbolInstance(HungerSymbol, position = 1f)
+    override fun spawnAbsent() = AbsentSymbolInstance()
 }

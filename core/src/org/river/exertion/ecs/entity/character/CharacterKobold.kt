@@ -53,7 +53,7 @@ class CharacterKobold : ICharacter, Component {
         logDebug (this.javaClass.name, "$initName initialized!")
     }
 
-    override var moment = 6f
+    override var moment = 6f // six tenths of a second
     override var actions = mutableListOf<IComponent>(
         MomentComponent(moment),
         ConditionComponent(this),

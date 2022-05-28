@@ -11,15 +11,17 @@ object StarveSymbol : IPerceivedSymbol {
     override var cycle = SymbolCycle.SINGLE
 
     override var presentModifiers = mutableSetOf(
-        SymbolModifier(MomentElapseSymbol, SymbolMagnetism.ATTRACT_CONSUME, SymbolModifierType.CYCLE_POSITION, .0005f)
+        PresentSymbolModifier(MomentElapseSymbol, -.005f)
     )
+    override var absentModifiers = mutableSetOf<AbsentSymbolModifier>()
+
     override var spawnsPresent = mutableSetOf<SymbolSpawn>()
     override var despawnsPresent = mutableSetOf<SymbolSpawn>()
     override var spawnsAbsent = mutableSetOf<SymbolSpawn>()
     override var despawnsAbsent = mutableSetOf<SymbolSpawn>()
-    override var absentImpactors = mutableSetOf<SymbolImpactor>()
+
     override var satisfiers = mutableSetOf<IInternalFocus>()
 
-    override fun spawnPresent() = mutableSetOf(PresentSymbolInstance(StarveSymbol, position = 1f))
-    override fun spawnAbsent() = mutableSetOf<AbsentSymbolInstance>()
+    override fun spawnPresent() = PresentSymbolInstance(StarveSymbol, position = 1f)
+    override fun spawnAbsent() = AbsentSymbolInstance()
 }

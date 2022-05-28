@@ -9,14 +9,16 @@ interface IPerceivedSymbol : IInternalSymbol {
     var targetMagnetism : SymbolMagnetism
     var cycle : SymbolCycle
 
-    var presentModifiers : MutableSet<SymbolModifier>
+    var presentModifiers : MutableSet<PresentSymbolModifier>
+    var absentModifiers : MutableSet<AbsentSymbolModifier>
+
     var spawnsPresent : MutableSet<SymbolSpawn>
     var despawnsPresent : MutableSet<SymbolSpawn>
     var spawnsAbsent : MutableSet<SymbolSpawn>
     var despawnsAbsent : MutableSet<SymbolSpawn>
-    var absentImpactors : MutableSet<SymbolImpactor>
+
     var satisfiers : MutableSet<IInternalFocus>
 
-    fun spawnPresent() : MutableSet<PresentSymbolInstance>
-    fun spawnAbsent() : MutableSet<AbsentSymbolInstance>
+    fun spawnPresent() : PresentSymbolInstance
+    fun spawnAbsent() : AbsentSymbolInstance
 }

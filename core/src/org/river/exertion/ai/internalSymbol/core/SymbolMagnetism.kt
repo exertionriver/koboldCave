@@ -10,7 +10,7 @@ enum class SymbolMagnetism {
     STABILIZE_INTIMATE {override fun targetPosition() = .2f},
     STABILIZE_POSSESSION {override fun targetPosition() = .1f},
     STABILIZE_HANDLING {override fun targetPosition() = .05f},
-    ATTRACT_CONSUME,
+    ATTRACT_CONSUME {override fun targetPosition() = -1f},
     NONE
     ;
     open fun targetPosition() = 0f

@@ -10,14 +10,16 @@ object MomentElapseSymbol : IPerceivedSymbol {
     override var targetMagnetism = SymbolMagnetism.ATTRACT_CONSUME
     override var cycle = SymbolCycle.MULTIPLE
 
-    override var presentModifiers = mutableSetOf<SymbolModifier>()
+    override var presentModifiers = mutableSetOf<PresentSymbolModifier>()
+    override var absentModifiers = mutableSetOf<AbsentSymbolModifier>()
+
     override var spawnsPresent = mutableSetOf<SymbolSpawn>()
     override var despawnsPresent = mutableSetOf<SymbolSpawn>()
     override var spawnsAbsent = mutableSetOf<SymbolSpawn>()
     override var despawnsAbsent = mutableSetOf<SymbolSpawn>()
-    override var absentImpactors = mutableSetOf<SymbolImpactor>()
+
     override var satisfiers = mutableSetOf<IInternalFocus>()
 
-    override fun spawnPresent() = mutableSetOf(PresentSymbolInstance(MomentElapseSymbol, position = 1f))
-    override fun spawnAbsent() = mutableSetOf<AbsentSymbolInstance>()
+    override fun spawnPresent() = PresentSymbolInstance(MomentElapseSymbol, position = 1f)
+    override fun spawnAbsent() = AbsentSymbolInstance()
 }

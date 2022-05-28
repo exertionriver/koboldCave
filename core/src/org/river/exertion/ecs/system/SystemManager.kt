@@ -22,6 +22,7 @@ object SystemManager {
         pooledEngine.addSystem(ActionSystem())
         pooledEngine.addSystem(ConditionSystem())
         pooledEngine.addSystem(FacetSystem())
+        pooledEngine.addSystem(SymbologySystem())
         pooledEngine.addSystem(ManifestSystem())
         pooledEngine.addSystem(MemorySystem())
         pooledEngine.addSystem(MomentSystem())

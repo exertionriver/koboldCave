@@ -17,13 +17,13 @@ object PickUpFocus : IInternalFocus {
     override fun satisfyingResult(targetSymbol : PresentSymbolInstance) = targetSymbol.apply {
         var unitsToHandle = 0f
 
-        if (this.units > targetSymbol.handleCapacity) {
+        if (this.cycles > targetSymbol.handleCapacity) {
             unitsToHandle = targetSymbol.handleCapacity
-            this.ornaments.add(ControlSymbolInstance(SpawnSymbol, units = this.units - targetSymbol.handleCapacity, position = this.position).apply { this.target = targetSymbol.symbolObj } )
+            this.ornaments.add(ControlSymbolInstance(SpawnSymbol, units = this.cycles - targetSymbol.handleCapacity, position = this.position).apply { this.target = targetSymbol.symbolObj } )
         } else
-            unitsToHandle = this.units
+            unitsToHandle = this.cycles
 
-        this.units = unitsToHandle
+        this.cycles = unitsToHandle
         this.position = SymbolMagnetism.STABILIZE_POSSESSION.targetPosition()
         this.ornaments.add(ControlSymbolInstance(PossessSymbol))
     }
