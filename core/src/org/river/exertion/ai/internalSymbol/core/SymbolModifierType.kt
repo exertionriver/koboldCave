@@ -4,5 +4,7 @@ enum class SymbolModifierType {
 
     CYCLE_TO_CYCLE,
     CYCLE_TO_POSITION,
+    POSITION_TO_POSITION,
+    POSITION_TO_CYCLE,
     NONE
 }

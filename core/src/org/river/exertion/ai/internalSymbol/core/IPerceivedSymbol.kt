@@ -1,24 +1,23 @@
 package org.river.exertion.ai.internalSymbol.core
 
 import org.river.exertion.ai.internalFocus.IInternalFocus
+import org.river.exertion.ai.internalSymbol.core.symbolAction.ISymbolAction
 
-interface IPerceivedSymbol : IInternalSymbol {
+interface IPerceivedSymbol : ISymbol {
 
     override var tag : String
     override var type : SymbolType
-    var targetMagnetism : SymbolMagnetism
+    var targetPosition : SymbolTargetPosition
     var cycle : SymbolCycle
 
-    var presentModifiers : MutableSet<PresentSymbolModifier>
-    var absentModifiers : MutableSet<AbsentSymbolModifier>
+    var symbolActions : MutableSet<ISymbolAction>
+    var focusSatisfiers : MutableSet<IInternalFocus>
 
-    var spawnsPresent : MutableSet<SymbolSpawn>
-    var despawnsPresent : MutableSet<SymbolSpawn>
-    var spawnsAbsent : MutableSet<SymbolSpawn>
-    var despawnsAbsent : MutableSet<SymbolSpawn>
+    fun spawn() : SymbolInstance
 
-    var satisfiers : MutableSet<IInternalFocus>
-
-    fun spawnPresent() : PresentSymbolInstance
-    fun spawnAbsent() : AbsentSymbolInstance
+    @Suppress("NewApi")
+    fun despawnAll(targetDisplay : MutableSet<SymbolInstance>) : MutableSet<SymbolInstance> {
+        targetDisplay.removeIf { it.symbolObj.tag == this.tag }
+        return targetDisplay
+    }
 }

@@ -1,27 +1,18 @@
 package org.river.exertion.ai.internalSymbol.perceivedSymbols
 
 import org.river.exertion.ai.internalFocus.IInternalFocus
-import org.river.exertion.ai.internalFocus.internalFocuses.ConsumeFocus
 import org.river.exertion.ai.internalSymbol.core.*
+import org.river.exertion.ai.internalSymbol.core.symbolAction.ISymbolAction
 
 object PossessSymbol : IPerceivedSymbol {
 
     override var tag = "possess"
     override var type = SymbolType.ORNAMENT
-    override var targetMagnetism = SymbolMagnetism.NONE
+    override var targetPosition = SymbolTargetPosition.NONE
     override var cycle = SymbolCycle.NONE
 
-    override var presentModifiers = mutableSetOf<PresentSymbolModifier>()
-    override var absentModifiers = mutableSetOf<AbsentSymbolModifier>()
+    override var symbolActions = mutableSetOf<ISymbolAction>()
+    override var focusSatisfiers = mutableSetOf<IInternalFocus>()
 
-    override var spawnsPresent = mutableSetOf<SymbolSpawn>()
-    override var despawnsPresent = mutableSetOf<SymbolSpawn>()
-    override var spawnsAbsent = mutableSetOf<SymbolSpawn>()
-    override var despawnsAbsent = mutableSetOf<SymbolSpawn>()
-
-    override var satisfiers : MutableSet<IInternalFocus> = mutableSetOf(ConsumeFocus)
-
-    override fun spawnPresent() = PresentSymbolInstance()
-    override fun spawnAbsent() = AbsentSymbolInstance()
-
+    override fun spawn() = SymbolInstance()
 }

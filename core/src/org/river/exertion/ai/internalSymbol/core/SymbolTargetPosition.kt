@@ -1,7 +1,7 @@
 package org.river.exertion.ai.internalSymbol.core
 
 
-enum class SymbolMagnetism {
+enum class SymbolTargetPosition {
 
     REPEL_LIMINAL {override fun targetPosition() = 1f},
     STABILIZE_PERCEPTUAL {override fun targetPosition() = .8f},

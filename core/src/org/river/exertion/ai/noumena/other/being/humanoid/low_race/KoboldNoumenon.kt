@@ -4,16 +4,11 @@ import org.river.exertion.ai.attribute.GrowlAttribute.growlRange
 import org.river.exertion.ai.attribute.IntelligenceAttribute.intelligenceRange
 import org.river.exertion.ai.attribute.Trait.Companion.mergeOverrideTraits
 import org.river.exertion.ai.internalFacet.*
-import org.river.exertion.ai.internalFocus.IInternalFocus
-import org.river.exertion.ai.internalFocus.InternalFocusDisplay
 import org.river.exertion.ai.noumena.other.being.humanoid.LowRaceNoumenon
-import org.river.exertion.ai.internalSymbol.core.IInternalSymbol
-import org.river.exertion.ai.internalSymbol.core.IInternalSymbology
-import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
 import org.river.exertion.ai.noumena.core.*
 import java.util.*
 
-object KoboldNoumenon : INoumenon, InstantiatableNoumenon, IAttributeable, IInternalSymbology {
+object KoboldNoumenon : INoumenon, InstantiatableNoumenon, IAttributeable {
 
     override fun type() = NoumenonType.KOBOLD
     override fun types() = LowRaceNoumenon.types().toMutableList().apply { this.add(type()) }.toList()
@@ -27,12 +22,6 @@ object KoboldNoumenon : INoumenon, InstantiatableNoumenon, IAttributeable, IInte
             InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = FearFacet.fearFacet {}; origin = 0.4f; arising = 0.8f },
             InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = DoubtFacet.doubtFacet {}; origin = 0f; arising = 0.1f }
     )
-
-    override var internalSymbolLexicon = mutableSetOf<IInternalSymbol>()
-    override var internalFocusesLexicon = mutableSetOf<IInternalFocus>()
-
-    override var internalSymbolDisplay = InternalSymbolDisplay()
-    override var internalFocusDisplay = InternalFocusDisplay()
 
     fun kobold(lambda : NoumenonInstance.() -> Unit) = NoumenonInstance(sourceNoumenonType = KoboldNoumenon.javaClass, instanceName = "razza" + Random().nextInt()).apply(lambda)
 

@@ -9,8 +9,6 @@ enum class SymbolType {
     OBSTACLE,
     TIME,
     ORNAMENT,
-    SPAWN,
-    DESPAWN,
     NONE
 
 }

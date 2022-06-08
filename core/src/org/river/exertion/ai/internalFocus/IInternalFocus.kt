@@ -1,6 +1,7 @@
 package org.river.exertion.ai.internalFocus
 
-import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
+import com.badlogic.gdx.ai.msg.Telegraph
+import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 
 interface IInternalFocus {
 
@@ -8,7 +9,7 @@ interface IInternalFocus {
     var dependsUpon : MutableSet<IInternalFocus>
     var satisfyingStrategies : MutableSet<IInternalFocus>
 
-    fun satisfyingCondition(targetSymbol : PresentSymbolInstance) : Boolean
+    fun satisfyingCondition(targetSymbol : SymbolInstance) : Boolean
 
-    fun satisfyingResult(targetSymbol: PresentSymbolInstance) : PresentSymbolInstance
+    fun satisfyingResult(entity: Telegraph, targetSymbol: SymbolInstance)
 }

@@ -1,6 +1,6 @@
 package org.river.exertion.ai.internalSymbol.core
 
-interface IInternalSymbol {
+interface ISymbol {
 
     var tag : String
     var type : SymbolType

@@ -1,17 +1,12 @@
 package org.river.exertion.ai.internalSymbol
 
-import org.river.exertion.ai.internalFocus.*
-import org.river.exertion.ai.internalSymbol.core.IInternalSymbol
-import org.river.exertion.ai.internalSymbol.core.IInternalSymbology
-import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
+object KoboldSymbology {
 
-object KoboldSymbology : IInternalSymbology {
+ //   override var internalSymbolLexicon = mutableSetOf<IInternalSymbol>()
+ //   override var internalFocusesLexicon = mutableSetOf<IInternalFocus>()
 
-    override var internalSymbolLexicon = mutableSetOf<IInternalSymbol>()
-    override var internalFocusesLexicon = mutableSetOf<IInternalFocus>()
-
-    override var internalSymbolDisplay = InternalSymbolDisplay()
-    override var internalFocusDisplay = InternalFocusDisplay()
+//    override var internalSymbolDisplay = InternalSymbolDisplay()
+//    override var internalFocusDisplay = InternalFocusDisplay()
 }
 
 //if belief is not fulfilled, copy to vision

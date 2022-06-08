@@ -1,8 +1,9 @@
 package org.river.exertion.ai.internalFocus.internalFocuses.proximity
 
+import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalFocus.IInternalFocus
-import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
-import org.river.exertion.ai.internalSymbol.core.SymbolMagnetism
+import org.river.exertion.ai.internalSymbol.core.SymbolInstance
+import org.river.exertion.ai.internalSymbol.core.SymbolTargetPosition
 
 object CloseSocialFocus : IInternalFocus {
 
@@ -11,8 +12,9 @@ object CloseSocialFocus : IInternalFocus {
         ClosePerceptualFocus
     )
     override var satisfyingStrategies = mutableSetOf<IInternalFocus>()
-    override fun satisfyingCondition(targetSymbol : PresentSymbolInstance) = targetSymbol.position <= SymbolMagnetism.STABILIZE_SOCIAL.targetPosition()
 
-    override fun satisfyingResult(targetSymbol : PresentSymbolInstance) = targetSymbol
+    override fun satisfyingCondition(targetSymbol : SymbolInstance) = targetSymbol.position <= SymbolTargetPosition.STABILIZE_SOCIAL.targetPosition()
+
+    override fun satisfyingResult(entity: Telegraph, targetSymbol : SymbolInstance) {}
 
 }

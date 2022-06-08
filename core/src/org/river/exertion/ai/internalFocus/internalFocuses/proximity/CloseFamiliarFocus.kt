@@ -1,9 +1,10 @@
 package org.river.exertion.ai.internalFocus.internalFocuses.proximity
 
+import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalFocus.internalFocuses.ApproachFocus
-import org.river.exertion.ai.internalSymbol.core.PresentSymbolInstance
-import org.river.exertion.ai.internalSymbol.core.SymbolMagnetism
+import org.river.exertion.ai.internalSymbol.core.SymbolInstance
+import org.river.exertion.ai.internalSymbol.core.SymbolTargetPosition
 
 object CloseFamiliarFocus : IInternalFocus {
 
@@ -14,8 +15,8 @@ object CloseFamiliarFocus : IInternalFocus {
     override var satisfyingStrategies = mutableSetOf<IInternalFocus>(
         ApproachFocus
     )
-    override fun satisfyingCondition(targetSymbol : PresentSymbolInstance) = targetSymbol.position <= SymbolMagnetism.STABILIZE_FAMILIAR.targetPosition()
+    override fun satisfyingCondition(targetSymbol : SymbolInstance) = targetSymbol.position <= SymbolTargetPosition.STABILIZE_FAMILIAR.targetPosition()
 
-    override fun satisfyingResult(targetSymbol : PresentSymbolInstance) = targetSymbol
+    override fun satisfyingResult(entity: Telegraph,  targetSymbol : SymbolInstance) {}
 
 }
