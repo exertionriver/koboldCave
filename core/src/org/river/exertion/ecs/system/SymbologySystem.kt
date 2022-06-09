@@ -19,6 +19,9 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
     override fun processEntity(entity: Entity) {
         val entityMomentDelta = (-10f * this.interval) / ICharacter.getFor(entity)!!.moment //moment is in tenths of a second
 
+        //clear circularity check
+        SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.circularity.clear()
+
         val entityMomentSymbolInstance = SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.firstOrNull { it.symbolObj == MomentElapseSymbol }
 
         if (entityMomentSymbolInstance != null)

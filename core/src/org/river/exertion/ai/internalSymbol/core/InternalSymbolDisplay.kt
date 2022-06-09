@@ -10,6 +10,7 @@ import org.river.exertion.ai.messaging.SymbolMessage
 class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
 
     var symbolDisplay = mutableSetOf<SymbolInstance>()
+    var circularity = mutableSetOf<Pair<SymbolInstance, SymbolInstance>>()
 
     init {
         MessageManager.getInstance().addListener(this, MessageChannel.INT_SYMBOL_SPAWN.id())
@@ -77,7 +78,11 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
         if (symbolMessage.symbolInstance != null) {
             symbolDisplay.flatMap { it.symbolObj.symbolActions }.filter { it.symbolActionType == SymbolActionType.MODIFY && (it as SymbolModifyAction).sourceSymbol == symbolMessage.symbolInstance!!.symbolObj }.forEach { symbolAction ->
                 symbolDisplay.filter {it.symbolObj == (symbolAction as SymbolModifyAction).targetSymbol && it.displayType == symbolAction.targetDisplayType}.forEach { targetSymbolInstance ->
-                    symbolAction.execute(entity, SymbolMessage(symbolInstance = symbolMessage.symbolInstance, targetSymbolInstance = targetSymbolInstance, targetSymbolDisplayType = (symbolAction as SymbolModifyAction).targetDisplayType))
+                    if (circularity.contains(Pair(symbolMessage.symbolInstance!!, targetSymbolInstance)) ) throw Exception("circularity detected: ${symbolMessage.symbolInstance}, $targetSymbolInstance")
+                    else {
+                        circularity.add(Pair(symbolMessage.symbolInstance!!, targetSymbolInstance))
+                        symbolAction.execute(entity, SymbolMessage(symbolInstance = symbolMessage.symbolInstance, targetSymbolInstance = targetSymbolInstance, targetSymbolDisplayType = (symbolAction as SymbolModifyAction).targetDisplayType))
+                    }
                 }
             }
         }
