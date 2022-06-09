@@ -8,7 +8,6 @@ import org.river.exertion.ai.internalSymbol.core.SymbolDisplayType
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.internalSymbol.core.SymbolTargetPosition
 import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ai.messaging.SymbolActionMessage
 import org.river.exertion.ai.messaging.SymbolMessage
 
 object PickUpFocus : IInternalFocus {
@@ -21,16 +20,16 @@ object PickUpFocus : IInternalFocus {
 
         if (targetSymbol.cycles > targetSymbol.handleCapacity) {
 //            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_PRESENT_SYMBOL_MODIFY.id(), PresentSymbolMessage(targetSymbol, deltaCycles = -targetSymbol.handleCapacity, 0f) )
-            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_SPAWN_INSTANCE.id(), SymbolMessage(
-                    SymbolInstance(symbolObj = targetSymbol.symbolObj, cycles = targetSymbol.cycles - targetSymbol.handleCapacity, position = targetSymbol.position).apply { this.consumeCapacity = targetSymbol.consumeCapacity; this.handleCapacity = targetSymbol.handleCapacity}, SymbolDisplayType.PRESENT
+            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_SPAWN.id(), SymbolMessage(symbolInstance =
+                    SymbolInstance(symbolObj = targetSymbol.symbolObj, cycles = targetSymbol.cycles - targetSymbol.handleCapacity, position = targetSymbol.position).apply { this.consumeCapacity = targetSymbol.consumeCapacity; this.handleCapacity = targetSymbol.handleCapacity; this.displayType = SymbolDisplayType.PRESENT}
             ) )
-            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_SPAWN_INSTANCE.id(), SymbolMessage(
-                    SymbolInstance(symbolObj = targetSymbol.symbolObj, cycles = targetSymbol.handleCapacity, position = SymbolTargetPosition.STABILIZE_POSSESSION.targetPosition()).apply { this.consumeCapacity = targetSymbol.consumeCapacity; this.handleCapacity = targetSymbol.handleCapacity}, SymbolDisplayType.PRESENT
+            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_SPAWN.id(), SymbolMessage(symbolInstance =
+                    SymbolInstance(symbolObj = targetSymbol.symbolObj, cycles = targetSymbol.handleCapacity, position = SymbolTargetPosition.STABILIZE_POSSESSION.targetPosition()).apply { this.consumeCapacity = targetSymbol.consumeCapacity; this.handleCapacity = targetSymbol.handleCapacity; this.displayType = SymbolDisplayType.PRESENT}
             ) )
-            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_DESPAWN_INSTANCE.id(), SymbolMessage(targetSymbol, SymbolDisplayType.PRESENT))
+            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_DESPAWN.id(), SymbolMessage(targetSymbolInstance = targetSymbol.apply { this.displayType = SymbolDisplayType.PRESENT }))
         } else {
             val deltaPosition = targetSymbol.position - SymbolTargetPosition.STABILIZE_POSSESSION.targetPosition()
-            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_MODIFY_INSTANCE.id(), SymbolMessage(targetSymbol.apply { this.deltaCycles = 0f; this.deltaPosition = -deltaPosition}, SymbolDisplayType.PRESENT) )
+            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_MODIFY.id(), SymbolMessage(targetSymbolInstance = targetSymbol.apply { this.deltaCycles = 0f; this.deltaPosition = -deltaPosition}) )
         }
     }
 }

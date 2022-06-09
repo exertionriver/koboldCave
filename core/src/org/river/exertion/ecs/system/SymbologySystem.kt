@@ -9,6 +9,7 @@ import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolActionMessage
+import org.river.exertion.ai.messaging.SymbolMessage
 import org.river.exertion.ecs.component.SymbologyComponent
 import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.ICharacter
@@ -18,10 +19,10 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
     override fun processEntity(entity: Entity) {
         val entityMomentDelta = (-10f * this.interval) / ICharacter.getFor(entity)!!.moment //moment is in tenths of a second
 
-        val entityMomentSymbolInstance = SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.symbolsPresent.symbolDisplay.firstOrNull { it.symbolObj == MomentElapseSymbol }
+        val entityMomentSymbolInstance = SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.firstOrNull { it.symbolObj == MomentElapseSymbol }
 
         if (entityMomentSymbolInstance != null)
-            SymbolModifyAction.executeImmediate(IEntity.getFor(entity)!!, entityMomentSymbolInstance.apply { this.deltaPosition = entityMomentDelta }, SymbolDisplayType.PRESENT)
+            SymbolModifyAction.executeImmediate(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = entityMomentSymbolInstance.apply { this.deltaPosition = entityMomentDelta }))
 /*
         //add new plan for absent symbol, if needed
         SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.symbolsAbsent.symbolDisplay.filter { it.symbolObj.mitigators.isNotEmpty() }.forEach { absentSymbolInstance ->

@@ -3,8 +3,6 @@ package ai
 import com.badlogic.ashley.core.PooledEngine
 import org.junit.jupiter.api.Test
 import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
-import org.river.exertion.ai.internalSymbol.core.SymbolDisplayInstance
-import org.river.exertion.ai.internalSymbol.core.SymbolDisplayType
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.HungerSymbol
@@ -28,13 +26,11 @@ class TestSymbology {
     fun testDisplayUpdate() {
 
         SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay = InternalSymbolDisplay(IEntity.getFor(character)!!).apply {
-            this.symbolsPresent = SymbolDisplayInstance(IEntity.getFor(character)!!, SymbolDisplayType.PRESENT).apply {
-                this.symbolDisplay = mutableSetOf(
-                        SymbolInstance(HungerSymbol, position = .55f),
-                        SymbolInstance(FoodSymbol, cycles = 12f, position = .6f).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f},
-                        SymbolInstance(MomentElapseSymbol, position = .4f)
-                )
-            }
+            this.symbolDisplay = mutableSetOf(
+                    SymbolInstance(HungerSymbol, position = .55f),
+                    SymbolInstance(FoodSymbol, cycles = 12f, position = .6f).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f},
+                    SymbolInstance(MomentElapseSymbol, position = .4f)
+            )
         }
 
         (0..30).forEach {
@@ -42,10 +38,7 @@ class TestSymbology {
             val internalSymbolDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay
 
             println("itr:$it")
-            println("present:")
-            internalSymbolDisplay.symbolsPresent.symbolDisplay.forEach { println("${it.symbolObj} : ${it.cycles}, ${it.position}") }
-            println("absent:")
-            internalSymbolDisplay.symbolsAbsent.symbolDisplay.forEach { println("${it.symbolObj} : ${it.cycles}, ${it.position}, ${it.impact}") }
+            internalSymbolDisplay.symbolDisplay.forEach { println("${it.symbolObj} : ${it.cycles}, ${it.position}") }
             println("internal focuses:")
             internalFocusDisplay.focusPlansPresent.forEach { println (it.absentSymbolInstance.symbolObj) ; it.instancesChain.forEach { println(it) } }
 

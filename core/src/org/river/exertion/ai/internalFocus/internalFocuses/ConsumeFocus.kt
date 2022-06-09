@@ -6,7 +6,6 @@ import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalSymbol.core.SymbolDisplayType
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ai.messaging.SymbolActionMessage
 import org.river.exertion.ai.messaging.SymbolMessage
 
 object ConsumeFocus : IInternalFocus {
@@ -22,10 +21,10 @@ object ConsumeFocus : IInternalFocus {
 
     override fun satisfyingResult(entity: Telegraph, targetSymbol : SymbolInstance) {
         //consume capacity or consume remaining
-        MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_MODIFY_INSTANCE.id(), SymbolMessage(targetSymbol.apply { this.deltaCycles = -targetSymbol.consumeCapacity}, SymbolDisplayType.PRESENT) )
+        MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_MODIFY.id(), SymbolMessage().apply{this.targetSymbolInstance = targetSymbol.apply { this.deltaCycles = -targetSymbol.consumeCapacity; this.displayType = SymbolDisplayType.PRESENT}})
 
         if (targetSymbol.cycles < targetSymbol.consumeCapacity) {
-            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_DESPAWN_INSTANCE.id(), SymbolMessage(targetSymbol, SymbolDisplayType.PRESENT) )
+            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_DESPAWN.id(), SymbolMessage().apply{this.targetSymbolInstance = targetSymbol.apply { this.displayType = SymbolDisplayType.PRESENT}})
         }
     }
 }

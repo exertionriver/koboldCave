@@ -13,9 +13,10 @@ object StarveSymbol : IPerceivedSymbol {
     override var cycle = SymbolCycle.SINGLE
 
     override var symbolActions = mutableSetOf<ISymbolAction>(
-        SymbolModifyAction(MomentElapseSymbol, StarveSymbol, SymbolDisplayType.PRESENT, SymbolModifierType.POSITION_TO_POSITION, -.005f),
+        SymbolModifyAction(MomentElapseSymbol, StarveSymbol, -.005f, SymbolModifierType.POSITION_TO_POSITION),
 
-        SymbolModifyAction(StarveSymbol, FoodSymbol, SymbolDisplayType.ABSENT, SymbolModifierType.POSITION_TO_POSITION, 0f)
+            //for use with impact
+//        SymbolModifyAction(StarveSymbol, FoodSymbol, 0f, SymbolModifierType.POSITION_TO_POSITION)
     )
     override var focusSatisfiers = mutableSetOf<IInternalFocus>()
 

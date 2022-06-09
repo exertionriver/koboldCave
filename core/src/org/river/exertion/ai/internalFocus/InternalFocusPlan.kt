@@ -13,7 +13,7 @@ class InternalFocusPlan(var absentSymbolInstance: SymbolInstance, var satisfier:
         var presentSymbol = symbolsPresent.firstOrNull { it.symbolObj == absentSymbolInstance.symbolObj }
         val headInstance = InternalFocusInstance(satisfier, absentSymbolInstance, 1f)
 
-        if (presentSymbol == null) presentSymbol = SymbolInstance(absentSymbolInstance.symbolObj, 1.01f)
+        if (presentSymbol == null) presentSymbol = SymbolInstance(absentSymbolInstance.symbolObj, position = 1.01f)
 
         if (headInstance.internalFocusObj.satisfyingCondition(presentSymbol) ) {
             position = 0f

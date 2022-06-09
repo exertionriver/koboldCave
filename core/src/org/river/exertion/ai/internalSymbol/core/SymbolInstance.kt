@@ -7,7 +7,7 @@ import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolActionMessage
 import kotlin.math.sign
 
-data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbol, var cycles : Float = 0f, var position : Float = 0f) {
+data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbol, var displayType : SymbolDisplayType = SymbolDisplayType.PRESENT, var cycles : Float = 0f, var position : Float = 0f) {
 
     var impact = 0f //used for absent symbols
 

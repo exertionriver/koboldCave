@@ -7,15 +7,15 @@ import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolMessage
 import org.river.exertion.logDebug
 
-class SymbolDespawnAction(var targetSymbol : IPerceivedSymbol
-                          , var thresholdPosition : Float
-                          , var thresholdType: SymbolThresholdType
-                          , var targetDisplayType: SymbolDisplayType = SymbolDisplayType.PRESENT) : ISymbolAction {
+class SymbolSpawnAction(var targetSymbol : IPerceivedSymbol
+                        , var thresholdPosition : Float
+                        , var thresholdType: SymbolThresholdType
+                        , var targetDisplayType: SymbolDisplayType = SymbolDisplayType.PRESENT) : ISymbolAction {
 
-    override var symbolActionType: SymbolActionType = SymbolActionType.DESPAWN
+    override var symbolActionType: SymbolActionType = SymbolActionType.SPAWN
 
     override fun execute(entity: Telegraph, symbolMessage: SymbolMessage) {
-//        logDebug("symbolAction", "executing SymbolDespawnAction")
+//        logDebug("symbolAction", "executing SymbolSpawnAction")
 
         if (symbolMessage.symbolInstance != null
                 && symbolMessage.targetSymbolInstance != null
@@ -31,7 +31,7 @@ class SymbolDespawnAction(var targetSymbol : IPerceivedSymbol
 
     companion object {
         fun executeImmediate(entity: Telegraph, symbolMessage: SymbolMessage) {
-            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_DESPAWN.id(), symbolMessage)
+            MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_SPAWN.id(), symbolMessage)
         }
     }
 }

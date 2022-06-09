@@ -25,7 +25,7 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
             if (msg.message == MessageChannel.INT_ADD_FOCUS_PLAN.id()) {
                 val symbolMessage = msg.extraInfo as SymbolMessage
                 //todo: correct for FocusMessage
-                focusPlansPresent.add(InternalFocusPlan(symbolMessage.symbolInstance, NoneFocus))
+                focusPlansPresent.add(InternalFocusPlan(symbolMessage.symbolInstance!!, NoneFocus))
             }
             if (msg.message == MessageChannel.INT_REMOVE_FOCUS_PLAN.id()) {
                 val symbolMessage = msg.extraInfo as SymbolMessage
@@ -37,7 +37,7 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
             }
             if (msg.message == MessageChannel.INT_REMOVE_FOCUS_CHAIN_LINK.id()) {
                 val symbolMessage = msg.extraInfo as SymbolMessage
-                focusPlansPresent.first { it.absentSymbolInstance == symbolMessage.symbolInstance }.instancesChain.removeAt(symbolMessage.symbolInstance.deltaPosition.toInt())
+                focusPlansPresent.first { it.absentSymbolInstance == symbolMessage.symbolInstance }.instancesChain.removeAt(symbolMessage.symbolInstance!!.deltaPosition.toInt())
             }
         }
         return true

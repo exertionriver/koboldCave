@@ -3,51 +3,102 @@ package org.river.exertion.ai.internalSymbol.core
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
+import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
 import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ai.messaging.SymbolActionMessage
+import org.river.exertion.ai.messaging.SymbolMessage
 
-class InternalSymbolDisplay(val entity : Telegraph) {
+class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
 
-    var symbolsPresent = SymbolDisplayInstance(entity, SymbolDisplayType.PRESENT)
-    var symbolsAbsent = SymbolDisplayInstance(entity, SymbolDisplayType.ABSENT)
+    var symbolDisplay = mutableSetOf<SymbolInstance>()
 
-/*    @Suppress("NewApi")
+    init {
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_SYMBOL_SPAWN.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_SYMBOL_DESPAWN.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_SYMBOL_MODIFY.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_SYMBOL_MODIFIED.id())
+    }
+
+    @Suppress("NewApi")
+    fun despawn(symbolMessage : SymbolMessage) {
+        when {
+            //despawn all of a symboltype
+            (symbolMessage.symbol != null) ->
+                if (symbolMessage.symbolDisplayType == null)
+                    symbolDisplay.removeIf { it.symbolObj == symbolMessage.symbol }
+                //despawn all of a symboltype and displaytype
+                else
+                    symbolDisplay.removeIf { it.symbolObj == symbolMessage.symbol && it.displayType == symbolMessage.symbolDisplayType }
+            //despawn a particular instance
+            (symbolMessage.symbolInstance != null) ->
+                symbolDisplay.removeIf { it == symbolMessage.symbolInstance }
+        }
+    }
+
+    fun spawn(symbolMessage : SymbolMessage) {
+        when {
+            //spawn of a symboltype
+            (symbolMessage.symbol != null) ->
+                if (symbolMessage.symbolDisplayType != null)
+                    symbolDisplay.add(symbolMessage.symbol!!.spawn())
+                //spawn of a symboltype and display type
+                else
+                    symbolDisplay.add(symbolMessage.symbol!!.spawn().apply { this.displayType = symbolMessage.symbolDisplayType!! })
+            //spawn a particular instance in the display
+            (symbolMessage.symbolInstance != null) ->
+                symbolDisplay.add(symbolMessage.symbolInstance!!)
+        }
+    }
+
+    fun update(symbolMessage : SymbolMessage) {
+        if (symbolMessage.symbolInstance != null)
+            if (symbolMessage.symbolDisplayType != null)
+                symbolDisplay.filter { it == symbolMessage.symbolInstance!! && it.displayType == symbolMessage.symbolDisplayType }.forEach {
+                    it.cycles = symbolMessage.symbolInstance!!.cycles
+                    it.position = symbolMessage.symbolInstance!!.position
+                    it.consumeCapacity = symbolMessage.symbolInstance!!.consumeCapacity
+                    it.handleCapacity = symbolMessage.symbolInstance!!.handleCapacity
+                    it.possessCapacity = symbolMessage.symbolInstance!!.possessCapacity
+                }
+            else symbolDisplay.filter { it == symbolMessage.symbolInstance!! }.forEach {
+                it.cycles = symbolMessage.symbolInstance!!.cycles
+                it.position = symbolMessage.symbolInstance!!.position
+                it.consumeCapacity = symbolMessage.symbolInstance!!.consumeCapacity
+                it.handleCapacity = symbolMessage.symbolInstance!!.handleCapacity
+                it.possessCapacity = symbolMessage.symbolInstance!!.possessCapacity
+            }
+    }
+    /*
+    SymbolModifyAction(FoodSymbol, HungerSymbol, SymbolDisplayType.PRESENT, SymbolModifierType.CYCLE_TO_POSITION, .1f),
+    SymbolModifyAction(MomentElapseSymbol, HungerSymbol, SymbolDisplayType.PRESENT, SymbolModifierType.POSITION_TO_POSITION, -.001f),
+    SymbolModifyAction(HungerSymbol, FoodSymbol, SymbolDisplayType.ABSENT, SymbolModifierType.POSITION_TO_POSITION, -.1f, 1f)
+    */
+    //to do: check for circularity
+    fun propagateUpdate(symbolMessage : SymbolMessage) {
+        if (symbolMessage.symbolInstance != null) {
+            symbolDisplay.flatMap { it.symbolObj.symbolActions }.filter { it.symbolActionType == SymbolActionType.MODIFY && (it as SymbolModifyAction).sourceSymbol == symbolMessage.symbolInstance!!.symbolObj }.forEach { symbolAction ->
+                symbolDisplay.filter {it.symbolObj == (symbolAction as SymbolModifyAction).targetSymbol && it.displayType == symbolAction.targetDisplayType}.forEach { targetSymbolInstance ->
+                    symbolAction.execute(entity, SymbolMessage(symbolInstance = symbolMessage.symbolInstance, targetSymbolInstance = targetSymbolInstance, targetSymbolDisplayType = (symbolAction as SymbolModifyAction).targetDisplayType))
+                }
+            }
+        }
+    }
+
+    @Suppress("NewApi")
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
-            if (msg.message == MessageChannel.INT_PRESENT_SYMBOL_MODIFY.id()) {
-                val symbolMessage = msg.extraInfo as SymbolActionMessage
-                symbolsPresent.firstOrNull { it == symbolMessage.symbolInstance }?.updatePosition(entity, symbolMessage.deltaCycles, symbolMessage.deltaPosition)
+            if (msg.message == MessageChannel.INT_SYMBOL_SPAWN.id()) {
+                this.spawn(msg.extraInfo as SymbolMessage)
             }
-            if (msg.message == MessageChannel.INT_PRESENT_SYMBOL_MODIFY_ALL.id()) {
-                val symbolMessage = msg.extraInfo as SymbolActionMessage
-                symbolsPresent.filter { it.symbolObj == symbolMessage.symbolInstance.symbolObj }.forEach { it.updatePosition(entity, symbolMessage.deltaCycles, symbolMessage.deltaPosition) }
+            if (msg.message == MessageChannel.INT_SYMBOL_DESPAWN.id()) {
+                this.despawn(msg.extraInfo as SymbolMessage)
             }
-            if (msg.message == MessageChannel.INT_PRESENT_SYMBOL_MODIFIED.id()) {
-                val symbolMessage = msg.extraInfo as SymbolActionMessage
-                symbolsPresent.filter { it.symbolObj.presentModifiers.map { modifier -> modifier.modifyingSymbol }.contains(symbolMessage.symbolInstance.symbolObj) }.forEach { it.updateModifiedPosition(entity, symbolMessage.symbolInstance, symbolMessage.deltaCycles, symbolMessage.deltaPosition) }
+            if (msg.message == MessageChannel.INT_SYMBOL_MODIFY.id()) {
+                this.update(msg.extraInfo as SymbolMessage)
             }
-            if (msg.message == MessageChannel.INT_ABSENT_SYMBOL_MODIFY.id()) {
-                val symbolMessage = msg.extraInfo as SymbolActionMessage
-                symbolsAbsent.firstOrNull { it == symbolMessage.symbolInstance }?.updateModifiedPosition(entity, symbolMessage.modifyingSymbolInstance!!, symbolMessage.deltaCycles, symbolMessage.deltaPosition)
-            }
-            if (msg.message == MessageChannel.INT_PRESENT_SYMBOL_SPAWN.id()) {
-                val symbolMessage = msg.extraInfo as SymbolActionMessage
-                symbolsPresent.add(symbolMessage.symbolInstance)
-            }
-            if (msg.message == MessageChannel.INT_ABSENT_SYMBOL_SPAWN.id()) {
-                val symbolMessage = msg.extraInfo as SymbolActionMessage
-                if (!symbolsAbsent.map { it.symbolObj }.contains(symbolMessage.symbolInstance.symbolObj) )
-                    symbolsAbsent.add(symbolMessage.symbolInstance)
-            }
-            if (msg.message == MessageChannel.INT_PRESENT_SYMBOL_DESPAWN.id()) {
-                val symbolMessage = msg.extraInfo as SymbolActionMessage
-                symbolsPresent.removeIf { it == symbolMessage.symbolInstance }
-            }
-            if (msg.message == MessageChannel.INT_ABSENT_SYMBOL_DESPAWN.id()) {
-                val symbolMessage = msg.extraInfo as SymbolActionMessage
-                symbolsAbsent.removeIf { it == symbolMessage.symbolInstance }
+            if (msg.message == MessageChannel.INT_SYMBOL_MODIFIED.id()) {
+                this.propagateUpdate(msg.extraInfo as SymbolMessage)
             }
         }
         return true
-    }*/
+    }
 }

@@ -4,7 +4,7 @@ import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalSymbol.core.*
 import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolDespawnAction
 import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
-import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolSpawnInstanceAction
+import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolSpawnAction
 
 object HungerSymbol : IPerceivedSymbol {
 
@@ -14,16 +14,16 @@ object HungerSymbol : IPerceivedSymbol {
     override var cycle = SymbolCycle.SINGLE
 
     override var symbolActions = mutableSetOf(
-        SymbolSpawnInstanceAction(StarveSymbol, SymbolDisplayType.PRESENT, SymbolThresholdType.LESS_THAN, .2f),
-        SymbolDespawnAction(StarveSymbol, SymbolDisplayType.PRESENT, SymbolThresholdType.GREATER_THAN, .3f),
+        SymbolSpawnAction(StarveSymbol, .2f, SymbolThresholdType.LESS_THAN),
+        SymbolDespawnAction(StarveSymbol, .3f, SymbolThresholdType.GREATER_THAN),
 
-        SymbolSpawnInstanceAction(FoodSymbol, SymbolDisplayType.ABSENT, SymbolThresholdType.LESS_THAN, .6f),
-        SymbolDespawnAction(FoodSymbol, SymbolDisplayType.ABSENT, SymbolThresholdType.GREATER_THAN, .8f),
+        SymbolSpawnAction(FoodSymbol, .6f, SymbolThresholdType.LESS_THAN, SymbolDisplayType.ABSENT),
+        SymbolDespawnAction(FoodSymbol, .8f, SymbolThresholdType.GREATER_THAN, SymbolDisplayType.ABSENT),
 
-        SymbolModifyAction(FoodSymbol, HungerSymbol, SymbolDisplayType.PRESENT, SymbolModifierType.CYCLE_TO_POSITION, .1f),
-        SymbolModifyAction(MomentElapseSymbol, HungerSymbol, SymbolDisplayType.PRESENT, SymbolModifierType.POSITION_TO_POSITION, -.001f),
+        SymbolModifyAction(FoodSymbol, HungerSymbol, .1f, SymbolModifierType.CYCLE_TO_POSITION),
+        SymbolModifyAction(MomentElapseSymbol, HungerSymbol, -.001f, SymbolModifierType.POSITION_TO_POSITION),
 
-        SymbolModifyAction(HungerSymbol, FoodSymbol, SymbolDisplayType.ABSENT, SymbolModifierType.POSITION_TO_POSITION, -.1f)
+        SymbolModifyAction(HungerSymbol, FoodSymbol, -.1f, SymbolModifierType.POSITION_TO_POSITION, SymbolDisplayType.ABSENT)
     )
 
     override var focusSatisfiers = mutableSetOf<IInternalFocus>()
