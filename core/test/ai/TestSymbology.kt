@@ -25,20 +25,18 @@ class TestSymbology {
     @Test
     fun testDisplayUpdate() {
 
-        SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay = InternalSymbolDisplay(IEntity.getFor(character)!!).apply {
-            this.symbolDisplay = mutableSetOf(
+        SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay = mutableSetOf(
                     SymbolInstance(HungerSymbol, position = .55f),
                     SymbolInstance(FoodSymbol, cycles = 12f, position = .6f).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f},
                     SymbolInstance(MomentElapseSymbol, position = .4f)
             )
-        }
 
         (0..30).forEach {
             val internalFocusDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalFocusDisplay
             val internalSymbolDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay
 
             println("itr:$it")
-            internalSymbolDisplay.symbolDisplay.forEach { println("${it.symbolObj} : ${it.cycles}, ${it.position}") }
+            internalSymbolDisplay.symbolDisplay.forEach { println("${it.symbolObj} : ${it.cycles}, ${it.position}, ${it.displayType}") }
             println("internal focuses:")
             internalFocusDisplay.focusPlansPresent.forEach { println (it.absentSymbolInstance.symbolObj) ; it.instancesChain.forEach { println(it) } }
 

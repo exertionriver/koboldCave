@@ -5,10 +5,12 @@ import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.NonePerceivedSymbol
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolActionMessage
+import java.util.*
 import kotlin.math.sign
 
 data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbol, var displayType : SymbolDisplayType = SymbolDisplayType.PRESENT, var cycles : Float = 0f, var position : Float = 0f) {
 
+    val uuid : UUID = UUID.randomUUID()
     var impact = 0f //used for absent symbols
 
     var deltaCycles = 0f
@@ -25,24 +27,26 @@ data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbo
         this.position += deltaPosition
         this.cycles += deltaCycles
 
-        //first update position wrt symbol cycle style
-        if (this.symbolObj.cycle == SymbolCycle.MULTIPLE) {
-            while (this.position < 0) {
-                this.position += 1
-                this.cycles -= 1
-            }
-            while (this.position > 1) {
-                this.position -= 1
-                this.cycles += 1
-            }
-        } else { //single or none
-            if (this.position < 0) {
-                this.position = 0f
-                this.cycles = 0f
-            }
-            if (this.position > 1) {
-                this.position = 1f
-                this.cycles = 0f
+        if (this.displayType == SymbolDisplayType.PRESENT) {
+            //first update position wrt symbol cycle style
+            if (this.symbolObj.cycle == SymbolCycle.MULTIPLE) {
+                while (this.position < 0) {
+                    this.position += 1
+                    this.cycles -= 1
+                }
+                while (this.position > 1) {
+                    this.position -= 1
+                    this.cycles += 1
+                }
+            } else { //single or none
+                if (this.position < 0) {
+                    this.position = 0f
+                    this.cycles = 0f
+                }
+                if (this.position > 1) {
+                    this.position = 1f
+                    this.cycles = 0f
+                }
             }
         }
 
@@ -89,15 +93,13 @@ data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbo
 
         other as SymbolInstance
 
-        if (symbolObj != other.symbolObj) return false
-        if (displayType != other.displayType) return false
+        if (uuid != other.uuid) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = symbolObj.hashCode()
-        result = 31 * result + displayType.hashCode()
-        return result
+        return uuid.hashCode()
     }
+
 }

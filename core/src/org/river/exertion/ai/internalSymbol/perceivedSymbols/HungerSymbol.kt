@@ -23,7 +23,7 @@ object HungerSymbol : IPerceivedSymbol {
         SymbolModifyAction(FoodSymbol, HungerSymbol, .1f, SymbolModifierType.CYCLE_TO_POSITION),
         SymbolModifyAction(MomentElapseSymbol, HungerSymbol, -.001f, SymbolModifierType.POSITION_TO_POSITION),
 
-        SymbolModifyAction(HungerSymbol, FoodSymbol, -.1f, SymbolModifierType.POSITION_TO_POSITION, SymbolDisplayType.ABSENT)
+        SymbolModifyAction(HungerSymbol, FoodSymbol, -1f, SymbolModifierType.POSITION_TO_POSITION, SymbolDisplayType.ABSENT)
     )
 
     override var focusSatisfiers = mutableSetOf<IInternalFocus>()

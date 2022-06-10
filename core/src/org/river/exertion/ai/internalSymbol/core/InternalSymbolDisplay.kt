@@ -22,36 +22,37 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
     @Suppress("NewApi")
     fun despawn(symbolMessage : SymbolMessage) {
         when {
-            //despawn all of a symboltype
             (symbolMessage.symbol != null) ->
-                if (symbolMessage.symbolDisplayType == null)
-                    symbolDisplay.removeIf { it.symbolObj == symbolMessage.symbol }
-                //despawn all of a symboltype and displaytype
-                else
+                if (symbolMessage.symbolDisplayType != null)
+                    //despawn all instances of a symbolObj and displaytype
                     symbolDisplay.removeIf { it.symbolObj == symbolMessage.symbol && it.displayType == symbolMessage.symbolDisplayType }
-            //despawn a particular instance
+                else
+                    //despawn all instances of a symbolObj
+                    symbolDisplay.removeIf { it.symbolObj == symbolMessage.symbol }
             (symbolMessage.symbolInstance != null) ->
+                //despawn a particular instance of a symbolObj
                 symbolDisplay.removeIf { it == symbolMessage.symbolInstance }
         }
     }
 
     fun spawn(symbolMessage : SymbolMessage) {
         when {
-            //spawn of a symboltype
             (symbolMessage.symbol != null) ->
-                if (symbolMessage.symbolDisplayType != null)
-                    symbolDisplay.add(symbolMessage.symbol!!.spawn())
-                //spawn of a symboltype and display type
-                else
+                if (symbolMessage.symbolDisplayType != null && symbolDisplay.none { it.symbolObj == symbolMessage.symbol && it.displayType == symbolMessage.symbolDisplayType })
+                    //spawn instance of a symboltype if obj not already spawned
                     symbolDisplay.add(symbolMessage.symbol!!.spawn().apply { this.displayType = symbolMessage.symbolDisplayType!! })
-            //spawn a particular instance in the display
+                else if (symbolDisplay.none { it.symbolObj == symbolMessage.symbol })
+                    //spawn insance of a symboltype and display type is obj not already spawned
+                    symbolDisplay.add(symbolMessage.symbol!!.spawn())
+            //spawn a particular instance in the display, multiple are allowed for PRESENT, single allowed for ABSENT
             (symbolMessage.symbolInstance != null) ->
-                symbolDisplay.add(symbolMessage.symbolInstance!!)
+                if (symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT || symbolDisplay.none { it.symbolObj == symbolMessage.symbolInstance!!.symbolObj && it.displayType == symbolMessage.symbolInstance!!.displayType })
+                    symbolDisplay.add(symbolMessage.symbolInstance!!)
         }
     }
 
     fun update(symbolMessage : SymbolMessage) {
-        if (symbolMessage.symbolInstance != null)
+        if (symbolMessage.symbolInstance != null && symbolDisplay.any { it == symbolMessage.symbolInstance }) {
             if (symbolMessage.symbolDisplayType != null)
                 symbolDisplay.filter { it == symbolMessage.symbolInstance!! && it.displayType == symbolMessage.symbolDisplayType }.forEach {
                     it.cycles = symbolMessage.symbolInstance!!.cycles
@@ -67,15 +68,19 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
                 it.handleCapacity = symbolMessage.symbolInstance!!.handleCapacity
                 it.possessCapacity = symbolMessage.symbolInstance!!.possessCapacity
             }
+            //spawn / despawn / etc. as needed
+            symbolMessage.symbolInstance!!.symbolObj.symbolActions.filter { it.symbolActionType != SymbolActionType.MODIFY}.forEach {
+                it.execute(entity, SymbolMessage(symbolInstance = symbolMessage.symbolInstance!!))
+            }
+        }
     }
     /*
     SymbolModifyAction(FoodSymbol, HungerSymbol, SymbolDisplayType.PRESENT, SymbolModifierType.CYCLE_TO_POSITION, .1f),
     SymbolModifyAction(MomentElapseSymbol, HungerSymbol, SymbolDisplayType.PRESENT, SymbolModifierType.POSITION_TO_POSITION, -.001f),
     SymbolModifyAction(HungerSymbol, FoodSymbol, SymbolDisplayType.ABSENT, SymbolModifierType.POSITION_TO_POSITION, -.1f, 1f)
     */
-    //to do: check for circularity
     fun propagateUpdate(symbolMessage : SymbolMessage) {
-        if (symbolMessage.symbolInstance != null) {
+        if (symbolMessage.symbolInstance != null && symbolDisplay.any { it == symbolMessage.symbolInstance } && symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT) {
             symbolDisplay.flatMap { it.symbolObj.symbolActions }.filter { it.symbolActionType == SymbolActionType.MODIFY && (it as SymbolModifyAction).sourceSymbol == symbolMessage.symbolInstance!!.symbolObj }.forEach { symbolAction ->
                 symbolDisplay.filter {it.symbolObj == (symbolAction as SymbolModifyAction).targetSymbol && it.displayType == symbolAction.targetDisplayType}.forEach { targetSymbolInstance ->
                     if (circularity.contains(Pair(symbolMessage.symbolInstance!!, targetSymbolInstance)) ) throw Exception("circularity detected: ${symbolMessage.symbolInstance}, $targetSymbolInstance")

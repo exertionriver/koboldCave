@@ -26,7 +26,8 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
 
         if (entityMomentSymbolInstance != null)
             SymbolModifyAction.executeImmediate(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = entityMomentSymbolInstance.apply { this.deltaPosition = entityMomentDelta }))
-/*
+
+    /*
         //add new plan for absent symbol, if needed
         SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.symbolsAbsent.symbolDisplay.filter { it.symbolObj.mitigators.isNotEmpty() }.forEach { absentSymbolInstance ->
             val satisfier = absentSymbolInstance.symbolObj.mitigators.firstOrNull() //todo: order desc by success rate

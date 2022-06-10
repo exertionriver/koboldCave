@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalSymbol.core.*
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolMessage
+import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.logDebug
 
 class SymbolDespawnAction(var targetSymbol : IPerceivedSymbol
@@ -15,17 +16,15 @@ class SymbolDespawnAction(var targetSymbol : IPerceivedSymbol
     override var symbolActionType: SymbolActionType = SymbolActionType.DESPAWN
 
     override fun execute(entity: Telegraph, symbolMessage: SymbolMessage) {
-//        logDebug("symbolAction", "executing SymbolDespawnAction")
 
-        if (symbolMessage.symbolInstance != null
-                && symbolMessage.targetSymbolInstance != null
-                && symbolMessage.targetSymbolInstance!!.symbolObj == targetSymbol
-                && symbolMessage.targetSymbolDisplayType != null
-                && symbolMessage.targetSymbolDisplayType!! == targetDisplayType) {
-
+        //symbolInstance is the spawning symbol
+        if (symbolMessage.symbolInstance != null) {
             if ((thresholdType == SymbolThresholdType.LESS_THAN && symbolMessage.symbolInstance!!.position < thresholdPosition) ||
-                    (thresholdType == SymbolThresholdType.GREATER_THAN && symbolMessage.symbolInstance!!.position > thresholdPosition))
-                executeImmediate(entity, symbolMessage)
+                (thresholdType == SymbolThresholdType.GREATER_THAN && symbolMessage.symbolInstance!!.position > thresholdPosition)) {
+                //set parameters to despawn
+//                logDebug("symbolAction", "${(entity as IEntity).entityName} executing SymbolDespawnAction $targetSymbol, $targetDisplayType")
+                executeImmediate(entity, symbolMessage.apply { this.symbol = targetSymbol; this.symbolInstance = null; this.symbolDisplayType = targetDisplayType })
+            }
         }
     }
 
