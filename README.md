@@ -9,6 +9,8 @@ Example usage, after cloning / downloading:
 
 Hope this may help you in your development work. - IanP
 
+v0.12 - completing basic AI structure, integrating AI with ECS
+
 v0.11 - 3d and behavior tree demos, beginning core AI
 
 ![kCave_v 11](https://user-images.githubusercontent.com/13192685/160516071-a47f2748-bbed-45a1-8211-0ccf2dc4b611.png)
