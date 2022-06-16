@@ -8,13 +8,13 @@ import org.river.exertion.ai.internalSymbol.core.SymbolTargetPosition
 object HandleFocus : IInternalFocus {
 
     override var tag = "handle"
-    override var dependsUpon = mutableSetOf<IInternalFocus>(
+
+    override var satisfyingStrategies = mutableListOf(
+        ReadyFocus,
         PossessFocus
     )
-    override var satisfyingStrategies = mutableSetOf<IInternalFocus>(
-        ReadyFocus
-    )
-    override fun satisfyingCondition(targetSymbol : SymbolInstance) = targetSymbol.position <= SymbolTargetPosition.STABILIZE_HANDLING.targetPosition()
 
-    override fun satisfyingResult(entity: Telegraph, targetSymbol : SymbolInstance) {}
+    override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = targetPresentSymbol.position <= SymbolTargetPosition.STABILIZE_HANDLING.targetPosition()
+
+    override fun satisfyingResult(entity: Telegraph, targetPresentSymbol : SymbolInstance) {}
 }

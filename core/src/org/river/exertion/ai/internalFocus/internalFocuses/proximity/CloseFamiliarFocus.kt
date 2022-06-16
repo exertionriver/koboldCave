@@ -9,14 +9,13 @@ import org.river.exertion.ai.internalSymbol.core.SymbolTargetPosition
 object CloseFamiliarFocus : IInternalFocus {
 
     override var tag = "close familiar focus"
-    override var dependsUpon = mutableSetOf<IInternalFocus>(
-        CloseSocialFocus
-    )
-    override var satisfyingStrategies = mutableSetOf<IInternalFocus>(
+
+    override var satisfyingStrategies = mutableListOf(
+        CloseSocialFocus,
         ApproachFocus
     )
-    override fun satisfyingCondition(targetSymbol : SymbolInstance) = targetSymbol.position <= SymbolTargetPosition.STABILIZE_FAMILIAR.targetPosition()
+    override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = targetPresentSymbol.position <= SymbolTargetPosition.STABILIZE_FAMILIAR.targetPosition()
 
-    override fun satisfyingResult(entity: Telegraph,  targetSymbol : SymbolInstance) {}
+    override fun satisfyingResult(entity: Telegraph, targetPresentSymbol : SymbolInstance) {}
 
 }

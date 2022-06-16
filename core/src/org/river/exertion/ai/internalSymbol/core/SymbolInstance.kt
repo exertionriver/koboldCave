@@ -1,10 +1,6 @@
 package org.river.exertion.ai.internalSymbol.core
 
-import com.badlogic.gdx.ai.msg.MessageManager
-import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.NonePerceivedSymbol
-import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ai.messaging.SymbolActionMessage
 import java.util.*
 import kotlin.math.sign
 

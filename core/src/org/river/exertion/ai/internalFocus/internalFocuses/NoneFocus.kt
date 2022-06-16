@@ -7,9 +7,8 @@ import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 object NoneFocus : IInternalFocus {
 
     override var tag = "none"
-    override var dependsUpon = mutableSetOf<IInternalFocus>()
-    override var satisfyingStrategies = mutableSetOf<IInternalFocus>()
-    override fun satisfyingCondition(targetSymbol : SymbolInstance) = false
-    override fun satisfyingResult(entity: Telegraph, targetSymbol : SymbolInstance) {}
+    override var satisfyingStrategies = mutableListOf<IInternalFocus>()
+    override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = false
+    override fun satisfyingResult(entity: Telegraph, targetPresentSymbol : SymbolInstance) {}
 
 }

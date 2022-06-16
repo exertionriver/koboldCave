@@ -9,13 +9,13 @@ import org.river.exertion.ai.internalSymbol.core.SymbolTargetPosition
 object PossessFocus : IInternalFocus {
 
     override var tag = "possess"
-    override var dependsUpon = mutableSetOf<IInternalFocus>(
+
+    override var satisfyingStrategies = mutableListOf(
+        PickUpFocus,
         CloseIntimateFocus
     )
-    override var satisfyingStrategies = mutableSetOf<IInternalFocus>(
-        PickUpFocus
-    )
-    override fun satisfyingCondition(targetSymbol : SymbolInstance) = targetSymbol.position <= SymbolTargetPosition.STABILIZE_POSSESSION.targetPosition()
-    override fun satisfyingResult(entity: Telegraph, targetSymbol : SymbolInstance) {}
+    override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = targetPresentSymbol.position <= SymbolTargetPosition.STABILIZE_POSSESSION.targetPosition()
+
+    override fun satisfyingResult(entity: Telegraph, targetPresentSymbol : SymbolInstance) {}
 
 }
