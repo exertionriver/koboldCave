@@ -1,13 +1,13 @@
 # koboldCave
 open source Kotlin/LibKTX perceptual / exploration RPG
 
-Built using IntelliJ Community Edition 2022.1.2 / libGDX 1.11.0 / libktx 1.11.0-rc1 / on Ubuntu 20.04
+Built using IntelliJ Community Edition 2022.1.3 / libGDX 1.11.0 / libktx 1.11.0-rc1 / on Ubuntu 20.04
 
 Example usage, after cloning / downloading:
 
 ```./gradlew desktop:run```
 
-Hope this may help you in your development work. - IanP
+Hope this may help you in your development work.
 
 v0.12 - completing basic AI structure, integrating AI with ECS
 
