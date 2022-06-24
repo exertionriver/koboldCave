@@ -23,7 +23,7 @@ class UIFeelingTable(initSkin : Skin) : Table(), Telegraph {
         x = Gdx.graphics.width / 8f
         y = 5 * Gdx.graphics.height / 8f
         name = "feelingTable"
-        this.debug = true
+//        this.debug = true
         this.add(Label("feelingTable", initSkin) )
         this.row()
     }

@@ -16,7 +16,7 @@ class InternalFocusPlan(var entity : Telegraph, var satisfierFocus: IInternalFoc
         MessageManager.getInstance().addListener(this, MessageChannel.INT_REMOVE_FOCUS_CHAIN_LINK.id())
     }
 
-    var instancesChain = mutableListOf<IInternalFocus>()
+    var instancesChain = mutableListOf<InternalFocusInstance>()
     var satisied = false
 
     fun closestPresentSymbol(internalSymbolDisplay: InternalSymbolDisplay) : SymbolInstance {
@@ -30,82 +30,37 @@ class InternalFocusPlan(var entity : Telegraph, var satisfierFocus: IInternalFoc
 
     fun seedChain() {
 
-        this.instancesChain.add(satisfierFocus)
+        this.instancesChain.add(satisfierFocus.instantiate())
     }
 
-    fun processChain(internalSymbolDisplay: InternalSymbolDisplay) {
+    fun processChain(internalSymbolDisplay: InternalSymbolDisplay, momentDelta : Float) {
 
         this.instancesChain.reversed().forEach {
             internalSymbolDisplay.circularity.clear()
-            it.evaluate(entity, FocusMessage(satisfierFocus = this.satisfierFocus, absentSymbolInstance = this.absentSymbolInstance, presentSymbolInstance = closestPresentSymbol(internalSymbolDisplay)))}
+            it.internalFocusObj.evaluate(entity, FocusMessage(satisfierFocus = this.satisfierFocus, absentSymbolInstance = this.absentSymbolInstance, presentSymbolInstance = closestPresentSymbol(internalSymbolDisplay), chainStrategyInstance = it), momentDelta)}
     }
 
-        /*        val headInstance = InternalFocusInstance(satisfierFocus, absentSymbolInstance, 1f)
-
-        if (headInstance.internalFocusObj.satisfyingCondition(presentSymbol) ) {
-            headInstance.internalFocusObj.satisfyingResult(entity, presentSymbol)
-            satisied = true
-        }
-        else {
-            var chainTailed = false
-            var linkInstance = headInstance
-
-            while (!chainTailed) {
-                instancesChain.add(linkInstance)
-
-                val nextLinkInstance = InternalFocusInstance(linkInstance.internalFocusObj.satisfyingStrategies.first(), absentSymbolInstance, 1f)
-
-                if (nextLinkInstance.internalFocusObj.satisfyingCondition(presentSymbol)) {
-                    val topStrategy = InternalFocusInstance(linkInstance.internalFocusObj.satisfyingStrategies.first(), absentSymbolInstance, 1f)
-                    instancesChain.add(topStrategy)
-                    chainTailed = true
-                } else {
-                    linkInstance = nextLinkInstance
-                }
-            }
-        }
-
-        initSize = instancesChain.size
-
-        processChain(internalSymbolDisplay)
-    }*/
-/*
-    fun processChain(internalSymbolDisplay: InternalSymbolDisplay) {
-
-        val presentSymbol = closestPresentSymbol(internalSymbolDisplay)
-
-        var linkSatisfied = true
-        var revIdx = instancesChain.size - 1
-        var focusPlanSizeDelta = 0
-
-        while (revIdx >= 0 && linkSatisfied) {
-            if (instancesChain[revIdx].internalFocusObj.satisfyingCondition(presentSymbol)) {
-                instancesChain[revIdx].internalFocusObj.satisfyingResult(entity, presentSymbol)
-
-                instancesChain.removeAt(instancesChain.size - 1)
-
-                focusPlanSizeDelta--
-                revIdx--
-            } else linkSatisfied = false
-        }
-
-        if ((focusPlanSizeDelta == 0) || (revIdx < 0) )
-            addLink(FocusMessage(satisfierFocus, presentSymbol))
-    }
-*/
     fun addLink(focusMessage: FocusMessage) {
 
         if ( (focusMessage.satisfierFocus != null) && (focusMessage.satisfierFocus == this.satisfierFocus)
                 && (focusMessage.absentSymbolInstance != null) && (focusMessage.absentSymbolInstance == this.absentSymbolInstance)
-                && (focusMessage.chainStrategy != null) && !this.instancesChain.contains(focusMessage.chainStrategy)) {
-            this.instancesChain.add(focusMessage.chainStrategy!!)
+                && (focusMessage.chainStrategyInstance != null) && !this.instancesChain.map { it.internalFocusObj }.contains(focusMessage.chainStrategyInstance!!.internalFocusObj)) {
+            this.instancesChain.add(focusMessage.chainStrategyInstance!!)
         }
     }
 
     fun removeLink(focusMessage: FocusMessage) {
         if ( (focusMessage.satisfierFocus != null) && (focusMessage.satisfierFocus == this.satisfierFocus)
                 && (focusMessage.absentSymbolInstance != null) && (focusMessage.absentSymbolInstance == this.absentSymbolInstance)
-                && (focusMessage.chainStrategy != null) && (this.instancesChain.last() == focusMessage.chainStrategy)) {
+                && (focusMessage.chainStrategyInstance != null) && (this.instancesChain.last().internalFocusObj == focusMessage.chainStrategyInstance!!.internalFocusObj)) {
+            this.instancesChain.removeLast()
+        }
+    }
+
+    fun updateMomentCounter(focusMessage: FocusMessage) {
+        if ( (focusMessage.satisfierFocus != null) && (focusMessage.satisfierFocus == this.satisfierFocus)
+                && (focusMessage.absentSymbolInstance != null) && (focusMessage.absentSymbolInstance == this.absentSymbolInstance)
+                && (focusMessage.chainStrategyInstance != null) && (this.instancesChain.last().internalFocusObj == focusMessage.chainStrategyInstance!!.internalFocusObj)) {
             this.instancesChain.removeLast()
         }
     }

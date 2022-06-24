@@ -13,7 +13,9 @@ import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
+import org.river.exertion.demos.ai.DemoBasicAI
 import org.river.exertion.demos.gdx3d.Demo3dHallElevationHigh
+import org.river.exertion.demos.s2d.DemoS2DTableScrollUI
 
 class Game : KtxGame<KtxScreen>() {
     private val context = Context()
@@ -78,7 +80,7 @@ class Game : KtxGame<KtxScreen>() {
 /*            addScreen(DemoNodeRoomMeshECSRotateNavigateScreen( inject(), inject(), inject(), inject() ) )
 */
 //            addScreen(DemoNodeRoomS2DNavigateScreen( inject(), inject(), inject(), inject(), inject() ) )
-//            addScreen(DemoS2DTableScrollUI( inject(), inject(), inject(), inject(), inject() ) )
+//           addScreen(DemoS2DTableScrollUI( inject(), inject(), inject(), inject(), inject() ) )
 
 //            addScreen(DemoFSM( inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3d( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
@@ -86,11 +88,13 @@ class Game : KtxGame<KtxScreen>() {
 //            addScreen(Demo3dHall( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3dHallRoughness( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3dHallElevation( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
-            addScreen(Demo3dHallElevationHigh( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
+//            addScreen(Demo3dHallElevationHigh( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 //
+            addScreen(DemoBasicAI( inject(), inject(), inject(), inject(), inject() ) )
+
         }
 
-        setScreen<Demo3dHallElevationHigh>()
+        setScreen<DemoBasicAI>()
 //        super.create()
     }
 

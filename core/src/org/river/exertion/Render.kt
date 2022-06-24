@@ -9,6 +9,11 @@ object Render {
 
     val cameraAngle = 90f
 
+    fun initRender(camera: OrthographicCamera) {
+        camera.position.set(300f, 300f, 0f)
+        camera.zoom = .8f
+    }
+
     fun initRender(camera: OrthographicCamera, currentNode: Node, currentAngle: Angle) {
         camera.position.set(currentNode.position.x, currentNode.position.y, 0f)
         camera.zoom = .8f

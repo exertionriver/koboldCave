@@ -2,6 +2,10 @@ package org.river.exertion.ai.internalFocus
 
 enum class InternalFocusType {
 
+    ACTION { override fun tag() = "action" },
+
+    SENSING { override fun tag() = "sensing" },
+
 //ground for resolving targets
     //symbol + conviction (ordered by desc are values
     BELIEF { override fun tag() = "belief" },

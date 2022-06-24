@@ -23,7 +23,7 @@ class UIPerceptionTable(initSkin : Skin) : Table(), Telegraph {
         x = Gdx.graphics.width / 8f
         y = 6 * Gdx.graphics.height / 8f
         name = "perceptionTable"
-        this.debug = true
+//        this.debug = true
         this.add(Label("perceptionTable", initSkin) )
         this.row()
     }

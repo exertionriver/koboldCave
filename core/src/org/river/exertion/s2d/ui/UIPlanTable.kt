@@ -23,7 +23,7 @@ class UIPlanTable(initSkin : Skin) : Table(), Telegraph {
         x = Gdx.graphics.width / 8f
         y = 4 * Gdx.graphics.height / 8f
         name = "planTable"
-        this.debug = true
+//        this.debug = true
         this.add(Label("planTable", initSkin) )
         this.row()
     }

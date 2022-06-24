@@ -16,7 +16,7 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
 
     var focusPlansPresent = mutableSetOf<InternalFocusPlan>()
 
-    fun rebuildPlans(internalSymbolDisplay: InternalSymbolDisplay) {
+    fun rebuildPlans(internalSymbolDisplay: InternalSymbolDisplay, momentDelta : Float) {
 //        sortedByDescending { it.absentSymbolInstance.impact }
         focusPlansPresent.forEach {
 
@@ -25,11 +25,10 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
 
             if (it.instancesChain.isEmpty()) it.seedChain()
 
-            it.processChain(internalSymbolDisplay)
+            it.processChain(internalSymbolDisplay, momentDelta)
         }
     }
 
-    @Suppress("NewApi")
     fun addPlan(focusMessage : FocusMessage) {
         if ( (focusMessage.satisfierFocus != null && focusMessage.absentSymbolInstance != null)
                     && (focusPlansPresent.none {it.absentSymbolInstance == focusMessage.absentSymbolInstance && it.satisfierFocus == focusMessage.satisfierFocus} ) ) {
