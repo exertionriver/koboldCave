@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.TimingTableMessage
-import org.river.exertion.ecs.entity.IEntity
 
 class UITimingTable(val initSkin : Skin) : Table(), Telegraph {
 
@@ -19,7 +18,7 @@ class UITimingTable(val initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, Float>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.TIMING_TABLE.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.UI_TIMING_DISPLAY.id())
         register["elapsed"] = 0f
 //        skin = initSkin
         x = Gdx.graphics.width / 8f
@@ -60,7 +59,7 @@ class UITimingTable(val initSkin : Skin) : Table(), Telegraph {
     companion object {
 
         fun send(sender : Telegraph? = null, timingTableMessage: TimingTableMessage) {
-            MessageManager.getInstance().dispatchMessage(sender, MessageChannel.TIMING_TABLE.id(), timingTableMessage)
+            MessageManager.getInstance().dispatchMessage(sender, MessageChannel.UI_TIMING_DISPLAY.id(), timingTableMessage)
         }
     }
 

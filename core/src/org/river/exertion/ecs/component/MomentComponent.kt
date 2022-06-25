@@ -5,13 +5,15 @@ import com.badlogic.ashley.core.Entity
 import ktx.ashley.mapperFor
 import org.river.exertion.ecs.component.action.core.IComponent
 
-class MomentComponent(val initMoment : Float = 10f) : IComponent, Component {
+class MomentComponent(initMoment : Float = 10f) : IComponent, Component {
 
     override val componentName = "Moment"
 
     //tenths of a second
     var moment = initMoment
     var momentCountdown = initMoment
+
+    var systemMoment = 10f //for simulation
 
     fun ready() = momentCountdown <= 0
     fun reset() { momentCountdown = moment }

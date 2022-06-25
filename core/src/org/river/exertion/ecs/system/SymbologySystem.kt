@@ -7,6 +7,7 @@ import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
 import org.river.exertion.ai.messaging.SymbolMessage
 import org.river.exertion.ai.messaging.TimingTableMessage
+import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.SymbologyComponent
 import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.ICharacter
@@ -15,7 +16,7 @@ import org.river.exertion.s2d.ui.UITimingTable
 class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class).get(), 1/10f) {
 
     override fun processEntity(entity: Entity) {
-        val entityMomentDelta = (-10f * this.interval) / ICharacter.getFor(entity)!!.moment //moment is in tenths of a second
+        val entityMomentDelta = (-MomentComponent.getFor(entity)!!.systemMoment * this.interval) / ICharacter.getFor(entity)!!.moment //moment is in tenths of a second
 
         //clear circularity check
         SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.circularity.clear()
@@ -29,8 +30,7 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
         SymbologyComponent.getFor(entity)!!.internalSymbology.internalFocusDisplay.rebuildPlans(SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay, entityMomentDelta)
 
         UITimingTable.send(timingTableMessage = TimingTableMessage(label = "symbolSystem", value = interval))
-        UITimingTable.send(timingTableMessage = TimingTableMessage(label = "${ICharacter.getFor(entity)!!.entityName} moment delta", value = -entityMomentDelta))
-
+        UITimingTable.send(timingTableMessage = TimingTableMessage(label = "${ICharacter.getFor(entity)!!.entityName} moment delta", value = entityMomentDelta))
 
     }
 }

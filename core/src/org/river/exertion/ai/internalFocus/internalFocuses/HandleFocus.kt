@@ -10,11 +10,10 @@ object HandleFocus : IInternalFocus {
 
     override var tag = "handle"
     override var type = InternalFocusType.ACTION
-    override var momentMinimum = 1f
+    override var momentMinimum = 4f
 
-    override var satisfyingStrategies = mutableListOf(
-        ReadyFocus,
-        PossessFocus
+    override var satisfyingStrategies = mutableListOf<IInternalFocus>(
+        ReadyFocus
     )
 
     override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = targetPresentSymbol.position <= SymbolTargetPosition.STABILIZE_HANDLING.targetPosition()

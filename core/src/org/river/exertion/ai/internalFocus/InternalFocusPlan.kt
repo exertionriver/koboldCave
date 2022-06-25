@@ -35,9 +35,13 @@ class InternalFocusPlan(var entity : Telegraph, var satisfierFocus: IInternalFoc
 
     fun processChain(internalSymbolDisplay: InternalSymbolDisplay, momentDelta : Float) {
 
+        var lastTrue = false
+
         this.instancesChain.reversed().forEach {
             internalSymbolDisplay.circularity.clear()
-            it.internalFocusObj.evaluate(entity, FocusMessage(satisfierFocus = this.satisfierFocus, absentSymbolInstance = this.absentSymbolInstance, presentSymbolInstance = closestPresentSymbol(internalSymbolDisplay), chainStrategyInstance = it), momentDelta)}
+
+            if (!lastTrue)
+                lastTrue = it.internalFocusObj.evaluate(entity, FocusMessage(satisfierFocus = this.satisfierFocus, absentSymbolInstance = this.absentSymbolInstance, presentSymbolInstance = closestPresentSymbol(internalSymbolDisplay), chainStrategyInstance = it), momentDelta)}
     }
 
     fun addLink(focusMessage: FocusMessage) {

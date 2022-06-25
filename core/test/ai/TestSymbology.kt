@@ -2,7 +2,6 @@ package ai
 
 import com.badlogic.ashley.core.PooledEngine
 import org.junit.jupiter.api.Test
-import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
@@ -40,7 +39,7 @@ class TestSymbology {
             println("itr:$it")
             internalSymbolDisplay.symbolDisplay.forEach { println("${it.symbolObj} : ${it.cycles}, ${it.position}, ${it.displayType}") }
             println("internal focuses:")
-            internalFocusDisplay.focusPlansPresent.forEachIndexed { idx, it -> println (it.absentSymbolInstance.symbolObj) ; it.instancesChain.forEach { println("$idx; $it") } }
+            internalFocusDisplay.focusPlans.forEachIndexed { idx, it -> println (it.absentSymbolInstance.symbolObj) ; it.instancesChain.forEach { println("$idx; $it") } }
 
             engine.update(.1f)
 

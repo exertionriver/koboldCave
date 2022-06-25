@@ -14,9 +14,11 @@ object PickUpFocus : IInternalFocus {
 
     override var tag = "pick up"
     override var type = InternalFocusType.ACTION
-    override var momentMinimum = 1f
+    override var momentMinimum = 4f
 
-    override var satisfyingStrategies = mutableListOf<IInternalFocus>()
+    override var satisfyingStrategies = mutableListOf<IInternalFocus>(
+        CloseIntimateFocus
+    )
     override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = CloseIntimateFocus.satisfyingCondition(targetPresentSymbol)
     override fun satisfyingResult(entity: Telegraph, targetPresentSymbol : SymbolInstance) {
 

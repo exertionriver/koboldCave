@@ -14,11 +14,11 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
         MessageManager.getInstance().addListener(this, MessageChannel.INT_REMOVE_FOCUS_PLAN.id())
     }
 
-    var focusPlansPresent = mutableSetOf<InternalFocusPlan>()
+    var focusPlans = mutableSetOf<InternalFocusPlan>()
 
     fun rebuildPlans(internalSymbolDisplay: InternalSymbolDisplay, momentDelta : Float) {
 //        sortedByDescending { it.absentSymbolInstance.impact }
-        focusPlansPresent.forEach {
+        focusPlans.forEach {
 
             if (!internalSymbolDisplay.symbolDisplay.contains(it.absentSymbolInstance))
                 removePlan(FocusMessage(it.satisfierFocus, it.absentSymbolInstance))
@@ -31,9 +31,9 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
 
     fun addPlan(focusMessage : FocusMessage) {
         if ( (focusMessage.satisfierFocus != null && focusMessage.absentSymbolInstance != null)
-                    && (focusPlansPresent.none {it.absentSymbolInstance == focusMessage.absentSymbolInstance && it.satisfierFocus == focusMessage.satisfierFocus} ) ) {
+                    && (focusPlans.none {it.absentSymbolInstance == focusMessage.absentSymbolInstance && it.satisfierFocus == focusMessage.satisfierFocus} ) ) {
             val addedPlan = InternalFocusPlan(entity, focusMessage.satisfierFocus!!, focusMessage.absentSymbolInstance!!)
-            focusPlansPresent.add(addedPlan)
+            focusPlans.add(addedPlan)
         }
     }
 
@@ -41,9 +41,9 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
     fun removePlan(focusMessage : FocusMessage) {
         if (focusMessage.absentSymbolInstance != null)
             if (focusMessage.satisfierFocus != null)
-                focusPlansPresent.removeIf { it.satisfierFocus == focusMessage.satisfierFocus!! && it.absentSymbolInstance == focusMessage.absentSymbolInstance!! }
+                focusPlans.removeIf { it.satisfierFocus == focusMessage.satisfierFocus!! && it.absentSymbolInstance == focusMessage.absentSymbolInstance!! }
             else
-                focusPlansPresent.removeIf { it.absentSymbolInstance == focusMessage.absentSymbolInstance!! }
+                focusPlans.removeIf { it.absentSymbolInstance == focusMessage.absentSymbolInstance!! }
    }
 
     override fun handleMessage(msg: Telegram?): Boolean {

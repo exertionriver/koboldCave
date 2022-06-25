@@ -30,8 +30,12 @@ import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.HungerSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
+import org.river.exertion.ai.messaging.AnxietyBarMessage
+import org.river.exertion.ai.messaging.FocusDisplayMessage
 import org.river.exertion.ai.messaging.SymbolDisplayMessage
 import org.river.exertion.ai.messaging.TimingTableMessage
+import org.river.exertion.ecs.component.ConditionComponent
+import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.SymbologyComponent
 import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
 import org.river.exertion.ecs.entity.character.CharacterKobold
@@ -58,15 +62,14 @@ class DemoBasicAI(private val menuBatch: Batch,
 
         InputHandler.handleInput(menuCamera)
 
-/*        when {
-            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { menuStage.root.findActor<Table>("planTable").add("test ${LocalDateTime.now()}").row() }
-            Gdx.input.isKeyJustPressed(Input.Keys.X) -> { val staticTable = menuStage.root.findActor<Table>("planTable"); if (staticTable.children.size > 0) staticTable.getChild(0).remove() }
-            Gdx.input.isKeyJustPressed(Input.Keys.C) -> { menuStage.root.findActor<Table>("feelingTable").add("test ${LocalDateTime.now()}").row() }
-            Gdx.input.isKeyJustPressed(Input.Keys.B) -> { val scrollTable = menuStage.root.findActor<Table>("feelingTable") ; if (scrollTable.children.size > 0) scrollTable.getChild(0).remove() }
-            Gdx.input.isKeyJustPressed(Input.Keys.N) -> { menuStage.root.findActor<Table>("perceptionTable").add("test ${LocalDateTime.now()}").row() }
-            Gdx.input.isKeyJustPressed(Input.Keys.M) -> { val scrollTable = menuStage.root.findActor<Table>("perceptionTable") ; if (scrollTable.children.size > 0) scrollTable.getChild(0).remove() }
+        when {
+            Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> MomentComponent.getFor(character)!!.systemMoment = if (MomentComponent.getFor(character)!!.systemMoment == 0f) 10f else 0f
+            Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> MomentComponent.getFor(character)!!.systemMoment += 5f
+            Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> MomentComponent.getFor(character)!!.systemMoment -= 5f
+            Gdx.input.isKeyJustPressed(Input.Keys.UP) -> ConditionComponent.getFor(character)!!.mIntAnxiety += .05f
+            Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> ConditionComponent.getFor(character)!!.mIntAnxiety -= .05f
        }
-    */
+
         menuCamera.update()
         menuBatch.projectionMatrix = menuCamera.combined
 
@@ -74,7 +77,12 @@ class DemoBasicAI(private val menuBatch: Batch,
         menuStage.act()
 
         UITimingTable.send(timingTableMessage = TimingTableMessage(timingType = TimingTableMessage.TimingEntryType.RENDER, label = "render", value = delta))
+        UITimingTable.send(timingTableMessage = TimingTableMessage(timingType = TimingTableMessage.TimingEntryType.CHARACTER, label = "systemMoment", value = MomentComponent.getFor(character)!!.systemMoment))
+
         UISymbolDisplay.send(symbolDisplayMessage = SymbolDisplayMessage(symbolDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay))
+        UIFocusDisplay.send(focusDisplayMessage = FocusDisplayMessage(focusDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalFocusDisplay))
+
+        UIAnxietyBar.send(anxietyBarMessage = AnxietyBarMessage(value = ConditionComponent.getFor(character)!!.mIntAnxiety))
 
         engine.update(delta)
     }
@@ -89,6 +97,9 @@ class DemoBasicAI(private val menuBatch: Batch,
 
         menuStage.addActor(UITimingTable(Scene2DSkin.defaultSkin))
         menuStage.addActor(UISymbolDisplay(Scene2DSkin.defaultSkin))
+        menuStage.addActor(UIFocusDisplay(Scene2DSkin.defaultSkin))
+        menuStage.addActor(UIAnxietyBar(Scene2DSkin.defaultSkin))
+        menuStage.addActor(UIAnxietyBarTable(Scene2DSkin.defaultSkin))
 
         SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay = mutableSetOf(
                 SymbolInstance(HungerSymbol, cycles = 1f, position = .55f),

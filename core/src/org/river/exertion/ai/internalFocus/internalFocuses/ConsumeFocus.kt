@@ -14,7 +14,7 @@ object ConsumeFocus : IInternalFocus {
 
     override var tag = "consume"
     override var type = InternalFocusType.ACTION
-    override var momentMinimum = 1f
+    override var momentMinimum = 4f
 
     override var satisfyingStrategies = mutableListOf<IInternalFocus>(
         HandleFocus

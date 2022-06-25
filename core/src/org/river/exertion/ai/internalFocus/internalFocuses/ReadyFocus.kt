@@ -16,7 +16,9 @@ object ReadyFocus : IInternalFocus {
     override var type = InternalFocusType.SENSING
     override var momentMinimum = 0f
 
-    override var satisfyingStrategies = mutableListOf<IInternalFocus>()
+    override var satisfyingStrategies = mutableListOf<IInternalFocus>(
+        PossessFocus
+    )
     override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = PossessFocus.satisfyingCondition(targetPresentSymbol)
     override fun satisfyingResult(entity: Telegraph, targetPresentSymbol : SymbolInstance) {
         val deltaPosition = targetPresentSymbol.position - SymbolTargetPosition.STABILIZE_HANDLING.targetPosition()

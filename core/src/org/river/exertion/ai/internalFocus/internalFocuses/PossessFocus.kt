@@ -13,9 +13,8 @@ object PossessFocus : IInternalFocus {
     override var type = InternalFocusType.SENSING
     override var momentMinimum = 0f
 
-    override var satisfyingStrategies = mutableListOf(
-        PickUpFocus,
-        CloseIntimateFocus
+    override var satisfyingStrategies = mutableListOf<IInternalFocus>(
+        PickUpFocus
     )
     override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = targetPresentSymbol.position <= SymbolTargetPosition.STABILIZE_POSSESSION.targetPosition()
 
