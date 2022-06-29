@@ -1,13 +1,46 @@
 package org.river.exertion.ai.internalFacet
 
+import com.badlogic.gdx.ai.msg.MessageManager
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalFacet.NoneFacet.noneFacet
+import org.river.exertion.ai.messaging.FacetMessage
+import org.river.exertion.ai.messaging.FocusMessage
+import org.river.exertion.ai.messaging.MessageChannel
 
-data class InternalFacetInstancesState(var internalState: MutableSet<InternalFacetInstance> = mutableSetOf()) {
+class InternalFacetInstancesState(val entity : Telegraph, var internalState: MutableSet<InternalFacetInstance> = mutableSetOf()) : Telegraph {
+
+    init {
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_FACET_ARISINGS.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_FACET_RESPONDINGS.id())
+    }
+
+    var internalBaseLine = mutableSetOf<InternalFacetInstance>()
+
+    fun currentState() : MutableSet<InternalFacetInstance> {
+
+        val returnCurrentState = mutableSetOf<InternalFacetInstance>()
+
+        internalBaseLine.forEach { baselineStateInstance -> returnCurrentState.add(baselineStateInstance) }
+
+        internalState.forEach { internalStateInstance ->
+            val baselineInstance = returnCurrentState.firstOrNull { it.facetObj == internalStateInstance.facetObj }
+
+            if ( baselineInstance == null)
+                returnCurrentState.add(internalStateInstance)
+            else
+                if (internalStateInstance.magnitude > baselineInstance.magnitude) {
+                    returnCurrentState.first { it.facetObj == internalStateInstance.facetObj }.magnitude = internalStateInstance.magnitude
+                }
+        }
+
+        return returnCurrentState
+    }
 
     fun magnitudeOpinion() : InternalFacetInstance = if (internalState.isEmpty()) noneFacet {} else internalState.maxByOrNull { it.magnitude }!!
 
     fun add(facet: InternalFacetInstance) {
-        this.internalState = (InternalFacetInstancesState(this.internalState) + InternalFacetInstancesState(internalState = mutableSetOf(facet))).internalState
+        this.internalState = (InternalFacetInstancesState(entity, this.internalState) + InternalFacetInstancesState(entity, internalState = mutableSetOf(facet))).internalState
     }
 
     operator fun plus(other: InternalFacetInstancesState) : InternalFacetInstancesState {
@@ -27,7 +60,7 @@ data class InternalFacetInstancesState(var internalState: MutableSet<InternalFac
         mergeState.addAll( this.internalState.filter { !otherFacets.contains(it.facetObj) } )
         mergeState.addAll( other.internalState.filter { !thisFacets.contains(it.facetObj) } )
 
-        return InternalFacetInstancesState(mergeState)
+        return InternalFacetInstancesState(entity, mergeState)
     }
 
     operator fun minus(other: InternalFacetInstancesState) : InternalFacetInstancesState {
@@ -47,12 +80,12 @@ data class InternalFacetInstancesState(var internalState: MutableSet<InternalFac
         mergeState.addAll( this.internalState.filter { !otherFacets.contains(it.facetObj) } )
         mergeState.addAll( other.internalState.filter { !thisFacets.contains(it.facetObj) } )
 
-        return InternalFacetInstancesState(mergeState)
+        return InternalFacetInstancesState(entity, mergeState)
     }
 
     operator fun div(scalar: Float) : InternalFacetInstancesState {
 
-        val returnInstance = InternalFacetInstancesState(this.internalState)
+        val returnInstance = InternalFacetInstancesState(entity, this.internalState)
         returnInstance.internalState.forEach { it / scalar }
 
         return returnInstance
@@ -60,7 +93,7 @@ data class InternalFacetInstancesState(var internalState: MutableSet<InternalFac
 
     operator fun times(scalar: Float) : InternalFacetInstancesState {
 
-        val returnInstance = InternalFacetInstancesState(this.internalState)
+        val returnInstance = InternalFacetInstancesState(entity, this.internalState)
         returnInstance.internalState.forEach { it * scalar }
 
         return returnInstance
@@ -92,12 +125,30 @@ data class InternalFacetInstancesState(var internalState: MutableSet<InternalFac
         return internalState.hashCode()
     }
 
+    override fun handleMessage(msg: Telegram?): Boolean {
+        if ( (msg != null) && (msg.sender == entity) ) {
+            if (msg.message == MessageChannel.INT_FACET_ARISINGS.id()) {
+                val facetMessage = msg.extraInfo as FacetMessage
+                if (facetMessage.internalFacets != null) {
+                    this.internalBaseLine = facetMessage.internalFacets!!
+                }
+            }
+            if (msg.message == MessageChannel.INT_FACET_RESPONDINGS.id()) {
+                val facetMessage = msg.extraInfo as FacetMessage
+                if (facetMessage.internalFacets != null) {
+                    this.internalState = facetMessage.internalFacets!!
+                }
+            }
+        }
+        return true
+    }
+
     companion object {
 
-        fun Set<InternalFacetInstancesState>.merge() : InternalFacetInstancesState {
+        fun Set<InternalFacetInstancesState>.merge(entity : Telegraph) : InternalFacetInstancesState {
 
             val divSize = this.size.toFloat()
-            var returnInstance = InternalFacetInstancesState()
+            var returnInstance = InternalFacetInstancesState(entity)
 
             this.forEach { returnInstance += it }
 

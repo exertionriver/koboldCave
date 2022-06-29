@@ -34,7 +34,7 @@ class ConditionComponent(var entity : Telegraph) : IComponent, Component, Telegr
 //    var isStanding : Boolean
 
     override fun handleMessage(msg: Telegram?): Boolean {
-        if ( (msg != null) && (msg.receiver == entity) ) {
+        if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_CONDITION.id()) {
                 this.mIntAnxiety = msg.extraInfo as Float
             }

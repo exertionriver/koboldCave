@@ -28,5 +28,8 @@ object HungerSymbol : IPerceivedSymbol {
 
     override var focusSatisfiers = mutableSetOf<IInternalFocus>()
 
+//    override var facetModifiers = mutableSetOf<
+
+
     override fun spawn() = SymbolInstance(HungerSymbol, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
 }

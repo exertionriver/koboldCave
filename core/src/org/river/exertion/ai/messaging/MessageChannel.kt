@@ -10,6 +10,7 @@ enum class MessageChannel {
     FEELING_BRIDGE,
     UI_TIMING_DISPLAY,
     UI_FOCUS_DISPLAY,
+    UI_FACET_DISPLAY,
     UI_SYMBOL_DISPLAY,
     UI_ANXIETY_BAR,
     CURNODE_BRIDGE,
@@ -29,7 +30,9 @@ enum class MessageChannel {
     INT_ADD_FOCUS_CHAIN_LINK,
     INT_REMOVE_FOCUS_CHAIN_LINK,
     INT_PHENOMENA_FACETS,
-    INT_MEMORY_FACETS
+    INT_MEMORY_FACETS,
+    INT_FACET_ARISINGS,
+    INT_FACET_RESPONDINGS
     ;
 
     fun id() = this.ordinal

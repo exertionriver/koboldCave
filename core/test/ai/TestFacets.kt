@@ -14,6 +14,7 @@ import org.river.exertion.ecs.component.FacetComponent
 import org.river.exertion.ecs.component.ManifestComponent
 import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
+import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.CharacterKobold
 import org.river.exertion.ecs.system.SystemManager
 
@@ -27,7 +28,7 @@ class TestFacets {
 
     @Test
     fun testOriginArisingProjections() {
-        val testState = InternalFacetAttributesState().apply { this.internalFacetAttributes = mutableSetOf(
+        val testState = InternalFacetAttributesState(IEntity.getFor(character)!!).apply { this.internalFacetAttributes = mutableSetOf(
             internalFacetAttribute { internalFacetInstance = confusionFacet {}; origin = 0.2f; arising = 0.5f },
             internalFacetAttribute { internalFacetInstance = angerFacet {}; origin = 0.3f; arising = 0.7f },
             internalFacetAttribute { internalFacetInstance = fearFacet {}; origin = 0.4f; arising = 0.8f },

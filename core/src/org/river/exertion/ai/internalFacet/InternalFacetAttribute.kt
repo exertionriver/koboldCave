@@ -1,12 +1,10 @@
 package org.river.exertion.ai.internalFacet
 
-import org.river.exertion.ai.internalFacet.NoneFacet.noneFacet
-
-data class InternalFacetAttribute(var internalFacetInstance: InternalFacetInstance = noneFacet {}, var origin : Float = 0f, var arising : Float = 0f) {
+data class InternalFacetAttribute(var facetObj: Class<IInternalFacet> = (NoneFacet as IInternalFacet).javaClass, var origin : Float = 0f, var arising : Float = 0f) {
 
     fun magnitude(mInternalAnxiety : Float) = origin + (arising - origin) * mInternalAnxiety
 
-    fun arisenFacetInstance(mInternalAnxiety : Float) = InternalFacetInstance(this.internalFacetInstance.facetObj, magnitude(mInternalAnxiety))
+    fun arisenFacetInstance(mInternalAnxiety : Float) = InternalFacetInstance(this.facetObj, magnitude(mInternalAnxiety))
 
     companion object {
         fun internalFacetAttribute(lambda : InternalFacetAttribute.() -> Unit) = InternalFacetAttribute().apply(lambda)

@@ -58,7 +58,6 @@ class UISymbolDisplay(val initSkin : Skin) : Table(), Telegraph {
                 this.row().apply { this.align(Align.right) }
             }
 
-
             return true
         }
 

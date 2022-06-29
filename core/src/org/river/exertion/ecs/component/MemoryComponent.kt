@@ -20,9 +20,9 @@ class MemoryComponent(var entity : Telegraph) : IComponent, Component, Telegraph
 
     override val componentName = "Memory"
 
-    var internalMemory = InternalMemory()
+    var internalMemory = InternalMemory(entity)
     var perceivedPhenomena = mutableListOf<PerceivedPhenomena>()
-    var internalFacetInstancesState = InternalFacetInstancesState()
+    var internalFacetInstancesState = InternalFacetInstancesState(entity)
 
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {

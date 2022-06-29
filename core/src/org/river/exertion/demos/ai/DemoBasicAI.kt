@@ -27,14 +27,13 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWa
 import org.river.exertion.Render
 import org.river.exertion.RenderPalette
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.AnxietySymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.HungerSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
-import org.river.exertion.ai.messaging.AnxietyBarMessage
-import org.river.exertion.ai.messaging.FocusDisplayMessage
-import org.river.exertion.ai.messaging.SymbolDisplayMessage
-import org.river.exertion.ai.messaging.TimingTableMessage
+import org.river.exertion.ai.messaging.*
 import org.river.exertion.ecs.component.ConditionComponent
+import org.river.exertion.ecs.component.FacetComponent
 import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.SymbologyComponent
 import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
@@ -83,6 +82,7 @@ class DemoBasicAI(private val menuBatch: Batch,
         UIFocusDisplay.send(focusDisplayMessage = FocusDisplayMessage(focusDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalFocusDisplay))
 
         UIAnxietyBar.send(anxietyBarMessage = AnxietyBarMessage(value = ConditionComponent.getFor(character)!!.mIntAnxiety))
+        UIFacetTable.send(facetTableMessage = FacetTableMessage(internalFacetInstancesState = FacetComponent.getFor(character)!!.responsiveInternalState))
 
         engine.update(delta)
     }
@@ -100,8 +100,10 @@ class DemoBasicAI(private val menuBatch: Batch,
         menuStage.addActor(UIFocusDisplay(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIAnxietyBar(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIAnxietyBarTable(Scene2DSkin.defaultSkin))
+        menuStage.addActor(UIFacetTable(Scene2DSkin.defaultSkin))
 
         SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay = mutableSetOf(
+                SymbolInstance(AnxietySymbol, cycles = 1f, position = .1f),
                 SymbolInstance(HungerSymbol, cycles = 1f, position = .55f),
                 SymbolInstance(FoodSymbol, cycles = 12f, position = .6f).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f},
                 SymbolInstance(MomentElapseSymbol, cycles = -1f, position = .4f)

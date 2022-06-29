@@ -1,9 +1,11 @@
 package org.river.exertion.ai.memory
 
-class InternalMemory {
+import com.badlogic.gdx.ai.msg.Telegraph
 
-    val activeMemory = ActiveMemory()
-    val encounterMemory = EncounterMemory()
-    val longtermMemory = LongtermMemory()
+class InternalMemory(var entity : Telegraph) {
+
+    val activeMemory = ActiveMemory(entity)
+    val encounterMemory = EncounterMemory(entity)
+    val longtermMemory = LongtermMemory(entity)
 
 }

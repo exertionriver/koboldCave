@@ -17,10 +17,11 @@ object KoboldNoumenon : INoumenon, InstantiatableNoumenon, IAttributeable {
         intelligenceRange { noumenonObj = this@KoboldNoumenon.javaClass; noumenonOrder = 8; minValue = 7; maxValue = 8 }
     ))
     override fun facetAttributes() = mutableSetOf(
-            InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = ConfusionFacet.confusionFacet {}; origin = 0.2f; arising = 0.5f },
-            InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = AngerFacet.angerFacet {}; origin = 0.3f; arising = 0.7f },
-            InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = FearFacet.fearFacet {}; origin = 0.4f; arising = 0.8f },
-            InternalFacetAttribute.internalFacetAttribute { internalFacetInstance = DoubtFacet.doubtFacet {}; origin = 0f; arising = 0.1f }
+            //todo: clean up to remove instantiation
+            InternalFacetAttribute.internalFacetAttribute { facetObj = ConfusionFacet.confusionFacet {}.facetObj; origin = 0.2f; arising = 0.5f },
+            InternalFacetAttribute.internalFacetAttribute { facetObj = AngerFacet.angerFacet {}.facetObj; origin = 0.3f; arising = 0.7f },
+            InternalFacetAttribute.internalFacetAttribute { facetObj = FearFacet.fearFacet {}.facetObj; origin = 0.4f; arising = 0.8f },
+            InternalFacetAttribute.internalFacetAttribute { facetObj = DoubtFacet.doubtFacet {}.facetObj; origin = 0f; arising = 0.1f }
     )
 
     fun kobold(lambda : NoumenonInstance.() -> Unit) = NoumenonInstance(sourceNoumenonType = KoboldNoumenon.javaClass, instanceName = "razza" + Random().nextInt()).apply(lambda)

@@ -14,18 +14,18 @@ class ConditionSystem : IntervalIteratingSystem(allOf(ConditionComponent::class)
     override fun processEntity(entity: Entity) {
         val delta = 1/10f
 
+        var mIntAnxiety = ConditionComponent.getFor(entity)!!.mIntAnxiety
+
         //random jostling around
         val changeMIntAnxietyBy = (Random.nextInt(5) - 2) / 1000f
 
-        ConditionComponent.getFor(entity)!!.mIntAnxiety += changeMIntAnxietyBy
+        mIntAnxiety += changeMIntAnxietyBy
 
-        if (ConditionComponent.getFor(entity)!!.mIntAnxiety < 0) ConditionComponent.getFor(entity)!!.mIntAnxiety = 0f
+        if (mIntAnxiety < 0) mIntAnxiety = 0f
+        if (mIntAnxiety > 1) mIntAnxiety = 1f
 
-        if (ConditionComponent.getFor(entity)!!.mIntAnxiety > 1) ConditionComponent.getFor(entity)!!.mIntAnxiety = 1f
-
-        val mIntAnxiety = ConditionComponent.getFor(entity)!!.mIntAnxiety
-
-        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_FACET.id(), mIntAnxiety)
+        //updates ConditionComponent and Arising Facet
+        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_CONDITION.id(), mIntAnxiety)
 
     }
 }

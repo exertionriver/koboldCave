@@ -20,6 +20,7 @@ import org.river.exertion.ecs.component.MemoryComponent
 import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
 import org.river.exertion.ecs.component.action.core.ActionType
+import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.CharacterKobold
 import org.river.exertion.ecs.system.SystemManager
 
@@ -42,7 +43,7 @@ class TestMemory {
 
     @Test
     fun testKoboldMemory() {
-        val isi = InternalFacetInstancesState().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
+        val isi = InternalFacetInstancesState(IEntity.getFor(character)!!).apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
 
         KoboldMemory.memoriesPA().forEach {
             val perceivedNoumenon = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE) ).apply { this.perceivedAttributes.add(it); this.noumenonType = NoumenonType.OTHER; this.isNamed = true}
@@ -73,7 +74,7 @@ class TestMemory {
 
     @Test
     fun testAddingKoboldMemoryFromManifest() {
-        val isi = InternalFacetInstancesState().apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
+        val isi = InternalFacetInstancesState(IEntity.getFor(character)!!).apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
 
         MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 
@@ -112,7 +113,7 @@ class TestMemory {
 
     @Test
     fun testPollKoboldFacts() {
-        val isi = InternalFacetInstancesState().apply { this.internalState.add(angerFacet { magnitude = 0.7f }) }
+        val isi = InternalFacetInstancesState(IEntity.getFor(character)!!).apply { this.internalState.add(angerFacet { magnitude = 0.7f }) }
 
         MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 

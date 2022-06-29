@@ -12,27 +12,15 @@ import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.action.core.IComponent
 
-class FacetComponent(var entity : Telegraph, var facetAttributes: Set<InternalFacetAttribute>) : IComponent, Component, Telegraph {
+class FacetComponent(var entity : Telegraph, var facetAttributes: Set<InternalFacetAttribute>) : IComponent, Component {
 
     override val componentName = "Facet"
 
-    var responsiveInternalState = InternalFacetInstancesState()
-    var arisingInternalState = InternalFacetAttributesState()
-
-    var mInternalAnxiety = 0f
+    var responsiveInternalState = InternalFacetInstancesState(entity)
+    var arisingInternalState = InternalFacetAttributesState(entity)
 
     init {
         arisingInternalState.internalFacetAttributes = facetAttributes
-        MessageManager.getInstance().addListener(this, MessageChannel.INT_FACET.id())
-    }
-
-    override fun handleMessage(msg: Telegram?): Boolean {
-        if ( (msg != null) && (msg.sender == entity) ) {
-            if (msg.message == MessageChannel.INT_FACET.id()) {
-                mInternalAnxiety = msg.extraInfo as Float
-            }
-        }
-        return true
     }
 
     companion object {
