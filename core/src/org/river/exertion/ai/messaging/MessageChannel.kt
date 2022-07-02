@@ -31,8 +31,7 @@ enum class MessageChannel {
     INT_REMOVE_FOCUS_CHAIN_LINK,
     INT_PHENOMENA_FACETS,
     INT_MEMORY_FACETS,
-    INT_FACET_ARISINGS,
-    INT_FACET_RESPONDINGS
+    INT_FACET_MODIFY,
     ;
 
     fun id() = this.ordinal

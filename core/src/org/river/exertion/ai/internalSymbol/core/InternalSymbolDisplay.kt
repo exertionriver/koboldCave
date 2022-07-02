@@ -3,7 +3,10 @@ package org.river.exertion.ai.internalSymbol.core
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
+import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
+import org.river.exertion.ai.internalFacet.InternalFacetInstancesState.Companion.merge
 import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
+import org.river.exertion.ai.messaging.FacetMessage
 import org.river.exertion.ai.messaging.FocusMessage
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolMessage
@@ -18,6 +21,19 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
         MessageManager.getInstance().addListener(this, MessageChannel.INT_SYMBOL_DESPAWN.id())
         MessageManager.getInstance().addListener(this, MessageChannel.INT_SYMBOL_MODIFY.id())
         MessageManager.getInstance().addListener(this, MessageChannel.INT_SYMBOL_MODIFIED.id())
+    }
+
+    fun mergeAndUpdateFacets() {
+        val internalFacetStates = mutableSetOf<InternalFacetInstancesState>()
+
+        symbolDisplay.filter { it.displayType == SymbolDisplayType.PRESENT }.forEach {
+            if (it.currentFacetState.isNotEmpty() )
+                internalFacetStates.add(InternalFacetInstancesState(entity, it.currentFacetState))
+        }
+
+        val compositeFacetStates = internalFacetStates.merge(entity).internalState
+
+        MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_FACET_MODIFY.id(), FacetMessage(internalFacets = compositeFacetStates))
     }
 
     @Suppress("NewApi")

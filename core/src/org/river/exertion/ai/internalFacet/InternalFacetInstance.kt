@@ -1,8 +1,6 @@
 package org.river.exertion.ai.internalFacet
 
-data class InternalFacetInstance(var facetObj: Class<IInternalFacet> = (NoneFacet as IInternalFacet).javaClass, var magnitude : Float = 0f) {
-
-    fun facet() : IInternalFacet = facetObj.kotlin.objectInstance!!
+data class InternalFacetInstance(var facetObj: IInternalFacet = NoneFacet, var magnitude : Float = 0f) {
 
     operator fun plus(other : InternalFacetInstance) : InternalFacetInstance =
             if (this.facetObj == other.facetObj)
@@ -23,6 +21,6 @@ data class InternalFacetInstance(var facetObj: Class<IInternalFacet> = (NoneFace
 
     operator fun times(scalar : Float) : InternalFacetInstance = InternalFacetInstance(this.facetObj, this.magnitude * scalar)
 
-    fun description() = "${FacetMagnitudeType.byMagnitude(magnitude).description()} ${facet().type.description()}"
+    fun description() = "${FacetMagnitudeType.byMagnitude(magnitude).description()} ${facetObj.type.description()}"
 
 }

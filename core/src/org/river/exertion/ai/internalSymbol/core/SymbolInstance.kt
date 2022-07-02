@@ -1,5 +1,7 @@
 package org.river.exertion.ai.internalSymbol.core
 
+import org.river.exertion.ai.internalFacet.InternalFacetInstance
+import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.NonePerceivedSymbol
 import java.util.*
 import kotlin.math.sign
@@ -17,6 +19,14 @@ data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbo
     var possessCapacity = 0f
 
     var ornaments = mutableSetOf<SymbolInstance>()
+    var currentFacetState = mutableSetOf<InternalFacetInstance>()
+
+    fun normalizeFacetState() {
+        currentFacetState.clear()
+        this.symbolObj.facetModifiers.forEach { facetModifier ->
+            currentFacetState.add(facetModifier.facetObj.spawn().apply { this.magnitude = facetModifier.symbolToFacetRatio * position })
+        }
+    }
 
     fun normalizePosition() {
 

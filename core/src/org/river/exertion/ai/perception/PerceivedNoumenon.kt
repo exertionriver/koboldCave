@@ -16,16 +16,16 @@ data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttri
         val returnFacts = mutableListOf<String>()
 
         perceivedAttributes.forEach { perceivedAttribute ->
-            val attributePhenomenaType = perceivedAttribute.attributeInstance!!.attribute().howPerceived()
+            val attributePhenomenaType = perceivedAttribute.attributeInstance!!.attributeObj.howPerceived()
 
             var perceptionStatement = attributePhenomenaType.perceivedAction(knowledgeSourceInstance.source)
             if (knowledgeSourceInstance.trust < .5f) perceptionStatement += " maybe"
 
             perceptionStatement +=
                     if (knowledgeSourceInstance.source == KnowledgeSourceType.LEARNING || knowledgeSourceInstance.source == KnowledgeSourceType.LEARNING)
-                        " ${perceivedAttribute.attributeInstance!!.noumenon().type().tag()}s "
+                        " ${perceivedAttribute.attributeInstance!!.noumenonObj.type().tag()}s "
                     else
-                        " a ${perceivedAttribute.attributeInstance!!.noumenon().type().tag()}"
+                        " a ${perceivedAttribute.attributeInstance!!.noumenonObj.type().tag()}"
 
             perceptionStatement += " with a ${perceivedAttribute.attributeInstance!!.characteristicValue.description}"
 

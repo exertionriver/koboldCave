@@ -4,6 +4,7 @@ object AngerFacet : IInternalFacet {
 
     override val type = InternalFacetType.ANGER
 
-    fun angerFacet(lambda : InternalFacetInstance.() -> Unit) = InternalFacetInstance(facetObj = AngerFacet.javaClass).apply(lambda)
+    fun angerFacet(lambda : InternalFacetInstance.() -> Unit) = InternalFacetInstance(facetObj = AngerFacet).apply(lambda)
 
+    override fun spawn() = angerFacet {}
 }

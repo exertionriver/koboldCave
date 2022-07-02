@@ -40,6 +40,7 @@ class SymbolModifyAction(var sourceSymbol : IPerceivedSymbol
                     MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_MODIFIED.id(), symbolMessage)
                 }
                 symbolMessage.symbolInstance!!.normalizePosition()
+                symbolMessage.symbolInstance!!.normalizeFacetState()
                 MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_MODIFY.id(), symbolMessage)
             }
         }

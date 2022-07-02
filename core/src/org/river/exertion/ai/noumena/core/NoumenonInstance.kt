@@ -8,19 +8,19 @@ import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ai.property.PropertyInstance
 import org.river.exertion.ai.property.Quality.Companion.getRandomFeatures
 
-class NoumenonInstance(sourceNoumenonType : Class<InstantiatableNoumenon>, var instanceName : String) {
+class NoumenonInstance(val sourceNoumenon : InstantiatableNoumenon, var instanceName : String) {
 
-    val sourceNoumenon: InstantiatableNoumenon = sourceNoumenonType.kotlin.objectInstance!!
+//    val sourceNoumenon: InstantiatableNoumenon = sourceNoumenonType.kotlin.objectInstance!!
     var characteristics = if (sourceNoumenon is IAttributeable) sourceNoumenon.traits().getRandomCharacteristics() else null
     var facetAttributes = if (sourceNoumenon is IAttributeable) sourceNoumenon.facetAttributes() else null
 
     var features = if (sourceNoumenon is IPropertyable) sourceNoumenon.qualities().getRandomFeatures() else null
 
     private fun filteredAttributes(externalPhenomenaType: ExternalPhenomenaType?) =
-        if (externalPhenomenaType == null) characteristics else characteristics?.filter { attrInst -> attrInst.attribute().howPerceived() == externalPhenomenaType }
+        if (externalPhenomenaType == null) characteristics else characteristics?.filter { attrInst -> attrInst.attributeObj.howPerceived() == externalPhenomenaType }
 
     private fun filteredProperties(externalPhenomenaType: ExternalPhenomenaType?) =
-            if (externalPhenomenaType == null) features else features?.filter { propInst -> propInst.property().howPerceived() == externalPhenomenaType }
+            if (externalPhenomenaType == null) features else features?.filter { propInst -> propInst.propertyObj.howPerceived() == externalPhenomenaType }
 
     fun pollRandomAttributeInstance(externalPhenomenaType: ExternalPhenomenaType? = null) : Characteristic<*>? {
         val filteredAttributes = filteredAttributes(externalPhenomenaType)

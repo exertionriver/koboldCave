@@ -10,22 +10,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import ktx.app.KtxScreen
-import ktx.ashley.get
-import ktx.graphics.use
 import ktx.scene2d.*
 import org.river.exertion.*
-import org.river.exertion.assets.*
 import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.entity.character.CharacterPlayerCharacter
-import org.river.exertion.ecs.entity.location.LocationCave
 import org.river.exertion.ecs.system.SystemManager
-import org.river.exertion.geom.node.nodeMesh.NodeRoom
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
-import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
 import org.river.exertion.Render
-import org.river.exertion.RenderPalette
+import org.river.exertion.ai.internalFacet.AngerFacet
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.AnxietySymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
@@ -38,7 +28,6 @@ import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.SymbologyComponent
 import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
 import org.river.exertion.ecs.entity.character.CharacterKobold
-import org.river.exertion.ecs.entity.character.ICharacter
 import org.river.exertion.s2d.ui.*
 
 class DemoBasicAI(private val menuBatch: Batch,
@@ -67,6 +56,8 @@ class DemoBasicAI(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> MomentComponent.getFor(character)!!.systemMoment -= 5f
             Gdx.input.isKeyJustPressed(Input.Keys.UP) -> ConditionComponent.getFor(character)!!.mIntAnxiety += .05f
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> ConditionComponent.getFor(character)!!.mIntAnxiety -= .05f
+            Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude += .05f
+            Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude -= .05f
        }
 
         menuCamera.update()
@@ -82,7 +73,7 @@ class DemoBasicAI(private val menuBatch: Batch,
         UIFocusDisplay.send(focusDisplayMessage = FocusDisplayMessage(focusDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalFocusDisplay))
 
         UIAnxietyBar.send(anxietyBarMessage = AnxietyBarMessage(value = ConditionComponent.getFor(character)!!.mIntAnxiety))
-        UIFacetTable.send(facetTableMessage = FacetTableMessage(internalFacetInstancesState = FacetComponent.getFor(character)!!.responsiveInternalState))
+        UIFacetTable.send(facetTableMessage = FacetTableMessage(internalFacetInstancesState = FacetComponent.getFor(character)!!.internalFacetState))
 
         engine.update(delta)
     }

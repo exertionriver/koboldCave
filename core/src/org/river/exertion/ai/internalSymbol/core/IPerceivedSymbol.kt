@@ -12,6 +12,7 @@ interface IPerceivedSymbol : ISymbol {
 
     var symbolActions : MutableSet<ISymbolAction>
     var focusSatisfiers : MutableSet<IInternalFocus>
+    var facetModifiers : MutableSet<FacetModifier>
 
     fun spawn() : SymbolInstance
 

@@ -11,5 +11,4 @@ interface IInternalSymbology {
     var internalSymbolDisplay : InternalSymbolDisplay
     var internalFocusDisplay : InternalFocusDisplay
 
-
 }

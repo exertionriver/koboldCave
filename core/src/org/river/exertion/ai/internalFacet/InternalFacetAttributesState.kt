@@ -11,7 +11,7 @@ import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
 import org.river.exertion.ecs.entity.IEntity
 import kotlin.math.roundToInt
 
-class InternalFacetAttributesState(val entity : Telegraph, var internalFacetAttributes: Set<InternalFacetAttribute> = mutableSetOf()) : Telegraph  {
+class InternalFacetAttributesState(val entity : Telegraph, var internalFacetAttributes: Set<InternalFacetAttribute>) : Telegraph  {
 
     init {
         MessageManager.getInstance().addListener(this, MessageChannel.INT_CONDITION.id())
@@ -19,7 +19,7 @@ class InternalFacetAttributesState(val entity : Telegraph, var internalFacetAttr
 
     var mIntAnxiety = 0f
 
-    fun baseline() {
+    fun baseline() : MutableSet<InternalFacetInstance> {
 
         val returnBaselineSet = mutableSetOf<InternalFacetInstance>()
 
@@ -27,7 +27,7 @@ class InternalFacetAttributesState(val entity : Telegraph, var internalFacetAttr
             returnBaselineSet.add(internalFacetAttribute.arisenFacetInstance(mIntAnxiety))
         }
 
-        MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_FACET_ARISINGS.id(), FacetMessage(returnBaselineSet))
+        return returnBaselineSet
     }
 
     fun projections() : MutableList<InternalPhenomenaImpression?> {

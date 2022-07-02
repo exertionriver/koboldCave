@@ -1,5 +1,6 @@
 package org.river.exertion.ai.attribute
 
+import org.river.exertion.ai.noumena.NoneNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 
 object IntelligenceAttribute : IAttribute<Int> {
@@ -13,7 +14,7 @@ object IntelligenceAttribute : IAttribute<Int> {
             , AttributeValue(8, "smiley Tim", 2)
     )
 
-    fun intelligenceRange(lambda : Trait<Int>.() -> Unit) = Trait(attributeObj = this@IntelligenceAttribute.javaClass).apply(lambda)
+    fun intelligenceRange(lambda : Trait<Int>.() -> Unit) = Trait(attributeObj = this@IntelligenceAttribute, noumenonObj = NoneNoumenon).apply(lambda)
 
     override fun equals(other: Any?): Boolean = this.type() == (other as IAttribute<*>).type()
     override fun hashCode(): Int {

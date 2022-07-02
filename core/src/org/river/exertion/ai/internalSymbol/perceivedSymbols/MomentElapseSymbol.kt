@@ -13,6 +13,7 @@ object MomentElapseSymbol : IPerceivedSymbol {
 
     override var symbolActions = mutableSetOf<ISymbolAction>()
     override var focusSatisfiers = mutableSetOf<IInternalFocus>()
+    override var facetModifiers = mutableSetOf<FacetModifier>()
 
     override fun spawn() = SymbolInstance(MomentElapseSymbol, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
 }

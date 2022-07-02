@@ -13,10 +13,11 @@ class FacetSystem : IntervalIteratingSystem(allOf(FacetComponent::class).get(), 
     override fun processEntity(entity: Entity) {
         val delta = 1/10f
 
-        val arisingImpressions = FacetComponent.getFor(entity)!!.arisingInternalState.projections()
-        FacetComponent.getFor(entity)!!.arisingInternalState.baseline()
 
-        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_PHENOMENA_FACETS.id(), arisingImpressions)
+//        val arisingImpressions = FacetComponent.getFor(entity)!!.internalFacetState.internalState
+//        FacetComponent.getFor(entity)!!.arisingInternalState.baseline()
+
+//        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_PHENOMENA_FACETS.id(), arisingImpressions)
 
     }
 }

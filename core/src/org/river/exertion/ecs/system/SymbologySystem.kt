@@ -42,6 +42,8 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
         //rebuild plans from state of internalSymbolDisplay
         SymbologyComponent.getFor(entity)!!.internalSymbology.internalFocusDisplay.rebuildPlans(SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay, entityMomentDelta)
 
+        SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.mergeAndUpdateFacets()
+
         UITimingTable.send(timingTableMessage = TimingTableMessage(label = "symbolSystem", value = interval))
         UITimingTable.send(timingTableMessage = TimingTableMessage(label = "${ICharacter.getFor(entity)!!.entityName} moment delta", value = entityMomentDelta))
 

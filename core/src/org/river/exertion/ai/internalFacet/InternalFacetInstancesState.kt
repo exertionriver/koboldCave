@@ -5,29 +5,32 @@ import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalFacet.NoneFacet.noneFacet
 import org.river.exertion.ai.messaging.FacetMessage
-import org.river.exertion.ai.messaging.FocusMessage
 import org.river.exertion.ai.messaging.MessageChannel
 
-class InternalFacetInstancesState(val entity : Telegraph, var internalState: MutableSet<InternalFacetInstance> = mutableSetOf()) : Telegraph {
+class InternalFacetInstancesState(val entity : Telegraph, var internalState: MutableSet<InternalFacetInstance> = mutableSetOf(), var internalAttributes: Set<InternalFacetAttribute> = mutableSetOf()) : Telegraph {
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.INT_FACET_ARISINGS.id())
-        MessageManager.getInstance().addListener(this, MessageChannel.INT_FACET_RESPONDINGS.id())
+        MessageManager.getInstance().addListener(this, MessageChannel.INT_FACET_MODIFY.id())
     }
 
-    var internalBaseLine = mutableSetOf<InternalFacetInstance>()
+    var arisingInternalState = InternalFacetAttributesState(entity, internalAttributes)
 
     fun currentState() : MutableSet<InternalFacetInstance> {
 
         val returnCurrentState = mutableSetOf<InternalFacetInstance>()
 
-        internalBaseLine.forEach { baselineStateInstance -> returnCurrentState.add(baselineStateInstance) }
+        arisingInternalState.baseline().forEach {
+            baselineStateInstance -> returnCurrentState.add(baselineStateInstance)
+            if (!internalState.map { it.facetObj }.contains(baselineStateInstance.facetObj) )
+                this.internalState.add(InternalFacetInstance(facetObj = baselineStateInstance.facetObj, magnitude = 0f))
+        }
 
         internalState.forEach { internalStateInstance ->
             val baselineInstance = returnCurrentState.firstOrNull { it.facetObj == internalStateInstance.facetObj }
 
-            if ( baselineInstance == null)
+            if ( baselineInstance == null) {
                 returnCurrentState.add(internalStateInstance)
+            }
             else
                 if (internalStateInstance.magnitude > baselineInstance.magnitude) {
                     returnCurrentState.first { it.facetObj == internalStateInstance.facetObj }.magnitude = internalStateInstance.magnitude
@@ -127,13 +130,7 @@ class InternalFacetInstancesState(val entity : Telegraph, var internalState: Mut
 
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
-            if (msg.message == MessageChannel.INT_FACET_ARISINGS.id()) {
-                val facetMessage = msg.extraInfo as FacetMessage
-                if (facetMessage.internalFacets != null) {
-                    this.internalBaseLine = facetMessage.internalFacets!!
-                }
-            }
-            if (msg.message == MessageChannel.INT_FACET_RESPONDINGS.id()) {
+            if (msg.message == MessageChannel.INT_FACET_MODIFY.id()) {
                 val facetMessage = msg.extraInfo as FacetMessage
                 if (facetMessage.internalFacets != null) {
                     this.internalState = facetMessage.internalFacets!!
@@ -145,6 +142,7 @@ class InternalFacetInstancesState(val entity : Telegraph, var internalState: Mut
 
     companion object {
 
+        //TODO: shore up merge to average of facets, grouped by facet type
         fun Set<InternalFacetInstancesState>.merge(entity : Telegraph) : InternalFacetInstancesState {
 
             val divSize = this.size.toFloat()

@@ -13,6 +13,7 @@ object PossessSymbol : IPerceivedSymbol {
 
     override var symbolActions = mutableSetOf<ISymbolAction>()
     override var focusSatisfiers = mutableSetOf<IInternalFocus>()
+    override var facetModifiers = mutableSetOf<FacetModifier>()
 
     override fun spawn() = SymbolInstance()
 }

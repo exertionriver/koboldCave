@@ -13,17 +13,17 @@ object KoboldNoumenon : INoumenon, InstantiatableNoumenon, IAttributeable {
     override fun type() = NoumenonType.KOBOLD
     override fun types() = LowRaceNoumenon.types().toMutableList().apply { this.add(type()) }.toList()
     override fun traits() = LowRaceNoumenon.traits().mergeOverrideTraits( listOf(
-        growlRange { noumenonObj = this@KoboldNoumenon.javaClass; noumenonOrder = 2; minValue = type().tag(); maxValue = type().tag() },
-        intelligenceRange { noumenonObj = this@KoboldNoumenon.javaClass; noumenonOrder = 8; minValue = 7; maxValue = 8 }
+        growlRange { noumenonObj = this@KoboldNoumenon; noumenonOrder = 2; minValue = type().tag(); maxValue = type().tag() },
+        intelligenceRange { noumenonObj = this@KoboldNoumenon; noumenonOrder = 8; minValue = 7; maxValue = 8 }
     ))
     override fun facetAttributes() = mutableSetOf(
             //todo: clean up to remove instantiation
-            InternalFacetAttribute.internalFacetAttribute { facetObj = ConfusionFacet.confusionFacet {}.facetObj; origin = 0.2f; arising = 0.5f },
-            InternalFacetAttribute.internalFacetAttribute { facetObj = AngerFacet.angerFacet {}.facetObj; origin = 0.3f; arising = 0.7f },
-            InternalFacetAttribute.internalFacetAttribute { facetObj = FearFacet.fearFacet {}.facetObj; origin = 0.4f; arising = 0.8f },
-            InternalFacetAttribute.internalFacetAttribute { facetObj = DoubtFacet.doubtFacet {}.facetObj; origin = 0f; arising = 0.1f }
+            InternalFacetAttribute.internalFacetAttribute { facetObj = ConfusionFacet; origin = 0.2f; arising = 0.5f },
+            InternalFacetAttribute.internalFacetAttribute { facetObj = AngerFacet; origin = 0.3f; arising = 0.7f },
+            InternalFacetAttribute.internalFacetAttribute { facetObj = FearFacet; origin = 0.4f; arising = 0.8f },
+            InternalFacetAttribute.internalFacetAttribute { facetObj = DoubtFacet; origin = 0f; arising = 0.1f }
     )
 
-    fun kobold(lambda : NoumenonInstance.() -> Unit) = NoumenonInstance(sourceNoumenonType = KoboldNoumenon.javaClass, instanceName = "razza" + Random().nextInt()).apply(lambda)
+    fun kobold(lambda : NoumenonInstance.() -> Unit) = NoumenonInstance(sourceNoumenon = KoboldNoumenon, instanceName = "razza" + Random().nextInt()).apply(lambda)
 
 }

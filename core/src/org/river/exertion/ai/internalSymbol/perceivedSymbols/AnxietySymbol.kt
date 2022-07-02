@@ -1,5 +1,7 @@
 package org.river.exertion.ai.internalSymbol.perceivedSymbols
 
+import org.river.exertion.ai.internalFacet.AngerFacet
+import org.river.exertion.ai.internalFacet.DisgustFacet
 import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalFocus.internalFocuses.ConsumeFocus
 import org.river.exertion.ai.internalSymbol.core.*
@@ -16,5 +18,9 @@ object AnxietySymbol : IPerceivedSymbol {
 
     override var focusSatisfiers = mutableSetOf<IInternalFocus>(ConsumeFocus)
 
+//    override var facetModifiers = mutableSetOf<FacetModifier>()
+    override var facetModifiers = mutableSetOf(
+            FacetModifier(DisgustFacet, .01f)
+    )
     override fun spawn() = SymbolInstance(AnxietySymbol, position = SymbolTargetPosition.ATTRACT_CONSUME.targetPosition())
 }

@@ -1,6 +1,6 @@
 package org.river.exertion.ai.internalFacet
 
-data class InternalFacetAttribute(var facetObj: Class<IInternalFacet> = (NoneFacet as IInternalFacet).javaClass, var origin : Float = 0f, var arising : Float = 0f) {
+data class InternalFacetAttribute(var facetObj: IInternalFacet = NoneFacet, var origin : Float = 0f, var arising : Float = 0f) {
 
     fun magnitude(mInternalAnxiety : Float) = origin + (arising - origin) * mInternalAnxiety
 

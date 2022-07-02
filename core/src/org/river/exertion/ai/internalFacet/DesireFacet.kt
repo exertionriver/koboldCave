@@ -4,6 +4,8 @@ object DesireFacet : IInternalFacet {
 
     override val type = InternalFacetType.DESIRE
 
-    fun desireFacet(lambda : InternalFacetInstance.() -> Unit) = InternalFacetInstance(facetObj = DesireFacet.javaClass).apply(lambda)
+    fun desireFacet(lambda : InternalFacetInstance.() -> Unit) = InternalFacetInstance(facetObj = DesireFacet).apply(lambda)
+
+    override fun spawn() = desireFacet {}
 
 }

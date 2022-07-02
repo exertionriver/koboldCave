@@ -1,5 +1,6 @@
 package org.river.exertion.ai.internalSymbol.perceivedSymbols
 
+import org.river.exertion.ai.internalFacet.FearFacet
 import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalSymbol.core.*
 import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolDespawnAction
@@ -28,8 +29,9 @@ object HungerSymbol : IPerceivedSymbol {
 
     override var focusSatisfiers = mutableSetOf<IInternalFocus>()
 
-//    override var facetModifiers = mutableSetOf<
-
+    override var facetModifiers = mutableSetOf(
+        FacetModifier(FearFacet, .1f)
+    )
 
     override fun spawn() = SymbolInstance(HungerSymbol, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
 }

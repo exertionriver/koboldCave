@@ -13,7 +13,7 @@ object LowRaceNoumenon : INoumenon, IAttributeable {
     override fun type() = NoumenonType.LOW_RACE
     override fun types() = HumanoidNoumenon.types().toMutableList().apply { this.add( type() ) }.toList()
     override fun traits() = HumanoidNoumenon.traits().mergeOverrideTraits(listOf(
-        intelligenceRange { noumenonObj = this@LowRaceNoumenon.javaClass; noumenonOrder = 8; minValue = 6; maxValue = 8 }
+        intelligenceRange { noumenonObj = this@LowRaceNoumenon; noumenonOrder = 8; minValue = 6; maxValue = 8 }
     ))
     override fun facetAttributes() = mutableSetOf<InternalFacetAttribute>()
 

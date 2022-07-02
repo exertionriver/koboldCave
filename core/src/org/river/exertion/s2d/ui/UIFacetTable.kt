@@ -45,7 +45,7 @@ class UIFacetTable(val initSkin : Skin) : Table(), Telegraph {
 
             if ( (facetTableMessage.internalFacetInstancesState != null) && (facetTableMessage.internalFacetInstancesState!!.currentState().isNotEmpty() ) ) {
                         facetTableMessage.internalFacetInstancesState!!.currentState().forEach {
-                            register[it.facet().type.tag()] = it.magnitude
+                            register[it.facetObj.type.tag()] = it.magnitude
                                    // ", ${it.arisenFacetInstance(facetTableMessage.mIntAnxiety!!).magnitude}"
 
             //                facetTableMessage.internalFacetAttributesState!!.projections(facetTableMessage.mIntAnxiety!! / 10f).forEachIndexed {

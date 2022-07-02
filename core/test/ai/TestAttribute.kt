@@ -16,25 +16,25 @@ class TestAttribute {
     @Test
     fun testAttributableLists() {
         kn.traits().forEach { char ->
-            char.attribute().getDescriptions().forEach { println(it) }
+            char.attributeObj.getDescriptions().forEach { println(it) }
         }
     }
 
     @Test
     fun testAttributablesDescription() {
         kn.traits().forEach { char ->
-            println ( char.attribute().getAttributeValueByOrder(0)!!.description )
-            println ( char.attribute().getAttributeValueByOrder(0)!!.value )
-            println ( char.attribute().getAttributeValueByOrder(1)!!.value?.let { char.attribute().getDescriptionByValue(it) })
+            println ( char.attributeObj.getAttributeValueByOrder(0)!!.description )
+            println ( char.attributeObj.getAttributeValueByOrder(0)!!.value )
+            println ( char.attributeObj.getAttributeValueByOrder(1)!!.value?.let { char.attributeObj.getDescriptionByValue(it) })
         }
     }
 
     @Test
     fun testAttributablesGetRandomValue() {
         kn.traits().forEach { char ->
-            println (char.getRandomAttributeValue().value?.let { char.attribute().getDescriptionByValue(it) })
-            println (char.getRandomAttributeValue().value?.let { char.attribute().getDescriptionByValue(it) })
-            println (char.getRandomAttributeValue().value?.let { char.attribute().getDescriptionByValue(it) })
+            println (char.getRandomAttributeValue().value?.let { char.attributeObj.getDescriptionByValue(it) })
+            println (char.getRandomAttributeValue().value?.let { char.attributeObj.getDescriptionByValue(it) })
+            println (char.getRandomAttributeValue().value?.let { char.attributeObj.getDescriptionByValue(it) })
         }
     }
 
@@ -42,7 +42,7 @@ class TestAttribute {
     fun testAttributablesGetRandomAttribValueK() {
         (0..10).forEach {
             kn.traits().getRandomCharacteristics().forEach { attr ->
-                println ( "${attr.attribute().type().tag()}, ${attr.characteristicValue.value}" )
+                println ( "${attr.attributeObj.type().tag()}, ${attr.characteristicValue.value}" )
             }
         }
     }
@@ -51,7 +51,7 @@ class TestAttribute {
     fun testAttributablesGetRandomAttribValueLR() {
         (0..10).forEach {
             lrn.traits().getRandomCharacteristics().forEach { attr ->
-                println ( "${attr.attribute().type().tag()}, ${attr.characteristicValue.value}" )
+                println ( "${attr.attributeObj.type().tag()}, ${attr.characteristicValue.value}" )
             }
         }
     }
@@ -61,21 +61,21 @@ class TestAttribute {
         val testIndividual = kobold { instanceName = "test123" }
 
         println("${testIndividual.instanceName} attributes:")
-        testIndividual.characteristics?.forEach { println ( "${it.attribute().type().tag()}, ${it.characteristicValue}" ) }
+        testIndividual.characteristics?.forEach { println ( "${it.attributeObj.type().tag()}, ${it.characteristicValue}" ) }
 
         println("${testIndividual.instanceName} attribute random selection:")
         (0..10).forEach {
-            testIndividual.pollRandomAttributeInstance().run { if (this != null) println ("${this.attribute().type().tag()}: ${this.characteristicValue.value}") }
+            testIndividual.pollRandomAttributeInstance().run { if (this != null) println ("${this.attributeObj.type().tag()}: ${this.characteristicValue.value}") }
         }
 
         println("${testIndividual.instanceName} attribute random selection(ExternalPhenomenaType.AUDITORY):")
         (0..10).forEach {
-            testIndividual.pollRandomAttributeInstance(ExternalPhenomenaType.AUDITORY).run { if (this != null) println ("${this.attribute().type().tag()}: ${this.characteristicValue.value}") }
+            testIndividual.pollRandomAttributeInstance(ExternalPhenomenaType.AUDITORY).run { if (this != null) println ("${this.attributeObj.type().tag()}: ${this.characteristicValue.value}") }
         }
 
         println("${testIndividual.instanceName} attribute random selection(ExternalPhenomenaType.WISDOM):")
         (0..10).forEach {
-            testIndividual.pollRandomAttributeInstance(ExternalPhenomenaType.WISDOM).run { if (this != null) println ("${this.attribute().type().tag()}: ${this.characteristicValue.value}") }
+            testIndividual.pollRandomAttributeInstance(ExternalPhenomenaType.WISDOM).run { if (this != null) println ("${this.attributeObj.type().tag()}: ${this.characteristicValue.value}") }
         }
     }
 }

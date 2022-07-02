@@ -4,5 +4,7 @@ object NoneFacet : IInternalFacet {
 
     override val type = InternalFacetType.NONE
 
-    fun noneFacet(lambda : () -> Unit) = InternalFacetInstance(facetObj = NoneFacet.javaClass)
+    fun noneFacet(lambda : () -> Unit) = InternalFacetInstance(facetObj = NoneFacet)
+
+    override fun spawn() = noneFacet {}
 }

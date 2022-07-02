@@ -17,7 +17,7 @@ class MomentSystem : IntervalIteratingSystem(allOf(MomentComponent::class).get()
             MomentComponent.getFor(entity)!!.reset()
         }
 
-        GdxAI.getTimepiece().update(1/10f)
+        GdxAI.getTimepiece().update(this.interval)
 
 //        Gdx.app.log(this.javaClass.name, "${IEntity.getFor(entity)!!.entityName}: ${entity[MomentComponent.mapper]!!.momentCountdown}")
     }
