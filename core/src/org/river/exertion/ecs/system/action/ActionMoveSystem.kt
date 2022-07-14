@@ -150,6 +150,7 @@ class ActionMoveSystem : IteratingSystem(allOf(ActionMoveComponent::class).get()
                         entity[ActionMoveComponent.mapper]!!.rightTurnEasing = currentAngle.rightAngleBetween(entity[ActionMoveComponent.mapper]!!.rightNextAngle)
                     }
                 }
+                else -> { val i = 1 }//do nothing
             }
 //            if (entity[ActionMoveComponent.mapper]!!.direction != ActionMoveComponent.Direction.NONE)
                 MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageChannel.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")

@@ -24,9 +24,9 @@ class DemoNodeMeshOperationsSecondScreen(private val batch: Batch,
                                          private val camera: OrthographicCamera,
                                          private val stage: Stage) : KtxScreen {
 
-    val horizOffset = Game.initViewportWidth / 11
-    val vertOffset = Game.initViewportHeight / 11
-    val labelOffset = Point(- Game.initViewportWidth / 8, Game.initViewportHeight / 32)
+    val horizOffset = KoboldCave.initViewportWidth / 11
+    val vertOffset = KoboldCave.initViewportHeight / 11
+    val labelOffset = Point(- KoboldCave.initViewportWidth / 8, KoboldCave.initViewportHeight / 32)
 
     val locations = listOf(
         Point(0f,0f)

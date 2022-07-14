@@ -23,7 +23,35 @@ class InternalManifest {
     fun addImpression(sender : IEntity, externalPhenomenaImpression: ExternalPhenomenaImpression) = manifests.filter { it.manifestType == externalPhenomenaImpression.type }.first().addImpression(PerceivedExternalPhenomena(sender, externalPhenomenaImpression))
     fun addImpression(internalPhenomenaImpression: InternalPhenomenaImpression) = manifests.forEach { it.addImpression(internalPhenomenaImpression) }
 
-    fun addFacetImpressions(facetImpressions : MutableList<InternalPhenomenaImpression?>) = manifests.forEach {manifest -> manifest.projectionList = facetImpressions}
+    @Suppress("NewApi")
+    fun removeImpression(perceivedExternalPhenomena: PerceivedExternalPhenomena) {
+        val removeIndex = manifests.filter { it.manifestType == perceivedExternalPhenomena.externalPhenomenaImpression!!.type }.first().perceptionList.indexOf(perceivedExternalPhenomena)
+        if (removeIndex >= 0) {
+            manifests.filter { it.manifestType == perceivedExternalPhenomena.externalPhenomenaImpression!!.type }.first().perceptionList.removeAt(removeIndex)
+            manifests.filter { it.manifestType == perceivedExternalPhenomena.externalPhenomenaImpression!!.type }.first().perceptionList.add(removeIndex, null)
+        }
+    }
+
+    fun removeImpression(internalPhenomenaImpression: InternalPhenomenaImpression) {
+        val removeIndex = manifests.first().projectionList.indexOf(internalPhenomenaImpression)
+        if (removeIndex >= 0) {
+            manifests.forEach {
+                if (it.projectionList[removeIndex] != null) {
+                    it.projectionList.removeAt(removeIndex)
+                    it.projectionList.add(removeIndex, null)
+                }
+            }
+        }
+    }
+
+    fun addFacetImpressions(facetImpressions : MutableList<InternalPhenomenaImpression?>) {
+        manifests.first().projectionList.forEachIndexed { idx, internalPhenomenaImpression ->
+                if (internalPhenomenaImpression != null && internalPhenomenaImpression.countdown > 0) facetImpressions[idx] = internalPhenomenaImpression
+        }
+        manifests.forEach {
+            it.projectionList = facetImpressions
+        }
+    }
 
     fun getManifest(externalPhenomenaType: ExternalPhenomenaType) = manifests.filter { it.manifestType == externalPhenomenaType }.first()
 

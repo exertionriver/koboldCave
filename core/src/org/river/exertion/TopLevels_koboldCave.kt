@@ -107,7 +107,7 @@ class ShapeDrawerConfig(val batch: Batch, val baseColor : Color = Color.WHITE) {
     }
 }
 
-val NextDistancePx = Game.initViewportWidth / Game.initViewportHeight * 16F
+val NextDistancePx = KoboldCave.initViewportWidth / KoboldCave.initViewportHeight * 16F
 
 class InputProcessorHandler(val renderCamera: OrthographicCamera, val nodes: MutableSet<Node>) : InputProcessor {
     override fun keyDown(keycode: Int): Boolean {

@@ -28,10 +28,8 @@ class UISymbolDisplay(val initSkin : Skin) : Table(), Telegraph {
 
     init {
         MessageManager.getInstance().addListener(this, MessageChannel.UI_SYMBOL_DISPLAY.id())
-
-//        skin = initSkin
-        x = Gdx.graphics.width / 8f
-        y = 4 * Gdx.graphics.height / 8f
+        x = KoboldCave.initViewportWidth * 8/16f
+        y = KoboldCave.initViewportHeight * 12/16f
         name = "symbolDisplay"
 //        this.debug = true
         this.add(Label(this.name, initSkin))

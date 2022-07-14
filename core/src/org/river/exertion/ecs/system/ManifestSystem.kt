@@ -18,20 +18,20 @@ class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).g
             manifestPhenomenonEntry ->
                 manifestPhenomenonEntry.perceivedExternalPhenomena?.externalPhenomenaImpression!!.countdown -= delta
                 if (manifestPhenomenonEntry.perceivedExternalPhenomena?.externalPhenomenaImpression!!.countdown < 0)
-                    manifestPhenomenonEntry.perceivedExternalPhenomena = null
+                    MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.REMOVE_EXT_PHENOMENA.id(), manifestPhenomenonEntry.perceivedExternalPhenomena)
         }
 
         val processedProjections = mutableSetOf<InternalPhenomenaImpression>()
 
         ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.internalPhenomenaImpression != null }.forEach {
             manifestProjectionEntry ->
-                if (!processedProjections.contains(manifestProjectionEntry.internalPhenomenaImpression!!)) {
+              //  if (!processedProjections.contains(manifestProjectionEntry.internalPhenomenaImpression!!)) {
                     manifestProjectionEntry.internalPhenomenaImpression!!.countdown -= delta
                     if (manifestProjectionEntry.internalPhenomenaImpression!!.countdown < 0)
-                        manifestProjectionEntry.internalPhenomenaImpression = null
-                    else
-                        processedProjections.add(manifestProjectionEntry.internalPhenomenaImpression!!)
-                }
+                        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.REMOVE_INT_PHENOMENA.id(), manifestProjectionEntry.internalPhenomenaImpression)
+//                    else
+//                        processedProjections.add(manifestProjectionEntry.internalPhenomenaImpression!!)
+                //}
         }
 
         val perceivedPhenomena = ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.perceivedExternalPhenomena?.externalPhenomenaImpression != null }

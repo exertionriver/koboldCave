@@ -10,7 +10,7 @@ object Render {
     val cameraAngle = 90f
 
     fun initRender(camera: OrthographicCamera) {
-        camera.position.set(300f, 300f, 0f)
+        camera.position.set(KoboldCave.initViewportWidth / 2, KoboldCave.initViewportHeight / 2, 0f)
         camera.zoom = .8f
     }
 

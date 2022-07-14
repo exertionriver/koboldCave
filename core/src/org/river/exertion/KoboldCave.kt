@@ -14,10 +14,8 @@ import ktx.app.KtxScreen
 import ktx.inject.Context
 import ktx.inject.register
 import org.river.exertion.demos.ai.DemoBasicAI
-import org.river.exertion.demos.gdx3d.Demo3dHallElevationHigh
-import org.river.exertion.demos.s2d.DemoS2DTableScrollUI
 
-class Game : KtxGame<KtxScreen>() {
+class KoboldCave : KtxGame<KtxScreen>() {
     private val context = Context()
 
     override fun create() {

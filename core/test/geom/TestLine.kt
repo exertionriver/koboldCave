@@ -65,9 +65,9 @@ class TestLine {
     @Test
     fun testAngleBetween() {
 
-        val centerPoint = Point(Game.initViewportWidth / 2, Game.initViewportHeight / 2)
-        val xOffset = Point(Game.initViewportWidth / 4, 0F)
-        val yOffset = Point(0F, Game.initViewportWidth / 4) // to make it appear circular
+        val centerPoint = Point(KoboldCave.initViewportWidth / 2, KoboldCave.initViewportHeight / 2)
+        val xOffset = Point(KoboldCave.initViewportWidth / 4, 0F)
+        val yOffset = Point(0F, KoboldCave.initViewportWidth / 4) // to make it appear circular
 
         val startingList = listOf(
             centerPoint - xOffset
@@ -86,9 +86,9 @@ class TestLine {
     @Test
     fun testAngleBetweenRads() {
 
-        val centerPoint = Point(Game.initViewportWidth / 2, Game.initViewportHeight / 2)
-        val xOffset = Point(Game.initViewportWidth / 4, 0F)
-        val yOffset = Point(0F, Game.initViewportWidth / 4) // to make it appear circular
+        val centerPoint = Point(KoboldCave.initViewportWidth / 2, KoboldCave.initViewportHeight / 2)
+        val xOffset = Point(KoboldCave.initViewportWidth / 4, 0F)
+        val yOffset = Point(0F, KoboldCave.initViewportWidth / 4) // to make it appear circular
 
         val startingList = listOf(
             centerPoint - xOffset

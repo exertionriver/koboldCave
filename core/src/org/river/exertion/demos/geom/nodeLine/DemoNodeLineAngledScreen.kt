@@ -15,11 +15,11 @@ class DemoNodeLineAngledScreen(private val batch: Batch,
                                private val font: BitmapFont,
                                private val camera: OrthographicCamera) : KtxScreen {
 
-    val centerPoint = Point(Game.initViewportWidth / 2, Game.initViewportHeight / 2)
-    val xOffset = Point(Game.initViewportWidth / 4, 0F)
-    val yOffset = Point(0F, Game.initViewportWidth / 4) // to make it appear circular
+    val centerPoint = Point(KoboldCave.initViewportWidth / 2, KoboldCave.initViewportHeight / 2)
+    val xOffset = Point(KoboldCave.initViewportWidth / 4, 0F)
+    val yOffset = Point(0F, KoboldCave.initViewportWidth / 4) // to make it appear circular
 
-    val labelVertOffset = Point(0F, Game.initViewportHeight / 32)
+    val labelVertOffset = Point(0F, KoboldCave.initViewportHeight / 32)
 
     val startingList = listOf(
         centerPoint - xOffset

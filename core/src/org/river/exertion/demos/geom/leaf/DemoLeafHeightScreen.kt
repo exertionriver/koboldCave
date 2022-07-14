@@ -14,9 +14,9 @@ class DemoLeafHeightScreen(private val batch: Batch,
                     private val font: BitmapFont,
                     private val camera: OrthographicCamera) : KtxScreen {
 
-    val horizOffset = Game.initViewportWidth / 11
-    val vertOffset = Game.initViewportHeight / 11
-    val labelVertOffset = Point(0F, Game.initViewportHeight / 32)
+    val horizOffset = KoboldCave.initViewportWidth / 11
+    val vertOffset = KoboldCave.initViewportHeight / 11
+    val labelVertOffset = Point(0F, KoboldCave.initViewportHeight / 32)
 
     val leafList = List(8) { leafIdx ->
         Leaf(topHeight = leafIdx + 1, position = Point((8 - leafIdx) * horizOffset + horizOffset, leafIdx * vertOffset + vertOffset * 2) )

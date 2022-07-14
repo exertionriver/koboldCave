@@ -36,9 +36,9 @@ class DemoS2DTableScrollUI(private val menuBatch: Batch,
                            private val menuStage: Stage,
                            private val menuCamera: OrthographicCamera) : KtxScreen {
 
-    val horizOffset = Game.initViewportWidth / 11
-    val vertOffset = Game.initViewportHeight / 11
-    val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
+    val horizOffset = KoboldCave.initViewportWidth / 11
+    val vertOffset = KoboldCave.initViewportHeight / 11
+    val labelVert = Point(0F, KoboldCave.initViewportHeight * 2 / 32)
 
     var nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
     var nodeRoomMesh = NodeRoomMesh(nodeRoom)

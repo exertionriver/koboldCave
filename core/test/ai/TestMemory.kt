@@ -78,7 +78,7 @@ class TestMemory {
 
         MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageChannel.EXT_PHENOMENA.id(), koboldBalter)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageChannel.ADD_EXT_PHENOMENA.id(), koboldBalter)
         engine.update(CharacterKobold.getFor(character)!!.moment)
 
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
@@ -117,7 +117,7 @@ class TestMemory {
 
         MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageChannel.EXT_PHENOMENA.id(), koboldBalter)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageChannel.ADD_EXT_PHENOMENA.id(), koboldBalter)
         engine.update(CharacterKobold.getFor(character)!!.moment)
 
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }

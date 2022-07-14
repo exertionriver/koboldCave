@@ -15,12 +15,12 @@ class DemoNodeLineHeightScreen(private val batch: Batch,
                                private val font: BitmapFont,
                                private val camera: OrthographicCamera) : KtxScreen {
 
-    val horizOffset = Game.initViewportWidth / 11
-    val vertOffset = Game.initViewportHeight / 11
-    val labelVertOffset = Point(0F, Game.initViewportHeight / 32)
+    val horizOffset = KoboldCave.initViewportWidth / 11
+    val vertOffset = KoboldCave.initViewportHeight / 11
+    val labelVertOffset = Point(0F, KoboldCave.initViewportHeight / 32)
 
     val firstNodeList = List(8) { idx -> Node(description = "nodeLine${idx}", position = Point((8 - idx) * 100 + 50f, (8 - idx) * vertOffset + 50f) ) }
-    val secondNodeList = List(8) { idx -> Node(description = "nodeLine${idx}", position = Point((8 - idx) * 100 + 50f, Game.initViewportHeight - 50f ) ) }
+    val secondNodeList = List(8) { idx -> Node(description = "nodeLine${idx}", position = Point((8 - idx) * 100 + 50f, KoboldCave.initViewportHeight - 50f ) ) }
 
     val nodeLineList = List(8) { nodeIdx -> NodeLine(firstNode = firstNodeList[7 - nodeIdx], lastNode = secondNodeList[7 - nodeIdx], lineNoise = (7 - nodeIdx) * 15) }
 

@@ -4,8 +4,12 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalFacet.NoneFacet.noneFacet
+import org.river.exertion.ai.manifest.IManifest
 import org.river.exertion.ai.messaging.FacetMessage
 import org.river.exertion.ai.messaging.MessageChannel
+import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
+import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
+import kotlin.math.roundToInt
 
 class InternalFacetInstancesState(val entity : Telegraph, var internalState: MutableSet<InternalFacetInstance> = mutableSetOf(), var internalAttributes: Set<InternalFacetAttribute> = mutableSetOf()) : Telegraph {
 
@@ -38,6 +42,42 @@ class InternalFacetInstancesState(val entity : Telegraph, var internalState: Mut
         }
 
         return returnCurrentState
+    }
+
+    fun projections() : MutableList<InternalPhenomenaImpression?> {
+
+        val returnProjectionList = MutableList<InternalPhenomenaImpression?>(IManifest.listMax) { null }
+
+        val currentState = currentState()
+
+        if (currentState.isNotEmpty() ) {
+
+            val magnitudeSum = currentState.map { it.magnitude }.reduce { acc, mag -> acc + mag }
+            val slots = arisingInternalState.mIntAnxiety * 10
+            val spread = if (slots > 0f) magnitudeSum / slots else 1f
+
+            //facet to slots to fill
+            val facetSlots = currentState.mapIndexed { index, internalFacetInstance ->
+                internalFacetInstance to (internalFacetInstance.magnitude / spread).roundToInt()
+            }.filter { it.second > 0 }.sortedBy { it.second }
+
+            var slotIdx = 0
+            var facetIdx = 0
+            var facetSlotCount = 0
+
+            while ((slotIdx < IManifest.listMax) && (facetIdx < facetSlots.size)) {
+                facetSlotCount = 0
+
+                while (facetSlotCount < facetSlots[facetIdx].second) {
+                    returnProjectionList[slotIdx] = InternalPhenomenaInstance().apply { this.arisenFacet = facetSlots[facetIdx].first }.impression()
+                    facetSlotCount++
+                    slotIdx++
+                }
+
+                facetIdx++
+            }
+        }
+        return returnProjectionList
     }
 
     fun magnitudeOpinion() : InternalFacetInstance = if (internalState.isEmpty()) noneFacet {} else internalState.maxByOrNull { it.magnitude }!!

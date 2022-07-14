@@ -19,9 +19,9 @@ class DemoLeafBorderingScreen(private val batch: Batch,
                               private val font: BitmapFont,
                               private val camera: OrthographicCamera) : KtxScreen {
 
-    val horizOffset = Game.initViewportWidth / 6
-    val vertOffset = Game.initViewportHeight / 6
-    val labelVertOffset = Point(0f, Game.initViewportHeight / 32)
+    val horizOffset = KoboldCave.initViewportWidth / 6
+    val vertOffset = KoboldCave.initViewportHeight / 6
+    val labelVertOffset = Point(0f, KoboldCave.initViewportHeight / 32)
     val leafHorizOffset = Point (50f, 0f)
 
     val vertPoints = listOf(Point(0f, vertOffset), Point(0f, vertOffset + 50f), Point(0f, vertOffset + 100f))

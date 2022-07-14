@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import ktx.app.KtxScreen
@@ -22,11 +23,11 @@ import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.HungerSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
 import org.river.exertion.ai.messaging.*
-import org.river.exertion.ecs.component.ConditionComponent
-import org.river.exertion.ecs.component.FacetComponent
-import org.river.exertion.ecs.component.MomentComponent
-import org.river.exertion.ecs.component.SymbologyComponent
+import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
+import org.river.exertion.ai.phenomena.ExternalPhenomenaType
+import org.river.exertion.ecs.component.*
 import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
+import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.CharacterKobold
 import org.river.exertion.s2d.ui.*
 
@@ -36,12 +37,16 @@ class DemoBasicAI(private val menuBatch: Batch,
                   private val menuStage: Stage,
                   private val menuCamera: OrthographicCamera) : KtxScreen {
 
-    val horizOffset = Game.initViewportWidth / 11
-    val vertOffset = Game.initViewportHeight / 11
-    val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
-
     val engine = PooledEngine().apply { SystemManager.init(this) }
     val character = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }
+
+    val ordinarySound = ExternalPhenomenaInstance().apply {
+        this.type = ExternalPhenomenaType.AUDITORY
+        this.direction = 120f
+        this.magnitude = 50f
+        this.location = Vector3(10f, 10f, 10f)
+        this.loss = .2f
+    }
 
     @Suppress("NewApi")
     override fun render(delta: Float) {
@@ -58,6 +63,7 @@ class DemoBasicAI(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> ConditionComponent.getFor(character)!!.mIntAnxiety -= .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude += .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude -= .05f
+            Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) -> ManifestComponent.getFor(character)!!.internalManifest.addImpression(IEntity.getFor(character)!!, ordinarySound.impression())
        }
 
         menuCamera.update()
@@ -74,6 +80,12 @@ class DemoBasicAI(private val menuBatch: Batch,
 
         UIAnxietyBar.send(anxietyBarMessage = AnxietyBarMessage(value = ConditionComponent.getFor(character)!!.mIntAnxiety))
         UIFacetTable.send(facetTableMessage = FacetTableMessage(internalFacetInstancesState = FacetComponent.getFor(character)!!.internalFacetState))
+
+        UIInternalManifestDisplay.send(internalManifestDisplayMessage = ManifestDisplayMessage(internalManifest = ManifestComponent.getFor(character)!!.internalManifest))
+        UIExternalManifestDisplay.send(internalManifestDisplayMessage = ManifestDisplayMessage(internalManifest = ManifestComponent.getFor(character)!!.internalManifest))
+
+//        println("internal manifest:")
+//        ManifestComponent.getFor(character)!!.internalManifest.manifests[0].projectionList.forEachIndexed{ idx, it -> println("$idx: ${it?.arisenFacet?.facetObj}") }
 
         engine.update(delta)
     }
@@ -92,6 +104,8 @@ class DemoBasicAI(private val menuBatch: Batch,
         menuStage.addActor(UIAnxietyBar(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIAnxietyBarTable(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIFacetTable(Scene2DSkin.defaultSkin))
+        menuStage.addActor(UIInternalManifestDisplay(Scene2DSkin.defaultSkin))
+        menuStage.addActor(UIExternalManifestDisplay(Scene2DSkin.defaultSkin))
 
         SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay = mutableSetOf(
                 SymbolInstance(AnxietySymbol, cycles = 1f, position = .1f),

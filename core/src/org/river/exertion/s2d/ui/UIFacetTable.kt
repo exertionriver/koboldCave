@@ -26,10 +26,8 @@ class UIFacetTable(val initSkin : Skin) : Table(), Telegraph {
 
     init {
         MessageManager.getInstance().addListener(this, MessageChannel.UI_FACET_DISPLAY.id())
-
-//        skin = initSkin
-        x = 4 * Gdx.graphics.width / 8f
-        y = Gdx.graphics.height / 8f
+        x = KoboldCave.initViewportWidth * 1f
+        y = KoboldCave.initViewportHeight * 7/16f
         name = "facetDisplay"
 //        this.debug = true
         this.add(Label(this.name, initSkin))

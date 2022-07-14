@@ -30,40 +30,6 @@ class InternalFacetAttributesState(val entity : Telegraph, var internalFacetAttr
         return returnBaselineSet
     }
 
-    fun projections() : MutableList<InternalPhenomenaImpression?> {
-
-        val returnProjectionList = MutableList<InternalPhenomenaImpression?>(IManifest.listMax) { null }
-
-        if (internalFacetAttributes.isNotEmpty() ) {
-
-            val magnitudeSum = internalFacetAttributes.map { it.magnitude(mIntAnxiety) }.reduce { acc, mag -> acc + mag }
-            val slots = mIntAnxiety * 10
-            val spread = if (slots > 0f) magnitudeSum / slots else 1f
-
-            //facet to slots to fill
-            val facetSlots = internalFacetAttributes.mapIndexed { index, internalFacetAttribute ->
-                internalFacetAttribute.arisenFacetInstance(mIntAnxiety) to (internalFacetAttribute.magnitude(mIntAnxiety) / spread).roundToInt()
-            }.filter { it.second > 0 }.sortedBy { it.second }
-
-            var slotIdx = 0
-            var facetIdx = 0
-            var facetSlotCount = 0
-
-            while ((slotIdx < IManifest.listMax) && (facetIdx < facetSlots.size)) {
-                facetSlotCount = 0
-
-                while (facetSlotCount < facetSlots[facetIdx].second) {
-                    returnProjectionList[slotIdx] = InternalPhenomenaInstance().apply { this.arisenFacet = facetSlots[facetIdx].first }.impression()
-                    facetSlotCount++
-                    slotIdx++
-                }
-
-                facetIdx++
-            }
-        }
-        return returnProjectionList
-    }
-
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_CONDITION.id()) {

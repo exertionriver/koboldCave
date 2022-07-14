@@ -24,7 +24,7 @@ interface IManifest {
         return returnList
     }
 
-    fun addImpression(perceivedPhenomena: PerceivedExternalPhenomena) {
+    fun addImpression(perceivedExternalPhenomena: PerceivedExternalPhenomena) {
         var checkCounter = 0
         var foundSlot = false
         val idxList = List(listMax()) {idx -> idx}.shuffled()
@@ -32,7 +32,7 @@ interface IManifest {
 
         while ( (checkCounter < listMax()) && !foundSlot ) {
             if (perceptionList[idxList[checkCounter]] == null) {
-                perceptionList[idxList[checkCounter]] = perceivedPhenomena
+                perceptionList[idxList[checkCounter]] = perceivedExternalPhenomena
                 foundSlot = true
             }
 
@@ -40,7 +40,7 @@ interface IManifest {
         }
 
         if (!foundSlot) {
-            perceptionList[perceptionList.indexOf(perceptionList.minByOrNull{ it!!.externalPhenomenaImpression!!.countdown })] = perceivedPhenomena
+            perceptionList[perceptionList.indexOf(perceptionList.minByOrNull{ it!!.externalPhenomenaImpression!!.countdown })] = perceivedExternalPhenomena
         }
     }
 
@@ -48,7 +48,6 @@ interface IManifest {
         var checkCounter = 0
         var foundSlot = false
         val idxList = List(listMax()) {idx -> idx}.shuffled()
-
 
         while ( (checkCounter < listMax()) && !foundSlot ) {
             if (projectionList[idxList[checkCounter]] == null) {

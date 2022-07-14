@@ -3,13 +3,13 @@ package org.river.exertion.desktop
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
-import org.river.exertion.Game
+import org.river.exertion.KoboldCave
 
 //https://github.com/Quillraven/SimpleKtxGame/wiki
 object DesktopLauncher {
 
-    val windowWidth = 1366
-    val windowHeight = 768
+    val windowWidth = 1024
+    val windowHeight = 576
 
     @JvmStatic
     fun main(arg: Array<String>) {
@@ -18,6 +18,6 @@ object DesktopLauncher {
             setWindowedMode(windowWidth, windowHeight)
             setBackBufferConfig(8, 8, 8, 8, 16, 0, 16)
         }
-        Lwjgl3Application(Game(), config).logLevel = Application.LOG_DEBUG
+        Lwjgl3Application(KoboldCave(), config).logLevel = Application.LOG_DEBUG
     }
 }

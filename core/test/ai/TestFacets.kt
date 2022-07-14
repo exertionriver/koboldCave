@@ -40,7 +40,7 @@ class TestFacets {
         (0..10).forEach { mAnxiety ->
             println("mAnxiety : ${mAnxiety / 10f}")
             testState.mIntAnxiety = mAnxiety / 10f
-            testState.projections().forEachIndexed { idx, it -> println("slot($idx) : ${it?.arisenFacet?.facetObj?.type?.tag()}, ${it?.arisenFacet?.magnitude}") }
+//            testState.projections().forEachIndexed { idx, it -> println("slot($idx) : ${it?.arisenFacet?.facetObj?.type?.tag()}, ${it?.arisenFacet?.magnitude}") }
         }
     }
 

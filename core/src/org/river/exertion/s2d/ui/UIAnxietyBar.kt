@@ -27,8 +27,8 @@ class UIAnxietyBar(initSkin : Skin) : ProgressBar(0f, 1f, 0.01f, true, initSkin)
     init {
         MessageManager.getInstance().addListener(this, MessageChannel.UI_ANXIETY_BAR.id())
         this.value = 0f
-        x = 4 * Gdx.graphics.width / 8f
-        y = 2 * Gdx.graphics.height / 8f
+        x = KoboldCave.initViewportWidth * 1f
+        y = KoboldCave.initViewportHeight * 9/16f
         name = "anxiety Bar"
 //        this.debug = true
     }

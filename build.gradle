@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.7.0'
+    ext.kotlinVersion = '1.7.10'
 
     repositories {
         google()
@@ -77,16 +77,13 @@ project(":core") {
     apply plugin: "kotlin"
 
     ext {
-        junitVersion = '5.3.1'
+        junitVersion = '5.8.2'
     }
 
     test {
         useJUnitPlatform()
     }
     dependencies {
-     //   testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
-     //   testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-     //   testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx:$gdxVersion"

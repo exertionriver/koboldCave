@@ -46,7 +46,7 @@ class TestManifest {
     @Test
     fun testRandomPhenomena() {
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.EXT_PHENOMENA.id(), ordinarySound)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.ADD_EXT_PHENOMENA.id(), ordinarySound)
 
         engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 
@@ -56,7 +56,7 @@ class TestManifest {
         println("Auditory Channel after ordinary, second character:")
         ManifestComponent.getFor(secondCharacter)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.EXT_PHENOMENA.id(), weirdSound)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.ADD_EXT_PHENOMENA.id(), weirdSound)
 
         engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 
@@ -66,7 +66,7 @@ class TestManifest {
         println("Auditory Channel after weird sound, second character:")
         ManifestComponent.getFor(secondCharacter)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.INT_PHENOMENA.id(), scared)
+        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter), MessageChannel.ADD_INT_PHENOMENA.id(), scared)
 
         engine.update(CharacterKobold.getFor(character)!!.moment / 10)
 

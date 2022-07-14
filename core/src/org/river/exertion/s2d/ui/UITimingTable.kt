@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import org.river.exertion.KoboldCave
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.TimingTableMessage
 
@@ -20,9 +21,8 @@ class UITimingTable(val initSkin : Skin) : Table(), Telegraph {
     init {
         MessageManager.getInstance().addListener(this, MessageChannel.UI_TIMING_DISPLAY.id())
         register["elapsed"] = 0f
-//        skin = initSkin
-        x = Gdx.graphics.width / 8f
-        y = 5 * Gdx.graphics.height / 8f
+        x = KoboldCave.initViewportWidth * 1f
+        y = KoboldCave.initViewportHeight * 1f
         name = "timingTable"
 //        this.debug = true
         this.add(Label(this.name, initSkin))

@@ -39,9 +39,9 @@ class Demo3d(private val menuBatch: Batch,
              private val menuCamera: OrthographicCamera,
              private val gameCamera: PerspectiveCamera) : KtxScreen {
 
-    val horizOffset = Game.initViewportWidth / 11
-    val vertOffset = Game.initViewportHeight / 11
-    val labelVert = Point(0F, Game.initViewportHeight * 2 / 32)
+    val horizOffset = KoboldCave.initViewportWidth / 11
+    val vertOffset = KoboldCave.initViewportHeight / 11
+    val labelVert = Point(0F, KoboldCave.initViewportHeight * 2 / 32)
 
     var nodeRoom = NodeRoom(height = 3, centerPoint = Point(horizOffset * 5.5f, vertOffset * 5.5f))
     var nodeRoomMesh = NodeRoomMesh(nodeRoom)
@@ -51,7 +51,7 @@ class Demo3d(private val menuBatch: Batch,
     val playerCharacter = CharacterPlayerCharacter.instantiate(engine, menuStage, location = cave, camera = null)
 
 //    val controlAreaCamera = OrthographicCamera()
-    val gameAreaViewport = StretchViewport(Game.initViewportWidth, Game.initViewportHeight, gameCamera)
+    val gameAreaViewport = StretchViewport(KoboldCave.initViewportWidth, KoboldCave.initViewportHeight, gameCamera)
 
     val sdc = ShapeDrawerConfig(menuBatch)
     val drawer = sdc.getDrawer()
