@@ -3,6 +3,8 @@ package org.river.exertion.ecs.system
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
 import ktx.ashley.allOf
+import org.river.exertion.ai.internalSymbol.core.SymbolActionType
+import org.river.exertion.ai.internalSymbol.core.SymbolDisplayType
 import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.AnxietySymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
@@ -37,6 +39,13 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
             val entityAnxietyDelta = ConditionComponent.getFor(entity)!!.mIntAnxiety - entityAnxietySymbolInstance.position
 
             SymbolModifyAction.executeImmediate(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = entityAnxietySymbolInstance.apply { this.deltaPosition = entityAnxietyDelta }))
+        }
+
+        //spawn / despawn for any remaining symbols
+        SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.displayType == SymbolDisplayType.PRESENT }.forEach { symbolInstance ->
+            symbolInstance.symbolObj.symbolActions.filter { it.symbolActionType == SymbolActionType.SPAWN || it.symbolActionType == SymbolActionType.DESPAWN }.forEach {
+                it.execute(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = symbolInstance))
+            }
         }
 
         //rebuild plans from state of internalSymbolDisplay

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
 import org.river.exertion.ai.internalFacet.FearFacet
 import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.FriendSymbol
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.memory.MemoryInstance
@@ -43,31 +44,31 @@ class TestMemory {
 
     @Test
     fun testKoboldMemory() {
-        val isi = InternalFacetInstancesState(IEntity.getFor(character)!!).apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
+//        val isi = InternalFacetInstancesState(IEntity.getFor(character)!!).apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
 
         KoboldMemory.memoriesPA().forEach {
             val perceivedNoumenon = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE) ).apply { this.perceivedAttributes.add(it); this.noumenonType = NoumenonType.OTHER; this.isNamed = true}
-            MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.add(MemoryInstance(perceivedNoumenon, isi))
+            MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.add(MemoryInstance(perceivedNoumenon, FriendSymbol))
         }
         KoboldMemory.memoriesPN().forEach {
-            MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.add(MemoryInstance(it, isi))
+            MemoryComponent.getFor(character)!!.internalMemory.activeMemory.noumenaRegister.add(MemoryInstance(it, FriendSymbol))
         }
 
         val opinions1 = "other"
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions1).forEach {
-            println("opinions on $opinions1: ${it.internalState}: ${it.magnitudeOpinion()}")
+            println("opinions on $opinions1: ${it.tag}")
         }
         println("opinion on $opinions1: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions1)}")
 
         val opinions2 = "kobold"
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions2).forEach {
-            println("opinions on $opinions2: ${it.internalState}: ${it.magnitudeOpinion()}")
+            println("opinions on $opinions2: ${it.tag}")
         }
         println("opinion on $opinions2: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions2)}")
 
         val opinions3 = "intelligence"
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions3).forEach {
-            println("opinions on $opinions3: ${it.internalState}: ${it.magnitudeOpinion()}")
+            println("opinions on $opinions3: ${it.tag}")
         }
         println("opinion on $opinions3: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions3)}")
     }
@@ -87,25 +88,25 @@ class TestMemory {
 
         val opinions1 = "other"
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions1).forEach {
-            println("opinions on $opinions1: ${it.internalState}: ${it.magnitudeOpinion()}")
+            println("opinions on $opinions1: ${it.tag}")
         }
         println("opinion on $opinions1: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions1)}")
 
         val opinions4 = "low-race"
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions4).forEach {
-            println("opinions on $opinions4: ${it.internalState}: ${it.magnitudeOpinion()}")
+            println("opinions on $opinions4: ${it.tag}")
         }
         println("opinion on $opinions4: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions4)}")
 
         val opinions5 = "kobold"
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions5).forEach {
-            println("opinions on $opinions5: ${it.internalState}: ${it.magnitudeOpinion()}")
+            println("opinions on $opinions5: ${it.tag}")
         }
         println("opinion on $opinions5: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions5)}")
 
         val opinions6 = CharacterKobold.getFor(secondCharacter)!!.noumenonInstance.instanceName
         MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinions(opinions6).forEach {
-            println("opinions on $opinions6: ${it.internalState}: ${it.magnitudeOpinion()}")
+            println("opinions on $opinions6: ${it.tag}")
         }
         println("opinion on $opinions6: ${MemoryComponent.getFor(character)!!.internalMemory.activeMemory.opinion(opinions6)}")
 

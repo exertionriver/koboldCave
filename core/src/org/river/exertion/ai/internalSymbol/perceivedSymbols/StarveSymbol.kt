@@ -23,5 +23,5 @@ object StarveSymbol : IPerceivedSymbol {
     override var facetModifiers = mutableSetOf(
             FacetModifier(FearFacet, .3f)
     )
-    override fun spawn() = SymbolInstance(StarveSymbol, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
+    override fun spawn() = SymbolInstance(StarveSymbol, cycles = 1f, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
 }

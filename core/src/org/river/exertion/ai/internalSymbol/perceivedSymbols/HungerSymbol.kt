@@ -33,5 +33,5 @@ object HungerSymbol : IPerceivedSymbol {
         FacetModifier(FearFacet, .1f)
     )
 
-    override fun spawn() = SymbolInstance(HungerSymbol, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
+    override fun spawn() = SymbolInstance(HungerSymbol, cycles = 1f, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
 }

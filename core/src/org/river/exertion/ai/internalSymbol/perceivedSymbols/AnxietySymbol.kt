@@ -22,5 +22,5 @@ object AnxietySymbol : IPerceivedSymbol {
     override var facetModifiers = mutableSetOf(
             FacetModifier(DisgustFacet, .01f)
     )
-    override fun spawn() = SymbolInstance(AnxietySymbol, position = SymbolTargetPosition.ATTRACT_CONSUME.targetPosition())
+    override fun spawn() = SymbolInstance(AnxietySymbol, cycles = 1f, position = SymbolTargetPosition.ATTRACT_CONSUME.targetPosition())
 }

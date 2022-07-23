@@ -29,7 +29,6 @@ interface IManifest {
         var foundSlot = false
         val idxList = List(listMax()) {idx -> idx}.shuffled()
 
-
         while ( (checkCounter < listMax()) && !foundSlot ) {
             if (perceptionList[idxList[checkCounter]] == null) {
                 perceptionList[idxList[checkCounter]] = perceivedExternalPhenomena

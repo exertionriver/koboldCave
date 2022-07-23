@@ -18,11 +18,14 @@ import org.river.exertion.ecs.system.SystemManager
 import org.river.exertion.Render
 import org.river.exertion.ai.internalFacet.AngerFacet
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
-import org.river.exertion.ai.internalSymbol.perceivedSymbols.AnxietySymbol
-import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
-import org.river.exertion.ai.internalSymbol.perceivedSymbols.HungerSymbol
-import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.*
+import org.river.exertion.ai.memory.KnowledgeSourceInstance
+import org.river.exertion.ai.memory.KnowledgeSourceType
+import org.river.exertion.ai.memory.MemoryInstance
 import org.river.exertion.ai.messaging.*
+import org.river.exertion.ai.noumena.core.NoumenonType
+import org.river.exertion.ai.perception.PerceivedAttribute
+import org.river.exertion.ai.perception.PerceivedNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ecs.component.*
@@ -32,13 +35,13 @@ import org.river.exertion.ecs.entity.character.CharacterKobold
 import org.river.exertion.s2d.ui.*
 
 class DemoBasicAI(private val menuBatch: Batch,
-                  private val font: BitmapFont,
                   private val assets: AssetManager,
                   private val menuStage: Stage,
                   private val menuCamera: OrthographicCamera) : KtxScreen {
 
     val engine = PooledEngine().apply { SystemManager.init(this) }
     val character = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }
+    val secondCharacter = CharacterKobold.ecsInstantiate(engine).apply { this.remove(ActionMoveComponent.getFor(this)!!.javaClass) ; this.remove(ActionSimpleDecideMoveComponent.getFor(this)!!.javaClass) }
 
     val ordinarySound = ExternalPhenomenaInstance().apply {
         this.type = ExternalPhenomenaType.AUDITORY
@@ -47,6 +50,11 @@ class DemoBasicAI(private val menuBatch: Batch,
         this.location = Vector3(10f, 10f, 10f)
         this.loss = .2f
     }
+
+    val secondCharacterPN = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)).apply {
+        this.perceivedAttributes.add(PerceivedAttribute(attributeInstance = IEntity.getFor(secondCharacter)!!.noumenonInstance.pollRandomAttributeInstance(ExternalPhenomenaType.AUDITORY))); this.instanceName = IEntity.getFor(secondCharacter)!!.entityName; this.noumenonType = NoumenonType.INDIVIDUAL; isNamed = true
+    }
+    val secondCharacterMemory = MemoryInstance(secondCharacterPN, FriendSymbol)
 
     @Suppress("NewApi")
     override fun render(delta: Float) {
@@ -63,7 +71,7 @@ class DemoBasicAI(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> ConditionComponent.getFor(character)!!.mIntAnxiety -= .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude += .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude -= .05f
-            Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) -> ManifestComponent.getFor(character)!!.internalManifest.addImpression(IEntity.getFor(character)!!, ordinarySound.impression())
+            Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) -> ManifestComponent.getFor(character)!!.internalManifest.addImpression(IEntity.getFor(secondCharacter)!!, ordinarySound.impression())
        }
 
         menuCamera.update()
@@ -106,13 +114,14 @@ class DemoBasicAI(private val menuBatch: Batch,
         menuStage.addActor(UIFacetTable(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIInternalManifestDisplay(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIExternalManifestDisplay(Scene2DSkin.defaultSkin))
-
+/*
         SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay = mutableSetOf(
                 SymbolInstance(AnxietySymbol, cycles = 1f, position = .1f),
                 SymbolInstance(HungerSymbol, cycles = 1f, position = .55f),
                 SymbolInstance(FoodSymbol, cycles = 12f, position = .6f).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f},
                 SymbolInstance(MomentElapseSymbol, cycles = -1f, position = .4f)
-        )
+        )*/
+       MemoryComponent.getFor(character)!!.internalMemory.longtermMemory.noumenaRegister.add(secondCharacterMemory)
 //        menuStage.addActor(UIFeelingTable(Scene2DSkin.defaultSkin))
 //        menuStage.addActor(UIPerceptionTable(Scene2DSkin.defaultSkin))
 

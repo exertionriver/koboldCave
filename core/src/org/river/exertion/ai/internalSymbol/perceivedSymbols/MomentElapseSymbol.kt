@@ -15,5 +15,5 @@ object MomentElapseSymbol : IPerceivedSymbol {
     override var focusSatisfiers = mutableSetOf<IInternalFocus>()
     override var facetModifiers = mutableSetOf<FacetModifier>()
 
-    override fun spawn() = SymbolInstance(MomentElapseSymbol, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
+    override fun spawn() = SymbolInstance(MomentElapseSymbol, cycles = 1f, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
 }

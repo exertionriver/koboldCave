@@ -88,7 +88,7 @@ class KoboldCave : KtxGame<KtxScreen>() {
 //            addScreen(Demo3dHallElevation( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 //            addScreen(Demo3dHallElevationHigh( inject(), inject(), inject(), inject(), inject(), inject(), inject() ) )
 //
-            addScreen(DemoBasicAI( inject(), inject(), inject(), inject(), inject() ) )
+            addScreen(DemoBasicAI( inject(), inject(), inject(), inject() ) )
 
         }
 

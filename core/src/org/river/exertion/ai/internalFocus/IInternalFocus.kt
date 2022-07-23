@@ -33,11 +33,19 @@ interface IInternalFocus {
                     return true
                 }
             } else {
-                satisfyingStrategies.forEach {
-                    if (!satisfyingCondition(focusMessage.presentSymbolInstance!!) ) {
+                var addedStrategy = false
+                var strategyIdx = 0
+
+                while ((!addedStrategy) && (strategyIdx < satisfyingStrategies.size) ) {
+
+                    if (!satisfyingStrategies[strategyIdx].satisfyingCondition(focusMessage.presentSymbolInstance!!) ) {
 //                        logDebug("evaluate", "${this.tag} ADD : ${it.tag}")
-                        MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_ADD_FOCUS_CHAIN_LINK.id(), focusMessage.apply { this.chainStrategyInstance = it.instantiate() })
+                        MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_ADD_FOCUS_CHAIN_LINK.id(), focusMessage.apply { this.chainStrategyInstance = satisfyingStrategies[strategyIdx].instantiate() })
+                        addedStrategy = true
+                    } else {
+                        satisfyingStrategies[strategyIdx].satisfyingResult(entity, focusMessage.presentSymbolInstance!!)
                     }
+                    strategyIdx++
                 }
             }
         return false

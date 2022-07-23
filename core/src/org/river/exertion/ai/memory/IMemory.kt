@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalFacet.InternalFacetInstance
 import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ai.internalFacet.InternalFacetInstancesState.Companion.merge
+import org.river.exertion.ai.internalSymbol.core.IPerceivedSymbol
 import org.river.exertion.ai.perception.PerceivedNoumenon
 
 interface IMemory {
@@ -12,11 +13,11 @@ interface IMemory {
     var entity : Telegraph
     var noumenaRegister : MutableSet<MemoryInstance>
 
-    fun opinions(onTopic : String) : Set<InternalFacetInstancesState> {
+    fun opinions(onTopic : String) : Set<IPerceivedSymbol> {
 
         val directNoumenaPerceptions = noumenaRegister.filter { (it.perceivedNoumenon.instanceName == onTopic || it.perceivedNoumenon.noumenonType.tag() == onTopic) && it.perceivedNoumenon.isNamed }
 
-        return directNoumenaPerceptions.map { it.internalFacetInstancesState }.toSet()
+        return directNoumenaPerceptions.map { it.symbol }.toSet()
     }
 
     fun facts(onTopic : String) : List<String> {
@@ -30,6 +31,6 @@ interface IMemory {
         return returnFacts
     }
 
-    fun opinion(onTopic : String) : InternalFacetInstance? = opinions(onTopic).merge(entity).magnitudeOpinion()
+    fun opinion(onTopic : String) : IPerceivedSymbol? = opinions(onTopic).first()//.merge(entity).magnitudeOpinion()
 
 }

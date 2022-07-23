@@ -12,7 +12,6 @@ import kotlin.random.Random
 class ConditionSystem : IntervalIteratingSystem(allOf(ConditionComponent::class).get(), 1/10f) {
 
     override fun processEntity(entity: Entity) {
-        val delta = 1/10f
 
         var mIntAnxiety = ConditionComponent.getFor(entity)!!.mIntAnxiety
 

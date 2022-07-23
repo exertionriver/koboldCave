@@ -39,7 +39,7 @@ class UIExternalManifestDisplay(val initSkin : Skin) : Table(), Telegraph {
             if (internalManifestDisplayMessage.internalManifest != null) {
                 internalManifestDisplayMessage.internalManifest!!.manifests.forEach { manifestInstance ->
                     manifestInstance.perceptionList.filter { it != null}.forEachIndexed { idx, perceivedExternalPhenomena ->
-                        register["${manifestInstance.manifestType.name}:$idx"] = "${perceivedExternalPhenomena!!.externalPhenomenaImpression!!.type.name} : ${perceivedExternalPhenomena.externalPhenomenaImpression!!.countdown}"
+                        register["${manifestInstance.manifestType.name}:$idx"] = "${perceivedExternalPhenomena!!.sender?.entityName} : ${perceivedExternalPhenomena.externalPhenomenaImpression!!.countdown}"
                     }
                 }
             }
