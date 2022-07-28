@@ -10,10 +10,11 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
-            android:name="com.libktx.game.AndroidLauncher"
-            android:label="@string/app_name" 
-            android:screenOrientation="landscape"
-            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout">
+                android:name="com.libktx.game.AndroidLauncher"
+                android:label="@string/app_name"
+                android:screenOrientation="landscape"
+                android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

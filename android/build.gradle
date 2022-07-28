@@ -1,6 +1,6 @@
 android {
     buildToolsVersion "30.0.3"
-    compileSdkVersion 30
+    compileSdkVersion 32
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -13,14 +13,17 @@ android {
         }
     }
     packagingOptions {
-        exclude 'META-INF/robovm/ios/robovm.xml'
+        resources {
+            excludes += ['META-INF/robovm/ios/robovm.xml']
+        }
     }
     defaultConfig {
         applicationId "com.libktx.game"
         minSdkVersion 14
-        targetSdkVersion 30
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
