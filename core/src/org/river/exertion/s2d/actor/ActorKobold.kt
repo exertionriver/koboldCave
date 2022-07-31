@@ -1,12 +1,12 @@
 package org.river.exertion.s2d.actor
 
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import org.river.exertion.*
 import org.river.exertion.ai.messaging.MessageChannel
+import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
 import org.river.exertion.geom.Line.Companion.onSegment
 import space.earlygrey.shapedrawer.JoinType
@@ -23,14 +23,14 @@ class ActorKobold(initName : String, initPosition : Point, initAngle : Angle) : 
         x = initPosition.x
         y = initPosition.y
         rotation = initAngle
-        MessageManager.getInstance().addListener(this, MessageChannel.ECS_S2D_BRIDGE.id())
-        MessageManager.getInstance().addListener(this, MessageChannel.LOSMAP_BRIDGE.id())
+        MessageChannel.ECS_S2D_BRIDGE.enableReceive(this)
+        MessageChannel.LOSMAP_BRIDGE.enableReceive(this)
     }
 
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null && msg.message == MessageChannel.LOSMAP_BRIDGE.id() ) {
-            losMap = (msg.extraInfo as MutableMap<Int, Point>)
+            losMap = (msg.extraInfo as ActionMoveComponent).losMap
         }
 
         return super.handleMessage(msg)

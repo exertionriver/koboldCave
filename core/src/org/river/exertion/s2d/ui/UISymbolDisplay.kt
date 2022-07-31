@@ -1,7 +1,5 @@
 package org.river.exertion.s2d.ui
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -14,10 +12,6 @@ import org.river.exertion.*
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolDisplayMessage
-import org.river.exertion.ai.messaging.TimingTableMessage
-import org.river.exertion.ecs.entity.IEntity
-import org.river.exertion.geom.Line.Companion.getPositionByDistanceAndAngle
-import org.river.exertion.s2d.actor.ActorKobold
 import space.earlygrey.shapedrawer.JoinType
 
 class UISymbolDisplay(val initSkin : Skin) : Table(), Telegraph {
@@ -27,7 +21,7 @@ class UISymbolDisplay(val initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, SymbolInstance>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.UI_SYMBOL_DISPLAY.id())
+        MessageChannel.UI_SYMBOL_DISPLAY.enableReceive(this)
         x = KoboldCave.initViewportWidth * 8/16f
         y = KoboldCave.initViewportHeight * 12/16f
         name = "symbolDisplay"
@@ -110,11 +104,4 @@ class UISymbolDisplay(val initSkin : Skin) : Table(), Telegraph {
         }
 
     }
-
-    companion object {
-        fun send(sender : Telegraph? = null, symbolDisplayMessage: SymbolDisplayMessage) {
-            MessageManager.getInstance().dispatchMessage(sender, MessageChannel.UI_SYMBOL_DISPLAY.id(), symbolDisplayMessage)
-        }
-    }
-
 }

@@ -1,6 +1,5 @@
 package org.river.exertion.ai.internalFocus
 
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
@@ -12,8 +11,8 @@ import org.river.exertion.ai.messaging.MessageChannel
 class InternalFocusPlan(var entity : Telegraph, var satisfierFocus: IInternalFocus, var absentSymbolInstance: SymbolInstance) : Telegraph {
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.INT_ADD_FOCUS_CHAIN_LINK.id())
-        MessageManager.getInstance().addListener(this, MessageChannel.INT_REMOVE_FOCUS_CHAIN_LINK.id())
+        MessageChannel.INT_ADD_FOCUS_CHAIN_LINK.enableReceive(this )
+        MessageChannel.INT_REMOVE_FOCUS_CHAIN_LINK.enableReceive(this)
     }
 
     var instancesChain = mutableListOf<InternalFocusInstance>()

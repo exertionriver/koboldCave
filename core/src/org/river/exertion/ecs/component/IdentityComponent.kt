@@ -15,7 +15,5 @@ class IdentityComponent(val noumenonInstance : NoumenonInstance) : IComponent, C
 
         fun has(entity : Entity) : Boolean = entity.components.firstOrNull{ it is IdentityComponent } != null
         fun getFor(entity : Entity) : IdentityComponent? = if (has(entity)) entity.components.first { it is IdentityComponent } as IdentityComponent else null
-
     }
-
 }

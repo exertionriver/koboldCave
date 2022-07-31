@@ -249,7 +249,7 @@ class Demo3dHall(private val menuBatch: Batch,
 
         modelFloorsInstance = ModelInstance(modelBuilder.createLineGrid(10, 10, 10f, 10f, Material(createDiffuse(Color.BLUE)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong()), lookAt.x, lookAt.y, 0f)
 
-        var prevNodeLine3 = NodeLine3()
+        var prevNodeLine3 : NodeLine3
         var currNodeLine3 = NodeLine3()
         val floorNoise = Vector3(100f, 70f, 90f)
         val wallNoise = Vector3(100f, 0f, 90f)

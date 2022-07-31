@@ -1,21 +1,16 @@
 package org.river.exertion.s2d.ui
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import org.river.exertion.*
+import org.river.exertion.KoboldCave
 import org.river.exertion.ai.internalFocus.InternalFocusInstance
-import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.messaging.FocusDisplayMessage
 import org.river.exertion.ai.messaging.MessageChannel
-import space.earlygrey.shapedrawer.JoinType
 
 class UIFocusDisplay(val initSkin : Skin) : Table(), Telegraph {
 
@@ -24,7 +19,7 @@ class UIFocusDisplay(val initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, InternalFocusInstance>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.UI_FOCUS_DISPLAY.id())
+        MessageChannel.UI_FOCUS_DISPLAY.enableReceive(this)
         x = KoboldCave.initViewportWidth * 8/16f
         y = KoboldCave.initViewportHeight * 6/16f
         name = "focusDisplay"
@@ -111,10 +106,5 @@ class UIFocusDisplay(val initSkin : Skin) : Table(), Telegraph {
 
     }
 */
-    companion object {
-        fun send(sender : Telegraph? = null, focusDisplayMessage: FocusDisplayMessage) {
-            MessageManager.getInstance().dispatchMessage(sender, MessageChannel.UI_FOCUS_DISPLAY.id(), focusDisplayMessage)
-        }
-    }
 
 }

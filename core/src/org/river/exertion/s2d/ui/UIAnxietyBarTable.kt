@@ -1,7 +1,5 @@
 package org.river.exertion.s2d.ui
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -10,14 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import org.river.exertion.KoboldCave
 import org.river.exertion.ai.messaging.AnxietyBarMessage
 import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ecs.entity.IEntity
 
 class UIAnxietyBarTable(initSkin : Skin) : Table(initSkin), Telegraph {
 
     val tableMax = 1
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.UI_ANXIETY_BAR.id())
+        MessageChannel.UI_ANXIETY_BAR.enableReceive(this)
         x = KoboldCave.initViewportWidth * 1f
         y = KoboldCave.initViewportHeight * 14/16f
         name = "anxietyBarTable"
@@ -42,11 +39,4 @@ class UIAnxietyBarTable(initSkin : Skin) : Table(initSkin), Telegraph {
 
         return false
     }
-
-    companion object {
-        fun send(sender : Telegraph? = null, anxietyBarMessage: AnxietyBarMessage) {
-            MessageManager.getInstance().dispatchMessage(sender, MessageChannel.UI_ANXIETY_BAR.id(), anxietyBarMessage)
-        }
-    }
-
 }

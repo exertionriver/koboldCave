@@ -2,7 +2,6 @@ package org.river.exertion.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
-import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
 import org.river.exertion.ai.messaging.FacetImpressionMessage
 import org.river.exertion.ai.messaging.MessageChannel
@@ -15,6 +14,6 @@ class FacetSystem : IntervalIteratingSystem(allOf(FacetComponent::class).get(), 
 
         val projections = FacetComponent.getFor(entity)!!.internalFacetState.projections()
 
-        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_PHENOMENA_FACETS.id(), FacetImpressionMessage(projections))
+        MessageChannel.INT_PHENOMENA_FACETS.send(IEntity.getFor(entity), FacetImpressionMessage(projections))
     }
 }

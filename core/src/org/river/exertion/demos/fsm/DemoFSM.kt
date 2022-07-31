@@ -3,9 +3,9 @@ package org.river.exertion.demos.fsm
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.assets.AssetManager
-import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -13,8 +13,12 @@ import ktx.app.KtxScreen
 import ktx.ashley.get
 import ktx.graphics.use
 import org.river.exertion.*
-import org.river.exertion.assets.*
+import org.river.exertion.ai.messaging.MessageChannel
+import org.river.exertion.assets.MusicAssets
+import org.river.exertion.assets.get
+import org.river.exertion.assets.load
 import org.river.exertion.ecs.component.action.ActionMoveComponent
+import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.CharacterPlayerCharacter
 import org.river.exertion.ecs.entity.location.LocationCave
 import org.river.exertion.ecs.system.SystemManager
@@ -23,10 +27,6 @@ import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.buildWallsAndPath
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.render
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh.Companion.renderWallsAndPath
-import org.river.exertion.Render
-import org.river.exertion.RenderPalette
-import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ecs.entity.IEntity
 
 class DemoFSM(private val menuBatch: Batch,
               private val font: BitmapFont,
@@ -60,7 +60,7 @@ class DemoFSM(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.BACKWARD }
             Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.LEFT }
             Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> { playerCharacter[ActionMoveComponent.mapper]!!.direction = ActionMoveComponent.Direction.RIGHT }
-            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { MessageManager.getInstance().dispatchMessage(IEntity.getFor(playerCharacter)!!, IEntity.getFor(playerCharacter)!!, MessageChannel.ECS_FSM_BRIDGE.id(), "hello from ${IEntity.getFor(playerCharacter)!!.entityName}") }
+            Gdx.input.isKeyJustPressed(Input.Keys.Z) -> { MessageChannel.ECS_FSM_BRIDGE.send(IEntity.getFor(playerCharacter)!!, "hello from ${IEntity.getFor(playerCharacter)!!.entityName}") }
         }
 
         menuCamera.update()

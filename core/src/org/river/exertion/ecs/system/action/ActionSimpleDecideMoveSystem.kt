@@ -2,14 +2,14 @@ package org.river.exertion.ecs.system.action
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
-import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
 import ktx.ashley.get
-import org.river.exertion.ecs.component.action.*
 import org.river.exertion.Probability
 import org.river.exertion.ProbabilitySelect
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.MomentComponent
+import org.river.exertion.ecs.component.action.ActionMoveComponent
+import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
 import org.river.exertion.ecs.entity.IEntity
 
 class ActionSimpleDecideMoveSystem : IteratingSystem(allOf(ActionSimpleDecideMoveComponent::class).get()) {
@@ -28,7 +28,7 @@ class ActionSimpleDecideMoveSystem : IteratingSystem(allOf(ActionSimpleDecideMov
                 }
 
 //            if (entity[ActionMoveComponent.mapper]!!.direction != ActionMoveComponent.Direction.NONE)
-                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageChannel.PLAN_BRIDGE.id(), "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
+            MessageChannel.PLAN_BRIDGE.send(IEntity.getFor(entity)!!, "move to ${entity[ActionMoveComponent.mapper]!!.direction}")
         }
     }
 

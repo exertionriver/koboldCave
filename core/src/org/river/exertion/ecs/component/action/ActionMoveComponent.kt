@@ -37,8 +37,7 @@ class ActionMoveComponent : IComponent, Component {
         this.camera = camera
 
     }
-
-
+    
     //TODO: split this into location component?
     var nodeRoomMesh = NodeRoomMesh()
     var currentNodeRoom = NodeRoom()
@@ -61,6 +60,8 @@ class ActionMoveComponent : IComponent, Component {
     var finalNode = Node()
     var finalAngle : Angle = 0.0f
     var direction = Direction.FORWARD
+
+    lateinit var losMap : MutableMap<Int, Point>
 
     var prevNetMove = netMove()
 //    var prevPosition = currentPosition

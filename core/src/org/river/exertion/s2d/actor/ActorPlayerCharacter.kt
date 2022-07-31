@@ -1,6 +1,5 @@
 package org.river.exertion.s2d.actor
 
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Action
@@ -21,7 +20,7 @@ class ActorPlayerCharacter(initName : String = "PlayerCharacter", initPosition :
         x = initPosition.x
         y = initPosition.y
         rotation = initAngle
-        MessageManager.getInstance().addListener(this, MessageChannel.ECS_S2D_BRIDGE.id())
+        MessageChannel.ECS_S2D_BRIDGE.enableReceive(this)
     }
 
     override fun draw(batch : Batch, parentAlpha : Float) {

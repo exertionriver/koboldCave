@@ -4,21 +4,18 @@ import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.assets.AssetManager
-import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import ktx.app.KtxScreen
-import ktx.scene2d.*
-import org.river.exertion.*
-import org.river.exertion.ecs.component.action.ActionMoveComponent
-import org.river.exertion.ecs.system.SystemManager
+import ktx.scene2d.Scene2DSkin
+import org.river.exertion.InputHandler
 import org.river.exertion.Render
 import org.river.exertion.ai.internalFacet.AngerFacet
-import org.river.exertion.ai.internalSymbol.core.SymbolInstance
-import org.river.exertion.ai.internalSymbol.perceivedSymbols.*
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.FriendSymbol
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.memory.MemoryInstance
@@ -29,9 +26,11 @@ import org.river.exertion.ai.perception.PerceivedNoumenon
 import org.river.exertion.ai.phenomena.ExternalPhenomenaInstance
 import org.river.exertion.ai.phenomena.ExternalPhenomenaType
 import org.river.exertion.ecs.component.*
+import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
 import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.CharacterKobold
+import org.river.exertion.ecs.system.SystemManager
 import org.river.exertion.s2d.ui.*
 
 class DemoBasicAI(private val menuBatch: Batch,
@@ -67,8 +66,8 @@ class DemoBasicAI(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.SPACE) -> MomentComponent.getFor(character)!!.systemMoment = if (MomentComponent.getFor(character)!!.systemMoment == 0f) 10f else 0f
             Gdx.input.isKeyJustPressed(Input.Keys.RIGHT) -> MomentComponent.getFor(character)!!.systemMoment += 5f
             Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> MomentComponent.getFor(character)!!.systemMoment -= 5f
-            Gdx.input.isKeyJustPressed(Input.Keys.UP) -> ConditionComponent.getFor(character)!!.mIntAnxiety += .05f
-            Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> ConditionComponent.getFor(character)!!.mIntAnxiety -= .05f
+            Gdx.input.isKeyJustPressed(Input.Keys.UP) -> ConditionComponent.getFor(character)!!.internalCondition.mIntAnxiety += .05f
+            Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> ConditionComponent.getFor(character)!!.internalCondition.mIntAnxiety -= .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude += .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude -= .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) -> ManifestComponent.getFor(character)!!.internalManifest.addImpression(IEntity.getFor(secondCharacter)!!, ordinarySound.impression())
@@ -80,20 +79,16 @@ class DemoBasicAI(private val menuBatch: Batch,
         menuStage.draw()
         menuStage.act()
 
-        UITimingTable.send(timingTableMessage = TimingTableMessage(timingType = TimingTableMessage.TimingEntryType.RENDER, label = "render", value = delta))
-        UITimingTable.send(timingTableMessage = TimingTableMessage(timingType = TimingTableMessage.TimingEntryType.CHARACTER, label = "systemMoment", value = MomentComponent.getFor(character)!!.systemMoment))
+        MessageChannel.UI_TIMING_DISPLAY.send(null, TimingTableMessage(timingType = TimingTableMessage.TimingEntryType.RENDER, label = "render", value = delta))
+        MessageChannel.UI_TIMING_DISPLAY.send(null, TimingTableMessage(timingType = TimingTableMessage.TimingEntryType.CHARACTER, label = "systemMoment", value = MomentComponent.getFor(character)!!.systemMoment))
 
-        UISymbolDisplay.send(symbolDisplayMessage = SymbolDisplayMessage(symbolDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay))
-        UIFocusDisplay.send(focusDisplayMessage = FocusDisplayMessage(focusDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalFocusDisplay))
+        MessageChannel.UI_SYMBOL_DISPLAY.send(null, SymbolDisplayMessage(symbolDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay))
+        MessageChannel.UI_FOCUS_DISPLAY.send(null, FocusDisplayMessage(focusDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalFocusDisplay))
 
-        UIAnxietyBar.send(anxietyBarMessage = AnxietyBarMessage(value = ConditionComponent.getFor(character)!!.mIntAnxiety))
-        UIFacetTable.send(facetTableMessage = FacetTableMessage(internalFacetInstancesState = FacetComponent.getFor(character)!!.internalFacetState))
+        MessageChannel.UI_ANXIETY_BAR.send(null, AnxietyBarMessage(value = ConditionComponent.getFor(character)!!.internalCondition.mIntAnxiety))
+        MessageChannel.UI_FACET_DISPLAY.send(null, FacetTableMessage(internalFacetInstancesState = FacetComponent.getFor(character)!!.internalFacetState))
 
-        UIInternalManifestDisplay.send(internalManifestDisplayMessage = ManifestDisplayMessage(internalManifest = ManifestComponent.getFor(character)!!.internalManifest))
-        UIExternalManifestDisplay.send(internalManifestDisplayMessage = ManifestDisplayMessage(internalManifest = ManifestComponent.getFor(character)!!.internalManifest))
-
-//        println("internal manifest:")
-//        ManifestComponent.getFor(character)!!.internalManifest.manifests[0].projectionList.forEachIndexed{ idx, it -> println("$idx: ${it?.arisenFacet?.facetObj}") }
+        MessageChannel.UI_MANIFEST_DISPLAY.send(null, ManifestDisplayMessage(internalManifest = ManifestComponent.getFor(character)!!.internalManifest))
 
         engine.update(delta)
     }

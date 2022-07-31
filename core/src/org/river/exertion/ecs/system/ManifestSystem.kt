@@ -2,7 +2,6 @@ package org.river.exertion.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
-import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
@@ -20,7 +19,7 @@ class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).g
             manifestPhenomenonEntry ->
                 manifestPhenomenonEntry.perceivedExternalPhenomena?.externalPhenomenaImpression!!.countdown -= entityMomentDelta
                 if (manifestPhenomenonEntry.perceivedExternalPhenomena?.externalPhenomenaImpression!!.countdown < 0)
-                    MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.REMOVE_EXT_PHENOMENA.id(), manifestPhenomenonEntry.perceivedExternalPhenomena)
+                    MessageChannel.REMOVE_EXT_PHENOMENA.send(IEntity.getFor(entity)!!, manifestPhenomenonEntry.perceivedExternalPhenomena!!)
         }
 
         val processedProjections = mutableSetOf<InternalPhenomenaImpression>()
@@ -30,7 +29,7 @@ class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).g
               //  if (!processedProjections.contains(manifestProjectionEntry.internalPhenomenaImpression!!)) {
                     manifestProjectionEntry.internalPhenomenaImpression!!.countdown -= entityMomentDelta
                     if (manifestProjectionEntry.internalPhenomenaImpression!!.countdown < 0)
-                        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.REMOVE_INT_PHENOMENA.id(), manifestProjectionEntry.internalPhenomenaImpression)
+                        MessageChannel.REMOVE_INT_PHENOMENA.send(IEntity.getFor(entity), manifestProjectionEntry.internalPhenomenaImpression!!)
 //                    else
 //                        processedProjections.add(manifestProjectionEntry.internalPhenomenaImpression!!)
                 //}
@@ -39,7 +38,7 @@ class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).g
         val perceivedPhenomena = ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.perceivedExternalPhenomena?.externalPhenomenaImpression != null }
 
         if ( perceivedPhenomena.isNotEmpty() )
-            MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_MEMORY.id(), perceivedPhenomena)
+            MessageChannel.INT_MEMORY.send(IEntity.getFor(entity), perceivedPhenomena)
 
     }
 }

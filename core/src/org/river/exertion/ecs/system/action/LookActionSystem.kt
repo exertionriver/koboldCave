@@ -1,12 +1,11 @@
 package org.river.exertion.ecs.system.action
 
-import com.badlogic.ashley.core.*
+import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
-import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
 import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ecs.component.action.LookActionComponent
 import org.river.exertion.ecs.component.MomentComponent
+import org.river.exertion.ecs.component.action.LookActionComponent
 import org.river.exertion.ecs.entity.IEntity
 
 class LookActionSystem : IteratingSystem(allOf(LookActionComponent::class).get()) {
@@ -26,7 +25,7 @@ class LookActionSystem : IteratingSystem(allOf(LookActionComponent::class).get()
             }
             val lookReport = if (lookDigest.isNotEmpty()) "sees $lookDigest" else "sees nothing"
 
-            MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageChannel.PERCEPTION_BRIDGE.id(), lookReport)
+            MessageChannel.PERCEPTION_BRIDGE.send(IEntity.getFor(entity)!!, lookReport)
         }
     }
 }

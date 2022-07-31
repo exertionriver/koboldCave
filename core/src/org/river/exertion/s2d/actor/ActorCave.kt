@@ -1,12 +1,12 @@
 package org.river.exertion.s2d.actor
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Action
 import com.badlogic.gdx.scenes.scene2d.Actor
-import org.river.exertion.*
+import org.river.exertion.RenderPalette
+import org.river.exertion.ShapeDrawerConfig
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
@@ -21,8 +21,8 @@ class ActorCave(initName : String = "Cave", initNodeRoomMesh : NodeRoomMesh) : A
 
     init {
         name = initName
-        MessageManager.getInstance().addListener(this, MessageChannel.CURNODE_BRIDGE.id())
-        MessageManager.getInstance().addListener(this, MessageChannel.NODEROOMMESH_BRIDGE.id())
+        MessageChannel.CURNODE_BRIDGE.enableReceive(this)
+        MessageChannel.NODEROOMMESH_BRIDGE.enableReceive(this)
     }
 
     override fun draw(batch : Batch, parentAlpha : Float) {
@@ -56,7 +56,7 @@ class ActorCave(initName : String = "Cave", initNodeRoomMesh : NodeRoomMesh) : A
                 nodeRoomMesh = msg.extraInfo as NodeRoomMesh
             }
 
-            MessageManager.getInstance().dispatchMessage(this, MessageChannel.S2D_ECS_BRIDGE.id())
+            MessageChannel.S2D_ECS_BRIDGE.send(this,"ping")
 
             return true
         }

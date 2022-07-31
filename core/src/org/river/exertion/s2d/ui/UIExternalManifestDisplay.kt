@@ -1,7 +1,5 @@
 package org.river.exertion.s2d.ui
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -20,7 +18,7 @@ class UIExternalManifestDisplay(val initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, String>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.UI_MANIFEST_DISPLAY.id())
+        MessageChannel.UI_MANIFEST_DISPLAY.enableReceive(this)
         x = KoboldCave.initViewportWidth * 0/16f
         y = KoboldCave.initViewportHeight * 7/16f
         name = "externalManifestDisplay"
@@ -60,11 +58,4 @@ class UIExternalManifestDisplay(val initSkin : Skin) : Table(), Telegraph {
     override fun draw(batch : Batch, parentAlpha : Float) {
         super.draw(batch, parentAlpha)
     }
-
-    companion object {
-        fun send(sender : Telegraph? = null, internalManifestDisplayMessage: ManifestDisplayMessage) {
-            MessageManager.getInstance().dispatchMessage(sender, MessageChannel.UI_MANIFEST_DISPLAY.id(), internalManifestDisplayMessage)
-        }
-    }
-
 }

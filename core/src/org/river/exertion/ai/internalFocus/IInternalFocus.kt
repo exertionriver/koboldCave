@@ -1,6 +1,5 @@
 package org.river.exertion.ai.internalFocus
 
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.messaging.FocusMessage
@@ -26,7 +25,7 @@ interface IInternalFocus {
                 if (focusMessage.chainStrategyInstance!!.momentCounter <= 0) {
                     satisfyingResult(entity, focusMessage.presentSymbolInstance!!)
 //                logDebug("evaluate", "${this.tag} REMOVE : ${this@IInternalFocus.tag}")
-                    MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_REMOVE_FOCUS_CHAIN_LINK.id(), focusMessage.apply { this.chainStrategyInstance = this@IInternalFocus.instantiate() })
+                    MessageChannel.INT_REMOVE_FOCUS_CHAIN_LINK.send(entity, focusMessage.apply { this.chainStrategyInstance = this@IInternalFocus.instantiate() })
                     return true
                 } else {
                     focusMessage.chainStrategyInstance!!.momentCounter += momentDelta
@@ -40,7 +39,7 @@ interface IInternalFocus {
 
                     if (!satisfyingStrategies[strategyIdx].satisfyingCondition(focusMessage.presentSymbolInstance!!) ) {
 //                        logDebug("evaluate", "${this.tag} ADD : ${it.tag}")
-                        MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_ADD_FOCUS_CHAIN_LINK.id(), focusMessage.apply { this.chainStrategyInstance = satisfyingStrategies[strategyIdx].instantiate() })
+                        MessageChannel.INT_ADD_FOCUS_CHAIN_LINK.send(entity, focusMessage.apply { this.chainStrategyInstance = satisfyingStrategies[strategyIdx].instantiate() })
                         addedStrategy = true
                     } else {
                         satisfyingStrategies[strategyIdx].satisfyingResult(entity, focusMessage.presentSymbolInstance!!)

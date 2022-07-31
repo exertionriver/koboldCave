@@ -14,7 +14,7 @@ class ActiveMemory(override var entity : Telegraph) : IMemory {
 
         val presentPhenomenaList = mutableListOf<PerceivedExternalPhenomena>()
 
-        (0 until intelligenceValue).forEach { idx ->
+        (0 until intelligenceValue).forEach { _ ->
             presentPhenomenaList.add(characterManifest.pollRandomExternalPhenomena(presentPhenomenaList))
         }
 

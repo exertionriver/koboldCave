@@ -2,7 +2,6 @@ package org.river.exertion.ecs.system.action
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import ktx.ashley.allOf
 import ktx.ashley.contains
@@ -10,7 +9,7 @@ import ktx.ashley.get
 import org.river.exertion.*
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.MomentComponent
-import org.river.exertion.ecs.component.action.*
+import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.CharacterPlayerCharacter
 import org.river.exertion.geom.node.Node.Companion.angleBetween
@@ -158,21 +157,21 @@ class ActionFulfillMoveSystem : IntervalIteratingSystem(allOf(ActionMoveComponen
                         ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPath()
                     }
 
-                    MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageChannel.NODEROOMMESH_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!.nodeRoomMesh)
+                    MessageChannel.NODEROOMMESH_BRIDGE.send(CharacterPlayerCharacter.getFor(entity)!!, ActionMoveComponent.getFor(entity)!!)
                 }
 
-                MessageManager.getInstance().dispatchMessage(CharacterPlayerCharacter.getFor(entity)!!, MessageChannel.CURNODE_BRIDGE.id(), ActionMoveComponent.getFor(entity)!!.currentNode)
+                MessageChannel.CURNODE_BRIDGE.send(CharacterPlayerCharacter.getFor(entity)!!, ActionMoveComponent.getFor(entity)!!)
 
             }
 
             if (ActionMoveComponent.getFor(entity)!!.camera != null) {
-                val losMap = ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPathLos(ActionMoveComponent.getFor(entity)!!.currentPosition, ActionMoveComponent.getFor(entity)!!.currentAngle, NextDistancePx * 1.5f)
+                ActionMoveComponent.getFor(entity)!!.losMap = ActionMoveComponent.getFor(entity)!!.nodeRoomMesh.renderWallsAndPathLos(ActionMoveComponent.getFor(entity)!!.currentPosition, ActionMoveComponent.getFor(entity)!!.currentAngle, NextDistancePx * 1.5f)
 
-                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageChannel.LOSMAP_BRIDGE.id(), losMap)
+                MessageChannel.LOSMAP_BRIDGE.send(IEntity.getFor(entity)!!, ActionMoveComponent.getFor(entity)!!)
             }
 
         if ((currentPosition != entity[ActionMoveComponent.mapper]!!.currentPosition) || (currentAngle != entity[ActionMoveComponent.mapper]!!.currentAngle) )
-                MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity)!!, MessageChannel.ECS_S2D_BRIDGE.id(), entity[ActionMoveComponent.mapper]!!)
+            MessageChannel.ECS_S2D_BRIDGE.send(IEntity.getFor(entity)!!, entity[ActionMoveComponent.mapper]!!)
         }
     }
 

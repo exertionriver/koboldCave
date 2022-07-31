@@ -1,13 +1,23 @@
 package org.river.exertion.ai.manifest
 
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.ai.msg.Telegraph
+import org.river.exertion.ai.messaging.FacetImpressionMessage
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.perception.PerceivedExternalPhenomena
 import org.river.exertion.ai.perception.PerceivedPhenomena
-import org.river.exertion.ai.phenomena.ExternalPhenomenaImpression
-import org.river.exertion.ai.phenomena.ExternalPhenomenaType
-import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
+import org.river.exertion.ai.phenomena.*
 import org.river.exertion.ecs.entity.IEntity
 
-class InternalManifest {
+class InternalManifest(val entity : Telegraph) : Telegraph {
+
+    init {
+        MessageChannel.ADD_EXT_PHENOMENA.enableReceive(this)
+        MessageChannel.ADD_INT_PHENOMENA.enableReceive(this)
+        MessageChannel.REMOVE_EXT_PHENOMENA.enableReceive(this)
+        MessageChannel.REMOVE_INT_PHENOMENA.enableReceive(this)
+        MessageChannel.INT_PHENOMENA_FACETS.enableReceive(this)
+    }
 
     val manifests = mutableListOf(
         ManifestInstance().apply { this.manifestType = ExternalPhenomenaType.VISUAL }
@@ -79,6 +89,27 @@ class InternalManifest {
         return fullList.apply { this.shuffle() }.first()
     }
 
-
+    override fun handleMessage(msg: Telegram?): Boolean {
+        if ( (msg != null) && (msg.sender != entity) ) {
+            if (msg.message == MessageChannel.ADD_EXT_PHENOMENA.id()) {
+                addImpression(msg.sender as IEntity, (msg.extraInfo as ExternalPhenomenaInstance).impression())
+            }
+            if (msg.message == MessageChannel.ADD_INT_PHENOMENA.id()) {
+                addImpression((msg.extraInfo as InternalPhenomenaInstance).impression())
+            }
+        }
+        if ( (msg != null) && (msg.sender == entity) ) {
+            if (msg.message == MessageChannel.INT_PHENOMENA_FACETS.id()) {
+                addFacetImpressions( (msg.extraInfo as FacetImpressionMessage).internalFacetImpressions)
+            }
+            if (msg.message == MessageChannel.REMOVE_INT_PHENOMENA.id()) {
+                removeImpression(msg.extraInfo as InternalPhenomenaImpression)
+            }
+            if (msg.message == MessageChannel.REMOVE_EXT_PHENOMENA.id()) {
+                removeImpression(msg.extraInfo as PerceivedExternalPhenomena)
+            }
+        }
+        return true
+    }
 
 }

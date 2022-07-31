@@ -1,22 +1,14 @@
 package org.river.exertion.s2d.ui
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import org.river.exertion.*
-import org.river.exertion.ai.internalFocus.InternalFocusInstance
-import org.river.exertion.ai.internalSymbol.core.SymbolInstance
+import org.river.exertion.KoboldCave
 import org.river.exertion.ai.messaging.FacetTableMessage
-import org.river.exertion.ai.messaging.FocusDisplayMessage
 import org.river.exertion.ai.messaging.MessageChannel
-import space.earlygrey.shapedrawer.JoinType
 
 class UIFacetTable(val initSkin : Skin) : Table(), Telegraph {
 
@@ -25,7 +17,7 @@ class UIFacetTable(val initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, Float>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.UI_FACET_DISPLAY.id())
+        MessageChannel.UI_FACET_DISPLAY.enableReceive(this)
         x = KoboldCave.initViewportWidth * 1f
         y = KoboldCave.initViewportHeight * 7/16f
         name = "facetDisplay"
@@ -63,11 +55,4 @@ class UIFacetTable(val initSkin : Skin) : Table(), Telegraph {
 
         return false
     }
-
-    companion object {
-        fun send(sender : Telegraph? = null, facetTableMessage: FacetTableMessage) {
-            MessageManager.getInstance().dispatchMessage(sender, MessageChannel.UI_FACET_DISPLAY.id(), facetTableMessage)
-        }
-    }
-
 }

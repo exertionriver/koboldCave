@@ -1,7 +1,6 @@
 package ai
 
 import com.badlogic.ashley.core.PooledEngine
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.Vector3
 import org.junit.jupiter.api.Test
 import org.river.exertion.ai.internalFacet.AngerFacet.angerFacet
@@ -77,9 +76,9 @@ class TestMemory {
     fun testAddingKoboldMemoryFromManifest() {
         val isi = InternalFacetInstancesState(IEntity.getFor(character)!!).apply { this.internalState.add(FearFacet.fearFacet { magnitude = 0.6f }) }
 
-        MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
+     //   MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageChannel.ADD_EXT_PHENOMENA.id(), koboldBalter)
+        MessageChannel.ADD_EXT_PHENOMENA.send(CharacterKobold.getFor(secondCharacter)!!, koboldBalter)
         engine.update(CharacterKobold.getFor(character)!!.moment)
 
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }
@@ -116,9 +115,9 @@ class TestMemory {
     fun testPollKoboldFacts() {
         val isi = InternalFacetInstancesState(IEntity.getFor(character)!!).apply { this.internalState.add(angerFacet { magnitude = 0.7f }) }
 
-        MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
+//        MemoryComponent.getFor(character)!!.internalFacetInstancesState = isi
 
-        MessageManager.getInstance().dispatchMessage(CharacterKobold.getFor(secondCharacter)!!, MessageChannel.ADD_EXT_PHENOMENA.id(), koboldBalter)
+        MessageChannel.ADD_EXT_PHENOMENA.send(CharacterKobold.getFor(secondCharacter)!!, koboldBalter)
         engine.update(CharacterKobold.getFor(character)!!.moment)
 
         ManifestComponent.getFor(character)!!.internalManifest.getManifest(ExternalPhenomenaType.AUDITORY).joinedList().forEach { println("$it : ${it.perceivedExternalPhenomena?.externalPhenomenaImpression?.countdown},${it.internalPhenomenaImpression?.countdown}") }

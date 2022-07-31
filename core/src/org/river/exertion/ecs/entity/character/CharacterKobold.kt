@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.ashley.entity
 import ktx.ashley.get
@@ -47,8 +46,7 @@ class CharacterKobold : ICharacter, Component {
         }
         entity.add(FacetComponent(this, noumenonInstance.facetAttributes!!))
 
-
-        MessageManager.getInstance().addListener(this, MessageChannel.S2D_ECS_BRIDGE.id())
+        MessageChannel.S2D_ECS_BRIDGE.enableReceive(this)
 
         logDebug (this.javaClass.name, "$initName initialized!")
     }

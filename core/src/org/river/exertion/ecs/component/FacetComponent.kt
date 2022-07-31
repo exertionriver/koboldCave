@@ -8,7 +8,7 @@ import org.river.exertion.ai.internalFacet.InternalFacetAttribute
 import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ecs.component.action.core.IComponent
 
-class FacetComponent(var entity : Telegraph, var facetAttributes: Set<InternalFacetAttribute>) : IComponent, Component {
+class FacetComponent(val entity : Telegraph, var facetAttributes: Set<InternalFacetAttribute>) : IComponent, Component {
 
     override val componentName = "Facet"
 

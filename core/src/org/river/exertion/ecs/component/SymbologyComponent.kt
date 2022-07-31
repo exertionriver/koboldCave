@@ -18,7 +18,6 @@ class SymbologyComponent(var entity : Telegraph) : IComponent, Component {
 
         fun has(entity : Entity) : Boolean = entity.components.firstOrNull{ it is SymbologyComponent } != null
         fun getFor(entity : Entity) : SymbologyComponent? = if (has(entity)) entity.components.first { it is SymbologyComponent } as SymbologyComponent else null
-
     }
 
 }

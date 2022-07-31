@@ -1,6 +1,5 @@
 package org.river.exertion.s2d.actor
 
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.Point
@@ -14,10 +13,6 @@ interface IBaseActor : Telegraph {
     var currentPosition : Point
     var currentAngle : Float
 
-//    fun init() {
-//        MessageManager.getInstance().addListener(this, MessageIds.ECS_S2D_BRIDGE.id())
-//    }
-
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null && (msg.sender as IEntity).entityName == actorName) {
@@ -30,7 +25,7 @@ interface IBaseActor : Telegraph {
                 currentAngle = (msg.extraInfo as ActionMoveComponent).currentAngle
             }
 
-            MessageManager.getInstance().dispatchMessage(this, MessageChannel.S2D_ECS_BRIDGE.id())
+            MessageChannel.S2D_ECS_BRIDGE.send(this, "ping" )
 
             return true
         }

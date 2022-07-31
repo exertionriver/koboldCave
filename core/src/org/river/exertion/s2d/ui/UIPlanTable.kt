@@ -1,7 +1,6 @@
 package org.river.exertion.s2d.ui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -17,7 +16,7 @@ class UIPlanTable(initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, String>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.PLAN_BRIDGE.id())
+        MessageChannel.PLAN_BRIDGE.enableReceive(this)
 
         skin = initSkin
         x = Gdx.graphics.width / 8f

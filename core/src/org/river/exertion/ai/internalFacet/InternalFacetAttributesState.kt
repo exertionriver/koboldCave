@@ -1,20 +1,13 @@
 package org.river.exertion.ai.internalFacet
 
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
-import org.river.exertion.ai.manifest.IManifest
-import org.river.exertion.ai.messaging.FacetMessage
 import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
-import org.river.exertion.ai.phenomena.InternalPhenomenaInstance
-import org.river.exertion.ecs.entity.IEntity
-import kotlin.math.roundToInt
 
 class InternalFacetAttributesState(val entity : Telegraph, var internalFacetAttributes: Set<InternalFacetAttribute>) : Telegraph  {
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.INT_CONDITION.id())
+        MessageChannel.INT_CONDITION.enableReceive(this)
     }
 
     var mIntAnxiety = 0f

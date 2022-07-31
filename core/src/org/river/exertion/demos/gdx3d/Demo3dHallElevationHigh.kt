@@ -297,7 +297,7 @@ class Demo3dHallElevationHigh(private val menuBatch: Batch,
 
         modelFloorsInstance = ModelInstance(modelBuilder.createLineGrid(10, 10, 10f, 10f, Material(createDiffuse(Color.BLUE)), (VertexAttributes.Usage.Position or VertexAttributes.Usage.Normal).toLong()), lookAt.x, lookAt.y, 0f)
 
-        var prevNodeLine3 = NodeLine3()
+        var prevNodeLine3 : NodeLine3
         var currNodeLine3 = NodeLine3()
         var floorNoise = Vector3(100f, 60f, 90f)
         val wallNoise = Vector3(100f, 40f, 90f)

@@ -8,6 +8,7 @@ import org.river.exertion.ai.internalSymbol.core.SymbolDisplayType
 import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.AnxietySymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolMessage
 import org.river.exertion.ai.messaging.TimingTableMessage
 import org.river.exertion.ecs.component.ConditionComponent
@@ -15,7 +16,6 @@ import org.river.exertion.ecs.component.MomentComponent
 import org.river.exertion.ecs.component.SymbologyComponent
 import org.river.exertion.ecs.entity.IEntity
 import org.river.exertion.ecs.entity.character.ICharacter
-import org.river.exertion.s2d.ui.UITimingTable
 
 class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class).get(), 1/10f) {
 
@@ -36,7 +36,7 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
         val entityAnxietySymbolInstance = SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.firstOrNull { it.symbolObj == AnxietySymbol }
 
         if (entityAnxietySymbolInstance != null) {
-            val entityAnxietyDelta = ConditionComponent.getFor(entity)!!.mIntAnxiety - entityAnxietySymbolInstance.position
+            val entityAnxietyDelta = ConditionComponent.getFor(entity)!!.internalCondition.mIntAnxiety - entityAnxietySymbolInstance.position
 
             SymbolModifyAction.executeImmediate(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = entityAnxietySymbolInstance.apply { this.deltaPosition = entityAnxietyDelta }))
         }
@@ -53,8 +53,8 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
 
         SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.mergeAndUpdateFacets()
 
-        UITimingTable.send(timingTableMessage = TimingTableMessage(label = "symbolSystem", value = interval))
-        UITimingTable.send(timingTableMessage = TimingTableMessage(label = "${ICharacter.getFor(entity)!!.entityName} moment delta", value = entityMomentDelta))
+        MessageChannel.UI_TIMING_DISPLAY.send(null, TimingTableMessage(label = "symbolSystem", value = interval))
+        MessageChannel.UI_TIMING_DISPLAY.send(null, TimingTableMessage(label = "${ICharacter.getFor(entity)!!.entityName} moment delta", value = entityMomentDelta))
 
     }
 }

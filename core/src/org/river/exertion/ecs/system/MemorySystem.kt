@@ -23,7 +23,7 @@ class MemorySystem : IntervalIteratingSystem(allOf(MemoryComponent::class).get()
     override fun processEntity(entity: Entity) {
 
         //poll attributes from external phenomena, store in activeMemory
-        MemoryComponent.getFor(entity)!!.perceivedPhenomena.forEach { perceivedPhenomenon ->
+        MemoryComponent.getFor(entity)!!.internalMemory.perceivedPhenomena.forEach { perceivedPhenomenon ->
             val attributeInstance = perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.pollRandomAttributeInstance(perceivedPhenomenon.perceivedExternalPhenomena!!.externalPhenomenaImpression!!.type)!! //poll random attribute not yet seen in encounter?
             val perceivedAttribute = PerceivedAttribute(attributeInstance, perceivedPhenomenon.perceivedExternalPhenomena)
 

@@ -1,6 +1,5 @@
 package org.river.exertion.ai.internalFacet
 
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalFacet.NoneFacet.noneFacet
@@ -14,7 +13,7 @@ import kotlin.math.roundToInt
 class InternalFacetInstancesState(val entity : Telegraph, var internalState: MutableSet<InternalFacetInstance> = mutableSetOf(), var internalAttributes: Set<InternalFacetAttribute> = mutableSetOf()) : Telegraph {
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.INT_FACET_MODIFY.id())
+        MessageChannel.INT_FACET_MODIFY.enableReceive(this)
     }
 
     var arisingInternalState = InternalFacetAttributesState(entity, internalAttributes)
@@ -57,13 +56,13 @@ class InternalFacetInstancesState(val entity : Telegraph, var internalState: Mut
             val spread = if (slots > 0f) magnitudeSum / slots else 1f
 
             //facet to slots to fill
-            val facetSlots = currentState.mapIndexed { index, internalFacetInstance ->
+            val facetSlots = currentState.map { internalFacetInstance ->
                 internalFacetInstance to (internalFacetInstance.magnitude / spread).roundToInt()
             }.filter { it.second > 0 }.sortedBy { it.second }
 
             var slotIdx = 0
             var facetIdx = 0
-            var facetSlotCount = 0
+            var facetSlotCount : Int
 
             while ((slotIdx < IManifest.listMax) && (facetIdx < facetSlots.size)) {
                 facetSlotCount = 0

@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.scenes.scene2d.Stage
 import ktx.ashley.entity
@@ -37,8 +36,8 @@ class LocationCave : ILocation, Component {
             if (!entity.components.contains(it as Component) ) entity.add(it as Component)
         }
 
-        MessageManager.getInstance().addListener(this, MessageChannel.S2D_ECS_BRIDGE.id())
-        MessageManager.getInstance().addListener(this, MessageChannel.NODEROOMMESH_BRIDGE.id())
+        MessageChannel.S2D_ECS_BRIDGE.enableReceive(this)
+        MessageChannel.NODEROOMMESH_BRIDGE.enableReceive(this)
 
         Gdx.app.log (this.javaClass.name, "$initName initialized!")
     }

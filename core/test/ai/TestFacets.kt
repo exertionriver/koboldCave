@@ -53,7 +53,7 @@ class TestFacets {
                 internalFacetAttribute { internalFacetInstance = doubtFacet {}; origin = 0f; arising = 0.1f }
         ) }
 */
-        ConditionComponent.getFor(character)!!.mIntAnxiety = .5f
+        ConditionComponent.getFor(character)!!.internalCondition.mIntAnxiety = .5f
 
 //        FacetComponent.getFor(character)!!.arisingInternalState = testState
 

@@ -2,7 +2,6 @@ package org.river.exertion.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
-import com.badlogic.gdx.ai.msg.MessageManager
 import ktx.ashley.allOf
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ecs.component.ConditionComponent
@@ -13,7 +12,7 @@ class ConditionSystem : IntervalIteratingSystem(allOf(ConditionComponent::class)
 
     override fun processEntity(entity: Entity) {
 
-        var mIntAnxiety = ConditionComponent.getFor(entity)!!.mIntAnxiety
+        var mIntAnxiety = ConditionComponent.getFor(entity)!!.internalCondition.mIntAnxiety
 
         //random jostling around
         val changeMIntAnxietyBy = (Random.nextInt(5) - 2) / 1000f
@@ -24,7 +23,7 @@ class ConditionSystem : IntervalIteratingSystem(allOf(ConditionComponent::class)
         if (mIntAnxiety > 1) mIntAnxiety = 1f
 
         //updates ConditionComponent and Arising Facet
-        MessageManager.getInstance().dispatchMessage(IEntity.getFor(entity), MessageChannel.INT_CONDITION.id(), mIntAnxiety)
+        MessageChannel.INT_CONDITION.send(IEntity.getFor(entity), mIntAnxiety)
 
     }
 }

@@ -1,12 +1,12 @@
 package org.river.exertion.ai.internalSymbol.core.symbolAction
 
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegraph
-import org.river.exertion.ai.internalSymbol.core.*
+import org.river.exertion.ai.internalSymbol.core.IPerceivedSymbol
+import org.river.exertion.ai.internalSymbol.core.SymbolActionType
+import org.river.exertion.ai.internalSymbol.core.SymbolDisplayType
+import org.river.exertion.ai.internalSymbol.core.SymbolModifierType
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolMessage
-import org.river.exertion.ecs.entity.IEntity
-import org.river.exertion.logDebug
 
 class SymbolModifyAction(var sourceSymbol : IPerceivedSymbol
                          , var targetSymbol : IPerceivedSymbol
@@ -28,7 +28,8 @@ class SymbolModifyAction(var sourceSymbol : IPerceivedSymbol
 //            logDebug("symbolAction", "${(entity as IEntity).entityName} executing SymbolModifyAction ${symbolMessage.symbolInstance!!.position}")
 
             symbolMessage.targetSymbolInstance!!.updateModifiedPosition(symbolMessage.symbolInstance!!, modifierType, sourceToTargetRatio)
-                executeImmediate(entity, SymbolMessage(symbolInstance = symbolMessage.targetSymbolInstance, symbolDisplayType = symbolMessage.targetSymbolDisplayType))
+
+            executeImmediate(entity, SymbolMessage(symbolInstance = symbolMessage.targetSymbolInstance, symbolDisplayType = symbolMessage.targetSymbolDisplayType))
         }
     }
 
@@ -37,11 +38,11 @@ class SymbolModifyAction(var sourceSymbol : IPerceivedSymbol
         fun executeImmediate(entity: Telegraph, symbolMessage: SymbolMessage) {
             if (symbolMessage.symbolInstance != null) {
                 if (symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT) {
-                    MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_MODIFIED.id(), symbolMessage)
+                    MessageChannel.INT_SYMBOL_MODIFIED.send(entity, symbolMessage)
                 }
                 symbolMessage.symbolInstance!!.normalizePosition()
                 symbolMessage.symbolInstance!!.normalizeFacetState()
-                MessageManager.getInstance().dispatchMessage(entity, MessageChannel.INT_SYMBOL_MODIFY.id(), symbolMessage)
+                MessageChannel.INT_SYMBOL_MODIFY.send(entity, symbolMessage)
             }
         }
     }

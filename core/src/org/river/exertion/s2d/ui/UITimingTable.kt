@@ -1,7 +1,5 @@
 package org.river.exertion.s2d.ui
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -19,7 +17,7 @@ class UITimingTable(val initSkin : Skin) : Table(), Telegraph {
     val register = mutableMapOf<String, Float>()
 
     init {
-        MessageManager.getInstance().addListener(this, MessageChannel.UI_TIMING_DISPLAY.id())
+        MessageChannel.UI_TIMING_DISPLAY.enableReceive(this)
         register["elapsed"] = 0f
         x = KoboldCave.initViewportWidth * 1f
         y = KoboldCave.initViewportHeight * 1f
@@ -55,12 +53,4 @@ class UITimingTable(val initSkin : Skin) : Table(), Telegraph {
 
         return false
     }
-
-    companion object {
-
-        fun send(sender : Telegraph? = null, timingTableMessage: TimingTableMessage) {
-            MessageManager.getInstance().dispatchMessage(sender, MessageChannel.UI_TIMING_DISPLAY.id(), timingTableMessage)
-        }
-    }
-
 }
