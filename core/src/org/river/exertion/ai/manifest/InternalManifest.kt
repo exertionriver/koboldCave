@@ -92,21 +92,21 @@ class InternalManifest(val entity : Telegraph) : Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender != entity) ) {
             if (msg.message == MessageChannel.ADD_EXT_PHENOMENA.id()) {
-                addImpression(msg.sender as IEntity, (msg.extraInfo as ExternalPhenomenaInstance).impression())
+                addImpression(msg.sender as IEntity, (MessageChannel.ADD_EXT_PHENOMENA.receiveMessage(msg.extraInfo) as ExternalPhenomenaInstance).externalImpression())
             }
             if (msg.message == MessageChannel.ADD_INT_PHENOMENA.id()) {
-                addImpression((msg.extraInfo as InternalPhenomenaInstance).impression())
+                addImpression((MessageChannel.ADD_INT_PHENOMENA.receiveMessage(msg.extraInfo) as InternalPhenomenaInstance).internalImpression())
             }
         }
         if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_PHENOMENA_FACETS.id()) {
-                addFacetImpressions( (msg.extraInfo as FacetImpressionMessage).internalFacetImpressions)
+                addFacetImpressions( (MessageChannel.INT_PHENOMENA_FACETS.receiveMessage(msg.extraInfo) as FacetImpressionMessage).internalFacetImpressions)
             }
             if (msg.message == MessageChannel.REMOVE_INT_PHENOMENA.id()) {
-                removeImpression(msg.extraInfo as InternalPhenomenaImpression)
+                removeImpression(MessageChannel.REMOVE_INT_PHENOMENA.receiveMessage(msg.extraInfo) as InternalPhenomenaImpression)
             }
             if (msg.message == MessageChannel.REMOVE_EXT_PHENOMENA.id()) {
-                removeImpression(msg.extraInfo as PerceivedExternalPhenomena)
+                removeImpression(MessageChannel.REMOVE_EXT_PHENOMENA.receiveMessage(msg.extraInfo) as PerceivedExternalPhenomena)
             }
         }
         return true

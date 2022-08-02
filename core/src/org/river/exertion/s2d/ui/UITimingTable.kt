@@ -30,7 +30,7 @@ class UITimingTable(val initSkin : Skin) : Table(), Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null) {
-            val timingTableMessage = msg.extraInfo as TimingTableMessage
+            val timingTableMessage : TimingTableMessage = MessageChannel.UI_TIMING_DISPLAY.receiveMessage(msg.extraInfo)
 
             if ( (timingTableMessage.label != null) && (timingTableMessage.value != null) ) {
                 register[timingTableMessage.label!!] = timingTableMessage.value!!

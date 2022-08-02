@@ -24,11 +24,11 @@ object ConsumeFocus : IInternalFocus {
         //consume capacity or consume remaining
 
         if (targetPresentSymbol.cycles <= targetPresentSymbol.consumeCapacity) {
-            SymbolModifyAction.executeImmediate(entity, SymbolMessage(symbolInstance = targetPresentSymbol.apply { this.deltaCycles = -targetPresentSymbol.cycles }))
+            MessageChannel.INT_SYMBOL_MODIFY.send(entity, SymbolMessage(symbolInstance = targetPresentSymbol.apply { this.deltaCycles = -targetPresentSymbol.cycles }))
 
             MessageChannel.INT_SYMBOL_DESPAWN.send(entity, SymbolMessage(symbolInstance = targetPresentSymbol.apply { this.displayType = SymbolDisplayType.PRESENT}))
         } else {
-            SymbolModifyAction.executeImmediate(entity, SymbolMessage(symbolInstance = targetPresentSymbol.apply { this.deltaCycles = -targetPresentSymbol.consumeCapacity }))
+            MessageChannel.INT_SYMBOL_MODIFY.send(entity, SymbolMessage(symbolInstance = targetPresentSymbol.apply { this.deltaCycles = -targetPresentSymbol.consumeCapacity }))
         }
     }
 }

@@ -68,7 +68,7 @@ class InternalFacetInstancesState(val entity : Telegraph, var internalState: Mut
                 facetSlotCount = 0
 
                 while (facetSlotCount < facetSlots[facetIdx].second) {
-                    returnProjectionList[slotIdx] = InternalPhenomenaInstance().apply { this.arisenFacet = facetSlots[facetIdx].first }.impression()
+                    returnProjectionList[slotIdx] = InternalPhenomenaInstance().apply { this.arisenFacet = facetSlots[facetIdx].first }.internalImpression()
                     facetSlotCount++
                     slotIdx++
                 }
@@ -170,7 +170,8 @@ class InternalFacetInstancesState(val entity : Telegraph, var internalState: Mut
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_FACET_MODIFY.id()) {
-                val facetMessage = msg.extraInfo as FacetMessage
+                val facetMessage : FacetMessage = MessageChannel.INT_FACET_MODIFY.receiveMessage(msg.extraInfo)
+
                 if (facetMessage.internalFacets != null) {
                     this.internalState = facetMessage.internalFacets!!
                 }

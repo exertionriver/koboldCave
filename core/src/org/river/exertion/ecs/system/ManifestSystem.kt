@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
 import ktx.ashley.allOf
 import org.river.exertion.ai.messaging.MessageChannel
+import org.river.exertion.ai.messaging.PerceivedPhenomenaMessage
 import org.river.exertion.ai.phenomena.InternalPhenomenaImpression
 import org.river.exertion.ecs.component.ManifestComponent
 import org.river.exertion.ecs.component.MomentComponent
@@ -38,7 +39,7 @@ class ManifestSystem : IntervalIteratingSystem(allOf(ManifestComponent::class).g
         val perceivedPhenomena = ManifestComponent.getFor(entity)!!.internalManifest.getPerceivedPhenomenaList().filter { it.perceivedExternalPhenomena?.externalPhenomenaImpression != null }
 
         if ( perceivedPhenomena.isNotEmpty() )
-            MessageChannel.INT_MEMORY.send(IEntity.getFor(entity), perceivedPhenomena)
+            MessageChannel.INT_MEMORY.send(IEntity.getFor(entity), PerceivedPhenomenaMessage(perceivedPhenomena = perceivedPhenomena.toMutableList()))
 
     }
 }

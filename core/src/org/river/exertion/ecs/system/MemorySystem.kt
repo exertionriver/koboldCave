@@ -8,6 +8,7 @@ import org.river.exertion.ai.internalSymbol.perceivedSymbols.UnknownSymbol
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.memory.MemoryInstance
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolMessage
 import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ai.perception.PerceivedAttribute
@@ -39,12 +40,12 @@ class MemorySystem : IntervalIteratingSystem(allOf(MemoryComponent::class).get()
                         val perceivedNoumenon = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)).apply { this.perceivedAttributes.add(perceivedAttribute); this.instanceName = instanceName; this.noumenonType = noumenonType; isNamed = true }
                         MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.add(MemoryInstance(perceivedNoumenon, UnknownSymbol))
                         if (noumenonType == NoumenonType.INDIVIDUAL)
-                            SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.spawn(SymbolMessage(symbolInstance = UnknownSymbol.spawn()))
+                            MessageChannel.INT_SYMBOL_SPAWN.send(IEntity.getFor(entity)!!, SymbolMessage(symbol = UnknownSymbol))
                     } else { //noumenon found in longterm memory, pull over
                         val memoryInstance = MemoryComponent.getFor(entity)!!.internalMemory.longtermMemory.noumenaRegister.filter { it.perceivedNoumenon.noumenonType == noumenonType && (instanceName == null || (it.perceivedNoumenon.instanceName == instanceName) ) }.first()
                         MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.add(memoryInstance.apply { this.perceivedNoumenon.perceivedAttributes.add(perceivedAttribute) ; this.symbol = memoryInstance.symbol})
                         if (noumenonType == NoumenonType.INDIVIDUAL)
-                            SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.spawn(SymbolMessage(symbolInstance = memoryInstance.symbol.spawn()))
+                            MessageChannel.INT_SYMBOL_SPAWN.send(IEntity.getFor(entity)!!, SymbolMessage(symbol = memoryInstance.symbol))
                     }
                 } else { //noumenon already in active memory, update association; todo: merge association with past associations
            //         MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.filter { it.perceivedNoumenon.noumenonType == noumenonType && (instanceName == null || (it.perceivedNoumenon.instanceName == instanceName) ) }.first().apply { this.perceivedNoumenon.perceivedAttributes.add(perceivedAttribute); this.internalFacetInstancesState = MemoryComponent.getFor(entity)!!.internalFacetInstancesState }

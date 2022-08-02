@@ -20,7 +20,6 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
         MessageChannel.INT_SYMBOL_SPAWN.enableReceive(this)
         MessageChannel.INT_SYMBOL_DESPAWN.enableReceive(this)
         MessageChannel.INT_SYMBOL_MODIFY.enableReceive(this)
-        MessageChannel.INT_SYMBOL_MODIFIED.enableReceive(this)
     }
 
     fun mergeAndUpdateFacets() {
@@ -37,7 +36,7 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
     }
 
     //despawn all instances of this symbol
-    fun despawn(symbol : IPerceivedSymbol) {
+    private fun despawn(symbol : IPerceivedSymbol) {
         //remove all plans related to symbolObj
         symbolDisplay.filter { it.symbolObj == symbol && it.displayType == SymbolDisplayType.ABSENT }.forEach { absentSymbolInstance ->
             MessageChannel.INT_REMOVE_FOCUS_PLAN.send(entity, FocusMessage(absentSymbolInstance = absentSymbolInstance) )
@@ -47,7 +46,7 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
     }
 
     //despawn all instances of this symbol for a particular display type
-    fun despawn(symbol : IPerceivedSymbol, symbolDisplayType: SymbolDisplayType) {
+    private fun despawn(symbol : IPerceivedSymbol, symbolDisplayType: SymbolDisplayType) {
         if (symbolDisplayType == SymbolDisplayType.ABSENT)
         //remove all plans related to symbolObj if displayType is ABSENT
             symbolDisplay.filter { it.symbolObj == symbol && it.displayType == SymbolDisplayType.ABSENT }.forEach { absentSymbolInstance ->
@@ -58,7 +57,7 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
     }
 
     //despawn an actual instance of this symbol
-    fun despawn(symbolInstance : SymbolInstance) {
+    private fun despawn(symbolInstance : SymbolInstance) {
         if (symbolInstance.displayType == SymbolDisplayType.ABSENT)
         //remove all plans related to ABSENT symbolInstance
             MessageChannel.INT_REMOVE_FOCUS_PLAN.send(entity, FocusMessage(absentSymbolInstance = symbolInstance) )
@@ -66,8 +65,7 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
         symbolDisplay.removeIf { it == symbolInstance }
     }
 
-    @Suppress("NewApi")
-    fun despawnHandler(symbolMessage : SymbolMessage) {
+    private fun despawnHandler(symbolMessage : SymbolMessage) {
         when {
             (symbolMessage.symbol != null) ->
                 if (symbolMessage.symbolDisplayType != null) {
@@ -81,101 +79,114 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
         }
     }
 
-    fun spawnHandler(symbolMessage : SymbolMessage) {
-        when {
-            (symbolMessage.symbol != null) ->
-                if (symbolMessage.symbolDisplayType != null && symbolDisplay.none { it.symbolObj == symbolMessage.symbol && it.displayType == symbolMessage.symbolDisplayType }) {
-                    //spawn instance of a symboltype if obj not already spawned
-                    val spawnSymbol = symbolMessage.symbol!!.spawn().apply { this.displayType = symbolMessage.symbolDisplayType!! }
-                    symbolDisplay.add(spawnSymbol)
-                    //if spawn symbol display type is ABSENT, add focus
-                    if (symbolMessage.symbolDisplayType == SymbolDisplayType.ABSENT)
-                        symbolMessage.symbolInstance!!.symbolObj.focusSatisfiers.forEach {
-                            MessageChannel.INT_ADD_FOCUS_PLAN.send(entity, FocusMessage(satisfierFocus = it, absentSymbolInstance = spawnSymbol))
-                        }
-                } else if (symbolDisplay.none { it.symbolObj == symbolMessage.symbol })
-                //spawn insance of a symboltype and display type is obj not already spawned
-                    symbolDisplay.add(symbolMessage.symbol!!.spawn())
-            //spawn a particular instance in the display, multiple are allowed for PRESENT, single allowed for ABSENT
-            (symbolMessage.symbolInstance != null) ->
-                if (symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT)
-                    symbolDisplay.add(symbolMessage.symbolInstance!!)
-                //ABSENT symbol
-                else if (symbolDisplay.none { it.symbolObj == symbolMessage.symbolInstance!!.symbolObj && it.displayType == symbolMessage.symbolInstance!!.displayType }) {
-                    symbolDisplay.add(symbolMessage.symbolInstance!!)
-                    //add first satisfier to focus
-                    symbolMessage.symbolInstance!!.symbolObj.focusSatisfiers.forEach {
-                        MessageChannel.INT_ADD_FOCUS_PLAN.send(entity, FocusMessage(satisfierFocus = it, absentSymbolInstance = symbolMessage.symbolInstance!!))
-                    }
-                }
-        }
-
-    }
-    fun spawn(symbolMessage : SymbolMessage) {
-        when {
-            (symbolMessage.symbol != null) ->
-                if (symbolMessage.symbolDisplayType != null && symbolDisplay.none { it.symbolObj == symbolMessage.symbol && it.displayType == symbolMessage.symbolDisplayType }) {
-                    //spawn instance of a symboltype if obj not already spawned
-                    val spawnSymbol = symbolMessage.symbol!!.spawn().apply { this.displayType = symbolMessage.symbolDisplayType!! }
-                    symbolDisplay.add(spawnSymbol)
-                    //if spawn symbol display type is ABSENT, add focus
-                    if (symbolMessage.symbolDisplayType == SymbolDisplayType.ABSENT)
-                        symbolMessage.symbolInstance!!.symbolObj.focusSatisfiers.forEach {
-                            MessageChannel.INT_ADD_FOCUS_PLAN.send(entity, FocusMessage(satisfierFocus = it, absentSymbolInstance = spawnSymbol))
-                        }
-                } else if (symbolDisplay.none { it.symbolObj == symbolMessage.symbol })
-                    //spawn insance of a symboltype and display type is obj not already spawned
-                    symbolDisplay.add(symbolMessage.symbol!!.spawn())
-            //spawn a particular instance in the display, multiple are allowed for PRESENT, single allowed for ABSENT
-            (symbolMessage.symbolInstance != null) ->
-                if (symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT)
-                    symbolDisplay.add(symbolMessage.symbolInstance!!)
-                //ABSENT symbol
-                else if (symbolDisplay.none { it.symbolObj == symbolMessage.symbolInstance!!.symbolObj && it.displayType == symbolMessage.symbolInstance!!.displayType }) {
-                    symbolDisplay.add(symbolMessage.symbolInstance!!)
-                    //add first satisfier to focus
-                    symbolMessage.symbolInstance!!.symbolObj.focusSatisfiers.forEach {
-                        MessageChannel.INT_ADD_FOCUS_PLAN.send(entity, FocusMessage(satisfierFocus = it, absentSymbolInstance = symbolMessage.symbolInstance!!))
-                    }
-                }
-        }
+    //spawn instance of symbol, defaulting to PRESENT display
+    private fun spawn(symbol : IPerceivedSymbol) {
+        symbolDisplay.add(symbol.spawn())
     }
 
-    fun update(symbolMessage : SymbolMessage) {
-        if (symbolMessage.symbolInstance != null && symbolDisplay.any { it == symbolMessage.symbolInstance }) {
-            if (symbolMessage.symbolDisplayType != null)
-                symbolDisplay.filter { it == symbolMessage.symbolInstance!! && it.displayType == symbolMessage.symbolDisplayType }.forEach {
-                    it.cycles = symbolMessage.symbolInstance!!.cycles
-                    it.position = symbolMessage.symbolInstance!!.position
-                    it.consumeCapacity = symbolMessage.symbolInstance!!.consumeCapacity
-                    it.handleCapacity = symbolMessage.symbolInstance!!.handleCapacity
-                    it.possessCapacity = symbolMessage.symbolInstance!!.possessCapacity
+    //spawn instance of symbol in display type if obj not already spawned in display type
+    private fun spawn(symbol : IPerceivedSymbol, symbolDisplayType: SymbolDisplayType) {
+        if (symbolDisplayType == SymbolDisplayType.ABSENT) {
+            if (symbolDisplay.none { it.symbolObj == symbol && it.displayType == symbolDisplayType }) {
+
+                val spawnSymbol = symbol.spawn().apply { this.displayType = symbolDisplayType }
+                symbolDisplay.add(spawnSymbol)
+
+                //add focus for ABSENT symbol
+                symbol.focusSatisfiers.forEach {
+                    MessageChannel.INT_ADD_FOCUS_PLAN.send(entity, FocusMessage(satisfierFocus = it, absentSymbolInstance = spawnSymbol))
                 }
-            else symbolDisplay.filter { it == symbolMessage.symbolInstance!! }.forEach {
-                it.cycles = symbolMessage.symbolInstance!!.cycles
-                it.position = symbolMessage.symbolInstance!!.position
-                it.consumeCapacity = symbolMessage.symbolInstance!!.consumeCapacity
-                it.handleCapacity = symbolMessage.symbolInstance!!.handleCapacity
-                it.possessCapacity = symbolMessage.symbolInstance!!.possessCapacity
+
+            } else {
+                symbolDisplay.add(symbol.spawn())
             }
+        }
+    }
+
+    private fun spawn(symbolInstance : SymbolInstance) {
+        if (symbolInstance.displayType == SymbolDisplayType.ABSENT) {
+            if (symbolDisplay.none { it.symbolObj == symbolInstance.symbolObj && it.displayType == symbolInstance.displayType }) {
+
+                symbolDisplay.add(symbolInstance)
+
+                //add focus for ABSENT symbol
+                symbolInstance.symbolObj.focusSatisfiers.forEach {
+                    MessageChannel.INT_ADD_FOCUS_PLAN.send(
+                        entity,
+                        FocusMessage(satisfierFocus = it, absentSymbolInstance = symbolInstance)
+                    )
+                }
+            }
+        } else {
+            symbolDisplay.add(symbolInstance)
+        }
+    }
+
+    private fun spawnHandler(symbolMessage : SymbolMessage) {
+        when {
+            (symbolMessage.symbol != null) ->
+                if (symbolMessage.symbolDisplayType != null) {
+                    spawn(symbolMessage.symbol!!, symbolMessage.symbolDisplayType!!)
+                } else {
+                    spawn(symbolMessage.symbol!!)
+                }
+
+            (symbolMessage.symbolInstance != null) -> {
+                spawn(symbolMessage.symbolInstance!!)
+            }
+        }
+    }
+
+    private fun updateHandler(symbolMessage : SymbolMessage) {
+
+        if (symbolMessage.symbolInstance != null) {
+            if (symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT) {
+                propagateUpdateHandler(symbolMessage)
+            }
+            update(symbolMessage.symbolInstance!!)
+        }
+
+    }
+
+    private fun update(symbolInstance: SymbolInstance) {
+
+        if (symbolDisplay.any { it == symbolInstance } ) {
+
+            symbolInstance.normalizePosition()
+            symbolInstance.normalizeFacetState()
+
+            symbolDisplay.filter { it == symbolInstance && it.displayType == symbolInstance.displayType }.forEach {
+                it.cycles = symbolInstance.cycles
+                it.position = symbolInstance.position
+                it.consumeCapacity = symbolInstance.consumeCapacity
+                it.handleCapacity = symbolInstance.handleCapacity
+                it.possessCapacity = symbolInstance.possessCapacity
+            }
+
             //spawn / despawn / etc. as needed
-            symbolMessage.symbolInstance!!.symbolObj.symbolActions.filter { it.symbolActionType != SymbolActionType.MODIFY}.forEach {
-                it.execute(entity, SymbolMessage(symbolInstance = symbolMessage.symbolInstance!!))
+            symbolInstance.symbolObj.symbolActions.filter { it.symbolActionType != SymbolActionType.MODIFY}.forEach {
+                it.execute(entity, SymbolMessage(symbolInstance = symbolInstance))
             }
-            if (symbolMessage.symbolInstance!!.cycles == 0f && symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT) {
-                despawnHandler(symbolMessage)
+            if (symbolInstance.cycles == 0f && symbolInstance.displayType == SymbolDisplayType.PRESENT) {
+                despawn(symbolInstance)
             }
         }
     }
 
-    fun propagateUpdate(symbolMessage : SymbolMessage) {
-        if (symbolMessage.symbolInstance != null && symbolDisplay.any { it == symbolMessage.symbolInstance } && symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT) {
-            symbolDisplay.flatMap { it.symbolObj.symbolActions }.filter { it.symbolActionType == SymbolActionType.MODIFY && (it as SymbolModifyAction).sourceSymbol == symbolMessage.symbolInstance!!.symbolObj }.forEach { symbolAction ->
-                symbolDisplay.filter {it.symbolObj == (symbolAction as SymbolModifyAction).targetSymbol && it.displayType == symbolAction.targetDisplayType}.forEach { targetSymbolInstance ->
-                    if (circularity.contains(Pair(symbolMessage.symbolInstance!!, targetSymbolInstance)) ) throw Exception("circularity detected: ${symbolMessage.symbolInstance}, $targetSymbolInstance")
+    private fun propagateUpdateHandler(symbolMessage : SymbolMessage) {
+        if (symbolMessage.symbolInstance != null && symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT) {
+            propagateUpdate(symbolMessage.symbolInstance!!)
+        }
+    }
+
+    private fun propagateUpdate(symbolInstance : SymbolInstance) {
+        if (symbolDisplay.any { it == symbolInstance }) {
+            symbolDisplay.flatMap { it.symbolObj.symbolActions }.filter { it.symbolActionType == SymbolActionType.MODIFY && (it as SymbolModifyAction).sourceSymbol == symbolInstance.symbolObj }.forEach { symbolAction ->
+                symbolDisplay.filter { it.symbolObj == (symbolAction as SymbolModifyAction).targetSymbol && it.displayType == symbolAction.targetDisplayType}.forEach { targetSymbolInstance ->
+                    if (circularity.contains(Pair(symbolInstance, targetSymbolInstance)) ) throw Exception("circularity detected: ${symbolInstance}, $targetSymbolInstance")
                     else {
-                        circularity.add(Pair(symbolMessage.symbolInstance!!, targetSymbolInstance))
-                        symbolAction.execute(entity, SymbolMessage(symbolInstance = symbolMessage.symbolInstance, targetSymbolInstance = targetSymbolInstance, targetSymbolDisplayType = (symbolAction as SymbolModifyAction).targetDisplayType))
+                        circularity.add(Pair(symbolInstance, targetSymbolInstance))
+                        symbolAction.execute(entity, SymbolMessage(symbolInstance = symbolInstance, targetSymbolInstance = targetSymbolInstance, targetSymbolDisplayType = (symbolAction as SymbolModifyAction).targetDisplayType))
                     }
                 }
             }
@@ -185,16 +196,13 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_SYMBOL_SPAWN.id()) {
-                this.spawn(MessageChannel.INT_SYMBOL_SPAWN.receiveMessage(msg.extraInfo))
+                this.spawnHandler(MessageChannel.INT_SYMBOL_SPAWN.receiveMessage(msg.extraInfo))
             }
             if (msg.message == MessageChannel.INT_SYMBOL_DESPAWN.id()) {
                 this.despawnHandler(MessageChannel.INT_SYMBOL_DESPAWN.receiveMessage(msg.extraInfo))
             }
             if (msg.message == MessageChannel.INT_SYMBOL_MODIFY.id()) {
-                this.update(msg.extraInfo as SymbolMessage)
-            }
-            if (msg.message == MessageChannel.INT_SYMBOL_MODIFIED.id()) {
-                this.propagateUpdate(msg.extraInfo as SymbolMessage)
+                this.updateHandler(MessageChannel.INT_SYMBOL_MODIFY.receiveMessage(msg.extraInfo))
             }
         }
         return true

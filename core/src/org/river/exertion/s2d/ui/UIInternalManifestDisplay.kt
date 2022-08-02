@@ -30,7 +30,7 @@ class UIInternalManifestDisplay(val initSkin : Skin) : Table(), Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null) {
-            val internalManifestDisplayMessage = msg.extraInfo as ManifestDisplayMessage
+            val internalManifestDisplayMessage : ManifestDisplayMessage = MessageChannel.UI_MANIFEST_DISPLAY.receiveMessage(msg.extraInfo)
 
             register.clear()
 

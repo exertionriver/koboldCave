@@ -29,7 +29,7 @@ class InternalCondition(val entity : Telegraph) : Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_CONDITION.id()) {
-                this.mIntAnxiety = msg.extraInfo as Float
+                this.mIntAnxiety = MessageChannel.INT_CONDITION.receiveMessage(msg.extraInfo)
             }
         }
         return true

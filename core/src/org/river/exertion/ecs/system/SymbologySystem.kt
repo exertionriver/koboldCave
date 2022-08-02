@@ -28,7 +28,7 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
         val entityMomentSymbolInstance = SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.firstOrNull { it.symbolObj == MomentElapseSymbol }
 
         if (entityMomentSymbolInstance != null)
-            SymbolModifyAction.executeImmediate(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = entityMomentSymbolInstance.apply { this.deltaPosition = entityMomentDelta }))
+            MessageChannel.INT_SYMBOL_MODIFY.send(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = entityMomentSymbolInstance.apply { this.deltaPosition = entityMomentDelta }))
 
         //clear circularity check for anxiety
         SymbologyComponent.getFor(entity)!!.internalSymbology.internalSymbolDisplay.circularity.clear()
@@ -38,7 +38,7 @@ class SymbologySystem : IntervalIteratingSystem(allOf(SymbologyComponent::class)
         if (entityAnxietySymbolInstance != null) {
             val entityAnxietyDelta = ConditionComponent.getFor(entity)!!.internalCondition.mIntAnxiety - entityAnxietySymbolInstance.position
 
-            SymbolModifyAction.executeImmediate(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = entityAnxietySymbolInstance.apply { this.deltaPosition = entityAnxietyDelta }))
+            MessageChannel.INT_SYMBOL_MODIFY.send(IEntity.getFor(entity)!!, SymbolMessage(symbolInstance = entityAnxietySymbolInstance.apply { this.deltaPosition = entityAnxietyDelta }))
         }
 
         //spawn / despawn for any remaining symbols

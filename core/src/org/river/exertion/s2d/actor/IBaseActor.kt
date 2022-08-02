@@ -18,18 +18,16 @@ interface IBaseActor : Telegraph {
         if (msg != null && (msg.sender as IEntity).entityName == actorName) {
  //           Gdx.app.log("message","actor $actorName received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
 
-            if (msg.extraInfo != null && msg.extraInfo is ActionMoveComponent) {
+            val actionMoveComponent : ActionMoveComponent = MessageChannel.CURNODE_BRIDGE.receiveMessage(msg.extraInfo)
+
  //               Gdx.app.log("message","update currentPosition to: ${(msg.extraInfo as ActionMoveComponent).currentPosition}, currentAngle to: ${(msg.extraInfo as ActionMoveComponent).currentAngle}")
 
-                currentPosition = (msg.extraInfo as ActionMoveComponent).currentPosition
-                currentAngle = (msg.extraInfo as ActionMoveComponent).currentAngle
-            }
+                currentPosition = actionMoveComponent.currentPosition
+                currentAngle = actionMoveComponent.currentAngle
+        }
 
             MessageChannel.S2D_ECS_BRIDGE.send(this, "ping" )
 
             return true
-        }
-
-        return false
     }
 }

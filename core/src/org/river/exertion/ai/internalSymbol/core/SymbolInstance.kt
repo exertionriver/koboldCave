@@ -1,7 +1,6 @@
 package org.river.exertion.ai.internalSymbol.core
 
 import org.river.exertion.ai.internalFacet.InternalFacetInstance
-import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.NonePerceivedSymbol
 import java.util.*
 import kotlin.math.sign
@@ -62,7 +61,7 @@ data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbo
 
     //indirectly update position via modification
     //e.g. this == Hunger, modifyingSymbol == Food
-    fun updateModifiedPosition(modifyingSymbol : SymbolInstance, modifierType: SymbolModifierType, sourceToTargetRatio : Float) {
+    fun setDeltas(modifyingSymbol : SymbolInstance, modifierType: SymbolModifierType, sourceToTargetRatio : Float) {
 
         deltaPosition = when (modifierType) {
             SymbolModifierType.POSITION_TO_POSITION ->

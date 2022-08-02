@@ -71,10 +71,10 @@ class InternalFocusPlan(var entity : Telegraph, var satisfierFocus: IInternalFoc
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_ADD_FOCUS_CHAIN_LINK.id()) {
-                this.addLink(msg.extraInfo as FocusMessage)
+                this.addLink(MessageChannel.INT_ADD_FOCUS_CHAIN_LINK.receiveMessage(msg.extraInfo))
             }
             if (msg.message == MessageChannel.INT_REMOVE_FOCUS_CHAIN_LINK.id()) {
-                this.removeLink(msg.extraInfo as FocusMessage)
+                this.removeLink(MessageChannel.INT_REMOVE_FOCUS_CHAIN_LINK.receiveMessage(msg.extraInfo))
             }
         }
         return true

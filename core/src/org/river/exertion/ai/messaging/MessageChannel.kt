@@ -34,7 +34,6 @@ enum class MessageChannel {
     INT_FACET { override val messageClass = FacetMessage::class },
     INT_MEMORY { override val messageClass = PerceivedPhenomenaMessage::class },
     INT_SYMBOL_MODIFY { override val messageClass = SymbolMessage::class },
-    INT_SYMBOL_MODIFIED { override val messageClass = SymbolMessage::class },
     INT_SYMBOL_SPAWN { override val messageClass = SymbolMessage::class },
     INT_SYMBOL_DESPAWN { override val messageClass = SymbolMessage::class },
     INT_ADD_FOCUS_PLAN { override val messageClass = FocusMessage::class },

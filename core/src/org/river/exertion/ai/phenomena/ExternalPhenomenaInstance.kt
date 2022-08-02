@@ -16,7 +16,7 @@ class ExternalPhenomenaInstance {
     var loss = 0f //% per distance unit
     var fade = 0f //% per time unit
 
-    fun impression() : ExternalPhenomenaImpression {
+    fun externalImpression() : ExternalPhenomenaImpression {
         return ExternalPhenomenaImpression().apply {
             type = this@ExternalPhenomenaInstance.type
             actionType = this@ExternalPhenomenaInstance.actionType

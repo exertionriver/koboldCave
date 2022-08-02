@@ -3,9 +3,11 @@ package org.river.exertion.ai.internalFocus
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalSymbol.core.InternalSymbolDisplay
+import org.river.exertion.ai.internalSymbol.core.SymbolInstance
 import org.river.exertion.ai.messaging.FocusMessage
 import org.river.exertion.ai.messaging.MessageChannel
 
+@Suppress("NewApi")
 class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
 
     init {
@@ -16,11 +18,11 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
     var focusPlans = mutableSetOf<InternalFocusPlan>()
 
     fun rebuildPlans(internalSymbolDisplay: InternalSymbolDisplay, momentDelta : Float) {
-//        sortedByDescending { it.absentSymbolInstance.impact }
+
         focusPlans.forEach {
 
             if (!internalSymbolDisplay.symbolDisplay.contains(it.absentSymbolInstance))
-                removePlan(FocusMessage(it.satisfierFocus, it.absentSymbolInstance))
+                removePlan(it.satisfierFocus, it.absentSymbolInstance)
 
             if (it.instancesChain.isEmpty()) it.seedChain()
 
@@ -28,30 +30,41 @@ class InternalFocusDisplay(val entity : Telegraph) : Telegraph {
         }
     }
 
-    fun addPlan(focusMessage : FocusMessage) {
-        if ( (focusMessage.satisfierFocus != null && focusMessage.absentSymbolInstance != null)
-                    && (focusPlans.none {it.absentSymbolInstance == focusMessage.absentSymbolInstance && it.satisfierFocus == focusMessage.satisfierFocus} ) ) {
-            val addedPlan = InternalFocusPlan(entity, focusMessage.satisfierFocus!!, focusMessage.absentSymbolInstance!!)
+    fun addPlanHandler(focusMessage : FocusMessage) {
+        if (focusMessage.satisfierFocus != null && focusMessage.absentSymbolInstance != null)
+            addPlan(focusMessage.satisfierFocus!!, focusMessage.absentSymbolInstance!!)
+    }
+
+    fun addPlan(satisfierFocus : IInternalFocus, absentSymbolInstance : SymbolInstance) {
+        if (focusPlans.none {it.absentSymbolInstance == absentSymbolInstance && it.satisfierFocus == satisfierFocus} ) {
+            val addedPlan = InternalFocusPlan(entity, satisfierFocus, absentSymbolInstance)
             focusPlans.add(addedPlan)
         }
     }
 
-    @Suppress("NewApi")
-    fun removePlan(focusMessage : FocusMessage) {
+    fun removePlanHandler(focusMessage : FocusMessage) {
         if (focusMessage.absentSymbolInstance != null)
             if (focusMessage.satisfierFocus != null)
-                focusPlans.removeIf { it.satisfierFocus == focusMessage.satisfierFocus!! && it.absentSymbolInstance == focusMessage.absentSymbolInstance!! }
+                removePlan(focusMessage.satisfierFocus!!, focusMessage.absentSymbolInstance!!)
             else
-                focusPlans.removeIf { it.absentSymbolInstance == focusMessage.absentSymbolInstance!! }
+                removePlan(focusMessage.absentSymbolInstance!!)
    }
+
+    fun removePlan(satisfierFocus : IInternalFocus, absentSymbolInstance : SymbolInstance) {
+        focusPlans.removeIf { it.satisfierFocus == satisfierFocus && it.absentSymbolInstance == absentSymbolInstance }
+    }
+
+    fun removePlan(absentSymbolInstance : SymbolInstance) {
+        focusPlans.removeIf { it.absentSymbolInstance == absentSymbolInstance }
+    }
 
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_ADD_FOCUS_PLAN.id()) {
-                this.addPlan(msg.extraInfo as FocusMessage)
+                this.addPlanHandler(MessageChannel.INT_ADD_FOCUS_PLAN.receiveMessage(msg.extraInfo))
             }
             if (msg.message == MessageChannel.INT_REMOVE_FOCUS_PLAN.id()) {
-                this.removePlan(msg.extraInfo as FocusMessage)
+                this.removePlanHandler(MessageChannel.INT_REMOVE_FOCUS_PLAN.receiveMessage(msg.extraInfo))
             }
         }
         return true

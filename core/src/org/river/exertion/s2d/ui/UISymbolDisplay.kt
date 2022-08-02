@@ -33,7 +33,7 @@ class UISymbolDisplay(val initSkin : Skin) : Table(), Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null) {
-            val symbolDisplayMessage = msg.extraInfo as SymbolDisplayMessage
+            val symbolDisplayMessage : SymbolDisplayMessage = MessageChannel.UI_SYMBOL_DISPLAY.receiveMessage(msg.extraInfo)
 
             register.clear()
 

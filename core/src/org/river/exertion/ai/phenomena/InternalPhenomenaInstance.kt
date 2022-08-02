@@ -7,7 +7,7 @@ class InternalPhenomenaInstance {
     var arisenFacet = noneFacet {}
     fun fade() = 10f //arisenFacet.magnitude * 10 //% per time unit; first pass
 
-    fun impression() : InternalPhenomenaImpression {
+    fun internalImpression() : InternalPhenomenaImpression {
         return InternalPhenomenaImpression().apply {
             arisenFacet = this@InternalPhenomenaInstance.arisenFacet
             countdown = this@InternalPhenomenaInstance.fade()

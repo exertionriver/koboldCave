@@ -15,7 +15,8 @@ import ktx.scene2d.Scene2DSkin
 import org.river.exertion.InputHandler
 import org.river.exertion.Render
 import org.river.exertion.ai.internalFacet.AngerFacet
-import org.river.exertion.ai.internalSymbol.perceivedSymbols.FriendSymbol
+import org.river.exertion.ai.internalSymbol.core.SymbolInstance
+import org.river.exertion.ai.internalSymbol.perceivedSymbols.*
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.memory.MemoryInstance
@@ -55,6 +56,13 @@ class DemoBasicAI(private val menuBatch: Batch,
     }
     val secondCharacterMemory = MemoryInstance(secondCharacterPN, FriendSymbol)
 
+    val hungerDisplay = mutableSetOf(
+        SymbolInstance(AnxietySymbol, cycles = 1f, position = .1f),
+        SymbolInstance(HungerSymbol, cycles = 1f, position = .55f),
+        SymbolInstance(FoodSymbol, cycles = 12f, position = .6f).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f},
+        SymbolInstance(MomentElapseSymbol, cycles = -1f, position = .4f)
+    )
+
     @Suppress("NewApi")
     override fun render(delta: Float) {
 
@@ -70,7 +78,8 @@ class DemoBasicAI(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> ConditionComponent.getFor(character)!!.internalCondition.mIntAnxiety -= .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude += .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude -= .05f
-            Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) -> ManifestComponent.getFor(character)!!.internalManifest.addImpression(IEntity.getFor(secondCharacter)!!, ordinarySound.impression())
+            Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) -> ManifestComponent.getFor(character)!!.internalManifest.addImpression(IEntity.getFor(secondCharacter)!!, ordinarySound.externalImpression())
+            Gdx.input.isKeyJustPressed(Input.Keys.NUM_4) -> SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.addAll(hungerDisplay)
        }
 
         menuCamera.update()
@@ -109,13 +118,7 @@ class DemoBasicAI(private val menuBatch: Batch,
         menuStage.addActor(UIFacetTable(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIInternalManifestDisplay(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIExternalManifestDisplay(Scene2DSkin.defaultSkin))
-/*
-        SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay = mutableSetOf(
-                SymbolInstance(AnxietySymbol, cycles = 1f, position = .1f),
-                SymbolInstance(HungerSymbol, cycles = 1f, position = .55f),
-                SymbolInstance(FoodSymbol, cycles = 12f, position = .6f).apply { this.consumeCapacity = 1f; this.handleCapacity = 3f},
-                SymbolInstance(MomentElapseSymbol, cycles = -1f, position = .4f)
-        )*/
+
        MemoryComponent.getFor(character)!!.internalMemory.longtermMemory.noumenaRegister.add(secondCharacterMemory)
 //        menuStage.addActor(UIFeelingTable(Scene2DSkin.defaultSkin))
 //        menuStage.addActor(UIPerceptionTable(Scene2DSkin.defaultSkin))

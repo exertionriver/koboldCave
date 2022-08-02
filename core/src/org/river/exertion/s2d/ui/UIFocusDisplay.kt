@@ -31,7 +31,7 @@ class UIFocusDisplay(val initSkin : Skin) : Table(), Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null) {
-            val focusDisplayMessage = msg.extraInfo as FocusDisplayMessage
+            val focusDisplayMessage : FocusDisplayMessage = MessageChannel.UI_FOCUS_DISPLAY.receiveMessage(msg.extraInfo)
 
             register.clear()
 

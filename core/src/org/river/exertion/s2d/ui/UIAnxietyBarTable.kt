@@ -26,7 +26,7 @@ class UIAnxietyBarTable(initSkin : Skin) : Table(initSkin), Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null) {
-            val anxietyBarMessage = msg.extraInfo as AnxietyBarMessage
+            val anxietyBarMessage : AnxietyBarMessage = MessageChannel.UI_ANXIETY_BAR.receiveMessage(msg.extraInfo)
 
             if (anxietyBarMessage.value != null) {
                 this.clear()

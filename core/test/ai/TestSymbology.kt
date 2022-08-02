@@ -7,6 +7,7 @@ import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.FoodSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.HungerSymbol
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
+import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.SymbolMessage
 import org.river.exertion.ecs.component.SymbologyComponent
 import org.river.exertion.ecs.component.action.ActionMoveComponent
@@ -44,7 +45,7 @@ class TestSymbology {
             engine.update(.1f)
 
             if (it == 20) {
-                SymbolModifyAction.executeImmediate(IEntity.getFor(character)!!, SymbolMessage(symbolInstance = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.first { it.symbolObj == HungerSymbol }.apply { this.deltaPosition = -.3f}) )
+                MessageChannel.INT_SYMBOL_MODIFY.send(IEntity.getFor(character)!!, SymbolMessage(symbolInstance = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.first { it.symbolObj == HungerSymbol }.apply { this.deltaPosition = -.3f}) )
             }
         }
     }

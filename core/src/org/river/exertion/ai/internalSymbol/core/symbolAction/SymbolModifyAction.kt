@@ -27,23 +27,13 @@ class SymbolModifyAction(var sourceSymbol : IPerceivedSymbol
             ) {
 //            logDebug("symbolAction", "${(entity as IEntity).entityName} executing SymbolModifyAction ${symbolMessage.symbolInstance!!.position}")
 
-            symbolMessage.targetSymbolInstance!!.updateModifiedPosition(symbolMessage.symbolInstance!!, modifierType, sourceToTargetRatio)
+            val updateSymbolInstance = symbolMessage.targetSymbolInstance!!
 
-            executeImmediate(entity, SymbolMessage(symbolInstance = symbolMessage.targetSymbolInstance, symbolDisplayType = symbolMessage.targetSymbolDisplayType))
-        }
-    }
+            updateSymbolInstance.displayType = targetDisplayType
 
-    companion object {
+            updateSymbolInstance.setDeltas(symbolMessage.symbolInstance!!, modifierType, sourceToTargetRatio)
 
-        fun executeImmediate(entity: Telegraph, symbolMessage: SymbolMessage) {
-            if (symbolMessage.symbolInstance != null) {
-                if (symbolMessage.symbolInstance!!.displayType == SymbolDisplayType.PRESENT) {
-                    MessageChannel.INT_SYMBOL_MODIFIED.send(entity, symbolMessage)
-                }
-                symbolMessage.symbolInstance!!.normalizePosition()
-                symbolMessage.symbolInstance!!.normalizeFacetState()
-                MessageChannel.INT_SYMBOL_MODIFY.send(entity, symbolMessage)
-            }
+            MessageChannel.INT_SYMBOL_MODIFY.send(entity, SymbolMessage(symbolInstance = updateSymbolInstance ))
         }
     }
 }

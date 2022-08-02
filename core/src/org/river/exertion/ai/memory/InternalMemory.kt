@@ -21,7 +21,7 @@ class InternalMemory(var entity : Telegraph) : Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
         if ( (msg != null) && (msg.sender == entity) ) {
             if (msg.message == MessageChannel.INT_MEMORY.id()) {
-                perceivedPhenomena = (msg.extraInfo as PerceivedPhenomenaMessage).perceivedPhenomena ?: perceivedPhenomena
+                perceivedPhenomena = (MessageChannel.INT_MEMORY.receiveMessage(msg.extraInfo) as PerceivedPhenomenaMessage).perceivedPhenomena ?: perceivedPhenomena
             }
         }
         return true

@@ -30,7 +30,7 @@ class ActorKobold(initName : String, initPosition : Point, initAngle : Angle) : 
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null && msg.message == MessageChannel.LOSMAP_BRIDGE.id() ) {
-            losMap = (msg.extraInfo as ActionMoveComponent).losMap
+            losMap = (MessageChannel.LOSMAP_BRIDGE.receiveMessage(msg.extraInfo) as ActionMoveComponent).losMap
         }
 
         return super.handleMessage(msg)

@@ -32,11 +32,13 @@ class UIPlanTable(initSkin : Skin) : Table(), Telegraph {
         if (msg != null) {
 //            Gdx.app.log("message","planTable received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
 
+            val entityName : String = MessageChannel.PLAN_BRIDGE.receiveMessage(msg.extraInfo)
+
             if ( (this.children.size >= tableMax) || (this.getChild(0) as Label).textEquals("planTable") ) {
                 if (this.children.size > 0) this.getChild(0).remove()
             }
 
-            register[(msg.sender as IEntity).entityName] = (msg.extraInfo) as String
+            register[(msg.sender as IEntity).entityName] = entityName
 
             this.clear()
             register.entries.forEach {

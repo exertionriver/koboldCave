@@ -22,7 +22,7 @@ class UIAnxietyBar(initSkin : Skin) : ProgressBar(0f, 1f, 0.01f, true, initSkin)
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null) {
-            val anxietyBarMessage = msg.extraInfo as AnxietyBarMessage
+            val anxietyBarMessage : AnxietyBarMessage = MessageChannel.UI_ANXIETY_BAR.receiveMessage(msg.extraInfo)
 
             if (anxietyBarMessage.value != null) this.value = anxietyBarMessage.value!!
             return true

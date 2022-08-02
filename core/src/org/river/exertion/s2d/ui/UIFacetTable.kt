@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import org.river.exertion.KoboldCave
 import org.river.exertion.ai.messaging.FacetTableMessage
+import org.river.exertion.ai.messaging.ManifestDisplayMessage
 import org.river.exertion.ai.messaging.MessageChannel
 
 class UIFacetTable(val initSkin : Skin) : Table(), Telegraph {
@@ -29,7 +30,7 @@ class UIFacetTable(val initSkin : Skin) : Table(), Telegraph {
     override fun handleMessage(msg: Telegram?): Boolean {
 
         if (msg != null) {
-            val facetTableMessage = msg.extraInfo as FacetTableMessage
+            val facetTableMessage : FacetTableMessage = MessageChannel.UI_FACET_DISPLAY.receiveMessage(msg.extraInfo)
 
             register.clear()
 

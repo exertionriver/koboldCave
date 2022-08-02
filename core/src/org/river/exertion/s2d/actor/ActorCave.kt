@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import org.river.exertion.RenderPalette
 import org.river.exertion.ShapeDrawerConfig
 import org.river.exertion.ai.messaging.MessageChannel
+import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.geom.node.Node
 import org.river.exertion.geom.node.nodeRoomMesh.NodeRoomMesh
 
@@ -40,20 +41,21 @@ class ActorCave(initName : String = "Cave", initNodeRoomMesh : NodeRoomMesh) : A
 
         if (msg != null) {
             //           Gdx.app.log("message","actor $actorName received telegram:${msg.message}, ${(msg.sender as MessageComponent).entityName}, ${msg.extraInfo}")
+            val actionMoveComponent : ActionMoveComponent = MessageChannel.CURNODE_BRIDGE.receiveMessage(msg.extraInfo)
 
             //receive currentNode
-            if (msg.extraInfo != null && msg.message == MessageChannel.CURNODE_BRIDGE.id() ) {
-                               Gdx.app.log("message","update currentPosition to: ${(msg.extraInfo as Node).position}, currentNode to: ${(msg.extraInfo as Node)}")
+            if (msg.message == MessageChannel.CURNODE_BRIDGE.id() ) {
+                        Gdx.app.log("message","update currentPosition to: ${actionMoveComponent.currentPosition}, currentNode to: ${actionMoveComponent.currentNode}")
 
-                currentNode = msg.extraInfo as Node
-                currentPosition = (msg.extraInfo as Node).position
+                currentNode = actionMoveComponent.currentNode
+                currentPosition = actionMoveComponent.currentPosition
             }
 
             //receive nodeMesh
-            if (msg.extraInfo != null && msg.message == MessageChannel.NODEROOMMESH_BRIDGE.id() ) {
-                               Gdx.app.log("message","update nodeRoomMesh to: ${(msg.extraInfo as NodeRoomMesh)}")
+            if (msg.message == MessageChannel.NODEROOMMESH_BRIDGE.id() ) {
+                               Gdx.app.log("message","update nodeRoomMesh to: ${actionMoveComponent.nodeRoomMesh}")
 
-                nodeRoomMesh = msg.extraInfo as NodeRoomMesh
+                nodeRoomMesh = actionMoveComponent.nodeRoomMesh
             }
 
             MessageChannel.S2D_ECS_BRIDGE.send(this,"ping")
