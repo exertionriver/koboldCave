@@ -23,6 +23,7 @@ enum class MessageChannel {
     UI_SYMBOL_DISPLAY { override val messageClass = SymbolDisplayMessage::class },
     UI_ANXIETY_BAR { override val messageClass = AnxietyBarMessage::class },
     UI_MANIFEST_DISPLAY { override val messageClass = ManifestDisplayMessage::class },
+    UI_MEMORY_DISPLAY { override val messageClass = MemoryDisplayMessage::class },
     CURNODE_BRIDGE { override val messageClass = ActionMoveComponent::class },
     NODEROOMMESH_BRIDGE { override val messageClass = ActionMoveComponent::class },
     LOSMAP_BRIDGE { override val messageClass = ActionMoveComponent::class },

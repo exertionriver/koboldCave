@@ -98,6 +98,7 @@ class DemoBasicAI(private val menuBatch: Batch,
         MessageChannel.UI_FACET_DISPLAY.send(null, FacetTableMessage(internalFacetInstancesState = FacetComponent.getFor(character)!!.internalFacetState))
 
         MessageChannel.UI_MANIFEST_DISPLAY.send(null, ManifestDisplayMessage(internalManifest = ManifestComponent.getFor(character)!!.internalManifest))
+        MessageChannel.UI_MEMORY_DISPLAY.send(null, MemoryDisplayMessage(internalMemory = MemoryComponent.getFor(character)!!.internalMemory))
 
         engine.update(delta)
     }
@@ -118,6 +119,7 @@ class DemoBasicAI(private val menuBatch: Batch,
         menuStage.addActor(UIFacetTable(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIInternalManifestDisplay(Scene2DSkin.defaultSkin))
         menuStage.addActor(UIExternalManifestDisplay(Scene2DSkin.defaultSkin))
+        menuStage.addActor(UIMemoryTable(Scene2DSkin.defaultSkin))
 
        MemoryComponent.getFor(character)!!.internalMemory.longtermMemory.noumenaRegister.add(secondCharacterMemory)
 //        menuStage.addActor(UIFeelingTable(Scene2DSkin.defaultSkin))
