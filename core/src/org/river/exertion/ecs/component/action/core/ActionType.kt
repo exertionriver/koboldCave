@@ -13,7 +13,7 @@ enum class ActionType {
     WATCH { override fun tag() = "watch" },
     ABIDE { override fun tag() = "abide" },
     APPROACH { override fun tag() = "approach" },
-    BALTER { override fun tag() = "balter" },
+    BALTER { override fun tag() = "baltering" },
     SIT { override fun tag() = "sit" },
     STAND { override fun tag() = "stand" },
     LIE_DOWN { override fun tag() = "lie down" },

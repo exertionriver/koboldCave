@@ -51,8 +51,8 @@ class DemoBasicAI(private val menuBatch: Batch,
         this.loss = .2f
     }
 
-    val secondCharacterPN = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)).apply {
-        this.perceivedAttributes.add(PerceivedAttribute(attributeInstance = IEntity.getFor(secondCharacter)!!.noumenonInstance.pollRandomAttributeInstance(ExternalPhenomenaType.AUDITORY))); this.instanceName = IEntity.getFor(secondCharacter)!!.entityName; this.noumenonType = NoumenonType.INDIVIDUAL; isNamed = true
+    val secondCharacterPN = PerceivedNoumenon().apply {
+        this.perceivedAttributes.add(PerceivedAttribute(attributeInstance = IEntity.getFor(secondCharacter)!!.noumenonInstance.pollRandomAttributeInstance(ExternalPhenomenaType.AUDITORY), knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE))); this.instanceName = IEntity.getFor(secondCharacter)!!.entityName; this.noumenonType = NoumenonType.INDIVIDUAL; isNamed = true
     }
     val secondCharacterMemory = MemoryInstance(secondCharacterPN, FriendSymbol)
 

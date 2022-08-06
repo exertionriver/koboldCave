@@ -25,8 +25,9 @@ class MemorySystem : IntervalIteratingSystem(allOf(MemoryComponent::class).get()
 
         //poll attributes from external phenomena, store in activeMemory
         MemoryComponent.getFor(entity)!!.internalMemory.perceivedPhenomena.forEach { perceivedPhenomenon ->
+            //todo: tie attribute instance to channel
             val attributeInstance = perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.pollRandomAttributeInstance(perceivedPhenomenon.perceivedExternalPhenomena!!.externalPhenomenaImpression!!.type)!! //poll random attribute not yet seen in encounter?
-            val perceivedAttribute = PerceivedAttribute(attributeInstance, perceivedPhenomenon.perceivedExternalPhenomena)
+            val perceivedAttribute = PerceivedAttribute(attributeInstance, perceivedPhenomenon.perceivedExternalPhenomena, knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE))
 
             val noumenonTypes = perceivedPhenomenon.perceivedExternalPhenomena!!.sender!!.noumenonInstance.sourceNoumenon.types().plus(NoumenonType.INDIVIDUAL)
             var instanceName : String?
@@ -37,18 +38,18 @@ class MemorySystem : IntervalIteratingSystem(allOf(MemoryComponent::class).get()
                 if (MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.none { it.perceivedNoumenon.noumenonType == noumenonType && (instanceName == null || (it.perceivedNoumenon.instanceName == instanceName) ) }) { //check active memory first
                     if (MemoryComponent.getFor(entity)!!.internalMemory.longtermMemory.noumenaRegister.none { it.perceivedNoumenon.noumenonType == noumenonType && (instanceName == null || (it.perceivedNoumenon.instanceName == instanceName) ) }) { //not found in active memory, check longterm memory
                         //add to active memory
-                        val perceivedNoumenon = PerceivedNoumenon(knowledgeSourceInstance = KnowledgeSourceInstance(KnowledgeSourceType.EXPERIENCE)).apply { this.perceivedAttributes.add(perceivedAttribute); this.instanceName = instanceName; this.noumenonType = noumenonType; isNamed = true }
+                        val perceivedNoumenon = PerceivedNoumenon().apply { this.perceivedAttributes.add(perceivedAttribute); this.instanceName = instanceName; this.noumenonType = noumenonType; isNamed = true }
                         MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.add(MemoryInstance(perceivedNoumenon, UnknownSymbol))
                         if (noumenonType == NoumenonType.INDIVIDUAL)
                             MessageChannel.INT_SYMBOL_SPAWN.send(IEntity.getFor(entity)!!, SymbolMessage(symbol = UnknownSymbol))
-                    } else { //noumenon found in longterm memory, pull over
+                    } else { //noumenon found in longterm memory, pull over to active memory
                         val memoryInstance = MemoryComponent.getFor(entity)!!.internalMemory.longtermMemory.noumenaRegister.filter { it.perceivedNoumenon.noumenonType == noumenonType && (instanceName == null || (it.perceivedNoumenon.instanceName == instanceName) ) }.first()
                         MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.add(memoryInstance.apply { this.perceivedNoumenon.perceivedAttributes.add(perceivedAttribute) ; this.symbol = memoryInstance.symbol})
                         if (noumenonType == NoumenonType.INDIVIDUAL)
                             MessageChannel.INT_SYMBOL_SPAWN.send(IEntity.getFor(entity)!!, SymbolMessage(symbol = memoryInstance.symbol))
                     }
-                } else { //noumenon already in active memory, update association; todo: merge association with past associations
-           //         MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.filter { it.perceivedNoumenon.noumenonType == noumenonType && (instanceName == null || (it.perceivedNoumenon.instanceName == instanceName) ) }.first().apply { this.perceivedNoumenon.perceivedAttributes.add(perceivedAttribute); this.internalFacetInstancesState = MemoryComponent.getFor(entity)!!.internalFacetInstancesState }
+                } else { //noumenon already in active memory, add new attribute
+                    MemoryComponent.getFor(entity)!!.internalMemory.activeMemory.noumenaRegister.filter { it.perceivedNoumenon.noumenonType == noumenonType && (instanceName == null || (it.perceivedNoumenon.instanceName == instanceName) ) }.first().apply { this.perceivedNoumenon.perceivedAttributes.add(perceivedAttribute) }
                 }
             }
         }

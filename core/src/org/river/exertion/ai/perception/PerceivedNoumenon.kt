@@ -5,33 +5,40 @@ import org.river.exertion.ai.memory.KnowledgeSourceType
 import org.river.exertion.ai.noumena.core.NoumenonType
 import org.river.exertion.ecs.component.action.core.ActionType
 
-data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttribute> = mutableSetOf(), var knowledgeSourceInstance: KnowledgeSourceInstance = KnowledgeSourceInstance()) {
+data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttribute> = mutableSetOf()) {
 
     var noumenonType : NoumenonType = NoumenonType.NONE
     var instanceName : String? = null
     var isNamed : Boolean = false
 
-    fun facts() : MutableList<String> {
+    fun facts(onTopic : String) : MutableList<String> {
 
         val returnFacts = mutableListOf<String>()
 
         perceivedAttributes.forEach { perceivedAttribute ->
             val attributePhenomenaType = perceivedAttribute.attributeInstance!!.attributeObj.howPerceived()
 
-            var perceptionStatement = attributePhenomenaType.perceivedAction(knowledgeSourceInstance.source)
-            if (knowledgeSourceInstance.trust < .5f) perceptionStatement += " maybe"
+            var perceptionStatement = attributePhenomenaType.perceivedAction(perceivedAttribute.knowledgeSourceInstance.source)
+            if (perceivedAttribute.knowledgeSourceInstance.trust < .5f) perceptionStatement += " maybe"
 
             perceptionStatement +=
-                    if (knowledgeSourceInstance.source == KnowledgeSourceType.LEARNING || knowledgeSourceInstance.source == KnowledgeSourceType.LEARNING)
-                        " ${perceivedAttribute.attributeInstance!!.noumenonObj.type().tag()}s "
+                if ((noumenonType == NoumenonType.INDIVIDUAL) && (isNamed)) {
+                    " $instanceName"
+                } else {
+                    if (perceivedAttribute.knowledgeSourceInstance.source == KnowledgeSourceType.LEARNING || perceivedAttribute.knowledgeSourceInstance.source == KnowledgeSourceType.LEARNING)
+                        " ${onTopic}s "
                     else
-                        " a ${perceivedAttribute.attributeInstance!!.noumenonObj.type().tag()}"
+                        " a $onTopic"
+                }
 
-            perceptionStatement += " with a ${perceivedAttribute.attributeInstance!!.characteristicValue.description}"
+            perceptionStatement += if (perceivedAttribute.knowledgeSourceInstance.source == KnowledgeSourceType.EXPERIENCE || perceivedAttribute.knowledgeSourceInstance.source == KnowledgeSourceType.EXPERIENCE)
+                " with a ${perceivedAttribute.attributeInstance!!.characteristicValue.description}"
+            else
+                " can have a ${perceivedAttribute.attributeInstance!!.characteristicValue.description}"
 
-            perceptionStatement += " while ${perceivedAttribute.perceivedExternalPhenomena?.externalPhenomenaImpression?.actionType?.tag() ?: ActionType.NONE.tag() }"
-
-       //     perceptionStatement += " and it made me feel ${internalStateInstance.description()}"
+            val actionTag = perceivedAttribute.perceivedExternalPhenomena?.externalPhenomenaImpression?.actionType?.tag()
+            if (actionTag != null)
+                perceptionStatement += " while $actionTag"
 
             returnFacts.add(perceptionStatement)
         }
@@ -46,7 +53,6 @@ data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttri
         other as PerceivedNoumenon
 
         if (perceivedAttributes != other.perceivedAttributes) return false
-        if (knowledgeSourceInstance != other.knowledgeSourceInstance) return false
         if (noumenonType != other.noumenonType) return false
         if (instanceName != other.instanceName) return false
 
@@ -55,7 +61,6 @@ data class PerceivedNoumenon(var perceivedAttributes : MutableSet<PerceivedAttri
 
     override fun hashCode(): Int {
         var result = perceivedAttributes.hashCode()
-        result = 31 * result + knowledgeSourceInstance.hashCode()
         result = 31 * result + noumenonType.hashCode()
         result = 31 * result + (instanceName?.hashCode() ?: 0)
         return result

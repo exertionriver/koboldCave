@@ -9,9 +9,9 @@ object IntelligenceAttribute : IAttribute<Int> {
     override fun howPerceived() = ExternalPhenomenaType.WISDOM
 
     override fun attributeValues() = listOf(
-            AttributeValue(6, "momma's angel", 0)
-            , AttributeValue(7, "schoolyard bully", 1)
-            , AttributeValue(8, "smiley Tim", 2)
+            AttributeValue(6, "not so bright", 0)
+            , AttributeValue(7, "ok smart", 1)
+            , AttributeValue(8, "better smart", 2)
     )
 
     fun intelligenceRange(lambda : Trait<Int>.() -> Unit) = Trait(attributeObj = this@IntelligenceAttribute, noumenonObj = NoneNoumenon).apply(lambda)
