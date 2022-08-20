@@ -13,8 +13,7 @@ object CloseIntimateFocus : IInternalFocus {
     override var type = InternalFocusType.SENSING
     override var momentMinimum = 0f
 
-    override var satisfyingStrategies = mutableListOf(
-        CloseFamiliarFocus,
+    override var satisfyingStrategies = mutableListOf<IInternalFocus>(
         ApproachFocus
     )
     override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) = targetPresentSymbol.position <= SymbolTargetPosition.STABILIZE_INTIMATE.targetPosition()

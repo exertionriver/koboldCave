@@ -14,4 +14,7 @@ enum class SymbolTargetPosition {
     NONE
     ;
     open fun targetPosition() = 0f
+    open fun atTargetPosition(position : Float) : Boolean = (position * 100).toInt() == (targetPosition() * 100).toInt()
+    open fun ltTargetPosition(position : Float) : Boolean = (position * 100).toInt() < (targetPosition() * 100).toInt()
+    open fun gtTargetPosition(position : Float) : Boolean = (position * 100).toInt() > (targetPosition() * 100).toInt()
 }

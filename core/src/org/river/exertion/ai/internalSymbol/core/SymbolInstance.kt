@@ -17,7 +17,7 @@ data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbo
     var handleCapacity = 0f
     var possessCapacity = 0f
 
-    var ornaments = mutableSetOf<SymbolInstance>()
+    var ornaments = mutableSetOf<ISymbol>()
     var currentFacetState = mutableSetOf<InternalFacetInstance>()
 
     fun normalizeFacetState() {

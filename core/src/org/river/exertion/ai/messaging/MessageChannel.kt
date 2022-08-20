@@ -37,6 +37,8 @@ enum class MessageChannel {
     INT_SYMBOL_MODIFY { override val messageClass = SymbolMessage::class },
     INT_SYMBOL_SPAWN { override val messageClass = SymbolMessage::class },
     INT_SYMBOL_DESPAWN { override val messageClass = SymbolMessage::class },
+    INT_SYMBOL_ADD_ORNAMENT { override val messageClass = OrnamentMessage::class },
+    INT_SYMBOL_REMOVE_ORNAMENT { override val messageClass = OrnamentMessage::class },
     INT_ADD_FOCUS_PLAN { override val messageClass = FocusMessage::class },
     INT_REMOVE_FOCUS_PLAN { override val messageClass = FocusMessage::class },
     INT_ADD_FOCUS_CHAIN_LINK { override val messageClass = FocusMessage::class },

@@ -13,8 +13,7 @@ object CloseSocialFocus : IInternalFocus {
     override var type = InternalFocusType.SENSING
     override var momentMinimum = 0f
 
-    override var satisfyingStrategies = mutableListOf(
-        ClosePerceptualFocus,
+    override var satisfyingStrategies = mutableListOf<IInternalFocus>(
         ApproachFocus
     )
 

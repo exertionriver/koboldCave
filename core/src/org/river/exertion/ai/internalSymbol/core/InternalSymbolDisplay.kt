@@ -5,10 +5,7 @@ import com.badlogic.gdx.ai.msg.Telegraph
 import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ai.internalFacet.InternalFacetInstancesState.Companion.merge
 import org.river.exertion.ai.internalSymbol.core.symbolAction.SymbolModifyAction
-import org.river.exertion.ai.messaging.FacetMessage
-import org.river.exertion.ai.messaging.FocusMessage
-import org.river.exertion.ai.messaging.MessageChannel
-import org.river.exertion.ai.messaging.SymbolMessage
+import org.river.exertion.ai.messaging.*
 
 @Suppress("NewApi")
 class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
@@ -20,6 +17,8 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
         MessageChannel.INT_SYMBOL_SPAWN.enableReceive(this)
         MessageChannel.INT_SYMBOL_DESPAWN.enableReceive(this)
         MessageChannel.INT_SYMBOL_MODIFY.enableReceive(this)
+        MessageChannel.INT_SYMBOL_ADD_ORNAMENT.enableReceive(this)
+        MessageChannel.INT_SYMBOL_REMOVE_ORNAMENT.enableReceive(this)
     }
 
     fun mergeAndUpdateFacets() {
@@ -81,25 +80,32 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
 
     //spawn instance of symbol, defaulting to PRESENT display
     private fun spawn(symbol : IPerceivedSymbol) {
-        symbolDisplay.add(symbol.spawn())
+        val symbolInstance = symbol.spawn()
+        symbolDisplay.add(symbolInstance)
+        update(symbolInstance)
     }
 
-    //spawn instance of symbol in display type if obj not already spawned in display type
+    //spawn instance of symbol in display type
     private fun spawn(symbol : IPerceivedSymbol, symbolDisplayType: SymbolDisplayType) {
+        val symbolInstance : SymbolInstance
+
         if (symbolDisplayType == SymbolDisplayType.ABSENT) {
+            //only one symbol of this type can be spawned in ABSENT display
             if (symbolDisplay.none { it.symbolObj == symbol && it.displayType == symbolDisplayType }) {
 
-                val spawnSymbol = symbol.spawn().apply { this.displayType = symbolDisplayType }
-                symbolDisplay.add(spawnSymbol)
+                symbolInstance = symbol.spawn().apply { this.displayType = symbolDisplayType }
+                symbolDisplay.add(symbolInstance)
 
                 //add focus for ABSENT symbol
                 symbol.focusSatisfiers.forEach {
-                    MessageChannel.INT_ADD_FOCUS_PLAN.send(entity, FocusMessage(satisfierFocus = it, absentSymbolInstance = spawnSymbol))
+                    MessageChannel.INT_ADD_FOCUS_PLAN.send(entity, FocusMessage(satisfierFocus = it, absentSymbolInstance = symbolInstance))
                 }
-
-            } else {
-                symbolDisplay.add(symbol.spawn())
+                update(symbolInstance)
             }
+        } else {
+            symbolInstance = symbol.spawn()
+            symbolDisplay.add(symbolInstance)
+            update(symbolInstance)
         }
     }
 
@@ -120,6 +126,7 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
         } else {
             symbolDisplay.add(symbolInstance)
         }
+        update(symbolInstance)
     }
 
     private fun spawnHandler(symbolMessage : SymbolMessage) {
@@ -145,7 +152,17 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
             }
             update(symbolMessage.symbolInstance!!)
         }
+    }
 
+    private fun addOrnamentHandler(ornamentMessage : OrnamentMessage) {
+
+        symbolDisplay.filter { it == ornamentMessage.symbolInstance }.firstOrNull { it.ornaments.add(ornamentMessage.ornament!!) }
+        spawn(ornamentMessage.symbolInstance!!.symbolObj, SymbolDisplayType.ABSENT)
+    }
+
+    private fun removeOrnamentHandler(ornamentMessage : OrnamentMessage) {
+
+        symbolDisplay.filter { it == ornamentMessage.symbolInstance }.firstOrNull { it.ornaments.remove(ornamentMessage.ornament!!) }
     }
 
     private fun update(symbolInstance: SymbolInstance) {
@@ -203,6 +220,12 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
             }
             if (msg.message == MessageChannel.INT_SYMBOL_MODIFY.id()) {
                 this.updateHandler(MessageChannel.INT_SYMBOL_MODIFY.receiveMessage(msg.extraInfo))
+            }
+            if (msg.message == MessageChannel.INT_SYMBOL_ADD_ORNAMENT.id()) {
+                this.addOrnamentHandler(MessageChannel.INT_SYMBOL_ADD_ORNAMENT.receiveMessage(msg.extraInfo))
+            }
+            if (msg.message == MessageChannel.INT_SYMBOL_REMOVE_ORNAMENT.id()) {
+                this.removeOrnamentHandler(MessageChannel.INT_SYMBOL_REMOVE_ORNAMENT.receiveMessage(msg.extraInfo))
             }
         }
         return true
