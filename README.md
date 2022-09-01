@@ -9,6 +9,10 @@ Example usage, after cloning / downloading:
 
 Hope this may help you in your development work.
 
+v0.13 - rendering simple symbolic scenarios--symbols, ornaments, focuses
+
+https://user-images.githubusercontent.com/13192685/187816742-74ccd0e3-cfc1-4710-b455-f743296b95f2.mp4
+
 v0.12 - completing basic AI structure, integrating AI with ECS
 
 v0.11 - 3d and behavior tree demos, beginning core AI
