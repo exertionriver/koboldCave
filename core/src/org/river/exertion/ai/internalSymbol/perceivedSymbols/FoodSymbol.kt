@@ -1,6 +1,5 @@
 package org.river.exertion.ai.internalSymbol.perceivedSymbols
 
-import org.river.exertion.ai.internalFacet.AngerFacet
 import org.river.exertion.ai.internalFacet.FearFacet
 import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalFocus.internalFocuses.ConsumeFocus
@@ -11,7 +10,7 @@ object FoodSymbol : IPerceivedSymbol {
 
     override var tag = "food"
     override var type = SymbolType.NEED
-    override var targetPosition = SymbolTargetPosition.ATTRACT_CONSUME
+    override var baseTargetPosition = SymbolTargetPosition.ATTRACT_CONSUME
     override var cycle = SymbolCycle.SINGLE
 
     override var symbolActions = mutableSetOf<ISymbolAction>()
@@ -23,5 +22,5 @@ object FoodSymbol : IPerceivedSymbol {
             FacetModifier(FearFacet, 1.0f)
     )
 
-    override fun spawn() = SymbolInstance(FoodSymbol, cycles = 1f, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
+    override fun spawn() = SymbolInstance(FoodSymbol, cycles = 1f, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition(), initTargetPosition = baseTargetPosition)
 }

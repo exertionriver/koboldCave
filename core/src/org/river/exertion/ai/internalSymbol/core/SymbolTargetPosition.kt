@@ -17,4 +17,10 @@ enum class SymbolTargetPosition {
     open fun atTargetPosition(position : Float) : Boolean = (position * 100).toInt() == (targetPosition() * 100).toInt()
     open fun ltTargetPosition(position : Float) : Boolean = (position * 100).toInt() < (targetPosition() * 100).toInt()
     open fun gtTargetPosition(position : Float) : Boolean = (position * 100).toInt() > (targetPosition() * 100).toInt()
+
+    companion object {
+        fun atTargetPosition(refPosition : Float, checkPosition : Float) : Boolean = (refPosition * 100).toInt() == (checkPosition * 100).toInt()
+        fun ltTargetPosition(refPosition : Float, checkPosition : Float) : Boolean = (refPosition * 100).toInt() < (checkPosition * 100).toInt()
+        fun gtTargetPosition(refPosition : Float, checkPosition : Float) : Boolean = (refPosition * 100).toInt() > (checkPosition * 100).toInt()
+    }
 }

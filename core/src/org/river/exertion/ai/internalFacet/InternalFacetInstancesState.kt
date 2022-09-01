@@ -194,7 +194,6 @@ class InternalFacetInstancesState(val entity : Telegraph, var internalState: Mut
 
             return returnInstance
         }
-
     }
 
 }

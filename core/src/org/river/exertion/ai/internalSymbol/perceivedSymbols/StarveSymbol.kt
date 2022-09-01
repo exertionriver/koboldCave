@@ -10,7 +10,7 @@ object StarveSymbol : IPerceivedSymbol {
 
     override var tag = "starving"
     override var type = SymbolType.DRIVE
-    override var targetPosition = SymbolTargetPosition.REPEL_LIMINAL
+    override var baseTargetPosition = SymbolTargetPosition.REPEL_LIMINAL
     override var cycle = SymbolCycle.SINGLE
 
     override var symbolActions = mutableSetOf<ISymbolAction>(
@@ -23,5 +23,5 @@ object StarveSymbol : IPerceivedSymbol {
     override var facetModifiers = mutableSetOf(
             FacetModifier(FearFacet, .3f)
     )
-    override fun spawn() = SymbolInstance(StarveSymbol, cycles = 1f, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition())
+    override fun spawn() = SymbolInstance(StarveSymbol, cycles = 1f, position = SymbolTargetPosition.REPEL_LIMINAL.targetPosition(), initTargetPosition = baseTargetPosition)
 }

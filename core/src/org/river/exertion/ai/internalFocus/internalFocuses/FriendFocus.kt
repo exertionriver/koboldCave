@@ -26,19 +26,11 @@ object FriendFocus : IInternalFocus {
     override fun satisfyingCondition(targetPresentSymbol : SymbolInstance) : Boolean {
         satisfyingStrategies.clear()
         var satisfied = false
+
         when {
-            targetPresentSymbol.ornaments.contains(FamiliarOrnament) ->
-                if (SymbolTargetPosition.STABILIZE_FAMILIAR.gtTargetPosition(targetPresentSymbol.position))
-                    satisfyingStrategies.add(CloseFamiliarFocus)
-                else if (SymbolTargetPosition.STABILIZE_FAMILIAR.ltTargetPosition(targetPresentSymbol.position))
-                    satisfyingStrategies.add(OpenFamiliarFocus)
-                else satisfied = true
-            targetPresentSymbol.ornaments.contains(SocialOrnament) ->
-                if (SymbolTargetPosition.STABILIZE_SOCIAL.gtTargetPosition(targetPresentSymbol.position))
-                    satisfyingStrategies.add(CloseSocialFocus)
-                else if (SymbolTargetPosition.STABILIZE_SOCIAL.ltTargetPosition(targetPresentSymbol.position))
-                    satisfyingStrategies.add(OpenSocialFocus)
-                else satisfied = true
+            SymbolTargetPosition.gtTargetPosition(targetPresentSymbol.position, targetPresentSymbol.targetPosition) -> satisfyingStrategies.add(CloseFocus)
+            SymbolTargetPosition.ltTargetPosition(targetPresentSymbol.position, targetPresentSymbol.targetPosition) -> satisfyingStrategies.add(OpenFocus)
+            else -> satisfied = true
         }
 
         return satisfied

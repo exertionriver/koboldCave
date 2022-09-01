@@ -14,6 +14,7 @@ import org.river.exertion.ai.internalSymbol.perceivedSymbols.MomentElapseSymbol
 import org.river.exertion.ai.messaging.MessageChannel
 import org.river.exertion.ai.messaging.OrnamentMessage
 import org.river.exertion.ai.messaging.SymbolMessage
+import org.river.exertion.ecs.component.FacetComponent
 import org.river.exertion.ecs.component.SymbologyComponent
 import org.river.exertion.ecs.component.action.ActionMoveComponent
 import org.river.exertion.ecs.component.action.ActionSimpleDecideMoveComponent
@@ -63,22 +64,28 @@ class TestSymbology {
         (0..30).forEach {
             val internalFocusDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalFocusDisplay
             val internalSymbolDisplay = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay
+            SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.symbolObj == FriendSymbol }.first().recalcFacetState()
+            val internalFacetInstance = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.symbolObj == FriendSymbol }.first().currentFacetState
 
             println("itr:$it")
             internalSymbolDisplay.symbolDisplay.forEach { println("${it.symbolObj} : ${it.cycles}, ${it.position}, ${it.displayType}") }
             println("internal focuses:")
-            internalFocusDisplay.focusPlans.forEachIndexed { idx, it -> println (it.absentSymbolInstance.symbolObj) ; it.instancesChain.forEach { println("$idx; $it") } }
+            internalFocusDisplay.focusPlans.forEachIndexed { idx, focusPlan -> println (focusPlan.absentSymbolInstance.symbolObj) ; focusPlan.instancesChain.forEach { println("$idx; $it") } }
+            println("internal facets:")
+            internalFacetInstance.forEach { facet -> println ("${facet.facetObj} : ${facet.magnitude}") }
 
             if (it == 10) {
                 val friendSymbol = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.symbolObj == FriendSymbol }.first()
                 MessageChannel.INT_SYMBOL_REMOVE_ORNAMENT.send(IEntity.getFor(character), OrnamentMessage(symbolInstance = friendSymbol, FamiliarOrnament))
                 MessageChannel.INT_SYMBOL_ADD_ORNAMENT.send(IEntity.getFor(character), OrnamentMessage(symbolInstance = friendSymbol, SocialOrnament))
+                SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.symbolObj == FriendSymbol }.first().recalcTargetPosition()
             }
 
             if (it == 20) {
                 val friendSymbol = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.symbolObj == FriendSymbol }.first()
                 MessageChannel.INT_SYMBOL_REMOVE_ORNAMENT.send(IEntity.getFor(character), OrnamentMessage(symbolInstance = friendSymbol, SocialOrnament))
                 MessageChannel.INT_SYMBOL_ADD_ORNAMENT.send(IEntity.getFor(character), OrnamentMessage(symbolInstance = friendSymbol, FamiliarOrnament))
+                SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.symbolObj == FriendSymbol }.first().recalcTargetPosition()
             }
 
             engine.update(.1f)

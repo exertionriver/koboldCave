@@ -7,7 +7,7 @@ interface IPerceivedSymbol : ISymbol {
 
     override var tag : String
     override var type : SymbolType
-    var targetPosition : SymbolTargetPosition
+    var baseTargetPosition : SymbolTargetPosition
     var cycle : SymbolCycle
 
     var symbolActions : MutableSet<ISymbolAction>

@@ -1,14 +1,23 @@
 package org.river.exertion.ai.internalSymbol.core
 
 import org.river.exertion.ai.internalFacet.InternalFacetInstance
+import org.river.exertion.ai.internalFacet.InternalFacetInstance.Companion.merge
+import org.river.exertion.ai.internalFacet.InternalFacetInstancesState
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.NonePerceivedSymbol
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.sign
 
-data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbol, var displayType : SymbolDisplayType = SymbolDisplayType.PRESENT, var cycles : Float = 0f, var position : Float = 0f) {
+data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbol
+                           , var displayType : SymbolDisplayType = SymbolDisplayType.PRESENT
+                           , var cycles : Float = 0f
+                           , var position : Float = 0f
+                           , val initTargetPosition: SymbolTargetPosition = SymbolTargetPosition.NONE
+                        ) {
 
     val uuid : UUID = UUID.randomUUID()
     var impact = 0f //used for absent symbols
+    var targetPosition = initTargetPosition.targetPosition()
 
     var deltaCycles = 0f
     var deltaPosition = 0f
@@ -17,14 +26,29 @@ data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbo
     var handleCapacity = 0f
     var possessCapacity = 0f
 
-    var ornaments = mutableSetOf<ISymbol>()
+    var ornaments = mutableSetOf<IPerceivedSymbolOrnament>()
     var currentFacetState = mutableSetOf<InternalFacetInstance>()
 
-    fun normalizeFacetState() {
+    fun recalcTargetPosition() {
+        //recalc present symbol position to avg of ornament positions
+        targetPosition = ornaments.map { it.baseTargetPosition.targetPosition() }.reduce { sum, iPerceivedSymbolOrnament -> sum + iPerceivedSymbolOrnament }.div(ornaments.size)
+    }
+
+    fun targetPositionDistance() = abs(targetPosition - position)
+
+    fun invTargetPositionDistance() = 1 - targetPositionDistance()
+
+    fun recalcFacetState() {
         currentFacetState.clear()
-        this.symbolObj.facetModifiers.forEach { facetModifier ->
-            currentFacetState.add(facetModifier.facetObj.spawn().apply { this.magnitude = facetModifier.symbolToFacetRatio * position })
+        this.ornaments.map { it.facetModifiers }.forEach { facetModifiers ->
+            facetModifiers.forEach { facetModifier ->
+                currentFacetState.merge(InternalFacetInstance(facetModifier.facetObj, facetModifier.facetMagnitude * invTargetPositionDistance()))
+            }
         }
+//      TODO: merge ornaments with base facetMod
+//        this.symbolObj.facetModifiers.forEach { facetModifier ->
+//            currentFacetState.add(facetModifier.facetObj.spawn().apply { this.magnitude = facetModifier.facetMagnitude })
+//        }
     }
 
     fun normalizePosition() {
@@ -65,13 +89,13 @@ data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbo
 
         deltaPosition = when (modifierType) {
             SymbolModifierType.POSITION_TO_POSITION ->
-                this.symbolObj.targetPosition.targetPosition().sign *
-                        modifyingSymbol.symbolObj.targetPosition.targetPosition().sign *
+                this.symbolObj.baseTargetPosition.targetPosition().sign *
+                        modifyingSymbol.symbolObj.baseTargetPosition.targetPosition().sign *
                         sourceToTargetRatio *
                         modifyingSymbol.deltaPosition
             SymbolModifierType.CYCLE_TO_POSITION ->
-                this.symbolObj.targetPosition.targetPosition().sign *
-                        modifyingSymbol.symbolObj.targetPosition.targetPosition().sign *
+                this.symbolObj.baseTargetPosition.targetPosition().sign *
+                        modifyingSymbol.symbolObj.baseTargetPosition.targetPosition().sign *
                         sourceToTargetRatio *
                         modifyingSymbol.deltaCycles
             else -> 0f
@@ -79,13 +103,13 @@ data class SymbolInstance (var symbolObj : IPerceivedSymbol = NonePerceivedSymbo
 
         deltaCycles = when (modifierType) {
             SymbolModifierType.CYCLE_TO_CYCLE ->
-                this.symbolObj.targetPosition.targetPosition().sign *
-                        modifyingSymbol.symbolObj.targetPosition.targetPosition().sign *
+                this.symbolObj.baseTargetPosition.targetPosition().sign *
+                        modifyingSymbol.symbolObj.baseTargetPosition.targetPosition().sign *
                         sourceToTargetRatio *
                         modifyingSymbol.deltaCycles
             SymbolModifierType.POSITION_TO_CYCLE ->
-                this.symbolObj.targetPosition.targetPosition().sign *
-                        modifyingSymbol.symbolObj.targetPosition.targetPosition().sign *
+                this.symbolObj.baseTargetPosition.targetPosition().sign *
+                        modifyingSymbol.symbolObj.baseTargetPosition.targetPosition().sign *
                         sourceToTargetRatio *
                         modifyingSymbol.deltaPosition
             else -> 0f

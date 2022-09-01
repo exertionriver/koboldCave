@@ -170,7 +170,7 @@ class InternalSymbolDisplay(val entity : Telegraph) : Telegraph {
         if (symbolDisplay.any { it == symbolInstance } ) {
 
             symbolInstance.normalizePosition()
-            symbolInstance.normalizeFacetState()
+            symbolInstance.recalcFacetState()
 
             symbolDisplay.filter { it == symbolInstance && it.displayType == symbolInstance.displayType }.forEach {
                 it.cycles = symbolInstance.cycles

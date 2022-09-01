@@ -1,6 +1,5 @@
 package org.river.exertion.ai.internalSymbol.perceivedSymbols
 
-import org.river.exertion.ai.internalFacet.AngerFacet
 import org.river.exertion.ai.internalFacet.DisgustFacet
 import org.river.exertion.ai.internalFocus.IInternalFocus
 import org.river.exertion.ai.internalFocus.internalFocuses.ConsumeFocus
@@ -11,7 +10,7 @@ object AnxietySymbol : IPerceivedSymbol {
 
     override var tag = "anxiety"
     override var type = SymbolType.DRIVE
-    override var targetPosition = SymbolTargetPosition.ATTRACT_CONSUME
+    override var baseTargetPosition = SymbolTargetPosition.ATTRACT_CONSUME
     override var cycle = SymbolCycle.SINGLE
 
     override var symbolActions = mutableSetOf<ISymbolAction>()
@@ -22,5 +21,5 @@ object AnxietySymbol : IPerceivedSymbol {
     override var facetModifiers = mutableSetOf(
             FacetModifier(DisgustFacet, .01f)
     )
-    override fun spawn() = SymbolInstance(AnxietySymbol, cycles = 1f, position = SymbolTargetPosition.ATTRACT_CONSUME.targetPosition())
+    override fun spawn() = SymbolInstance(AnxietySymbol, cycles = 1f, position = SymbolTargetPosition.ATTRACT_CONSUME.targetPosition(), initTargetPosition = baseTargetPosition)
 }

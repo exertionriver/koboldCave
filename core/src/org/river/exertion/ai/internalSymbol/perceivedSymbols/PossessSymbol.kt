@@ -8,7 +8,7 @@ object PossessSymbol : IPerceivedSymbol {
 
     override var tag = "possess"
     override var type = SymbolType.ORNAMENT
-    override var targetPosition = SymbolTargetPosition.NONE
+    override var baseTargetPosition = SymbolTargetPosition.NONE
     override var cycle = SymbolCycle.NONE
 
     override var symbolActions = mutableSetOf<ISymbolAction>()
