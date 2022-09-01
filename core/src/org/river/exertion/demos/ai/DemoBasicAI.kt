@@ -16,6 +16,7 @@ import org.river.exertion.InputHandler
 import org.river.exertion.Render
 import org.river.exertion.ai.internalFacet.AngerFacet
 import org.river.exertion.ai.internalSymbol.core.SymbolInstance
+import org.river.exertion.ai.internalSymbol.ornaments.SocialOrnament
 import org.river.exertion.ai.internalSymbol.perceivedSymbols.*
 import org.river.exertion.ai.memory.KnowledgeSourceInstance
 import org.river.exertion.ai.memory.KnowledgeSourceType
@@ -76,9 +77,18 @@ class DemoBasicAI(private val menuBatch: Batch,
             Gdx.input.isKeyJustPressed(Input.Keys.LEFT) -> MomentComponent.getFor(character)!!.systemMoment -= 5f
             Gdx.input.isKeyJustPressed(Input.Keys.UP) -> ConditionComponent.getFor(character)!!.internalCondition.mIntAnxiety += .05f
             Gdx.input.isKeyJustPressed(Input.Keys.DOWN) -> ConditionComponent.getFor(character)!!.internalCondition.mIntAnxiety -= .05f
+            //TODO: update facet at a time via INT_FACET_MODIFY
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_1) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude += .05f
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_2) -> FacetComponent.getFor(character)!!.internalFacetState.internalState.first { it.facetObj == AngerFacet }.magnitude -= .05f
-            Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) -> ManifestComponent.getFor(character)!!.internalManifest.addImpression(IEntity.getFor(secondCharacter)!!, ordinarySound.externalImpression())
+
+            //TODO: simplify symbol-ornament messaging
+            Gdx.input.isKeyJustPressed(Input.Keys.NUM_5) -> {
+                MessageChannel.INT_SYMBOL_ADD_ORNAMENT.send(IEntity.getFor(character)!!,
+                OrnamentMessage(symbolInstance = SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.symbolObj == FriendSymbol }.first(), ornament = SocialOrnament)
+                )
+                SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.filter { it.symbolObj == FriendSymbol }.first().recalcTargetPosition()
+            }
+            Gdx.input.isKeyJustPressed(Input.Keys.NUM_0) -> MessageChannel.ADD_EXT_PHENOMENA.send(IEntity.getFor(secondCharacter)!!, ordinarySound)
             Gdx.input.isKeyJustPressed(Input.Keys.NUM_4) -> SymbologyComponent.getFor(character)!!.internalSymbology.internalSymbolDisplay.symbolDisplay.addAll(hungerDisplay)
        }
 
